@@ -14,6 +14,8 @@
 - Leitura automática do documento pessoal e comprovante de residência com revisão dos campos
 - Nome da plataforma alterado para “Gestão Administrativa | SCC Adv”
 - Recuperação de senha por e-mail com tela para definição da nova senha
+- Cadastro orientado por anexos, com os campos visuais ocultos até a leitura ou a opção de preenchimento manual
+- Quantidade total e por cliente de processos ativos identificados pelas pastas numeradas no Google Drive
 
 ## Aberto (aguardando arquivos ou decisão do escritório)
 - Gerar as minutas preenchidas preservando integralmente a formatação dos modelos oficiais

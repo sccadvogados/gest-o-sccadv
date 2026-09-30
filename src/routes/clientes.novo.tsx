@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowLeft, CheckCircle2, LoaderCircle, ScanText } from "lucide-react";
+import { ArrowLeft, CheckCircle2, FileScan, LoaderCircle, PencilLine, ScanText } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -107,6 +107,7 @@ function NewClientPage() {
   const [files, setFiles] = useState<Record<string, File[]>>({});
   const [extracting, setExtracting] = useState<Record<string, boolean>>({});
   const [extractedKinds, setExtractedKinds] = useState<string[]>([]);
+  const [showForm, setShowForm] = useState(false);
   const [cepBusy, setCepBusy] = useState(false);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -171,6 +172,7 @@ function NewClientPage() {
       });
       mergeExtracted(data);
       setExtractedKinds((current) => [...new Set([...current, kind])]);
+      setShowForm(true);
       toast.success("Dados identificados. Confira os campos antes de salvar.");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Não foi possível ler o documento.");
@@ -212,6 +214,9 @@ function NewClientPage() {
 
   const save = useMutation({
     mutationFn: async () => {
+      if (!form.name.trim()) {
+        throw new Error("Anexe a identificação para ler os dados ou abra o preenchimento manual.");
+      }
       const { data: auth } = await supabase.auth.getUser();
       const { data: client, error } = await supabase
         .from("clients")
@@ -272,12 +277,17 @@ function NewClientPage() {
           save.mutate();
         }}
       >
-        <section className="panel space-y-5 p-6">
-          <div>
-            <h2 className="text-base font-semibold">Documentos para leitura</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              A leitura ajuda no preenchimento. Confira os dados identificados antes de salvar.
-            </p>
+        <section className="panel space-y-6 p-6">
+          <div className="flex items-start gap-4">
+            <div className="grid size-11 shrink-0 place-items-center rounded-md bg-secondary text-primary">
+              <FileScan className="size-5" />
+            </div>
+            <div>
+              <h2 className="text-base font-semibold">Anexe os documentos do cliente</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Ao anexar, as informações são lidas e preenchidas automaticamente.
+              </p>
+            </div>
           </div>
           <div className="grid gap-5 sm:grid-cols-3">
             {ATTACHMENTS.map(({ kind, label, multiple }) => (
@@ -300,6 +310,18 @@ function NewClientPage() {
               </div>
             ))}
           </div>
+          {!showForm && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground"
+              onClick={() => setShowForm(true)}
+            >
+              <PencilLine className="size-4" />
+              Preencher manualmente
+            </Button>
+          )}
         </section>
 
         {extractedKinds.length > 0 && (
@@ -310,7 +332,7 @@ function NewClientPage() {
           </Alert>
         )}
 
-        <section className="panel space-y-5 p-6">
+        {showForm && <section className="panel space-y-5 p-6">
           <h2 className="text-base font-semibold">Qualificação</h2>
 
           <div className="grid gap-5 sm:grid-cols-2">
@@ -411,9 +433,9 @@ function NewClientPage() {
               </>
             )}
           </div>
-        </section>
+        </section>}
 
-        <section className="panel space-y-5 p-6">
+        {showForm && <section className="panel space-y-5 p-6">
           <h2 className="text-base font-semibold">Endereço e contato</h2>
 
           <div className="grid gap-5 sm:grid-cols-6">
@@ -494,9 +516,9 @@ function NewClientPage() {
               />
             </div>
           </div>
-        </section>
+        </section>}
 
-        <section className="panel space-y-3 p-6">
+        {showForm && <section className="panel space-y-3 p-6">
           <Label htmlFor="notes">Observações</Label>
           <Textarea
             id="notes"
@@ -504,16 +526,16 @@ function NewClientPage() {
             value={form.notes}
             onChange={(e) => set("notes", e.target.value)}
           />
-        </section>
+        </section>}
 
-        <div className="flex gap-3">
+        {showForm && <div className="flex gap-3">
           <Button type="submit" disabled={save.isPending}>
             {save.isPending ? "Salvando…" : "Salvar cliente"}
           </Button>
           <Button asChild type="button" variant="outline">
             <Link to="/">Cancelar</Link>
           </Button>
-        </div>
+        </div>}
       </form>
     </AppShell>
   );
