@@ -1,10 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { ArrowLeft, CheckCircle2, LoaderCircle, ScanText } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,22 +19,28 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  extractClientDocument,
+  type ExtractedClientData,
+} from "@/lib/document-extraction.functions";
 import { maskCep, maskCpfCnpj, maskPhone, onlyDigits } from "@/lib/format";
 
 export const Route = createFileRoute("/clientes/novo")({
   head: () => ({
     meta: [
-      { title: "Novo cliente — SCC Advogados" },
+      { title: "Novo cliente | Gestão Administrativa | SCC Adv" },
       {
         name: "description",
         content:
           "Cadastro completo da qualificação do cliente e envio dos documentos no escritório SCC Advogados.",
       },
-      { property: "og:title", content: "Novo cliente — SCC Advogados" },
+      { property: "og:title", content: "Novo cliente | Gestão Administrativa | SCC Adv" },
       {
         property: "og:description",
         content: "Qualificação completa, endereço e anexos do cliente.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: NewClientPage,
@@ -97,12 +105,79 @@ const EMPTY: Form = {
 function NewClientPage() {
   const [form, setForm] = useState<Form>(EMPTY);
   const [files, setFiles] = useState<Record<string, File[]>>({});
+  const [extracting, setExtracting] = useState<Record<string, boolean>>({});
+  const [extractedKinds, setExtractedKinds] = useState<string[]>([]);
   const [cepBusy, setCepBusy] = useState(false);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const extractDocument = useServerFn(extractClientDocument);
 
   const set = <K extends keyof Form>(key: K, value: Form[K]) =>
     setForm((prev) => ({ ...prev, [key]: value }));
+
+  async function fileToBase64(file: File) {
+    return await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = () => reject(new Error("Não foi possível ler o arquivo."));
+      reader.onload = () => resolve(String(reader.result).split(",")[1] ?? "");
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function mergeExtracted(data: ExtractedClientData) {
+    setForm((current) => ({
+      ...current,
+      name: data.name || current.name,
+      nationality: data.nationality || current.nationality,
+      marital_status: data.marital_status || current.marital_status,
+      profession: data.profession || current.profession,
+      rg_number: data.rg_number || current.rg_number,
+      rg_issuer: data.rg_issuer || current.rg_issuer,
+      cpf_cnpj: data.cpf_cnpj ? maskCpfCnpj(data.cpf_cnpj) : current.cpf_cnpj,
+      cep: data.cep ? maskCep(data.cep) : current.cep,
+      street: data.street || current.street,
+      number: data.number || current.number,
+      complement: data.complement || current.complement,
+      district: data.district || current.district,
+      city: data.city || current.city,
+      state: data.state?.toUpperCase() || current.state,
+    }));
+  }
+
+  async function handleAttachment(kind: string, selected: File[]) {
+    setFiles((prev) => ({ ...prev, [kind]: selected }));
+    if ((kind !== "identificacao" && kind !== "residencia") || !selected[0]) return;
+
+    const file = selected[0];
+    const supported = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
+    if (!supported.includes(file.type)) {
+      toast.error("Para leitura automática, envie uma imagem JPG, PNG, WEBP ou um PDF.");
+      return;
+    }
+    if (file.size > 12 * 1024 * 1024) {
+      toast.error("O arquivo deve ter até 12 MB para leitura automática.");
+      return;
+    }
+
+    setExtracting((current) => ({ ...current, [kind]: true }));
+    try {
+      const data = await extractDocument({
+        data: {
+          kind,
+          fileName: file.name,
+          mimeType: file.type as "image/jpeg" | "image/png" | "image/webp" | "application/pdf",
+          base64: await fileToBase64(file),
+        },
+      });
+      mergeExtracted(data);
+      setExtractedKinds((current) => [...new Set([...current, kind])]);
+      toast.success("Dados identificados. Confira os campos antes de salvar.");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Não foi possível ler o documento.");
+    } finally {
+      setExtracting((current) => ({ ...current, [kind]: false }));
+    }
+  }
 
   async function lookupCep(value: string) {
     const digits = onlyDigits(value);
@@ -187,7 +262,7 @@ function NewClientPage() {
 
       <h1 className="mt-4 text-2xl">Novo cliente</h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        Preencha a qualificação completa — os dados alimentam as minutas do escritório.
+        Anexe a identificação e o comprovante de residência para preencher os dados automaticamente.
       </p>
 
       <form
@@ -197,6 +272,44 @@ function NewClientPage() {
           save.mutate();
         }}
       >
+        <section className="panel space-y-5 p-6">
+          <div>
+            <h2 className="text-base font-semibold">Documentos para leitura</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              A leitura ajuda no preenchimento. Confira os dados identificados antes de salvar.
+            </p>
+          </div>
+          <div className="grid gap-5 sm:grid-cols-3">
+            {ATTACHMENTS.map(({ kind, label, multiple }) => (
+              <div key={kind} className="space-y-2">
+                <Label htmlFor={`file-${kind}`}>{label}</Label>
+                <Input
+                  id={`file-${kind}`}
+                  type="file"
+                  accept={kind === "outros" ? undefined : "image/jpeg,image/png,image/webp,application/pdf"}
+                  multiple={Boolean(multiple)}
+                  onChange={(event) => handleAttachment(kind, Array.from(event.target.files ?? []))}
+                />
+                {extracting[kind] ? (
+                  <p className="flex items-center gap-2 text-xs text-muted-foreground"><LoaderCircle className="size-3.5 animate-spin" />Identificando dados…</p>
+                ) : extractedKinds.includes(kind) ? (
+                  <p className="flex items-center gap-2 text-xs text-success"><CheckCircle2 className="size-3.5" />Dados identificados</p>
+                ) : files[kind]?.length ? (
+                  <p className="text-xs text-muted-foreground">{files[kind]?.length} arquivo(s) selecionado(s)</p>
+                ) : null}
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {extractedKinds.length > 0 && (
+          <Alert>
+            <ScanText className="size-4" />
+            <AlertTitle>Dados preenchidos automaticamente</AlertTitle>
+            <AlertDescription>Revise a qualificação e o endereço abaixo. Campos não encontrados continuam disponíveis para preenchimento manual.</AlertDescription>
+          </Alert>
+        )}
+
         <section className="panel space-y-5 p-6">
           <h2 className="text-base font-semibold">Qualificação</h2>
 
@@ -380,33 +493,6 @@ function NewClientPage() {
                 onChange={(e) => set("phone", maskPhone(e.target.value))}
               />
             </div>
-          </div>
-        </section>
-
-        <section className="panel space-y-5 p-6">
-          <h2 className="text-base font-semibold">Anexos</h2>
-          <div className="grid gap-5 sm:grid-cols-3">
-            {ATTACHMENTS.map(({ kind, label, multiple }) => (
-              <div key={kind} className="space-y-2">
-                <Label htmlFor={`file-${kind}`}>{label}</Label>
-                <Input
-                  id={`file-${kind}`}
-                  type="file"
-                  multiple={Boolean(multiple)}
-                  onChange={(e) =>
-                    setFiles((prev) => ({
-                      ...prev,
-                      [kind]: Array.from(e.target.files ?? []),
-                    }))
-                  }
-                />
-                {files[kind]?.length ? (
-                  <p className="text-xs text-muted-foreground">
-                    {files[kind]!.length} arquivo(s) selecionado(s)
-                  </p>
-                ) : null}
-              </div>
-            ))}
           </div>
         </section>
 
