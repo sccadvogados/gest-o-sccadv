@@ -12,7 +12,9 @@
 - 31 clientes identificados no Google Drive e cadastrados com link direto para suas pastas
 
 ## Aberto (aguardando arquivos ou decisão do escritório)
-- Geração das minutas em Word (Procuração, Declaração de Hipossuficiência, Contrato) — bloqueado: faltam os modelos oficiais .docx
+- Incorporar os três modelos oficiais .docx e gerar as minutas preenchidas
+- Extrair automaticamente a qualificação do documento pessoal e o endereço do comprovante de residência, com revisão antes de salvar
+- Adicionar “Esqueci minha senha” e a tela para definir a nova senha
 - Automatizar no cadastro a criação das subpastas e o envio das minutas ao Google Drive
 - Categorias de despesa ((D) Serviços, (D) Distribuição de Honorários) e lançamentos de saída
 - Meta futura: leitura do contrato assinado no Drive para extrair condições de pagamento
