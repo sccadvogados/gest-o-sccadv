@@ -136,7 +136,6 @@ function NewClientPage() {
     const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
     const pdf = await pdfjs.getDocument({
       data: new Uint8Array(await file.arrayBuffer()),
-      isEvalSupported: false,
     }).promise;
     const pages = Math.min(pdf.numPages, 2);
     const rendered: Array<{ canvas: HTMLCanvasElement; width: number; height: number }> = [];
