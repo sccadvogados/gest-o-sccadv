@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { FolderOpen, Plus, Search } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { BriefcaseBusiness, FolderOpen, Plus, Search } from "lucide-react";
 import { useState } from "react";
 
 import { AppShell } from "@/components/AppShell";
@@ -16,6 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
+import { getActiveProcessCounts } from "@/lib/drive-processes.functions";
 import { formatDate } from "@/lib/format";
 
 export const Route = createFileRoute("/")({
@@ -41,17 +43,24 @@ export const Route = createFileRoute("/")({
 
 function ClientsPage() {
   const [term, setTerm] = useState("");
+  const fetchProcessCounts = useServerFn(getActiveProcessCounts);
 
   const { data: clients, isLoading } = useQuery({
     queryKey: ["clients"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("clients")
-        .select("id, name, person_type, cpf_cnpj, email, phone, city, state, drive_folder_url, drive_error, created_at")
+        .select("id, name, person_type, cpf_cnpj, email, phone, city, state, drive_folder_id, drive_folder_url, drive_error, created_at")
         .order("name");
       if (error) throw error;
       return data;
     },
+  });
+
+  const { data: processCounts, isLoading: processCountsLoading } = useQuery({
+    queryKey: ["drive-active-process-counts"],
+    queryFn: () => fetchProcessCounts(),
+    staleTime: 5 * 60 * 1000,
   });
 
   const search = term.trim().toLowerCase();
@@ -61,6 +70,10 @@ function ClientsPage() {
       : [c.name, c.cpf_cnpj, c.email, c.phone]
           .filter(Boolean)
           .some((field) => String(field).toLowerCase().includes(search)),
+  );
+  const totalActiveProcesses = Object.values(processCounts ?? {}).reduce(
+    (total, count) => total + count,
+    0,
   );
 
   return (
@@ -80,14 +93,25 @@ function ClientsPage() {
         </Button>
       </div>
 
-      <div className="relative mt-6 max-w-md">
-        <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          placeholder="Buscar cliente…"
-          className="pl-9"
-          value={term}
-          onChange={(e) => setTerm(e.target.value)}
-        />
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
+        <div className="relative w-full max-w-md">
+          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Buscar cliente…"
+            className="pl-9"
+            value={term}
+            onChange={(e) => setTerm(e.target.value)}
+          />
+        </div>
+        <div className="flex min-w-44 items-center gap-3 border-l-2 border-accent pl-4">
+          <BriefcaseBusiness className="size-5 text-accent" />
+          <div>
+            <p className="text-xs text-muted-foreground">Processos ativos</p>
+            <p className="text-xl font-semibold tabular-nums">
+              {processCountsLoading ? "—" : totalActiveProcesses}
+            </p>
+          </div>
+        </div>
       </div>
 
       <div className="panel mt-6 overflow-hidden">
@@ -98,6 +122,7 @@ function ClientsPage() {
               <TableHead>CPF/CNPJ</TableHead>
               <TableHead>Contato</TableHead>
               <TableHead>Cidade</TableHead>
+              <TableHead>Processos ativos</TableHead>
               <TableHead>Cadastro</TableHead>
               <TableHead className="text-right">Pasta</TableHead>
             </TableRow>
@@ -105,7 +130,7 @@ function ClientsPage() {
           <TableBody>
             {isLoading && (
               <TableRow>
-                <TableCell colSpan={6} className="py-10 text-center text-muted-foreground">
+                <TableCell colSpan={7} className="py-10 text-center text-muted-foreground">
                   Carregando clientes…
                 </TableCell>
               </TableRow>
@@ -113,7 +138,7 @@ function ClientsPage() {
 
             {!isLoading && filtered.length === 0 && (
               <TableRow>
-                <TableCell colSpan={6} className="py-10 text-center text-muted-foreground">
+                <TableCell colSpan={7} className="py-10 text-center text-muted-foreground">
                   {clients?.length
                     ? "Nenhum cliente encontrado para essa busca."
                     : "Nenhum cliente cadastrado ainda."}
@@ -144,6 +169,11 @@ function ClientsPage() {
                 </TableCell>
                 <TableCell className="text-sm text-muted-foreground">
                   {[client.city, client.state].filter(Boolean).join(" / ") || "—"}
+                </TableCell>
+                <TableCell className="text-sm font-medium tabular-nums">
+                  {processCountsLoading
+                    ? "—"
+                    : processCounts?.[client.drive_folder_id ?? ""] ?? 0}
                 </TableCell>
                 <TableCell className="text-sm text-muted-foreground">
                   {formatDate(client.created_at)}
