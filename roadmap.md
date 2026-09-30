@@ -11,7 +11,7 @@
 - Logo oficial aplicada no acesso e cabeçalho; monograma aplicado no ícone do site
 - 31 clientes identificados no Google Drive e cadastrados com link direto para suas pastas
 - Três modelos oficiais .docx incorporados à plataforma
-- Leitura automática do documento pessoal e comprovante de residência com revisão dos campos
+- Leitura automática de imagens e PDFs do documento pessoal e comprovante de residência, com revisão dos campos
 - Nome da plataforma alterado para “Gestão Administrativa | SCC Adv”
 - Recuperação de senha por e-mail com tela para definição da nova senha
 - Cadastro orientado por anexos, com os campos visuais ocultos até a leitura ou a opção de preenchimento manual

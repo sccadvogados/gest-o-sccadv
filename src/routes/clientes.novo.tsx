@@ -125,6 +125,55 @@ function NewClientPage() {
     });
   }
 
+  async function prepareDocument(file: File) {
+    if (file.type !== "application/pdf") {
+      return {
+        mimeType: file.type as "image/jpeg" | "image/png" | "image/webp",
+        base64: await fileToBase64(file),
+      };
+    }
+
+    const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
+    const pdf = await pdfjs.getDocument({
+      data: new Uint8Array(await file.arrayBuffer()),
+      isEvalSupported: false,
+    }).promise;
+    const pages = Math.min(pdf.numPages, 2);
+    const rendered: Array<{ canvas: HTMLCanvasElement; width: number; height: number }> = [];
+
+    for (let pageNumber = 1; pageNumber <= pages; pageNumber += 1) {
+      const page = await pdf.getPage(pageNumber);
+      const viewport = page.getViewport({ scale: 1.6 });
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.ceil(viewport.width);
+      canvas.height = Math.ceil(viewport.height);
+      const context = canvas.getContext("2d");
+      if (!context) throw new Error("Não foi possível preparar este PDF para leitura.");
+      context.fillStyle = "#ffffff";
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      await page.render({ canvas, canvasContext: context, viewport }).promise;
+      rendered.push({ canvas, width: canvas.width, height: canvas.height });
+    }
+
+    const combined = document.createElement("canvas");
+    combined.width = Math.max(...rendered.map((page) => page.width));
+    combined.height = rendered.reduce((height, page) => height + page.height, 0);
+    const combinedContext = combined.getContext("2d");
+    if (!combinedContext) throw new Error("Não foi possível preparar este PDF para leitura.");
+    combinedContext.fillStyle = "#ffffff";
+    combinedContext.fillRect(0, 0, combined.width, combined.height);
+    let y = 0;
+    for (const page of rendered) {
+      combinedContext.drawImage(page.canvas, 0, y);
+      y += page.height;
+    }
+
+    return {
+      mimeType: "image/jpeg" as const,
+      base64: combined.toDataURL("image/jpeg", 0.88).split(",")[1] ?? "",
+    };
+  }
+
   function mergeExtracted(data: ExtractedClientData) {
     setForm((current) => ({
       ...current,
@@ -162,12 +211,13 @@ function NewClientPage() {
 
     setExtracting((current) => ({ ...current, [kind]: true }));
     try {
+      const prepared = await prepareDocument(file);
       const data = await extractDocument({
         data: {
           kind,
           fileName: file.name,
-          mimeType: file.type as "image/jpeg" | "image/png" | "image/webp" | "application/pdf",
-          base64: await fileToBase64(file),
+          mimeType: prepared.mimeType,
+          base64: prepared.base64,
         },
       });
       mergeExtracted(data);
