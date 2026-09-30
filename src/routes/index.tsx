@@ -21,17 +21,19 @@ import { formatDate } from "@/lib/format";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Clientes — SCC Advogados" },
+      { title: "Gestão Administrativa | SCC Adv" },
       {
         name: "description",
         content:
           "Busca e cadastro de clientes do escritório Souza, Craveiro & Corradi Advogados.",
       },
-      { property: "og:title", content: "Clientes — SCC Advogados" },
+      { property: "og:title", content: "Gestão Administrativa | SCC Adv" },
       {
         property: "og:description",
         content: "Lista de clientes, pastas no Drive e cadastro de novos clientes.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: ClientsPage,
