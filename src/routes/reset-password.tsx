@@ -36,11 +36,17 @@ function ResetPasswordPage() {
 
   async function updatePassword(event: React.FormEvent) {
     event.preventDefault();
-    if (password !== confirm) return toast.error("As senhas não coincidem.");
+    if (password !== confirm) {
+      toast.error("As senhas não coincidem.");
+      return;
+    }
     setBusy(true);
     const { error } = await supabase.auth.updateUser({ password });
     setBusy(false);
-    if (error) return toast.error("Não foi possível alterar a senha. Solicite um novo link.");
+    if (error) {
+      toast.error("Não foi possível alterar a senha. Solicite um novo link.");
+      return;
+    }
     toast.success("Senha alterada com sucesso.");
     navigate({ to: "/" });
   }
