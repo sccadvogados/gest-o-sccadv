@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as FinanceiroRouteImport } from './routes/financeiro'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ClientesClientIdRouteImport } from './routes/clientes.$clientId'
 import { Route as ClientesNovoRouteImport } from './routes/clientes.novo'
 
@@ -30,6 +31,11 @@ const FinanceiroRoute = FinanceiroRouteImport.update({
   path: '/financeiro',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ClientesClientIdRoute = ClientesClientIdRouteImport.update({
   id: '/clientes/$clientId',
   path: '/clientes/$clientId',
@@ -45,6 +51,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/financeiro': typeof FinanceiroRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/clientes/$clientId': typeof ClientesClientIdRoute
   '/clientes/novo': typeof ClientesNovoRoute
 }
@@ -52,6 +59,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/financeiro': typeof FinanceiroRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/clientes/$clientId': typeof ClientesClientIdRoute
   '/clientes/novo': typeof ClientesNovoRoute
 }
@@ -60,20 +68,33 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/financeiro': typeof FinanceiroRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/clientes/$clientId': typeof ClientesClientIdRoute
   '/clientes/novo': typeof ClientesNovoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/auth' | '/financeiro' | '/clientes/$clientId' | '/clientes/novo'
+    | '/'
+    | '/auth'
+    | '/financeiro'
+    | '/reset-password'
+    | '/clientes/$clientId'
+    | '/clientes/novo'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/financeiro' | '/clientes/$clientId' | '/clientes/novo'
+  to:
+    | '/'
+    | '/auth'
+    | '/financeiro'
+    | '/reset-password'
+    | '/clientes/$clientId'
+    | '/clientes/novo'
   id:
     | '__root__'
     | '/'
     | '/auth'
     | '/financeiro'
+    | '/reset-password'
     | '/clientes/$clientId'
     | '/clientes/novo'
   fileRoutesById: FileRoutesById
@@ -82,6 +103,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
   FinanceiroRoute: typeof FinanceiroRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   ClientesClientIdRoute: typeof ClientesClientIdRoute
   ClientesNovoRoute: typeof ClientesNovoRoute
 }
@@ -109,6 +131,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FinanceiroRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/clientes/$clientId': {
       id: '/clientes/$clientId'
       path: '/clientes/$clientId'
@@ -130,6 +159,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
   FinanceiroRoute: FinanceiroRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   ClientesClientIdRoute: ClientesClientIdRoute,
   ClientesNovoRoute: ClientesNovoRoute,
 }

@@ -12,16 +12,18 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Entrar — SCC Advogados" },
+      { title: "Entrar | Gestão Administrativa | SCC Adv" },
       {
         name: "description",
         content: "Acesso do financeiro e administrativo do escritório SCC Advogados.",
       },
-      { property: "og:title", content: "Entrar — SCC Advogados" },
+      { property: "og:title", content: "Entrar | Gestão Administrativa | SCC Adv" },
       {
         property: "og:description",
         content: "Acesso restrito à equipe do escritório Souza, Craveiro & Corradi.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: AuthPage,
@@ -33,6 +35,7 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [busy, setBusy] = useState(false);
+  const [recovering, setRecovering] = useState(false);
   const { user, loading } = useAuth();
   const navigate = useNavigate();
 
@@ -73,6 +76,23 @@ function AuthPage() {
     } finally {
       setBusy(false);
     }
+  }
+
+  async function sendRecovery() {
+    if (!email.trim()) {
+      toast.error("Informe seu e-mail para receber o link.");
+      return;
+    }
+    setRecovering(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    setRecovering(false);
+    if (error) {
+      toast.error("Não foi possível enviar o link agora.");
+      return;
+    }
+    toast.success("Enviamos um link para redefinir sua senha.");
   }
 
   return (
@@ -143,13 +163,26 @@ function AuthPage() {
             {busy ? "Aguarde…" : mode === "login" ? "Entrar" : "Criar acesso"}
           </Button>
 
-          <button
+          {mode === "login" && (
+            <Button
+              type="button"
+              variant="link"
+              className="w-full text-muted-foreground"
+              disabled={recovering}
+              onClick={sendRecovery}
+            >
+              {recovering ? "Enviando…" : "Esqueci minha senha"}
+            </Button>
+          )}
+
+          <Button
             type="button"
-            className="w-full text-sm text-muted-foreground underline-offset-4 hover:text-accent hover:underline"
+            variant="ghost"
+            className="w-full text-muted-foreground"
             onClick={() => setMode(mode === "login" ? "signup" : "login")}
           >
             {mode === "login" ? "Não tenho acesso ainda" : "Já tenho acesso"}
-          </button>
+          </Button>
         </form>
       </div>
     </div>

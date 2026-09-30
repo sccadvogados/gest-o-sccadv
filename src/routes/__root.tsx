@@ -79,14 +79,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "SCC Advogados — Gestão" },
+      { title: "Gestão Administrativa | SCC Adv" },
       {
         name: "description",
         content:
           "Plataforma interna de gestão de clientes, contratos e financeiro do escritório Souza, Craveiro & Corradi Advogados.",
       },
       { name: "author", content: "SCC Advogados" },
-      { property: "og:title", content: "SCC Advogados — Gestão" },
+      { property: "og:title", content: "Gestão Administrativa | SCC Adv" },
       {
         property: "og:description",
         content: "Cadastro de clientes, contratos e controle financeiro do escritório.",
@@ -116,7 +116,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="pt-BR">
       <head>
         <HeadContent />
       </head>

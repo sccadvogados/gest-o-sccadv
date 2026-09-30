@@ -19,17 +19,19 @@ import { daysLate, formatCurrency, formatDate, installmentSituation, todayISO } 
 export const Route = createFileRoute("/financeiro")({
   head: () => ({
     meta: [
-      { title: "Financeiro — SCC Advogados" },
+      { title: "Financeiro | Gestão Administrativa | SCC Adv" },
       {
         name: "description",
         content:
           "Parcelas a receber, recebidas e em atraso, com previsão de recebimentos do escritório SCC Advogados.",
       },
-      { property: "og:title", content: "Financeiro — SCC Advogados" },
+      { property: "og:title", content: "Financeiro | Gestão Administrativa | SCC Adv" },
       {
         property: "og:description",
         content: "Controle de parcelas, baixas e fluxo de caixa dos próximos 12 meses.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: FinancePage,

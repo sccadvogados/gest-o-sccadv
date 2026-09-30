@@ -44,17 +44,19 @@ import {
 export const Route = createFileRoute("/clientes/$clientId")({
   head: () => ({
     meta: [
-      { title: "Ficha do cliente — SCC Advogados" },
+      { title: "Ficha do cliente | Gestão Administrativa | SCC Adv" },
       {
         name: "description",
         content:
           "Qualificação, documentos, contratos e parcelas do cliente no escritório SCC Advogados.",
       },
-      { property: "og:title", content: "Ficha do cliente — SCC Advogados" },
+      { property: "og:title", content: "Ficha do cliente | Gestão Administrativa | SCC Adv" },
       {
         property: "og:description",
         content: "Dados do cliente, contratos e condições de pagamento.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: ClientDetailPage,
