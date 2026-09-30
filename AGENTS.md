@@ -8,3 +8,6 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Use Lovable Cloud for authenticated office data and private client-document storage because the platform contains sensitive legal and financial records.
+- Keep the product architecture centered on clients, contracts, generated installments, and private document attachments because these are the office's primary workflows.
