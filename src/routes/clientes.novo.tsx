@@ -46,11 +46,11 @@ const MARITAL = [
   "União estável",
 ];
 
-const ATTACHMENTS = [
+const ATTACHMENTS: { kind: string; label: string; multiple?: boolean }[] = [
   { kind: "identificacao", label: "Documento de Identificação" },
   { kind: "residencia", label: "Comprovante de Residência" },
   { kind: "outros", label: "Outros Documentos", multiple: true },
-] as const;
+];
 
 type Form = {
   person_type: "PF" | "PJ";
