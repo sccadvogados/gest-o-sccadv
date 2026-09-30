@@ -11,3 +11,4 @@
 
 - Use Lovable Cloud for authenticated office data and private client-document storage because the platform contains sensitive legal and financial records.
 - Keep the product architecture centered on clients, contracts, generated installments, and private document attachments because these are the office's primary workflows.
+- Run personal-document extraction only in authenticated server functions and never log or expose the document contents, because they contain sensitive client data.
