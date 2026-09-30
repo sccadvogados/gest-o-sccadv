@@ -9,9 +9,10 @@
 - Contratos: valor total, parcelas, primeiro vencimento, % de êxito → parcelas geradas automaticamente
 - Financeiro: parcelas com situação/atraso, botão "Baixar", totais, previsão de 12 meses, rateio TAC/RCMT/ASS 30% + escritório 10%
 - Logo oficial aplicada no acesso e cabeçalho; monograma aplicado no ícone do site
+- 31 clientes identificados no Google Drive e cadastrados com link direto para suas pastas
 
 ## Aberto (aguardando arquivos ou decisão do escritório)
 - Geração das minutas em Word (Procuração, Declaração de Hipossuficiência, Contrato) — bloqueado: faltam os modelos oficiais .docx
-- Integração com o Google Drive da conta SCC (pasta "Arquivo Digital" + subpastas, upload das minutas, ícone de pasta clicável) — bloqueado: precisa conectar a conta corporativa
+- Automatizar no cadastro a criação das subpastas e o envio das minutas ao Google Drive
 - Categorias de despesa ((D) Serviços, (D) Distribuição de Honorários) e lançamentos de saída
 - Meta futura: leitura do contrato assinado no Drive para extrair condições de pagamento

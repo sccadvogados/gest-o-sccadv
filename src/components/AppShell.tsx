@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
-import logoHorizontal from "@/assets/scc-logo-horizontal.png.asset.json";
+import logoHorizontalWhite from "@/assets/scc-logo-horizontal-white.png";
 
 const NAV = [
   { to: "/", label: "Clientes", icon: Users },
@@ -15,11 +15,11 @@ const NAV = [
 
 export function BrandMark({ className }: { className?: string }) {
   return (
-    <div className={cn("rounded-sm bg-card px-3 py-2", className)}>
+    <div className={cn("flex items-center", className)}>
       <img
-        src={logoHorizontal.url}
+        src={logoHorizontalWhite}
         alt="Souza, Craveiro & Corradi Advogados"
-        className="h-9 w-auto object-contain"
+        className="h-11 w-auto object-contain"
       />
     </div>
   );
