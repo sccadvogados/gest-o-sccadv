@@ -134,6 +134,16 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const publicPaths = pathname === "/auth" || pathname === "/reset-password";
+
+  useEffect(() => {
+    if (!loading && !user && !publicPaths) {
+      navigate({ to: "/auth", replace: true });
+    }
+  }, [loading, user, publicPaths, navigate]);
 
   return (
     <QueryClientProvider client={queryClient}>
