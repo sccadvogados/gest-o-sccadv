@@ -96,8 +96,9 @@ function AuthPage() {
   }
 
   return (
-    <div className="grid min-h-screen lg:grid-cols-2">
-      <div className="hidden flex-col justify-between bg-sidebar p-12 text-sidebar-foreground lg:flex">
+        <div className="grid min-h-screen lg:grid-cols-2">
+      <div className="flex flex-col items-center justify-center bg-sidebar p-12 text-sidebar-foreground">
+        <BrandMark className="scale-150" />
         <BrandMark />
         <div>
           <h1 className="max-w-sm text-3xl leading-snug">
