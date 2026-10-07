@@ -116,7 +116,7 @@ function AuthPage() {
                 <Input id="email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} className="h-[22px] rounded-[4px] border-[#C9D3E0] bg-[#EEF2F8] text-[12px] text-[#032540] shadow-[0_1px_2px_rgba(0,0,0,.08)] focus:border-[#E1B795] focus:bg-white" required />
                 <Label htmlFor="password" className="mb-[3px] mt-[9px] text-[11px] font-bold text-white">Senha</Label>
                                 <Input id="password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} className="h-[22px] rounded-[4px] border-[#C9D3E0] bg-[#EEF2F8] text-[12px] text-[#032540] shadow-[0_1px_2px_rgba(0,0,0,.08)] focus:border-[#E1B795] focus:bg-white" required />
-                <div className="mt-[46px] grid grid-cols-2 gap-[6px]">
+                <div className="login-actions mt-[46px] grid grid-cols-2 gap-[6px]">
                   <button type="button" onClick={sendRecovery} disabled={recovering} className="h-[24px] min-w-0 whitespace-nowrap rounded-[3px] border border-[#7F93AD] bg-transparent px-1 text-[10.5px] font-semibold text-[#E5EAF2] transition-colors hover:border-[#E1B795] hover:text-[#E1B795] disabled:opacity-60">
                     {recovering ? "Enviando..." : "Esqueci a senha"}
                   </button>
