@@ -108,7 +108,7 @@ function AuthPage() {
         <main className="flex flex-1 items-center justify-center">
           <section className="login-card flex h-[320px] w-full max-w-[650px] overflow-hidden rounded-lg border border-[#E4E0D8] bg-white shadow-[0_1px_3px_rgba(0,0,0,.10),0_10px_30px_rgba(0,0,0,.35)]">
             <div className="login-logo-panel flex basis-[57.5%] items-center justify-center bg-white">
-              <img src="/imagens/imagem-fd496630.png" alt="SCC Advogados" className="h-[200px] w-auto object-contain" />
+              <img src="/imagens/imagem-fd496630.png" alt="SCC Advogados" className="login-logo h-[200px] w-auto object-contain" />
             </div>
             <div className="login-blue-panel flex flex-1 flex-col bg-gradient-to-br from-[#032540] to-[#021A2E] px-5 pb-[18px] pt-[26px]">
               <form onSubmit={handleSubmit} className="flex h-full flex-col">
