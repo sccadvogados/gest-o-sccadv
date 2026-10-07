@@ -46,11 +46,12 @@ import {
 } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  buildInstallments,
+  buildContractInstallments,
   formatCurrency,
   formatDate,
   installmentSituation,
   todayISO,
+  type ContractModality,
 } from "@/lib/format";
 
 export const Route = createFileRoute("/clientes/$clientId")({
