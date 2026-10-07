@@ -125,7 +125,7 @@ function AuthPage() {
                 {recovering ? "Enviando..." : "Esqueci a senha"}
               </Button>
             </div>
-            <Button type="submit" disabled={busy} className="h-[46px] w-full">
+            <Button type="submit" disabled={busy} className="h-[48px] w-full rounded-[10px] bg-[#0B2340] text-[15px] font-semibold text-white hover:bg-[#13325A]">
               {busy ? "Entrando..." : "Entrar"}
             </Button>
           </div>
