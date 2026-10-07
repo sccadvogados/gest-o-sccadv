@@ -115,14 +115,20 @@ function AuthPage() {
               </button>
             </div>
           </div>
-          <div className="flex justify-end">
-            <Button variant="link" type="button" onClick={sendRecovery} disabled={recovering || busy} className="h-auto p-0 text-muted-foreground">
-              {recovering ? "Enviando..." : "Esqueci a senha"}
+                    <div className="space-y-[22px]">
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-2 text-[13px] text-[#64748B]">
+                <input type="checkbox" className="size-4 rounded border-[#CBD5E1] accent-[#C9956B]" />
+                Manter conectado
+              </label>
+              <Button variant="link" type="button" onClick={sendRecovery} disabled={recovering || busy} className="h-auto p-0 text-[13px] font-medium text-[#C9956B]">
+                {recovering ? "Enviando..." : "Esqueci a senha"}
+              </Button>
+            </div>
+            <Button type="submit" disabled={busy} className="h-[46px] w-full">
+              {busy ? "Entrando..." : "Entrar"}
             </Button>
           </div>
-          <Button type="submit" disabled={busy} className="h-[46px] w-full">
-            {busy ? "Entrando..." : "Entrar"}
-          </Button>
         </form>
         <footer className="mt-7 text-center text-xs text-muted-foreground">© 2026 SCC Advogados · Acesso Restrito</footer>
       </main>
