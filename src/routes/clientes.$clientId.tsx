@@ -776,8 +776,8 @@ function NewContractDialog({ clientId }: { clientId: string }) {
             </Select>
           </div>
 
-          <div className="space-y-2 sm:col-span-2">
-            <Label htmlFor="successFee">% de êxito</Label>
+                    <div className="space-y-2 sm:col-span-2">
+            <Label htmlFor="successFee">% de êxito{modality === "exito" ? " (obrigatório)" : ""}</Label>
             <Input
               id="successFee"
               inputMode="decimal"
