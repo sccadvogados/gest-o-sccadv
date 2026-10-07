@@ -141,14 +141,12 @@ export type Database = {
       }
       contracts: {
         Row: {
-                    category: string
+          category: string
           client_id: string
           created_at: string
           description: string | null
           first_due_date: string
           id: string
-          modality: "parcelado" | "mensal" | "exito"
-          signature_date: string | null
           installments_count: number
           payment_method: string | null
           recurring: boolean
@@ -157,14 +155,12 @@ export type Database = {
           updated_at: string
         }
         Insert: {
-                    category?: string
+          category?: string
           client_id: string
           created_at?: string
           description?: string | null
           first_due_date?: string
           id?: string
-          modality?: "parcelado" | "mensal" | "exito"
-          signature_date?: string | null
           installments_count?: number
           payment_method?: string | null
           recurring?: boolean
@@ -173,14 +169,12 @@ export type Database = {
           updated_at?: string
         }
         Update: {
-                    category?: string
+          category?: string
           client_id?: string
           created_at?: string
           description?: string | null
           first_due_date?: string
           id?: string
-          modality?: "parcelado" | "mensal" | "exito"
-          signature_date?: string | null
           installments_count?: number
           payment_method?: string | null
           recurring?: boolean
@@ -257,30 +251,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-            perfis: {
-        Row: {
-          ativo: boolean
-          email: string
-          id: string
-          nome: string
-          papel: "admin" | "usuario"
-        }
-        Insert: {
-          ativo?: boolean
-          email: string
-          id: string
-          nome: string
-          papel: "admin" | "usuario"
-        }
-        Update: {
-          ativo?: boolean
-          email?: string
-          id?: string
-          nome?: string
-          papel?: "admin" | "usuario"
-        }
-        Relationships: []
       }
       profiles: {
         Row: {
