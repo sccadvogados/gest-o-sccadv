@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -35,7 +36,8 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+    const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
   const [recovering, setRecovering] = useState(false);
   const { user, loading } = useAuth();
@@ -96,13 +98,22 @@ function AuthPage() {
                     <p className="mt-1 mb-[22px] text-left text-[14px] text-[#64748B]">Acesse sua conta para continuar.</p>
         </div>
         <form onSubmit={handleSubmit} className="mt-0 space-y-5">
-          <div className="space-y-2">
+                    <div className="space-y-2">
             <Label htmlFor="email">E-mail</Label>
-            <Input id="email" type="email" autoComplete="username" value={email} onChange={(event) => setEmail(event.target.value)} className="h-[46px]" required />
+            <div className="relative">
+              <Mail className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-[#94A3B8]" aria-hidden="true" />
+              <Input id="email" type="email" autoComplete="username" placeholder="nome@sccadvocacia.com.br" value={email} onChange={(event) => setEmail(event.target.value)} className="h-[46px] rounded-[10px] border-[#E2E8F0] bg-white pl-[42px] focus-visible:border-[#C9956B] focus-visible:ring-4 focus-visible:ring-[rgba(227,184,150,0.25)]" required />
+            </div>
           </div>
-          <div className="space-y-2">
+                    <div className="space-y-2">
             <Label htmlFor="password">Senha</Label>
-            <Input id="password" type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} className="h-[46px]" required />
+            <div className="relative">
+              <Lock className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-[#94A3B8]" aria-hidden="true" />
+              <Input id="password" type={showPassword ? "text" : "password"} autoComplete="current-password" placeholder="••••••••" value={password} onChange={(event) => setPassword(event.target.value)} className="h-[46px] rounded-[10px] border-[#E2E8F0] bg-white pl-[42px] pr-[42px] focus-visible:border-[#C9956B] focus-visible:ring-4 focus-visible:ring-[rgba(227,184,150,0.25)]" required />
+              <button type="button" onClick={() => setShowPassword((visible) => !visible)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#94A3B8]" aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}>
+                {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+              </button>
+            </div>
           </div>
           <div className="flex justify-end">
             <Button variant="link" type="button" onClick={sendRecovery} disabled={recovering || busy} className="h-auto p-0 text-muted-foreground">
