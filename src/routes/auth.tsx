@@ -132,7 +132,7 @@ function AuthPage() {
                 </footer>
               </form>
             </div>
-            <div className="w-[42px] shrink-0 bg-white" />
+            <div className="login-white-strip w-[42px] shrink-0 bg-white" />
           </section>
         </main>
       </div>
