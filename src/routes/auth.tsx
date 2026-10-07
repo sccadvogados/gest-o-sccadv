@@ -85,8 +85,16 @@ function AuthPage() {
     }
   }
 
-                return (
-      <div className="flex min-h-screen flex-col bg-[#444444]">
+                  return (
+    <div className="login-page flex min-h-screen items-center justify-center px-4 py-8">
+      <main className="login-card w-full max-w-[420px] rounded-2xl border border-slate-200 border-t-4 border-t-[#E3B896] bg-white p-10 shadow-[0_12px_40px_rgba(11,35,64,0.12)]">
+        <div className="border-b border-[#E2E8F0] pb-6 text-center">
+          <img src="/imagens/imagem-f9880f50.png" alt="SCC Advogados" className="mx-auto h-[110px] w-auto object-contain" />
+        </div>
+        <div className="pt-7 text-center">
+          <h1 className="text-[30px] font-semibold leading-tight tracking-[-0.02em] text-[#0B2340]">Olá, bem-vindo.</h1>
+          <p className="mt-2 text-sm text-slate-500">Acesse sua conta para continuar.</p>
+        </div>
         <header className="w-full border-b-2 border-[#E1B795] bg-[#032540] px-3 py-2 text-xs font-bold text-white">
           Gestão SCC
         </header>
