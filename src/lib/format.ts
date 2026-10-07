@@ -77,6 +77,20 @@ export function maskPhone(value: string) {
   return v.replace(/(\d{2})(\d)/, "($1) $2").replace(/(\d{5})(\d{1,4})$/, "$1-$2");
 }
 
+export type ContractModality = "parcelado" | "mensal" | "exito";
+
+/** Gera parcelas conforme a modalidade do contrato. */
+export function buildContractInstallments(
+  value: number,
+  count: number,
+  firstDueDate: string,
+  modality: ContractModality = "parcelado",
+) {
+  if (modality === "exito") return [];
+  const total = modality === "mensal" ? value * Math.max(1, Math.floor(count)) : value;
+  return buildInstallments(total, count, firstDueDate);
+}
+
 /** Gera as parcelas a partir das condições de pagamento do contrato. */
 export function buildInstallments(
   totalValue: number,

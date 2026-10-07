@@ -46,11 +46,12 @@ import {
 } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  buildInstallments,
+  buildContractInstallments,
   formatCurrency,
   formatDate,
   installmentSituation,
   todayISO,
+  type ContractModality,
 } from "@/lib/format";
 
 export const Route = createFileRoute("/clientes/$clientId")({
@@ -566,42 +567,71 @@ function EditContractDialog({
   );
 }
 
+type PreviewInstallment = {
+  number: number;
+  amount: number;
+  due_date: string;
+};
+
 function NewContractDialog({ clientId }: { clientId: string }) {
   const [open, setOpen] = useState(false);
   const [description, setDescription] = useState("");
+  const [modality, setModality] = useState<ContractModality>("parcelado");
+  const [signatureDate, setSignatureDate] = useState("");
   const [category, setCategory] = useState<string>(CATEGORIES[0]);
   const [totalValue, setTotalValue] = useState("");
   const [count, setCount] = useState("1");
   const [firstDue, setFirstDue] = useState(todayISO());
   const [paymentMethod, setPaymentMethod] = useState<string>(PAYMENT_METHODS[0]);
-  const [successFee, setSuccessFee] = useState("0");
+    const [successFee, setSuccessFee] = useState("0");
+  const [preview, setPreview] = useState<PreviewInstallment[]>([]);
   const queryClient = useQueryClient();
+
+  function refreshPreview() {
+    const value = Number(totalValue.replace(",", "."));
+    const installmentsCount = Number(count);
+    if (!Number.isFinite(value) || value <= 0 || !Number.isInteger(installmentsCount) || installmentsCount < 1 || !firstDue || modality === "exito") {
+      setPreview([]);
+      return;
+    }
+    setPreview(buildContractInstallments(value, installmentsCount, firstDue, modality));
+  }
+
+  function updatePreview(index: number, field: "amount" | "due_date", value: string) {
+    setPreview((current) => current.map((row, rowIndex) => rowIndex === index ? { ...row, [field]: field === "amount" ? Number(value.replace(",", ".")) || 0 : value } : row));
+  }
 
   const create = useMutation({
     mutationFn: async () => {
-      const total = Number(totalValue.replace(",", "."));
+            const value = Number(totalValue.replace(",", "."));
       const installmentsCount = Math.max(1, Number(count));
-      if (!Number.isFinite(total) || total <= 0) {
-        throw new Error("Informe um valor total válido.");
-      }
+      const fee = Number(successFee.replace(",", ".")) || 0;
+      if (!Number.isFinite(value) || value <= 0) throw new Error("Informe um valor válido.");
+      if (!Number.isInteger(installmentsCount)) throw new Error("Informe um número inteiro de meses/parcelas.");
+      if (!firstDue) throw new Error("Informe o primeiro vencimento.");
+      if (modality === "exito" && (fee <= 0 || fee > 100)) throw new Error("Informe um percentual de êxito entre 0 e 100.");
+      if (modality !== "exito" && preview.length !== installmentsCount) throw new Error("Preencha as condições para gerar a prévia das parcelas.");
 
+      const total = modality === "mensal" ? value * installmentsCount : value;
       const { data: contract, error } = await supabase
         .from("contracts")
         .insert({
           client_id: clientId,
           description,
           category,
-          total_value: total,
+                    total_value: total,
           installments_count: installmentsCount,
           first_due_date: firstDue,
           payment_method: paymentMethod,
-          success_fee_percent: Number(successFee.replace(",", ".")) || 0,
+          success_fee_percent: fee,
+          modality,
+          signature_date: signatureDate || null,
         })
         .select("id")
         .single();
       if (error) throw error;
 
-      const rows = buildInstallments(total, installmentsCount, firstDue).map((row) => ({
+            const rows = modality === "exito" ? [] : preview.map((row) => ({
         ...row,
         contract_id: contract.id,
         client_id: clientId,
@@ -609,6 +639,7 @@ function NewContractDialog({ clientId }: { clientId: string }) {
         category,
       }));
 
+      if (rows.length === 0) return;
       const { error: instErr } = await supabase.from("installments").insert(rows);
       if (instErr) throw instErr;
     },
