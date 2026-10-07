@@ -740,7 +740,7 @@ function NewContractDialog({ clientId }: { clientId: string }) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="total">Valor total (R$)</Label>
+                        <Label htmlFor="total">{modality === "mensal" ? "Valor mensal (R$)" : "Valor total (R$)"}</Label>
             <Input
               id="total"
               inputMode="decimal"
