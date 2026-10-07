@@ -93,9 +93,9 @@ function AuthPage() {
         </div>
         <div className="pt-7 text-center">
           <h1 className="text-[30px] font-semibold leading-tight text-foreground">Olá, bem-vindo.</h1>
-          <p className="mt-2 text-sm text-muted-foreground">Acesse sua conta para continuar.</p>
+                    <p className="mt-1 mb-[22px] text-left text-[14px] text-[#64748B]">Acesse sua conta para continuar.</p>
         </div>
-        <form onSubmit={handleSubmit} className="mt-7 space-y-5">
+        <form onSubmit={handleSubmit} className="mt-0 space-y-5">
           <div className="space-y-2">
             <Label htmlFor="email">E-mail</Label>
             <Input id="email" type="email" autoComplete="username" value={email} onChange={(event) => setEmail(event.target.value)} className="h-[46px]" required />
