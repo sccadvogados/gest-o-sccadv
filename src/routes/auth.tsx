@@ -92,7 +92,7 @@ function AuthPage() {
           <img src="/imagens/imagem-f9880f50.png" alt="SCC Advogados" className="mx-auto h-[110px] max-w-full object-contain" />
         </div>
         <div className="pt-7 text-center">
-          <h1 className="text-[30px] font-semibold leading-tight text-foreground">Olá, bem-vindo.</h1>
+                    <h1 className="font-sans text-left text-[30px] font-semibold leading-tight tracking-[-0.02em] text-[#0F172A]">Olá, bem-vindo.</h1>
                     <p className="mt-1 mb-[22px] text-left text-[14px] text-[#64748B]">Acesse sua conta para continuar.</p>
         </div>
         <form onSubmit={handleSubmit} className="mt-0 space-y-5">
