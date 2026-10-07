@@ -105,9 +105,15 @@ function AuthPage() {
               <Input id="email" type="email" autoComplete="username" placeholder="nome@sccadvocacia.com.br" value={email} onChange={(event) => setEmail(event.target.value)} className="h-[46px] rounded-[10px] border-[#E2E8F0] bg-white pl-[42px] focus-visible:border-[#C9956B] focus-visible:ring-4 focus-visible:ring-[rgba(227,184,150,0.25)]" required />
             </div>
           </div>
-          <div className="space-y-2">
+                    <div className="space-y-2">
             <Label htmlFor="password">Senha</Label>
-            <Input id="password" type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} className="h-[46px]" required />
+            <div className="relative">
+              <Lock className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-[#94A3B8]" aria-hidden="true" />
+              <Input id="password" type={showPassword ? "text" : "password"} autoComplete="current-password" placeholder="••••••••" value={password} onChange={(event) => setPassword(event.target.value)} className="h-[46px] rounded-[10px] border-[#E2E8F0] bg-white pl-[42px] pr-[42px] focus-visible:border-[#C9956B] focus-visible:ring-4 focus-visible:ring-[rgba(227,184,150,0.25)]" required />
+              <button type="button" onClick={() => setShowPassword((visible) => !visible)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#94A3B8]" aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}>
+                {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+              </button>
+            </div>
           </div>
           <div className="flex justify-end">
             <Button variant="link" type="button" onClick={sendRecovery} disabled={recovering || busy} className="h-auto p-0 text-muted-foreground">
