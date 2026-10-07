@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { ArrowLeft, Download, FolderOpen, Pencil, Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
@@ -585,7 +585,11 @@ function NewContractDialog({ clientId }: { clientId: string }) {
   const [paymentMethod, setPaymentMethod] = useState<string>(PAYMENT_METHODS[0]);
     const [successFee, setSuccessFee] = useState("0");
   const [preview, setPreview] = useState<PreviewInstallment[]>([]);
-  const queryClient = useQueryClient();
+    const queryClient = useQueryClient();
+
+  useEffect(() => {
+    refreshPreview();
+  }, [totalValue, count, firstDue, modality]);
 
   function refreshPreview() {
     const value = Number(totalValue.replace(",", "."));
@@ -610,7 +614,17 @@ function NewContractDialog({ clientId }: { clientId: string }) {
       if (!Number.isInteger(installmentsCount)) throw new Error("Informe um número inteiro de meses/parcelas.");
       if (!firstDue) throw new Error("Informe o primeiro vencimento.");
       if (modality === "exito" && (fee <= 0 || fee > 100)) throw new Error("Informe um percentual de êxito entre 0 e 100.");
-      if (modality !== "exito" && preview.length !== installmentsCount) throw new Error("Preencha as condições para gerar a prévia das parcelas.");
+            if (modality !== "exito" && preview.length !== installmentsCount) throw new Error("Preencha as condições para gerar a prévia das parcelas.");
+      if (modality !== "exito") {
+        const expectedTotal = modality === "mensal" ? value * installmentsCount : value;
+        const previewTotal = preview.reduce((sum, row) => sum + row.amount, 0);
+        if (Math.abs(previewTotal - expectedTotal) > 0.005) {
+          throw new Error("A soma das parcelas precisa ser exatamente igual ao total.");
+        }
+        if (preview.some((row) => !row.due_date || !Number.isFinite(row.amount) || row.amount < 0)) {
+          throw new Error("Confira os valores e vencimentos da prévia.");
+        }
+      }
 
       const total = modality === "mensal" ? value * installmentsCount : value;
       const { data: contract, error } = await supabase
@@ -648,10 +662,14 @@ function NewContractDialog({ clientId }: { clientId: string }) {
       queryClient.invalidateQueries({ queryKey: ["installments"] });
       toast.success("Contrato cadastrado e parcelas geradas.");
       setOpen(false);
-      setDescription("");
+            setDescription("");
+      setModality("parcelado");
+      setSignatureDate("");
       setTotalValue("");
       setCount("1");
+      setFirstDue(todayISO());
       setSuccessFee("0");
+      setPreview([]);
     },
     onError: (error) =>
       toast.error(error instanceof Error ? error.message : "Erro ao salvar o contrato."),
@@ -681,6 +699,30 @@ function NewContractDialog({ clientId }: { clientId: string }) {
             />
           </div>
 
+          <div className="space-y-2">
+            <Label>Modalidade</Label>
+            <Select value={modality} onValueChange={(value) => setModality(value as ContractModality)}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="parcelado">Pró-labore parcelado</SelectItem>
+                <SelectItem value="mensal">Pró-labore mensal</SelectItem>
+                <SelectItem value="exito">Somente êxito</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="signatureDate">Data de assinatura (opcional)</Label>
+            <Input
+              id="signatureDate"
+              type="date"
+              value={signatureDate}
+              onChange={(e) => setSignatureDate(e.target.value)}
+            />
+          </div>
+
           <div className="space-y-2 sm:col-span-2">
             <Label>Categoria</Label>
             <Select value={category} onValueChange={setCategory}>
@@ -698,7 +740,7 @@ function NewContractDialog({ clientId }: { clientId: string }) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="total">Valor total (R$)</Label>
+                        <Label htmlFor="total">{modality === "mensal" ? "Valor mensal (R$)" : "Valor total (R$)"}</Label>
             <Input
               id="total"
               inputMode="decimal"
@@ -744,8 +786,8 @@ function NewContractDialog({ clientId }: { clientId: string }) {
             </Select>
           </div>
 
-          <div className="space-y-2 sm:col-span-2">
-            <Label htmlFor="successFee">% de êxito</Label>
+                    <div className="space-y-2 sm:col-span-2">
+            <Label htmlFor="successFee">% de êxito{modality === "exito" ? " (obrigatório)" : ""}</Label>
             <Input
               id="successFee"
               inputMode="decimal"
@@ -754,6 +796,45 @@ function NewContractDialog({ clientId }: { clientId: string }) {
             />
           </div>
         </div>
+
+                {modality !== "exito" && preview.length > 0 && (
+          <div className="space-y-3 rounded-md border border-border p-4">
+            <div>
+              <h3 className="text-sm font-medium">Prévia das parcelas</h3>
+              <p className="text-xs text-muted-foreground">
+                Confira e ajuste os valores e vencimentos antes de salvar.
+              </p>
+            </div>
+            <div className="space-y-3">
+              {preview.map((row, index) => (
+                <div key={row.number} className="grid gap-3 sm:grid-cols-[auto_1fr_1fr] sm:items-end">
+                  <p className="pb-2 text-sm font-medium">{row.number}</p>
+                  <div className="space-y-1">
+                    <Label htmlFor={`preview-amount-${row.number}`}>Valor</Label>
+                    <Input
+                      id={`preview-amount-${row.number}`}
+                      inputMode="decimal"
+                      value={String(row.amount)}
+                      onChange={(event) => updatePreview(index, "amount", event.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor={`preview-due-${row.number}`}>Vencimento</Label>
+                    <Input
+                      id={`preview-due-${row.number}`}
+                      type="date"
+                      value={row.due_date}
+                      onChange={(event) => updatePreview(index, "due_date", event.target.value)}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+            <p className="text-right text-sm font-medium">
+              Total: {formatCurrency(preview.reduce((sum, row) => sum + row.amount, 0))}
+            </p>
+          </div>
+        )}
 
         <DialogFooter>
           <Button
