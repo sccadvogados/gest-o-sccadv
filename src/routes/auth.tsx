@@ -110,7 +110,7 @@ function AuthPage() {
             <div className="login-logo-panel flex basis-[57.5%] items-center justify-center bg-white">
               <img src="/imagens/imagem-fd496630.png" alt="SCC Advogados" className="h-[200px] w-auto object-contain" />
             </div>
-            <div className="flex flex-1 flex-col bg-gradient-to-br from-[#032540] to-[#021A2E] px-5 pb-[18px] pt-[26px]">
+            <div className="login-blue-panel flex flex-1 flex-col bg-gradient-to-br from-[#032540] to-[#021A2E] px-5 pb-[18px] pt-[26px]">
               <form onSubmit={handleSubmit} className="flex h-full flex-col">
                 <Label htmlFor="email" className="mb-[3px] text-[11px] font-bold text-white">E-mail</Label>
                 <Input id="email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} className="h-[22px] rounded-[4px] border-[#C9D3E0] bg-[#EEF2F8] text-[12px] text-[#032540] shadow-[0_1px_2px_rgba(0,0,0,.08)] focus:border-[#E1B795] focus:bg-white" required />
