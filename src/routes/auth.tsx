@@ -130,8 +130,8 @@ function AuthPage() {
             </Button>
           </div>
         </form>
-        <footer className="mt-7 text-center text-xs text-muted-foreground">© 2026 SCC Advogados · Acesso Restrito</footer>
-      </main>
+              </main>
+      <footer className="mt-[22px] text-center text-[12px] text-[#94A3B8]">© 2026 SCC Advogados · Acesso Restrito</footer>
     </div>
   );
 }
