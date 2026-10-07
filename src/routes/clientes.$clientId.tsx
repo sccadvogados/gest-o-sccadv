@@ -294,7 +294,10 @@ function ClientDetailPage() {
                   {contract.installments_count}x · êxito {contract.success_fee_percent}%
                 </p>
               </div>
-              <Badge variant="secondary">{contract.payment_method || "Forma a definir"}</Badge>
+                            <div className="flex items-center gap-2">
+                <Badge variant="secondary">{contract.payment_method || "Forma a definir"}</Badge>
+                <ContractActions clientId={clientId} contract={contract} />
+              </div>
             </div>
 
             <Table>
