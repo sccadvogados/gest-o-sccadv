@@ -13,3 +13,4 @@
 - Keep the product architecture centered on clients, contracts, generated installments, and private document attachments because these are the office's primary workflows.
 - Run personal-document extraction only in authenticated server functions and never log or expose the document contents, because they contain sensitive client data.
 - Derive active-process counts from Google Drive folders named with a CNJ process number under each client folder, because Drive is the office's process source of truth.
+- Keep the public authentication page limited to email/password sign-in and recovery; account provisioning is managed outside the public UI to protect office access.
