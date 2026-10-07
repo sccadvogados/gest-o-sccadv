@@ -100,7 +100,31 @@ function AuthPage() {
         </header>
         <main className="flex flex-1 items-center justify-center">
           <section className="login-card flex h-[320px] w-full max-w-[650px] overflow-hidden rounded-lg border border-[#E4E0D8] bg-white shadow-[0_1px_3px_rgba(0,0,0,.10),0_10px_30px_rgba(0,0,0,.35)]">
-            <div className="login-logo-panel flex basis-[57.5%] items-center justify-center bg-white">
+                    <form onSubmit={handleSubmit} className="mt-7 space-y-5">
+          <div className="space-y-2">
+            <Label htmlFor="email" className="text-sm font-medium text-[#0B2340]">E-mail</Label>
+            <div className="relative">
+              <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">@</span>
+              <Input id="email" type="email" autoComplete="username" value={email} onChange={(event) => setEmail(event.target.value)} className="h-[46px] rounded-[10px] border-slate-200 pl-9 text-sm focus-visible:border-[#E3B896] focus-visible:ring-[#E3B896]" required />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="password" className="text-sm font-medium text-[#0B2340]">Senha</Label>
+            <div className="relative">
+              <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">●</span>
+              <Input id="password" type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} className="h-[46px] rounded-[10px] border-slate-200 px-9 text-sm focus-visible:border-[#E3B896] focus-visible:ring-[#E3B896]" required />
+              <button type="button" aria-label="Mostrar senha" className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">Mostrar</button>
+            </div>
+          </div>
+          <div className="flex items-center justify-between text-sm">
+            <label className="flex items-center gap-2 text-slate-600"><input type="checkbox" className="accent-[#E3B896]" />Manter conectado</label>
+            <button type="button" onClick={sendRecovery} disabled={recovering || busy} className="font-medium text-[#B77952] hover:underline">{recovering ? "Enviando..." : "Esqueci a senha"}</button>
+          </div>
+          <Button type="submit" disabled={busy} className="h-[46px] w-full rounded-[10px] bg-[#0B2340] text-sm font-semibold text-white hover:bg-[#16395F]">{busy ? "Entrando..." : "Entrar"}</Button>
+        </form>
+        <footer className="mt-7 text-center text-xs text-slate-400">© 2026 SCC Advogados · Acesso Restrito</footer>
+      </main>
+    </div>
               <img src="/imagens/imagem-fd496630.png" alt="SCC Advogados" className="login-logo h-[200px] w-auto object-contain" />
             </div>
             <div className="login-blue-panel flex flex-1 flex-col bg-gradient-to-br from-[#032540] to-[#021A2E] px-5 pb-[18px] pt-[26px]">
