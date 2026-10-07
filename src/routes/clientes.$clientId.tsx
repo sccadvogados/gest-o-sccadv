@@ -579,12 +579,16 @@ function NewContractDialog({ clientId }: { clientId: string }) {
 
   const create = useMutation({
     mutationFn: async () => {
-      const total = Number(totalValue.replace(",", "."));
+            const value = Number(totalValue.replace(",", "."));
       const installmentsCount = Math.max(1, Number(count));
-      if (!Number.isFinite(total) || total <= 0) {
-        throw new Error("Informe um valor total válido.");
-      }
+      const fee = Number(successFee.replace(",", ".")) || 0;
+      if (!Number.isFinite(value) || value <= 0) throw new Error("Informe um valor válido.");
+      if (!Number.isInteger(installmentsCount)) throw new Error("Informe um número inteiro de meses/parcelas.");
+      if (!firstDue) throw new Error("Informe o primeiro vencimento.");
+      if (modality === "exito" && (fee <= 0 || fee > 100)) throw new Error("Informe um percentual de êxito entre 0 e 100.");
+      if (modality !== "exito" && preview.length !== installmentsCount) throw new Error("Preencha as condições para gerar a prévia das parcelas.");
 
+      const total = modality === "mensal" ? value * installmentsCount : value;
       const { data: contract, error } = await supabase
         .from("contracts")
         .insert({
