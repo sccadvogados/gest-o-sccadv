@@ -103,10 +103,10 @@ function FinancePage() {
   const firmShare = received * 0.1;
 
   // Previsão dos próximos 12 meses (parcelas ainda não pagas).
+    const [currentYear, currentMonth] = currentMonthKey().split("-").map(Number);
   const forecast = Array.from({ length: 12 }, (_, i) => {
-    const base = new Date();
-    const month = new Date(Date.UTC(base.getUTCFullYear(), base.getUTCMonth() + i, 1));
-    const key = month.toISOString().slice(0, 7);
+    const month = new Date(Date.UTC(currentYear!, currentMonth! - 1 + i, 15));
+    const key = `${month.getUTCFullYear()}-${String(month.getUTCMonth() + 1).padStart(2, "0")}`;
     const total = list
       .filter((r) => r.status !== "Pago" && r.due_date.slice(0, 7) === key)
       .reduce((sum, r) => sum + Number(r.amount), 0);
