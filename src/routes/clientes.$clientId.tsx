@@ -652,10 +652,14 @@ function NewContractDialog({ clientId }: { clientId: string }) {
       queryClient.invalidateQueries({ queryKey: ["installments"] });
       toast.success("Contrato cadastrado e parcelas geradas.");
       setOpen(false);
-      setDescription("");
+            setDescription("");
+      setModality("parcelado");
+      setSignatureDate("");
       setTotalValue("");
       setCount("1");
+      setFirstDue(todayISO());
       setSuccessFee("0");
+      setPreview([]);
     },
     onError: (error) =>
       toast.error(error instanceof Error ? error.message : "Erro ao salvar o contrato."),
