@@ -15,15 +15,20 @@ export const Route = createFileRoute("/auth")({
       { title: "Entrar | Gestão Administrativa | SCC Adv" },
       {
         name: "description",
-        content: "Acesso do financeiro e administrativo do escritório SCC Advogados.",
+        content: "Acesso restrito à Gestão Administrativa do escritório Souza, Craveiro & Corradi Advogados: clientes, contratos e financeiro.",
       },
       { property: "og:title", content: "Entrar | Gestão Administrativa | SCC Adv" },
       {
         property: "og:description",
-        content: "Acesso restrito à equipe do escritório Souza, Craveiro & Corradi.",
+        content: "Acesso restrito à Gestão Administrativa do escritório Souza, Craveiro & Corradi Advogados: clientes, contratos e financeiro.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
+      { name: "twitter:title", content: "Entrar | Gestão Administrativa | SCC Adv" },
+      {
+        name: "twitter:description",
+        content: "Acesso restrito à Gestão Administrativa do escritório Souza, Craveiro & Corradi Advogados: clientes, contratos e financeiro.",
+      },
     ],
   }),
   component: AuthPage,
