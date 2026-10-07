@@ -88,7 +88,7 @@ function AuthPage() {
   }
 
   return (
-    <div className="login-page flex min-h-screen items-center justify-center bg-background px-4 py-8">
+        <div className="login-page flex min-h-screen flex-col items-center justify-center bg-background px-4 py-8">
       <main className="w-full max-w-[420px] rounded-lg border border-border border-t-4 border-t-accent bg-card p-6 text-card-foreground shadow-panel sm:p-10">
         <div className="border-b border-border pb-6 text-center">
           <img src="/imagens/imagem-f9880f50.png" alt="SCC Advogados" className="mx-auto h-[110px] max-w-full object-contain" />
@@ -130,8 +130,8 @@ function AuthPage() {
             </Button>
           </div>
         </form>
-        <footer className="mt-7 text-center text-xs text-muted-foreground">© 2026 SCC Advogados · Acesso Restrito</footer>
-      </main>
+              </main>
+      <footer className="mt-[22px] text-center text-[12px] text-[#94A3B8]">© 2026 SCC Advogados · Acesso Restrito</footer>
     </div>
   );
 }
