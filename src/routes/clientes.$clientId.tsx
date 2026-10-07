@@ -1,11 +1,22 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { ArrowLeft, Download, FolderOpen, Plus } from "lucide-react";
+import { ArrowLeft, Download, FolderOpen, Pencil, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
 import { EditClientDialog } from "@/components/EditClientDialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -294,7 +305,10 @@ function ClientDetailPage() {
                   {contract.installments_count}x · êxito {contract.success_fee_percent}%
                 </p>
               </div>
-              <Badge variant="secondary">{contract.payment_method || "Forma a definir"}</Badge>
+                            <div className="flex items-center gap-2">
+                <Badge variant="secondary">{contract.payment_method || "Forma a definir"}</Badge>
+                <ContractActions clientId={clientId} contract={contract} />
+              </div>
             </div>
 
             <Table>
@@ -380,6 +394,176 @@ export function SituationBadge({
     );
   }
   return <Badge variant="secondary">Pendente</Badge>;
+}
+
+function ContractActions({
+  clientId,
+  contract,
+}: {
+  clientId: string;
+  contract: {
+    id: string;
+    description: string | null;
+    category: string;
+    total_value: number;
+    installments_count: number;
+    first_due_date: string;
+    payment_method: string | null;
+    success_fee_percent: number;
+  };
+}) {
+  const queryClient = useQueryClient();
+  const [editOpen, setEditOpen] = useState(false);
+
+  const remove = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from("contracts").delete().eq("id", contract.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["contracts", clientId] });
+      queryClient.invalidateQueries({ queryKey: ["installments"] });
+      toast.success("Contrato excluído.");
+    },
+    onError: () => toast.error("Não foi possível excluir o contrato."),
+  });
+
+  return (
+    <>
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogTrigger asChild>
+          <Button variant="ghost" size="icon" aria-label="Editar contrato">
+            <Pencil className="size-4" />
+          </Button>
+        </DialogTrigger>
+        <EditContractDialog
+          clientId={clientId}
+          contract={contract}
+          onSaved={() => setEditOpen(false)}
+        />
+      </Dialog>
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button variant="ghost" size="icon" aria-label="Excluir contrato">
+            <Trash2 className="size-4 text-destructive" />
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir este contrato?</AlertDialogTitle>
+            <AlertDialogDescription>
+              O contrato e todas as parcelas relacionadas serão excluídos. Essa ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={() => remove.mutate()} disabled={remove.isPending}>
+              {remove.isPending ? "Excluindo…" : "Excluir contrato"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
+  );
+}
+
+function EditContractDialog({
+  clientId,
+  contract,
+  onSaved,
+}: {
+  clientId: string;
+  contract: {
+    id: string;
+    description: string | null;
+    category: string;
+    total_value: number;
+    installments_count: number;
+    first_due_date: string;
+    payment_method: string | null;
+    success_fee_percent: number;
+  };
+  onSaved: () => void;
+}) {
+  const queryClient = useQueryClient();
+  const [description, setDescription] = useState(contract.description ?? "");
+  const [category, setCategory] = useState(contract.category);
+  const [totalValue, setTotalValue] = useState(String(contract.total_value));
+  const [count, setCount] = useState(String(contract.installments_count));
+  const [firstDue, setFirstDue] = useState(contract.first_due_date);
+  const [paymentMethod, setPaymentMethod] = useState(contract.payment_method ?? PAYMENT_METHODS[0]);
+  const [successFee, setSuccessFee] = useState(String(contract.success_fee_percent));
+
+  const update = useMutation({
+    mutationFn: async () => {
+      const total = Number(totalValue.replace(",", "."));
+      const installmentsCount = Math.max(1, Number(count));
+      const fee = Number(successFee.replace(",", ".")) || 0;
+      if (!Number.isFinite(total) || total <= 0) throw new Error("Informe um valor total válido.");
+      if (!Number.isInteger(installmentsCount)) throw new Error("Informe um número inteiro de parcelas.");
+      if (!firstDue) throw new Error("Informe o primeiro vencimento.");
+
+      const { error } = await supabase.from("contracts").update({
+        description,
+        category,
+        total_value: total,
+        installments_count: installmentsCount,
+        first_due_date: firstDue,
+        payment_method: paymentMethod,
+        success_fee_percent: fee,
+      }).eq("id", contract.id);
+      if (error) throw error;
+
+      const { error: deleteError } = await supabase.from("installments").delete().eq("contract_id", contract.id);
+      if (deleteError) throw deleteError;
+
+      const rows = buildInstallments(total, installmentsCount, firstDue).map((row) => ({
+        ...row,
+        contract_id: contract.id,
+        client_id: clientId,
+        payment_method: paymentMethod,
+        category,
+      }));
+      const { error: insertError } = await supabase.from("installments").insert(rows);
+      if (insertError) throw insertError;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["contracts", clientId] });
+      queryClient.invalidateQueries({ queryKey: ["installments"] });
+      toast.success("Contrato atualizado e parcelas regeneradas.");
+      onSaved();
+    },
+    onError: (error) => toast.error(error instanceof Error ? error.message : "Não foi possível atualizar o contrato."),
+  });
+
+  return (
+    <DialogContent className="sm:max-w-lg">
+      <DialogHeader>
+        <DialogTitle>Editar contrato</DialogTitle>
+      </DialogHeader>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-2 sm:col-span-2">
+          <Label htmlFor={`edit-contract-description-${contract.id}`}>Descrição</Label>
+          <Input id={`edit-contract-description-${contract.id}`} value={description} onChange={(e) => setDescription(e.target.value)} />
+        </div>
+        <div className="space-y-2 sm:col-span-2">
+          <Label>Categoria</Label>
+          <Select value={category} onValueChange={setCategory}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>{CATEGORIES.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-2"><Label htmlFor={`edit-contract-total-${contract.id}`}>Valor total (R$)</Label><Input id={`edit-contract-total-${contract.id}`} inputMode="decimal" value={totalValue} onChange={(e) => setTotalValue(e.target.value)} /></div>
+        <div className="space-y-2"><Label htmlFor={`edit-contract-count-${contract.id}`}>Número de parcelas</Label><Input id={`edit-contract-count-${contract.id}`} type="number" min={1} value={count} onChange={(e) => setCount(e.target.value)} /></div>
+        <div className="space-y-2"><Label htmlFor={`edit-contract-due-${contract.id}`}>Primeiro vencimento</Label><Input id={`edit-contract-due-${contract.id}`} type="date" value={firstDue} onChange={(e) => setFirstDue(e.target.value)} /></div>
+        <div className="space-y-2"><Label>Forma de pagamento</Label><Select value={paymentMethod} onValueChange={setPaymentMethod}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{PAYMENT_METHODS.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent></Select></div>
+        <div className="space-y-2 sm:col-span-2"><Label htmlFor={`edit-contract-fee-${contract.id}`}>% de êxito</Label><Input id={`edit-contract-fee-${contract.id}`} inputMode="decimal" value={successFee} onChange={(e) => setSuccessFee(e.target.value)} /></div>
+      </div>
+      <DialogFooter>
+        <Button onClick={() => update.mutate()} disabled={update.isPending}>{update.isPending ? "Salvando…" : "Salvar alterações"}</Button>
+      </DialogFooter>
+    </DialogContent>
+  );
 }
 
 function NewContractDialog({ clientId }: { clientId: string }) {
