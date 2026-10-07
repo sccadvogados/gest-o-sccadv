@@ -71,8 +71,8 @@ function ClientsPage() {
           .filter(Boolean)
           .some((field) => String(field).toLowerCase().includes(search)),
   );
-  const totalActiveProcesses = Object.values(processCounts ?? {}).reduce(
-    (total, count) => total + count,
+    const totalActiveProcesses = (clients ?? []).reduce(
+    (total, client) => total + (processCounts?.[client.drive_folder_id ?? ""] ?? 0),
     0,
   );
 
