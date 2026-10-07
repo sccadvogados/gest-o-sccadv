@@ -585,7 +585,11 @@ function NewContractDialog({ clientId }: { clientId: string }) {
   const [paymentMethod, setPaymentMethod] = useState<string>(PAYMENT_METHODS[0]);
     const [successFee, setSuccessFee] = useState("0");
   const [preview, setPreview] = useState<PreviewInstallment[]>([]);
-  const queryClient = useQueryClient();
+    const queryClient = useQueryClient();
+
+  useEffect(() => {
+    refreshPreview();
+  }, [totalValue, count, firstDue, modality]);
 
   function refreshPreview() {
     const value = Number(totalValue.replace(",", "."));
