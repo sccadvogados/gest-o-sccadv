@@ -172,7 +172,7 @@ function AuthPage() {
           >
             {mode === "login" ? "Não tenho acesso ainda" : "Já tenho acesso"}
           </Button>
-        </form>
+                </form>
       </div>
     </div>
   );
