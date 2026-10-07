@@ -96,23 +96,17 @@ function AuthPage() {
   }
 
   return (
-    <div className="grid min-h-screen lg:grid-cols-2">
-      <div className="hidden flex-col justify-between bg-sidebar p-12 text-sidebar-foreground lg:flex">
+        <div className="grid min-h-screen lg:grid-cols-2">
+      <div className="flex flex-col items-center justify-center bg-sidebar p-12 text-sidebar-foreground">
+        <BrandMark className="scale-150" />
         <BrandMark />
-        <div>
-          <h1 className="max-w-sm text-3xl leading-snug">
-            Gestão de clientes, contratos e financeiro do escritório.
-          </h1>
-          <p className="mt-4 max-w-sm text-sm text-sidebar-foreground/70">
-            Cadastro completo do cliente, contratos com condições de pagamento e controle
-            de parcelas em um só lugar.
-          </p>
-        </div>
-        <p className="text-xs text-sidebar-foreground/50">Acesso restrito à equipe.</p>
+                <p className="mt-10 text-center text-xs text-sidebar-foreground/50">
+          Acesso restrito à equipe.
+        </p>
       </div>
 
-      <div className="flex items-center justify-center p-6">
-        <form onSubmit={handleSubmit} className="panel w-full max-w-sm space-y-5 p-8">
+                        <div className="flex items-center justify-center bg-gradient-to-b from-sidebar via-primary to-primary p-6 text-primary-foreground">
+        <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-5 p-8">
           <div className="space-y-1">
             <h2 className="text-xl">{mode === "login" ? "Entrar" : "Criar acesso"}</h2>
             <p className="text-sm text-muted-foreground">
@@ -171,7 +165,7 @@ function AuthPage() {
               disabled={recovering}
               onClick={sendRecovery}
             >
-              {recovering ? "Enviando…" : "Esqueci minha senha"}
+              {recovering ? "Enviando…" : "Esqueci a senha"}
             </Button>
           )}
 
