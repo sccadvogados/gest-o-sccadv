@@ -601,7 +601,7 @@ function NewContractDialog({ clientId }: { clientId: string }) {
         .single();
       if (error) throw error;
 
-      const rows = buildInstallments(total, installmentsCount, firstDue).map((row) => ({
+            const rows = modality === "exito" ? [] : preview.map((row) => ({
         ...row,
         contract_id: contract.id,
         client_id: clientId,
@@ -609,6 +609,7 @@ function NewContractDialog({ clientId }: { clientId: string }) {
         category,
       }));
 
+      if (rows.length === 0) return;
       const { error: instErr } = await supabase.from("installments").insert(rows);
       if (instErr) throw instErr;
     },
