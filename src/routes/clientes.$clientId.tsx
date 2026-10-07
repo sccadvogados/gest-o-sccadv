@@ -614,7 +614,17 @@ function NewContractDialog({ clientId }: { clientId: string }) {
       if (!Number.isInteger(installmentsCount)) throw new Error("Informe um número inteiro de meses/parcelas.");
       if (!firstDue) throw new Error("Informe o primeiro vencimento.");
       if (modality === "exito" && (fee <= 0 || fee > 100)) throw new Error("Informe um percentual de êxito entre 0 e 100.");
-      if (modality !== "exito" && preview.length !== installmentsCount) throw new Error("Preencha as condições para gerar a prévia das parcelas.");
+            if (modality !== "exito" && preview.length !== installmentsCount) throw new Error("Preencha as condições para gerar a prévia das parcelas.");
+      if (modality !== "exito") {
+        const expectedTotal = modality === "mensal" ? value * installmentsCount : value;
+        const previewTotal = preview.reduce((sum, row) => sum + row.amount, 0);
+        if (Math.abs(previewTotal - expectedTotal) > 0.005) {
+          throw new Error("A soma das parcelas precisa ser exatamente igual ao total.");
+        }
+        if (preview.some((row) => !row.due_date || !Number.isFinite(row.amount) || row.amount < 0)) {
+          throw new Error("Confira os valores e vencimentos da prévia.");
+        }
+      }
 
       const total = modality === "mensal" ? value * installmentsCount : value;
       const { data: contract, error } = await supabase
