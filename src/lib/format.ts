@@ -14,8 +14,21 @@ export function formatDate(value: string | null | undefined) {
   return `${d}/${m}/${y}`;
 }
 
+export const APP_TIME_ZONE = "America/Sao_Paulo";
+
 export function todayISO() {
-  return new Date().toISOString().slice(0, 10);
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: APP_TIME_ZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date());
+  const values = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+  return `${values.year}-${values.month}-${values.day}`;
+}
+
+export function currentMonthKey() {
+  return todayISO().slice(0, 7);
 }
 
 /** Dias de atraso de uma parcela pendente (0 quando não está vencida). */
