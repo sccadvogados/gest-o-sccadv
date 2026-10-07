@@ -95,18 +95,9 @@ function AuthPage() {
     toast.success("Enviamos um link para redefinir sua senha.");
   }
 
-  return (
-        <div className="grid min-h-screen lg:grid-cols-2">
-      <div className="flex flex-col items-center justify-center bg-sidebar p-12 text-sidebar-foreground">
-        <BrandMark className="scale-150" />
-        <BrandMark />
-                <p className="mt-10 text-center text-xs text-sidebar-foreground/50">
-          Acesso restrito à equipe.
-        </p>
-      </div>
-
-                        <div className="flex items-center justify-center bg-gradient-to-b from-sidebar via-primary to-primary p-6 text-primary-foreground">
-        <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-5 p-8">
+    return (
+    <div className="flex min-h-screen items-center justify-center bg-background p-6">
+      <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-5 p-8">
           <div className="space-y-1">
             <h2 className="text-xl">{mode === "login" ? "Entrar" : "Criar acesso"}</h2>
             <p className="text-sm text-muted-foreground">
