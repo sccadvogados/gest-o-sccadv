@@ -89,7 +89,7 @@ function AuthPage() {
 
   return (
         <div className="login-page flex min-h-screen flex-col items-center justify-center bg-background px-4 py-8">
-      <main className="w-full max-w-[420px] rounded-lg border border-border border-t-4 border-t-accent bg-card p-6 text-card-foreground shadow-panel sm:p-10">
+            <main className="w-full max-w-[420px] rounded-[16px] border border-border border-t-4 border-t-[#E3B896] bg-card p-10 text-card-foreground shadow-[0_1px_2px_rgba(0,0,0,.04),_0_16px_48px_rgba(11,35,64,.10)]">
         <div className="border-b border-border pb-6 text-center">
           <img src="/imagens/imagem-f9880f50.png" alt="SCC Advogados" className="mx-auto h-[110px] max-w-full object-contain" />
         </div>
