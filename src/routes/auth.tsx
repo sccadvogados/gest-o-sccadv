@@ -172,7 +172,7 @@ function AuthPage() {
               disabled={recovering}
               onClick={sendRecovery}
             >
-              {recovering ? "Enviando…" : "Esqueci minha senha"}
+              {recovering ? "Enviando…" : "Esqueci a senha"}
             </Button>
           )}
 
