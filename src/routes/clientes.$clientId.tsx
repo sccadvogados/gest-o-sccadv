@@ -197,7 +197,9 @@ function ClientDetailPage() {
             {client.cpf_cnpj || "CPF/CNPJ não informado"}
           </p>
         </div>
-        {client.drive_folder_url ? (
+                <div className="flex flex-wrap gap-2">
+          <EditClientDialog clientId={clientId} client={client} />
+          {client.drive_folder_url ? (
           <Button asChild variant="outline">
             <a href={client.drive_folder_url} target="_blank" rel="noreferrer">
               <FolderOpen className="size-4" />
