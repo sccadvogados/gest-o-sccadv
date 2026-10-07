@@ -112,8 +112,8 @@ function AuthPage() {
         <p className="text-xs text-sidebar-foreground/50">Acesso restrito à equipe.</p>
       </div>
 
-      <div className="flex items-center justify-center p-6">
-        <form onSubmit={handleSubmit} className="panel w-full max-w-sm space-y-5 p-8">
+            <div className="flex items-center justify-center bg-gradient-to-b from-sidebar to-primary p-6 text-primary-foreground">
+        <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-5 p-8">
           <div className="space-y-1">
             <h2 className="text-xl">{mode === "login" ? "Entrar" : "Criar acesso"}</h2>
             <p className="text-sm text-muted-foreground">
