@@ -5,6 +5,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
+import { EditClientDialog } from "@/components/EditClientDialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -196,14 +197,17 @@ function ClientDetailPage() {
             {client.cpf_cnpj || "CPF/CNPJ não informado"}
           </p>
         </div>
-        {client.drive_folder_url ? (
+                <div className="flex flex-wrap gap-2">
+          <EditClientDialog clientId={clientId} client={client} />
+          {client.drive_folder_url ? (
           <Button asChild variant="outline">
             <a href={client.drive_folder_url} target="_blank" rel="noreferrer">
               <FolderOpen className="size-4" />
               Abrir pasta no Drive
             </a>
-          </Button>
-        ) : null}
+                    </Button>
+          ) : null}
+        </div>
       </div>
 
       <section className="panel mt-6 grid gap-4 p-6 sm:grid-cols-2">
