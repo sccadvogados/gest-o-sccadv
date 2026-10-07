@@ -583,8 +583,23 @@ function NewContractDialog({ clientId }: { clientId: string }) {
   const [count, setCount] = useState("1");
   const [firstDue, setFirstDue] = useState(todayISO());
   const [paymentMethod, setPaymentMethod] = useState<string>(PAYMENT_METHODS[0]);
-  const [successFee, setSuccessFee] = useState("0");
+    const [successFee, setSuccessFee] = useState("0");
+  const [preview, setPreview] = useState<PreviewInstallment[]>([]);
   const queryClient = useQueryClient();
+
+  function refreshPreview() {
+    const value = Number(totalValue.replace(",", "."));
+    const installmentsCount = Number(count);
+    if (!Number.isFinite(value) || value <= 0 || !Number.isInteger(installmentsCount) || installmentsCount < 1 || !firstDue || modality === "exito") {
+      setPreview([]);
+      return;
+    }
+    setPreview(buildContractInstallments(value, installmentsCount, firstDue, modality));
+  }
+
+  function updatePreview(index: number, field: "amount" | "due_date", value: string) {
+    setPreview((current) => current.map((row, rowIndex) => rowIndex === index ? { ...row, [field]: field === "amount" ? Number(value.replace(",", ".")) || 0 : value } : row));
+  }
 
   const create = useMutation({
     mutationFn: async () => {
