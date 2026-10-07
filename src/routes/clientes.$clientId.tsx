@@ -566,9 +566,17 @@ function EditContractDialog({
   );
 }
 
+type PreviewInstallment = {
+  number: number;
+  amount: number;
+  due_date: string;
+};
+
 function NewContractDialog({ clientId }: { clientId: string }) {
   const [open, setOpen] = useState(false);
   const [description, setDescription] = useState("");
+  const [modality, setModality] = useState<ContractModality>("parcelado");
+  const [signatureDate, setSignatureDate] = useState("");
   const [category, setCategory] = useState<string>(CATEGORIES[0]);
   const [totalValue, setTotalValue] = useState("");
   const [count, setCount] = useState("1");
