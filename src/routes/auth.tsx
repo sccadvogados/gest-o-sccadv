@@ -97,9 +97,12 @@ function AuthPage() {
                     <p className="mt-1 mb-[22px] text-left text-[14px] text-[#64748B]">Acesse sua conta para continuar.</p>
         </div>
         <form onSubmit={handleSubmit} className="mt-0 space-y-5">
-          <div className="space-y-2">
+                    <div className="space-y-2">
             <Label htmlFor="email">E-mail</Label>
-            <Input id="email" type="email" autoComplete="username" value={email} onChange={(event) => setEmail(event.target.value)} className="h-[46px]" required />
+            <div className="relative">
+              <Mail className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-[#94A3B8]" aria-hidden="true" />
+              <Input id="email" type="email" autoComplete="username" placeholder="nome@sccadvocacia.com.br" value={email} onChange={(event) => setEmail(event.target.value)} className="h-[46px] rounded-[10px] border-[#E2E8F0] bg-white pl-[42px] focus-visible:border-[#C9956B] focus-visible:ring-4 focus-visible:ring-[rgba(227,184,150,0.25)]" required />
+            </div>
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Senha</Label>
