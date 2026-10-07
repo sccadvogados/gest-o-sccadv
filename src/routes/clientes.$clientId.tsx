@@ -755,6 +755,45 @@ function NewContractDialog({ clientId }: { clientId: string }) {
           </div>
         </div>
 
+                {modality !== "exito" && preview.length > 0 && (
+          <div className="space-y-3 rounded-md border border-border p-4">
+            <div>
+              <h3 className="text-sm font-medium">Prévia das parcelas</h3>
+              <p className="text-xs text-muted-foreground">
+                Confira e ajuste os valores e vencimentos antes de salvar.
+              </p>
+            </div>
+            <div className="space-y-3">
+              {preview.map((row, index) => (
+                <div key={row.number} className="grid gap-3 sm:grid-cols-[auto_1fr_1fr] sm:items-end">
+                  <p className="pb-2 text-sm font-medium">{row.number}</p>
+                  <div className="space-y-1">
+                    <Label htmlFor={`preview-amount-${row.number}`}>Valor</Label>
+                    <Input
+                      id={`preview-amount-${row.number}`}
+                      inputMode="decimal"
+                      value={String(row.amount)}
+                      onChange={(event) => updatePreview(index, "amount", event.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor={`preview-due-${row.number}`}>Vencimento</Label>
+                    <Input
+                      id={`preview-due-${row.number}`}
+                      type="date"
+                      value={row.due_date}
+                      onChange={(event) => updatePreview(index, "due_date", event.target.value)}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+            <p className="text-right text-sm font-medium">
+              Total: {formatCurrency(preview.reduce((sum, row) => sum + row.amount, 0))}
+            </p>
+          </div>
+        )}
+
         <DialogFooter>
           <Button
             onClick={() => create.mutate()}
