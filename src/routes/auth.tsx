@@ -108,7 +108,10 @@ function AuthPage() {
                   <Button type="submit" disabled={busy} className="h-[24px] min-w-0 whitespace-nowrap rounded-[3px] bg-[#E1B795] px-1 text-[10.5px] font-semibold text-[#032540] hover:bg-[#CF9F78]">
                     {busy ? "Entrando..." : "Entrar"}
                   </Button>
-                </div>
+                                </div>
+                <button type="button" onClick={() => toast.info("O acesso é restrito. Solicite seu cadastro ao administrador do escritório.")} className="mt-3 self-center text-[10.5px] font-semibold text-[#E5EAF2] underline-offset-2 hover:text-[#E1B795] hover:underline">
+                  Não tenho acesso ainda
+                </button>
                 <footer className="mt-auto pt-4 text-center text-[9px] font-bold text-[#B9C4D4]">
                   © 2026 Souza, Craveiro & Corradi Advogados
                 </footer>
