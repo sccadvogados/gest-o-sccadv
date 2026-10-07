@@ -100,16 +100,9 @@ function AuthPage() {
       <div className="flex flex-col items-center justify-center bg-sidebar p-12 text-sidebar-foreground">
         <BrandMark className="scale-150" />
         <BrandMark />
-        <div>
-          <h1 className="max-w-sm text-3xl leading-snug">
-            Gestão de clientes, contratos e financeiro do escritório.
-          </h1>
-          <p className="mt-4 max-w-sm text-sm text-sidebar-foreground/70">
-            Cadastro completo do cliente, contratos com condições de pagamento e controle
-            de parcelas em um só lugar.
-          </p>
-        </div>
-        <p className="text-xs text-sidebar-foreground/50">Acesso restrito à equipe.</p>
+                <p className="mt-10 text-center text-xs text-sidebar-foreground/50">
+          Acesso restrito à equipe.
+        </p>
       </div>
 
             <div className="flex items-center justify-center bg-gradient-to-b from-sidebar to-primary p-6 text-primary-foreground">
