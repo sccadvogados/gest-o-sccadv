@@ -202,8 +202,9 @@ function ClientDetailPage() {
               <FolderOpen className="size-4" />
               Abrir pasta no Drive
             </a>
-          </Button>
-        ) : null}
+                    </Button>
+          ) : null}
+        </div>
       </div>
 
       <section className="panel mt-6 grid gap-4 p-6 sm:grid-cols-2">
