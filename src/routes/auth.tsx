@@ -2,7 +2,6 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { BrandMark } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -35,10 +34,8 @@ export const Route = createFileRoute("/auth")({
 });
 
 function AuthPage() {
-  const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
   const [busy, setBusy] = useState(false);
   const [recovering, setRecovering] = useState(false);
   const { user, loading } = useAuth();
@@ -52,23 +49,9 @@ function AuthPage() {
     event.preventDefault();
     setBusy(true);
     try {
-      if (mode === "login") {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        navigate({ to: "/" });
-      } else {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/`,
-            data: { full_name: fullName },
-          },
-        });
-        if (error) throw error;
-        toast.success("Cadastro criado. Confirme o e-mail para acessar.");
-        setMode("login");
-      }
+      const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+      if (error) throw error;
+      navigate({ to: "/", replace: true });
     } catch (error) {
       const message = error instanceof Error ? error.message : "Erro inesperado";
       toast.error(
@@ -89,15 +72,17 @@ function AuthPage() {
       return;
     }
     setRecovering(true);
-    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-      redirectTo: `${window.location.origin}/reset-password`,
-    });
-    setRecovering(false);
-    if (error) {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+      toast.success("Se o e-mail estiver cadastrado, você receberá um link para redefinir sua senha.");
+    } catch {
       toast.error("Não foi possível enviar o link agora.");
-      return;
+    } finally {
+      setRecovering(false);
     }
-    toast.success("Enviamos um link para redefinir sua senha.");
   }
 
                 return (
@@ -113,20 +98,17 @@ function AuthPage() {
             <div className="login-blue-panel flex flex-1 flex-col bg-gradient-to-br from-[#032540] to-[#021A2E] px-5 pb-[18px] pt-[26px]">
               <form onSubmit={handleSubmit} className="flex h-full flex-col">
                 <Label htmlFor="email" className="mb-[3px] text-[11px] font-bold text-white">E-mail</Label>
-                <Input id="email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} className="h-[22px] rounded-[4px] border-[#C9D3E0] bg-[#EEF2F8] text-[12px] text-[#032540] shadow-[0_1px_2px_rgba(0,0,0,.08)] focus:border-[#E1B795] focus:bg-white" required />
+                <Input id="email" type="email" autoComplete="username" value={email} onChange={(event) => setEmail(event.target.value)} className="h-[22px] rounded-[4px] border-[#C9D3E0] bg-[#EEF2F8] text-[12px] text-[#032540] shadow-[0_1px_2px_rgba(0,0,0,.08)] focus:border-[#E1B795] focus:bg-white" required />
                 <Label htmlFor="password" className="mb-[3px] mt-[9px] text-[11px] font-bold text-white">Senha</Label>
-                                <Input id="password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} className="h-[22px] rounded-[4px] border-[#C9D3E0] bg-[#EEF2F8] text-[12px] text-[#032540] shadow-[0_1px_2px_rgba(0,0,0,.08)] focus:border-[#E1B795] focus:bg-white" required />
+                                <Input id="password" type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} className="h-[22px] rounded-[4px] border-[#C9D3E0] bg-[#EEF2F8] text-[12px] text-[#032540] shadow-[0_1px_2px_rgba(0,0,0,.08)] focus:border-[#E1B795] focus:bg-white" required />
                 <div className="login-actions mt-[46px] grid grid-cols-2 gap-[6px]">
-                  <button type="button" onClick={sendRecovery} disabled={recovering} className="h-[24px] min-w-0 whitespace-nowrap rounded-[3px] border border-[#7F93AD] bg-transparent px-1 text-[10.5px] font-semibold text-[#E5EAF2] transition-colors hover:border-[#E1B795] hover:text-[#E1B795] disabled:opacity-60">
+                  <Button variant="outline" type="button" onClick={sendRecovery} disabled={recovering || busy} className="h-[24px] min-w-0 whitespace-nowrap rounded-[3px] border border-[#7F93AD] bg-transparent px-1 text-[10.5px] font-semibold text-[#E5EAF2] transition-colors hover:border-[#E1B795] hover:text-[#E1B795] disabled:opacity-60">
                     {recovering ? "Enviando..." : "Esqueci a senha"}
-                  </button>
+                  </Button>
                   <Button type="submit" disabled={busy} className="h-[24px] min-w-0 whitespace-nowrap rounded-[3px] bg-[#E1B795] px-1 text-[10.5px] font-semibold text-[#032540] hover:bg-[#CF9F78]">
                     {busy ? "Entrando..." : "Entrar"}
                   </Button>
                 </div>
-                <button type="button" onClick={() => setMode("signup")} className="mt-[10px] self-center bg-transparent p-0 text-[10.5px] text-[#C8D1DE] hover:text-[#E1B795]">
-                  Não tenho acesso ainda
-                </button>
                 <footer className="mt-auto pt-4 text-center text-[9px] font-bold text-[#B9C4D4]">
                   © 2026 Souza, Craveiro & Corradi Advogados
                 </footer>
