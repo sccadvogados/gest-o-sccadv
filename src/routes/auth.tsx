@@ -36,35 +36,26 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
   const [recovering, setRecovering] = useState(false);
   const { user, loading } = useAuth();
   const navigate = useNavigate();
 
-    useEffect(() => {
+  useEffect(() => {
     if (loading || !user) return;
 
     let cancelled = false;
-    async function verifyProfileAccess() {
-      const { data } = await supabase
-        .from("perfis")
-        .select("ativo")
-        .eq("id", user.id)
-        .maybeSingle();
-
+    async function verifyAccountAccess() {
+      const { data, error } = await supabase.auth.getUser();
       if (cancelled) return;
-      if (!data?.ativo) {
-        await supabase.auth.signOut();
-        toast.error("Seu acesso ainda não foi liberado.");
-        return;
-      }
+      if (error || !data.user) return;
 
-      navigate({ to: "/" });
+      await navigate({ to: "/", replace: true });
     }
 
-    void verifyProfileAccess();
+    void verifyAccountAccess();
     return () => {
       cancelled = true;
     };
@@ -76,7 +67,6 @@ function AuthPage() {
     try {
       const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
       if (error) throw error;
-      
     } catch (error) {
       const message = error instanceof Error ? error.message : "Erro inesperado";
       toast.error(
