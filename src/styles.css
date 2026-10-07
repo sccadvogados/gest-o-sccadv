@@ -171,6 +171,12 @@
   box-shadow: var(--shadow-panel);
 }
 
+.login-page {
+  background-color: #F6F4F1;
+  background-image: radial-gradient(#D9D3CB 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
 @media (max-width: 600px) {
   .login-card {
     height: auto;
