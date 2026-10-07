@@ -252,6 +252,30 @@ export type Database = {
           },
         ]
       }
+            perfis: {
+        Row: {
+          ativo: boolean
+          email: string
+          id: string
+          nome: string
+          papel: "admin" | "usuario"
+        }
+        Insert: {
+          ativo?: boolean
+          email: string
+          id: string
+          nome: string
+          papel: "admin" | "usuario"
+        }
+        Update: {
+          ativo?: boolean
+          email?: string
+          id?: string
+          nome?: string
+          papel?: "admin" | "usuario"
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
