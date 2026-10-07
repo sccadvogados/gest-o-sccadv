@@ -43,8 +43,31 @@ function AuthPage() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!loading && user) navigate({ to: "/" });
+    useEffect(() => {
+    if (loading || !user) return;
+
+    let cancelled = false;
+    async function verifyProfileAccess() {
+      const { data } = await supabase
+        .from("perfis")
+        .select("ativo")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (cancelled) return;
+      if (!data?.ativo) {
+        await supabase.auth.signOut();
+        toast.error("Seu acesso ainda não foi liberado.");
+        return;
+      }
+
+      navigate({ to: "/" });
+    }
+
+    void verifyProfileAccess();
+    return () => {
+      cancelled = true;
+    };
   }, [loading, user, navigate]);
 
   async function handleSubmit(event: React.FormEvent) {
@@ -53,7 +76,7 @@ function AuthPage() {
     try {
       const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
       if (error) throw error;
-      navigate({ to: "/", replace: true });
+      
     } catch (error) {
       const message = error instanceof Error ? error.message : "Erro inesperado";
       toast.error(
