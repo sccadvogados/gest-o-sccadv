@@ -106,7 +106,7 @@ function AuthPage() {
           Gestão SCC
         </header>
         <main className="flex flex-1 items-center justify-center">
-          <section className="flex h-[320px] w-full max-w-[650px] overflow-hidden rounded-lg border border-[#E4E0D8] bg-white shadow-[0_1px_3px_rgba(0,0,0,.10),0_10px_30px_rgba(0,0,0,.35)]">
+          <section className="login-card flex h-[320px] w-full max-w-[650px] overflow-hidden rounded-lg border border-[#E4E0D8] bg-white shadow-[0_1px_3px_rgba(0,0,0,.10),0_10px_30px_rgba(0,0,0,.35)]">
             <div className="flex basis-[57.5%] items-center justify-center bg-white">
               <img src="/imagens/imagem-fd496630.png" alt="SCC Advogados" className="h-[200px] w-auto object-contain" />
             </div>
