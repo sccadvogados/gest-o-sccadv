@@ -619,11 +619,13 @@ function NewContractDialog({ clientId }: { clientId: string }) {
           client_id: clientId,
           description,
           category,
-          total_value: total,
+                    total_value: total,
           installments_count: installmentsCount,
           first_due_date: firstDue,
           payment_method: paymentMethod,
-          success_fee_percent: Number(successFee.replace(",", ".")) || 0,
+          success_fee_percent: fee,
+          modality,
+          signature_date: signatureDate || null,
         })
         .select("id")
         .single();
