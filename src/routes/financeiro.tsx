@@ -112,7 +112,11 @@ function FinancePage() {
       .reduce((sum, r) => sum + Number(r.amount), 0);
     return {
       key,
-      label: month.toLocaleDateString("pt-BR", { month: "short", year: "2-digit" }),
+            label: month.toLocaleDateString("pt-BR", {
+        timeZone: APP_TIME_ZONE,
+        month: "short",
+        year: "2-digit",
+      }),
       total,
     };
   });
