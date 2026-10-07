@@ -106,17 +106,17 @@ function AuthPage() {
           Gestão SCC
         </header>
         <main className="flex flex-1 items-center justify-center">
-          <section className="flex h-[320px] w-full max-w-[650px] overflow-hidden rounded-lg border border-[#E4E0D8] bg-white shadow-[0_1px_3px_rgba(0,0,0,.10),0_10px_30px_rgba(0,0,0,.35)]">
-            <div className="flex basis-[57.5%] items-center justify-center bg-white">
-              <img src="/imagens/imagem-fd496630.png" alt="SCC Advogados" className="h-[200px] w-auto object-contain" />
+          <section className="login-card flex h-[320px] w-full max-w-[650px] overflow-hidden rounded-lg border border-[#E4E0D8] bg-white shadow-[0_1px_3px_rgba(0,0,0,.10),0_10px_30px_rgba(0,0,0,.35)]">
+            <div className="login-logo-panel flex basis-[57.5%] items-center justify-center bg-white">
+              <img src="/imagens/imagem-fd496630.png" alt="SCC Advogados" className="login-logo h-[200px] w-auto object-contain" />
             </div>
-            <div className="flex flex-1 flex-col bg-gradient-to-br from-[#032540] to-[#021A2E] px-5 pb-[18px] pt-[26px]">
+            <div className="login-blue-panel flex flex-1 flex-col bg-gradient-to-br from-[#032540] to-[#021A2E] px-5 pb-[18px] pt-[26px]">
               <form onSubmit={handleSubmit} className="flex h-full flex-col">
                 <Label htmlFor="email" className="mb-[3px] text-[11px] font-bold text-white">E-mail</Label>
                 <Input id="email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} className="h-[22px] rounded-[4px] border-[#C9D3E0] bg-[#EEF2F8] text-[12px] text-[#032540] shadow-[0_1px_2px_rgba(0,0,0,.08)] focus:border-[#E1B795] focus:bg-white" required />
                 <Label htmlFor="password" className="mb-[3px] mt-[9px] text-[11px] font-bold text-white">Senha</Label>
                                 <Input id="password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} className="h-[22px] rounded-[4px] border-[#C9D3E0] bg-[#EEF2F8] text-[12px] text-[#032540] shadow-[0_1px_2px_rgba(0,0,0,.08)] focus:border-[#E1B795] focus:bg-white" required />
-                <div className="mt-[46px] grid grid-cols-2 gap-[6px]">
+                <div className="login-actions mt-[46px] grid grid-cols-2 gap-[6px]">
                   <button type="button" onClick={sendRecovery} disabled={recovering} className="h-[24px] min-w-0 whitespace-nowrap rounded-[3px] border border-[#7F93AD] bg-transparent px-1 text-[10.5px] font-semibold text-[#E5EAF2] transition-colors hover:border-[#E1B795] hover:text-[#E1B795] disabled:opacity-60">
                     {recovering ? "Enviando..." : "Esqueci a senha"}
                   </button>
@@ -132,7 +132,7 @@ function AuthPage() {
                 </footer>
               </form>
             </div>
-            <div className="w-[42px] shrink-0 bg-white" />
+            <div className="login-white-strip w-[42px] shrink-0 bg-white" />
           </section>
         </main>
       </div>

@@ -170,3 +170,34 @@
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-panel);
 }
+
+@media (max-width: 600px) {
+  .login-card {
+    height: auto;
+    flex-direction: column;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .login-logo-panel {
+    flex-basis: auto;
+    height: 150px;
+  }
+
+  .login-logo {
+    height: 150px;
+  }
+
+  .login-blue-panel {
+    flex: none;
+  }
+
+  .login-actions {
+    margin-top: 6px;
+  }
+
+  .login-white-strip {
+    display: none;
+  }
+}
+
