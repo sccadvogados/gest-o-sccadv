@@ -105,7 +105,7 @@ function AuthPage() {
         </p>
       </div>
 
-            <div className="flex items-center justify-center bg-gradient-to-b from-sidebar to-primary p-6 text-primary-foreground">
+                        <div className="flex items-center justify-center bg-gradient-to-b from-sidebar via-primary to-primary p-6 text-primary-foreground">
         <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-5 p-8">
           <div className="space-y-1">
             <h2 className="text-xl">{mode === "login" ? "Entrar" : "Criar acesso"}</h2>
