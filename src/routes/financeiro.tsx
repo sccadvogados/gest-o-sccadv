@@ -14,7 +14,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
-import { daysLate, formatCurrency, formatDate, installmentSituation, todayISO } from "@/lib/format";
+import {
+  APP_TIME_ZONE,
+  currentMonthKey,
+  daysLate,
+  formatCurrency,
+  formatDate,
+  installmentSituation,
+  todayISO,
+} from "@/lib/format";
 
 export const Route = createFileRoute("/financeiro")({
   head: () => ({
