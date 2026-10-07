@@ -95,85 +95,20 @@ function AuthPage() {
     toast.success("Enviamos um link para redefinir sua senha.");
   }
 
-    return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-6">
-      <div className="w-full max-w-sm">
-        <div className="mb-8 flex justify-center">
-          <BrandMark />
-        </div>
-        <form onSubmit={handleSubmit} className="w-full space-y-5">
-          <div className="space-y-1">
-            <h2 className="text-xl">{mode === "login" ? "Entrar" : "Criar acesso"}</h2>
-            <p className="text-sm text-muted-foreground">
-              {mode === "login"
-                ? "Use seu e-mail e senha do escritório."
-                : "Você receberá um e-mail de confirmação."}
-            </p>
-          </div>
-
-          {mode === "signup" && (
-            <div className="space-y-2">
-              <Label htmlFor="fullName">Nome completo</Label>
-              <Input
-                id="fullName"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                required
-              />
+        return (
+      <div className="flex min-h-screen flex-col bg-[#444444]">
+        <header className="w-full border-b-2 border-[#E1B795] bg-[#032540] px-3 py-2 text-xs font-bold text-white">
+          Gestão SCC
+        </header>
+        <main className="flex flex-1 items-center justify-center">
+          <section className="flex h-[320px] w-full max-w-[650px] overflow-hidden rounded-lg border border-[#E4E0D8] bg-white shadow-[0_1px_3px_rgba(0,0,0,.10),0_10px_30px_rgba(0,0,0,.35)]">
+            <div className="flex basis-[57.5%] items-center justify-center bg-white">
+              <img src="/imagens/imagem-fd496630.png" alt="SCC Advogados" className="h-[200px] w-auto object-contain" />
             </div>
-          )}
-
-          <div className="space-y-2">
-            <Label htmlFor="email">E-mail</Label>
-            <Input
-              id="email"
-              type="email"
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="password">Senha</Label>
-            <Input
-              id="password"
-              type="password"
-              autoComplete={mode === "login" ? "current-password" : "new-password"}
-              minLength={6}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-
-          <Button type="submit" className="w-full" disabled={busy}>
-            {busy ? "Aguarde…" : mode === "login" ? "Entrar" : "Criar acesso"}
-          </Button>
-
-          {mode === "login" && (
-            <Button
-              type="button"
-              variant="link"
-              className="w-full text-muted-foreground"
-              disabled={recovering}
-              onClick={sendRecovery}
-            >
-              {recovering ? "Enviando…" : "Esqueci a senha"}
-            </Button>
-          )}
-
-          <Button
-            type="button"
-            variant="ghost"
-            className="w-full text-muted-foreground"
-            onClick={() => setMode(mode === "login" ? "signup" : "login")}
-          >
-            {mode === "login" ? "Não tenho acesso ainda" : "Já tenho acesso"}
-          </Button>
-                </form>
+            <div className="flex-1 bg-gradient-to-br from-[#032540] to-[#021A2E]" />
+            <div className="w-[42px] shrink-0 bg-white" />
+          </section>
+        </main>
       </div>
-    </div>
-  );
+    );
 }
