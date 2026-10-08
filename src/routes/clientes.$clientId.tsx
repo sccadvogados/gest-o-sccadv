@@ -574,6 +574,11 @@ function EditContractDialog({
         <DialogTitle>Editar contrato</DialogTitle>
       </DialogHeader>
       <div className="grid gap-4 sm:grid-cols-2">
+        {hasPaidInstallment ? (
+          <p className="rounded-md border border-border bg-muted/40 px-3 py-2 text-sm text-muted-foreground sm:col-span-2">
+            Há parcelas pagas; valor e parcelas não podem ser alterados.
+          </p>
+        ) : null}
         <div className="space-y-2 sm:col-span-2">
           <Label htmlFor={`edit-contract-description-${contract.id}`}>Descrição</Label>
           <Input id={`edit-contract-description-${contract.id}`} value={description} onChange={(e) => setDescription(e.target.value)} />
