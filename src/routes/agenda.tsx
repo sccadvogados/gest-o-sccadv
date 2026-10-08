@@ -48,7 +48,7 @@ export const Route = createFileRoute("/agenda")({
       },
     ],
   }),
-  component: AgendaPage,
+    component: AgendaScreen,
 });
 
 type EventType = "prazo" | "audiencia" | "reuniao" | "compromisso";
