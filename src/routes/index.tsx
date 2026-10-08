@@ -41,8 +41,22 @@ export const Route = createFileRoute("/")({
   component: ClientsPage,
 });
 
+function isClientIncomplete(client: {
+  cpf_cnpj: string | null;
+  cep: string | null;
+  street: string | null;
+  email: string | null;
+  phone: string | null;
+}) {
+  return !client.cpf_cnpj?.trim() ||
+    (!client.cep?.trim() && !client.street?.trim()) ||
+    !client.email?.trim() ||
+    !client.phone?.trim();
+}
+
 function ClientsPage() {
   const [term, setTerm] = useState("");
+  const [onlyIncomplete, setOnlyIncomplete] = useState(false);
   const fetchProcessCounts = useServerFn(getActiveProcessCounts);
 
   const { data: clients, isLoading } = useQuery({
