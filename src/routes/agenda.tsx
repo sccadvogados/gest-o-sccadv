@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { CalendarDays, Plus, Search } from "lucide-react";
+import { AgendaScreen } from "@/components/AgendaScreen";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
