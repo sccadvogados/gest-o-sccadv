@@ -537,16 +537,21 @@ function EditContractDialog({
       if (!Number.isInteger(installmentsCount)) throw new Error("Informe um número inteiro de parcelas.");
       if (!firstDue) throw new Error("Informe o primeiro vencimento.");
 
-      const { error } = await supabase.from("contracts").update({
-        description,
-        category,
-        total_value: total,
-        installments_count: installmentsCount,
-        first_due_date: firstDue,
-        payment_method: paymentMethod,
-        success_fee_percent: fee,
-      }).eq("id", contract.id);
+            const contractUpdate = hasPaidInstallment
+        ? { description, category, payment_method: paymentMethod, success_fee_percent: fee }
+        : {
+            description,
+            category,
+            total_value: total,
+            installments_count: installmentsCount,
+            first_due_date: firstDue,
+            payment_method: paymentMethod,
+            success_fee_percent: fee,
+          };
+      const { error } = await supabase.from("contracts").update(contractUpdate).eq("id", contract.id);
       if (error) throw error;
+
+      if (hasPaidInstallment) return;
 
       const { error: deleteError } = await supabase.from("installments").delete().eq("contract_id", contract.id);
       if (deleteError) throw deleteError;
