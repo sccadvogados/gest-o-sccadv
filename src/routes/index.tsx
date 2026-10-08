@@ -63,14 +63,15 @@ function ClientsPage() {
     staleTime: 5 * 60 * 1000,
   });
 
-  const search = term.trim().toLowerCase();
-  const filtered = (clients ?? []).filter((c) =>
-    search.length === 0
+    const search = term.trim().toLowerCase();
+  const filtered = (clients ?? []).filter((c) => {
+    const matchesSearch = search.length === 0
       ? true
       : [c.name, c.cpf_cnpj, c.email, c.phone]
           .filter(Boolean)
-          .some((field) => String(field).toLowerCase().includes(search)),
-  );
+          .some((field) => String(field).toLowerCase().includes(search));
+    return matchesSearch && (!onlyIncomplete || isClientIncomplete(c));
+  });
     const totalActiveProcesses = (clients ?? []).reduce(
     (total, client) => total + (processCounts?.[client.drive_folder_id ?? ""] ?? 0),
     0,
