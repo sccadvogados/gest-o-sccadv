@@ -80,9 +80,13 @@ function clientToForm(client: Record<string, unknown>): ClientForm {
 export function EditClientDialog({
   clientId,
   client,
+  triggerLabel = "Editar dados",
+  triggerClassName,
 }: {
   clientId: string;
   client: Record<string, unknown>;
+  triggerLabel?: string;
+  triggerClassName?: string;
 }) {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<ClientForm>(() => clientToForm(client));
