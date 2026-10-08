@@ -217,6 +217,20 @@ function ClientDetailPage() {
         </Link>
       </Button>
 
+            {getMissingClientFields(client).length > 0 ? (
+        <div className="mt-4 rounded-md border border-[#E8B9A5] bg-[#FFF4EF] px-4 py-3 text-sm text-[#7A3F2D]">
+          <strong>Cadastro incompleto:</strong> faltam {getMissingClientFields(client).join(", ")}.
+          <span className="ml-1 inline-flex">
+            <EditClientDialog
+              clientId={clientId}
+              client={client}
+              triggerLabel="Editar dados"
+              triggerClassName="h-auto border-0 bg-transparent p-0 text-[#7A3F2D] underline hover:bg-transparent"
+            />
+          </span>
+        </div>
+      ) : null}
+
       <div className="mt-4 flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl">{client.name}</h1>
