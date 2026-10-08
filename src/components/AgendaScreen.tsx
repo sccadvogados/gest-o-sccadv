@@ -27,6 +27,31 @@ import { createEvent as syncCreateEvent, deleteEvent as syncDeleteEvent, updateE
 type EventType = "prazo" | "audiencia" | "reuniao" | "compromisso";
 type EventStatus = "pendente" | "cumprido";
 type FilterCard = "todos" | "vencidos" | "hoje" | "proximos";
+type CalendarView = "lista" | "mes" | "semana";
+
+function dateKey(date: Date) {
+  return date.toISOString().slice(0, 10);
+}
+
+function startOfSundayWeek(date: Date) {
+  const result = new Date(date);
+  result.setHours(12, 0, 0, 0);
+  result.setDate(result.getDate() - result.getDay());
+  return result;
+}
+
+function calendarDays(view: CalendarView, current: Date) {
+  const start = view === "semana"
+    ? startOfSundayWeek(current)
+    : startOfSundayWeek(new Date(current.getFullYear(), current.getMonth(), 1));
+  const total = view === "semana" ? 7 : 42;
+  return Array.from({ length: total }, (_, index) => {
+    const day = new Date(start);
+    day.setDate(start.getDate() + index);
+    return day;
+  });
+}
+
 
 type AgendaEvent = {
   id: string;
