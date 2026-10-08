@@ -440,7 +440,8 @@ function ContractActions({
     installments_count: number;
     first_due_date: string;
     payment_method: string | null;
-    success_fee_percent: number;
+        success_fee_percent: number;
+    installments?: Array<{ status: string }>;
   };
 }) {
   const queryClient = useQueryClient();
@@ -512,11 +513,13 @@ function EditContractDialog({
     installments_count: number;
     first_due_date: string;
     payment_method: string | null;
-    success_fee_percent: number;
+        success_fee_percent: number;
+    installments?: Array<{ status: string }>;
   };
   onSaved: () => void;
 }) {
   const queryClient = useQueryClient();
+  const hasPaidInstallment = (contract.installments ?? []).some((installment) => installment.status === "Pago");
   const [description, setDescription] = useState(contract.description ?? "");
   const [category, setCategory] = useState(contract.category);
   const [totalValue, setTotalValue] = useState(String(contract.total_value));
@@ -534,16 +537,21 @@ function EditContractDialog({
       if (!Number.isInteger(installmentsCount)) throw new Error("Informe um número inteiro de parcelas.");
       if (!firstDue) throw new Error("Informe o primeiro vencimento.");
 
-      const { error } = await supabase.from("contracts").update({
-        description,
-        category,
-        total_value: total,
-        installments_count: installmentsCount,
-        first_due_date: firstDue,
-        payment_method: paymentMethod,
-        success_fee_percent: fee,
-      }).eq("id", contract.id);
+            const contractUpdate = hasPaidInstallment
+        ? { description, category, payment_method: paymentMethod, success_fee_percent: fee }
+        : {
+            description,
+            category,
+            total_value: total,
+            installments_count: installmentsCount,
+            first_due_date: firstDue,
+            payment_method: paymentMethod,
+            success_fee_percent: fee,
+          };
+      const { error } = await supabase.from("contracts").update(contractUpdate).eq("id", contract.id);
       if (error) throw error;
+
+      if (hasPaidInstallment) return;
 
       const { error: deleteError } = await supabase.from("installments").delete().eq("contract_id", contract.id);
       if (deleteError) throw deleteError;
@@ -561,7 +569,7 @@ function EditContractDialog({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["contracts", clientId] });
       queryClient.invalidateQueries({ queryKey: ["installments"] });
-      toast.success("Contrato atualizado e parcelas regeneradas.");
+            toast.success(hasPaidInstallment ? "Contrato atualizado sem alterar as parcelas." : "Contrato atualizado e parcelas regeneradas.");
       onSaved();
     },
     onError: (error) => toast.error(error instanceof Error ? error.message : "Não foi possível atualizar o contrato."),
@@ -573,6 +581,11 @@ function EditContractDialog({
         <DialogTitle>Editar contrato</DialogTitle>
       </DialogHeader>
       <div className="grid gap-4 sm:grid-cols-2">
+        {hasPaidInstallment ? (
+          <p className="rounded-md border border-border bg-muted/40 px-3 py-2 text-sm text-muted-foreground sm:col-span-2">
+            Há parcelas pagas; valor e parcelas não podem ser alterados.
+          </p>
+        ) : null}
         <div className="space-y-2 sm:col-span-2">
           <Label htmlFor={`edit-contract-description-${contract.id}`}>Descrição</Label>
           <Input id={`edit-contract-description-${contract.id}`} value={description} onChange={(e) => setDescription(e.target.value)} />
@@ -584,9 +597,9 @@ function EditContractDialog({
             <SelectContent>{CATEGORIES.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
           </Select>
         </div>
-        <div className="space-y-2"><Label htmlFor={`edit-contract-total-${contract.id}`}>Valor total (R$)</Label><Input id={`edit-contract-total-${contract.id}`} inputMode="decimal" value={totalValue} onChange={(e) => setTotalValue(e.target.value)} /></div>
-        <div className="space-y-2"><Label htmlFor={`edit-contract-count-${contract.id}`}>Número de parcelas</Label><Input id={`edit-contract-count-${contract.id}`} type="number" min={1} value={count} onChange={(e) => setCount(e.target.value)} /></div>
-        <div className="space-y-2"><Label htmlFor={`edit-contract-due-${contract.id}`}>Primeiro vencimento</Label><Input id={`edit-contract-due-${contract.id}`} type="date" value={firstDue} onChange={(e) => setFirstDue(e.target.value)} /></div>
+        <div className="space-y-2"><Label htmlFor={`edit-contract-total-${contract.id}`}>Valor total (R$)</Label><Input id={`edit-contract-total-${contract.id}`} inputMode="decimal" value={totalValue} onChange={(e) => setTotalValue(e.target.value)} disabled={hasPaidInstallment} /></div>
+        <div className="space-y-2"><Label htmlFor={`edit-contract-count-${contract.id}`}>Número de parcelas</Label><Input id={`edit-contract-count-${contract.id}`} type="number" min={1} value={count} onChange={(e) => setCount(e.target.value)} disabled={hasPaidInstallment} /></div>
+        <div className="space-y-2"><Label htmlFor={`edit-contract-due-${contract.id}`}>Primeiro vencimento</Label><Input id={`edit-contract-due-${contract.id}`} type="date" value={firstDue} onChange={(e) => setFirstDue(e.target.value)} disabled={hasPaidInstallment} /></div>
         <div className="space-y-2"><Label>Forma de pagamento</Label><Select value={paymentMethod} onValueChange={setPaymentMethod}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{PAYMENT_METHODS.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent></Select></div>
         <div className="space-y-2 sm:col-span-2"><Label htmlFor={`edit-contract-fee-${contract.id}`}>% de êxito</Label><Input id={`edit-contract-fee-${contract.id}`} inputMode="decimal" value={successFee} onChange={(e) => setSuccessFee(e.target.value)} /></div>
       </div>
