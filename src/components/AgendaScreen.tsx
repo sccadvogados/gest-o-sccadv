@@ -115,9 +115,20 @@ export function AgendaScreen() {
   const [typeFilter, setTypeFilter] = useState<"todos" | EventType>("todos");
   const [responsibleFilter, setResponsibleFilter] = useState("todos");
   const [statusFilter, setStatusFilter] = useState<"todos" | EventStatus>("todos");
-  const [cardFilter, setCardFilter] = useState<FilterCard>("todos");
+    const [cardFilter, setCardFilter] = useState<FilterCard>("todos");
+  const [view, setView] = useState<CalendarView>("lista");
+  const [calendarDate, setCalendarDate] = useState(() => new Date());
   const [form, setForm] = useState(emptyForm);
   const [open, setOpen] = useState(false);
+  const openNewEvent = (selectedDate?: string) => {
+    setForm({ ...emptyForm, data_inicio: selectedDate ? `${selectedDate}T09:00` : "" });
+    setOpen(true);
+  };
+  const openEditEvent = (event: AgendaEvent) => {
+    setForm({ ...emptyForm, ...event, cliente_id: event.cliente_id ?? "", contrato_id: event.contrato_id ?? "", data_inicio: event.data_inicio?.slice(0, 16) ?? "", data_fim: event.data_fim?.slice(0, 16) ?? "", prazo_fatal: event.prazo_fatal ?? "", prazo_interno: event.prazo_interno ?? "", local_link: event.local_link ?? "", responsavel: event.responsavel ?? "" });
+    setOpen(true);
+  };
+
   const today = localDateKey(new Date().toISOString());
   const nextWeek = addDays(today, 7);
 
