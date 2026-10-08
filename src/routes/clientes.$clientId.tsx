@@ -440,7 +440,8 @@ function ContractActions({
     installments_count: number;
     first_due_date: string;
     payment_method: string | null;
-    success_fee_percent: number;
+        success_fee_percent: number;
+    installments?: Array<{ status: string }>;
   };
 }) {
   const queryClient = useQueryClient();
