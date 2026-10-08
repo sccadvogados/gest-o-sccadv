@@ -9,7 +9,8 @@ import { cn } from "@/lib/utils";
 import logoHorizontalWhite from "@/assets/scc-logo-horizontal-white.png";
 
 const NAV = [
-  { to: "/", label: "Clientes", icon: Users },
+    { to: "/", label: "Clientes", icon: Users },
+  { to: "/agenda", label: "Agenda", icon: CalendarDays },
   { to: "/financeiro", label: "Financeiro", icon: Wallet },
 ] as const;
 
