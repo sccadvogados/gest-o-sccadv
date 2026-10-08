@@ -13,7 +13,91 @@ export type Database = {
     PostgrestVersion: "14.18"
   }
   public: {
-    Tables: {
+        Tables: {
+      eventos: {
+        Row: {
+          cliente_id: string | null
+          contrato_id: string | null
+          created_at: string
+          created_by: string | null
+          data_fim: string | null
+          data_inicio: string
+          descricao: string | null
+          dia_inteiro: boolean
+          google_event_id: string | null
+          id: string
+          local_ou_link: string | null
+          numero_processo: string | null
+          orgao_vara: string | null
+          prazo_fatal: string | null
+          prazo_interno: string | null
+          responsavel: string
+          status: string
+          tipo: string
+          titulo: string
+          updated_at: string
+        }
+        Insert: {
+          cliente_id?: string | null
+          contrato_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          data_fim?: string | null
+          data_inicio: string
+          descricao?: string | null
+          dia_inteiro?: boolean
+          google_event_id?: string | null
+          id?: string
+          local_ou_link?: string | null
+          numero_processo?: string | null
+          orgao_vara?: string | null
+          prazo_fatal?: string | null
+          prazo_interno?: string | null
+          responsavel: string
+          status?: string
+          tipo: string
+          titulo: string
+          updated_at?: string
+        }
+        Update: {
+          cliente_id?: string | null
+          contrato_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          data_fim?: string | null
+          data_inicio?: string
+          descricao?: string | null
+          dia_inteiro?: boolean
+          google_event_id?: string | null
+          id?: string
+          local_ou_link?: string | null
+          numero_processo?: string | null
+          orgao_vara?: string | null
+          prazo_fatal?: string | null
+          prazo_interno?: string | null
+          responsavel?: string
+          status?: string
+          tipo?: string
+          titulo?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "eventos_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "eventos_contrato_id_fkey"
+            columns: ["contrato_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_documents: {
         Row: {
           client_id: string
