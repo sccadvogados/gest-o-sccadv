@@ -22,6 +22,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { supabase } from "@/integrations/supabase/client";
 import { APP_TIME_ZONE, formatDate } from "@/lib/format";
+import { createEvent as syncCreateEvent, deleteEvent as syncDeleteEvent, updateEvent as syncUpdateEvent } from "@/lib/calendarSync";
 
 type EventType = "prazo" | "audiencia" | "reuniao" | "compromisso";
 type EventStatus = "pendente" | "cumprido";
@@ -33,7 +34,12 @@ type AgendaEvent = {
   titulo: string;
   descricao: string | null;
   cliente_id: string | null;
-  data_inicio: string;
+    data_inicio: string;
+  data_fim: string | null;
+  prazo_fatal: string | null;
+  prazo_interno: string | null;
+  local_link: string | null;
+  contrato_id: string | null;
   responsavel: string | null;
   status: EventStatus;
 };
@@ -58,8 +64,13 @@ const emptyForm = {
   tipo: "prazo" as EventType,
   titulo: "",
   descricao: "",
-  cliente_id: "",
+    cliente_id: "",
+  contrato_id: "",
   data_inicio: "",
+  data_fim: "",
+  prazo_fatal: "",
+  prazo_interno: "",
+  local_link: "",
   responsavel: "",
 };
 
@@ -90,7 +101,7 @@ export function AgendaScreen() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("eventos" as never)
-        .select("id, tipo, titulo, descricao, cliente_id, data_inicio, responsavel, status")
+                .select("id, tipo, titulo, descricao, cliente_id, contrato_id, data_inicio, data_fim, prazo_fatal, prazo_interno, local_link, responsavel, status")
         .order("data_inicio");
       if (error) throw error;
       return (data ?? []) as unknown as AgendaEvent[];
@@ -106,7 +117,17 @@ export function AgendaScreen() {
     },
   });
 
-  const clientNames = useMemo(() => new Map(clients.map((client) => [client.id, client.name])), [clients]);
+    const clientNames = useMemo(() => new Map(clients.map((client) => [client.id, client.name])), [clients]);
+  const { data: contracts = [] } = useQuery({
+    queryKey: ["agenda-contracts", form.cliente_id],
+    enabled: Boolean(form.cliente_id),
+    queryFn: async () => {
+      const { data, error } = await supabase.from("contracts").select("id, description, category").eq("client_id", form.cliente_id).order("created_at", { ascending: false });
+      if (error) throw error;
+      return data as { id: string; description: string | null; category: string }[];
+    },
+  });
+  const selectedClient = clients.find((client) => client.id === form.cliente_id);
   const responsibleNames = useMemo(
     () => [...new Set(events.map((event) => event.responsavel).filter(Boolean) as string[])].sort(),
     [events],
@@ -142,8 +163,10 @@ export function AgendaScreen() {
 
   const createEvent = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from("eventos" as never).insert({ ...form, cliente_id: form.cliente_id || null, status: "pendente" } as never);
+            const payload = { ...form, cliente_id: form.cliente_id || null, contrato_id: form.contrato_id || null, data_fim: form.data_fim || null, prazo_fatal: form.tipo === "prazo" ? form.prazo_fatal || null : null, prazo_interno: form.tipo === "prazo" ? form.prazo_interno || null : null, local_link: form.tipo !== "prazo" ? form.local_link || null : null, status: "pendente" };
+      const { data, error } = await supabase.from("eventos" as never).insert(payload as never).select("id").single();
       if (error) throw error;
+      await syncCreateEvent(data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["agenda-events"] });
@@ -156,8 +179,9 @@ export function AgendaScreen() {
 
   const markDone = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("eventos" as never).update({ status: "cumprido" } as never).eq("id", id);
+            const { error } = await supabase.from("eventos" as never).update({ status: "cumprido" } as never).eq("id", id);
       if (error) throw error;
+      await syncUpdateEvent(id, { status: "cumprido" });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["agenda-events"] });
@@ -179,9 +203,11 @@ export function AgendaScreen() {
             <Dialog open={open} onOpenChange={setOpen}><DialogTrigger asChild><Button><Plus className="size-4" /> Novo evento</Button></DialogTrigger>
               <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl"><DialogHeader><DialogTitle>Novo evento</DialogTitle></DialogHeader>
                 <form className="grid gap-4" onSubmit={(event) => { event.preventDefault(); if (!form.titulo.trim() || !form.data_inicio) return toast.error("Informe o título e a data do evento."); createEvent.mutate(); }}>
-                  <div className="grid gap-4 sm:grid-cols-2"><Field label="Tipo"><Select value={form.tipo} onValueChange={(value: EventType) => setForm((current) => ({ ...current, tipo: value }))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{Object.entries(labels).map(([value, label]) => <SelectItem key={value} value={value}>{label}</SelectItem>)}</SelectContent></Select></Field><Field label="Data e hora"><Input type="datetime-local" value={form.data_inicio} onChange={(event) => setForm((current) => ({ ...current, data_inicio: event.target.value }))} /></Field></div>
+                                    <div className="grid gap-4 sm:grid-cols-2"><Field label="Tipo"><Select value={form.tipo} onValueChange={(value: EventType) => setForm((current) => ({ ...current, tipo: value, contrato_id: "" }))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{Object.entries(labels).map(([value, label]) => <SelectItem key={value} value={value}>{label}</SelectItem>)}</SelectContent></Select></Field><Field label="Responsável"><Input value={form.responsavel} onChange={(event) => setForm((current) => ({ ...current, responsavel: event.target.value }))} /></Field></div>
                   <Field label="Título"><Input value={form.titulo} onChange={(event) => setForm((current) => ({ ...current, titulo: event.target.value }))} /></Field>
-                  <div className="grid gap-4 sm:grid-cols-2"><Field label="Cliente"><Select value={form.cliente_id || "none"} onValueChange={(value) => setForm((current) => ({ ...current, cliente_id: value === "none" ? "" : value }))}><SelectTrigger><SelectValue placeholder="Sem cliente" /></SelectTrigger><SelectContent><SelectItem value="none">Sem cliente</SelectItem>{clients.map((client) => <SelectItem key={client.id} value={client.id}>{client.name}</SelectItem>)}</SelectContent></Select></Field><Field label="Responsável"><Input value={form.responsavel} onChange={(event) => setForm((current) => ({ ...current, responsavel: event.target.value }))} /></Field></div>
+                  {form.tipo === "prazo" ? <div className="grid gap-4 sm:grid-cols-2"><Field label="Prazo fatal"><Input type="date" value={form.prazo_fatal} onChange={(event) => setForm((current) => ({ ...current, prazo_fatal: event.target.value, prazo_interno: current.prazo_interno || addDays(event.target.value, -2) }))} /></Field><Field label="Prazo interno"><Input type="date" value={form.prazo_interno} onChange={(event) => setForm((current) => ({ ...current, prazo_interno: event.target.value }))} /></Field></div> : <div className="grid gap-4 sm:grid-cols-2"><Field label="Início"><Input type="datetime-local" value={form.data_inicio} onChange={(event) => setForm((current) => ({ ...current, data_inicio: event.target.value }))} /></Field><Field label="Fim"><Input type="datetime-local" value={form.data_fim} onChange={(event) => setForm((current) => ({ ...current, data_fim: event.target.value }))} /></Field><Field label="Local ou link"><Input value={form.local_link} onChange={(event) => setForm((current) => ({ ...current, local_link: event.target.value }))} /></Field></div>}
+                  <Field label="Cliente"><div className="relative"><Input placeholder="Buscar cliente…" value={selectedClient?.name ?? ""} onChange={(event) => setForm((current) => ({ ...current, cliente_id: clients.find((client) => client.name.toLowerCase().includes(event.target.value.toLowerCase()))?.id ?? "", contrato_id: "" }))} />{selectedClient && <p className="mt-1 text-xs text-muted-foreground">Cliente selecionado</p>}</div></Field>
+                  {form.cliente_id && <Field label="Contrato"><Select value={form.contrato_id || "none"} onValueChange={(value) => setForm((current) => ({ ...current, contrato_id: value === "none" ? "" : value }))}><SelectTrigger><SelectValue placeholder="Sem contrato" /></SelectTrigger><SelectContent><SelectItem value="none">Sem contrato</SelectItem>{contracts.map((contract) => <SelectItem key={contract.id} value={contract.id}>{contract.description || contract.category}</SelectItem>)}</SelectContent></Select></Field>}
                   <Field label="Descrição"><Textarea value={form.descricao} onChange={(event) => setForm((current) => ({ ...current, descricao: event.target.value }))} rows={3} /></Field>
                   <DialogFooter><Button type="submit" disabled={createEvent.isPending}>{createEvent.isPending ? "Salvando…" : "Salvar evento"}</Button></DialogFooter>
                 </form>
