@@ -86,6 +86,8 @@ const colors: Record<EventType, string> = {
 };
 
 const emptyForm = {
+  id: "",
+  status: "pendente" as EventStatus,
   tipo: "prazo" as EventType,
   titulo: "",
   descricao: "",
@@ -125,7 +127,7 @@ export function AgendaScreen() {
     setOpen(true);
   };
   const openEditEvent = (event: AgendaEvent) => {
-    setForm({ ...emptyForm, ...event, cliente_id: event.cliente_id ?? "", contrato_id: event.contrato_id ?? "", data_inicio: event.data_inicio?.slice(0, 16) ?? "", data_fim: event.data_fim?.slice(0, 16) ?? "", prazo_fatal: event.prazo_fatal ?? "", prazo_interno: event.prazo_interno ?? "", local_link: event.local_link ?? "", responsavel: event.responsavel ?? "" });
+    setForm({ ...emptyForm, ...event, descricao: event.descricao ?? "", cliente_id: event.cliente_id ?? "", contrato_id: event.contrato_id ?? "", data_inicio: event.data_inicio?.slice(0, 16) ?? "", data_fim: event.data_fim?.slice(0, 16) ?? "", prazo_fatal: event.prazo_fatal ?? "", prazo_interno: event.prazo_interno ?? "", local_link: event.local_link ?? "", responsavel: event.responsavel ?? "" });
     setOpen(true);
   };
 
@@ -199,7 +201,8 @@ export function AgendaScreen() {
 
     const createEvent = useMutation({
     mutationFn: async () => {
-      const payload = { ...form, cliente_id: form.cliente_id || null, contrato_id: form.contrato_id || null, data_fim: form.data_fim || null, prazo_fatal: form.tipo === "prazo" ? form.prazo_fatal || null : null, prazo_interno: form.tipo === "prazo" ? form.prazo_interno || null : null, local_link: form.tipo !== "prazo" ? form.local_link || null : null, status: form.status ?? "pendente" };
+      const { id: eventId, ...values } = form;
+      const payload = { ...values, cliente_id: form.cliente_id || null, contrato_id: form.contrato_id || null, data_fim: form.data_fim || null, prazo_fatal: form.tipo === "prazo" ? form.prazo_fatal || null : null, prazo_interno: form.tipo === "prazo" ? form.prazo_interno || null : null, local_link: form.tipo !== "prazo" ? form.local_link || null : null, status: form.status };
       if (form.id) {
         const { error } = await supabase.from("eventos" as never).update(payload as never).eq("id", form.id);
         if (error) throw error;
