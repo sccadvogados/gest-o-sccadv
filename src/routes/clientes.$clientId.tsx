@@ -476,7 +476,17 @@ function ContractActions({
       </Dialog>
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <Button variant="ghost" size="icon" aria-label="Excluir contrato">
+                    <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Excluir contrato"
+            onClick={(event) => {
+              if (hasPaidInstallment) {
+                event.preventDefault();
+                toast.error("Este contrato tem parcelas pagas e não pode ser excluído.");
+              }
+            }}
+          >
             <Trash2 className="size-4 text-destructive" />
           </Button>
         </AlertDialogTrigger>
