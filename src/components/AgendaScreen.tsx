@@ -27,6 +27,31 @@ import { createEvent as syncCreateEvent, deleteEvent as syncDeleteEvent, updateE
 type EventType = "prazo" | "audiencia" | "reuniao" | "compromisso";
 type EventStatus = "pendente" | "cumprido";
 type FilterCard = "todos" | "vencidos" | "hoje" | "proximos";
+type CalendarView = "lista" | "mes" | "semana";
+
+function dateKey(date: Date) {
+  return date.toISOString().slice(0, 10);
+}
+
+function startOfSundayWeek(date: Date) {
+  const result = new Date(date);
+  result.setHours(12, 0, 0, 0);
+  result.setDate(result.getDate() - result.getDay());
+  return result;
+}
+
+function calendarDays(view: CalendarView, current: Date) {
+  const start = view === "semana"
+    ? startOfSundayWeek(current)
+    : startOfSundayWeek(new Date(current.getFullYear(), current.getMonth(), 1));
+  const total = view === "semana" ? 7 : 42;
+  return Array.from({ length: total }, (_, index) => {
+    const day = new Date(start);
+    day.setDate(start.getDate() + index);
+    return day;
+  });
+}
+
 
 type AgendaEvent = {
   id: string;
@@ -90,9 +115,20 @@ export function AgendaScreen() {
   const [typeFilter, setTypeFilter] = useState<"todos" | EventType>("todos");
   const [responsibleFilter, setResponsibleFilter] = useState("todos");
   const [statusFilter, setStatusFilter] = useState<"todos" | EventStatus>("todos");
-  const [cardFilter, setCardFilter] = useState<FilterCard>("todos");
+    const [cardFilter, setCardFilter] = useState<FilterCard>("todos");
+  const [view, setView] = useState<CalendarView>("lista");
+  const [calendarDate, setCalendarDate] = useState(() => new Date());
   const [form, setForm] = useState(emptyForm);
   const [open, setOpen] = useState(false);
+  const openNewEvent = (selectedDate?: string) => {
+    setForm({ ...emptyForm, data_inicio: selectedDate ? `${selectedDate}T09:00` : "" });
+    setOpen(true);
+  };
+  const openEditEvent = (event: AgendaEvent) => {
+    setForm({ ...emptyForm, ...event, cliente_id: event.cliente_id ?? "", contrato_id: event.contrato_id ?? "", data_inicio: event.data_inicio?.slice(0, 16) ?? "", data_fim: event.data_fim?.slice(0, 16) ?? "", prazo_fatal: event.prazo_fatal ?? "", prazo_interno: event.prazo_interno ?? "", local_link: event.local_link ?? "", responsavel: event.responsavel ?? "" });
+    setOpen(true);
+  };
+
   const today = localDateKey(new Date().toISOString());
   const nextWeek = addDays(today, 7);
 
@@ -161,13 +197,20 @@ export function AgendaScreen() {
         new Date(a.data_inicio).getTime() - new Date(b.data_inicio).getTime());
   }, [cardFilter, clientNames, events, responsibleFilter, search, statusFilter, today, typeFilter]);
 
-  const createEvent = useMutation({
+    const createEvent = useMutation({
     mutationFn: async () => {
-            const payload = { ...form, cliente_id: form.cliente_id || null, contrato_id: form.contrato_id || null, data_fim: form.data_fim || null, prazo_fatal: form.tipo === "prazo" ? form.prazo_fatal || null : null, prazo_interno: form.tipo === "prazo" ? form.prazo_interno || null : null, local_link: form.tipo !== "prazo" ? form.local_link || null : null, status: "pendente" };
+      const payload = { ...form, cliente_id: form.cliente_id || null, contrato_id: form.contrato_id || null, data_fim: form.data_fim || null, prazo_fatal: form.tipo === "prazo" ? form.prazo_fatal || null : null, prazo_interno: form.tipo === "prazo" ? form.prazo_interno || null : null, local_link: form.tipo !== "prazo" ? form.local_link || null : null, status: form.status ?? "pendente" };
+      if (form.id) {
+        const { error } = await supabase.from("eventos" as never).update(payload as never).eq("id", form.id);
+        if (error) throw error;
+        await syncUpdateEvent(form.id, payload);
+        return;
+      }
       const { data, error } = await supabase.from("eventos" as never).insert(payload as never).select("id").single();
       if (error) throw error;
       await syncCreateEvent(data);
     },
+
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["agenda-events"] });
       setForm(emptyForm);
