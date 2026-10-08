@@ -441,7 +441,7 @@ function ContractActions({
     first_due_date: string;
     payment_method: string | null;
         success_fee_percent: number;
-    installments?: Array<{ status: string }>;
+        installments?: Array<{ status: string }>;
   };
 }) {
   const queryClient = useQueryClient();
