@@ -564,7 +564,7 @@ function EditContractDialog({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["contracts", clientId] });
       queryClient.invalidateQueries({ queryKey: ["installments"] });
-      toast.success("Contrato atualizado e parcelas regeneradas.");
+            toast.success(hasPaidInstallment ? "Contrato atualizado sem alterar as parcelas." : "Contrato atualizado e parcelas regeneradas.");
       onSaved();
     },
     onError: (error) => toast.error(error instanceof Error ? error.message : "Não foi possível atualizar o contrato."),
