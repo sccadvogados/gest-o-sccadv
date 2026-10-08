@@ -48,7 +48,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-4">
           <BrandMark />
           <nav className="flex items-center gap-1">
-            {NAV.map(({ to, label, icon: Icon }) => (
+            {NAV.map(({ to, label, icon: NavIcon }) => (
               <Link
                 key={to}
                 to={to}
@@ -59,7 +59,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                     : "text-sidebar-foreground/80 hover:bg-sidebar-accent/60",
                 )}
               >
-                <Icon className="size-4" />
+                <NavIcon className="size-4" />
                 {label}
               </Link>
             ))}
