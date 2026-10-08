@@ -93,6 +93,21 @@ const DOC_LABELS: Record<string, string> = {
   contrato: "Contrato de Prestação de Serviços",
 };
 
+function getMissingClientFields(client: {
+  cpf_cnpj: string | null;
+  cep: string | null;
+  street: string | null;
+  email: string | null;
+  phone: string | null;
+}) {
+  const missing: string[] = [];
+  if (!client.cpf_cnpj?.trim()) missing.push("CPF/CNPJ");
+  if (!client.cep?.trim() && !client.street?.trim()) missing.push("endereço");
+  if (!client.email?.trim()) missing.push("e-mail");
+  if (!client.phone?.trim()) missing.push("telefone");
+  return missing;
+}
+
 function ClientDetailPage() {
   const { clientId } = Route.useParams();
   const queryClient = useQueryClient();
