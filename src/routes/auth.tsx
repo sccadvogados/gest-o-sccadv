@@ -48,9 +48,22 @@ function AuthPage() {
 
     let cancelled = false;
     async function verifyAccountAccess() {
-      const { data, error } = await supabase.auth.getUser();
+            const { data, error } = await supabase.auth.getUser();
       if (cancelled) return;
       if (error || !data.user) return;
+
+      const { data: profile, error: profileError } = await supabase
+        .from("perfis")
+        .select("ativo")
+        .eq("id", data.user.id)
+        .maybeSingle();
+
+      if (cancelled) return;
+      if (profileError || !profile?.ativo) {
+        await supabase.auth.signOut();
+        toast.error("Seu acesso ainda não foi liberado.");
+        return;
+      }
 
       await navigate({ to: "/", replace: true });
     }
