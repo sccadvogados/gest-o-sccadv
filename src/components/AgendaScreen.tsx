@@ -59,8 +59,13 @@ const emptyForm = {
   tipo: "prazo" as EventType,
   titulo: "",
   descricao: "",
-  cliente_id: "",
+    cliente_id: "",
+  contrato_id: "",
   data_inicio: "",
+  data_fim: "",
+  prazo_fatal: "",
+  prazo_interno: "",
+  local_link: "",
   responsavel: "",
 };
 
