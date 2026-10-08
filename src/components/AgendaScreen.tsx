@@ -22,6 +22,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { supabase } from "@/integrations/supabase/client";
 import { APP_TIME_ZONE, formatDate } from "@/lib/format";
+import { createEvent as syncCreateEvent, deleteEvent as syncDeleteEvent, updateEvent as syncUpdateEvent } from "@/lib/calendarSync";
 
 type EventType = "prazo" | "audiencia" | "reuniao" | "compromisso";
 type EventStatus = "pendente" | "cumprido";
