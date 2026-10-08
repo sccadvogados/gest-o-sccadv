@@ -96,13 +96,21 @@ function ClientsPage() {
       <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
         <div className="relative w-full max-w-md">
           <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
+                    <Input
             placeholder="Buscar cliente…"
             className="pl-9"
             value={term}
             onChange={(e) => setTerm(e.target.value)}
           />
         </div>
+        <Button
+          type="button"
+          variant={onlyIncomplete ? "default" : "outline"}
+          onClick={() => setOnlyIncomplete((current) => !current)}
+          aria-pressed={onlyIncomplete}
+        >
+          Somente incompletos
+        </Button>
         <div className="flex min-w-44 items-center gap-3 border-l-2 border-accent pl-4">
           <BriefcaseBusiness className="size-5 text-accent" />
           <div>
