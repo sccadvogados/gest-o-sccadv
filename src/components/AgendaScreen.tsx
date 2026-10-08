@@ -90,7 +90,7 @@ export function AgendaScreen() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("eventos" as never)
-        .select("id, tipo, titulo, descricao, cliente_id, data_inicio, responsavel, status")
+                .select("id, tipo, titulo, descricao, cliente_id, contrato_id, data_inicio, data_fim, prazo_fatal, prazo_interno, local_link, responsavel, status")
         .order("data_inicio");
       if (error) throw error;
       return (data ?? []) as unknown as AgendaEvent[];
