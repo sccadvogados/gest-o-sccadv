@@ -197,13 +197,20 @@ export function AgendaScreen() {
         new Date(a.data_inicio).getTime() - new Date(b.data_inicio).getTime());
   }, [cardFilter, clientNames, events, responsibleFilter, search, statusFilter, today, typeFilter]);
 
-  const createEvent = useMutation({
+    const createEvent = useMutation({
     mutationFn: async () => {
-            const payload = { ...form, cliente_id: form.cliente_id || null, contrato_id: form.contrato_id || null, data_fim: form.data_fim || null, prazo_fatal: form.tipo === "prazo" ? form.prazo_fatal || null : null, prazo_interno: form.tipo === "prazo" ? form.prazo_interno || null : null, local_link: form.tipo !== "prazo" ? form.local_link || null : null, status: "pendente" };
+      const payload = { ...form, cliente_id: form.cliente_id || null, contrato_id: form.contrato_id || null, data_fim: form.data_fim || null, prazo_fatal: form.tipo === "prazo" ? form.prazo_fatal || null : null, prazo_interno: form.tipo === "prazo" ? form.prazo_interno || null : null, local_link: form.tipo !== "prazo" ? form.local_link || null : null, status: form.status ?? "pendente" };
+      if (form.id) {
+        const { error } = await supabase.from("eventos" as never).update(payload as never).eq("id", form.id);
+        if (error) throw error;
+        await syncUpdateEvent(form.id, payload);
+        return;
+      }
       const { data, error } = await supabase.from("eventos" as never).insert(payload as never).select("id").single();
       if (error) throw error;
       await syncCreateEvent(data);
     },
+
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["agenda-events"] });
       setForm(emptyForm);
