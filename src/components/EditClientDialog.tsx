@@ -154,9 +154,9 @@ export function EditClientDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">
+                <Button variant="outline" className={triggerClassName}>
           <PencilLine className="size-4" />
-          Editar dados
+          {triggerLabel}
         </Button>
       </DialogTrigger>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
