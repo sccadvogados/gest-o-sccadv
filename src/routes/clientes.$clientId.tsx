@@ -513,11 +513,13 @@ function EditContractDialog({
     installments_count: number;
     first_due_date: string;
     payment_method: string | null;
-    success_fee_percent: number;
+        success_fee_percent: number;
+    installments?: Array<{ status: string }>;
   };
   onSaved: () => void;
 }) {
   const queryClient = useQueryClient();
+  const hasPaidInstallment = (contract.installments ?? []).some((installment) => installment.status === "Pago");
   const [description, setDescription] = useState(contract.description ?? "");
   const [category, setCategory] = useState(contract.category);
   const [totalValue, setTotalValue] = useState(String(contract.total_value));
