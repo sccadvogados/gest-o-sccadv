@@ -24,7 +24,7 @@ export function todayISO() {
     day: "2-digit",
   }).formatToParts(new Date());
   const values = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-  return `${values.year}-${values.month}-${values.day}`;
+  return `${values["year"]}-${values["month"]}-${values["day"]}`;
 }
 
 export function currentMonthKey() {

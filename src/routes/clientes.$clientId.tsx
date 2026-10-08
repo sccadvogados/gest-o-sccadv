@@ -47,6 +47,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import {
   buildContractInstallments,
+  buildInstallments,
   formatCurrency,
   formatDate,
   installmentSituation,
@@ -638,8 +639,7 @@ function NewContractDialog({ clientId }: { clientId: string }) {
           first_due_date: firstDue,
           payment_method: paymentMethod,
           success_fee_percent: fee,
-          modality,
-          signature_date: signatureDate || null,
+          recurring: modality === "mensal",
         })
         .select("id")
         .single();
