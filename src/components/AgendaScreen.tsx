@@ -34,7 +34,12 @@ type AgendaEvent = {
   titulo: string;
   descricao: string | null;
   cliente_id: string | null;
-  data_inicio: string;
+    data_inicio: string;
+  data_fim: string | null;
+  prazo_fatal: string | null;
+  prazo_interno: string | null;
+  local_link: string | null;
+  contrato_id: string | null;
   responsavel: string | null;
   status: EventStatus;
 };
