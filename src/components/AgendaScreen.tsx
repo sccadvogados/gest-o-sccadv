@@ -257,7 +257,7 @@ export function AgendaScreen() {
 
     const deleteEvent = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("eventos" as never).delete().eq("id", id);
+            const { error } = await supabase.from("eventos").delete().eq("id", id);
       if (error) throw error;
       await syncDeleteEvent(id);
     },
