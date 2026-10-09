@@ -599,9 +599,24 @@ function EditContractDialog({
             Há parcelas pagas; valor e parcelas não podem ser alterados.
           </p>
         ) : null}
-        <div className="space-y-2 sm:col-span-2">
+                <div className="space-y-2 sm:col-span-2">
           <Label htmlFor={`edit-contract-description-${contract.id}`}>Descrição</Label>
           <Input id={`edit-contract-description-${contract.id}`} value={description} onChange={(e) => setDescription(e.target.value)} />
+        </div>
+        <div className="space-y-2">
+          <Label>Modalidade</Label>
+          <Select value={modality} onValueChange={(value) => setModality(value as ContractModality)}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="parcelado">Pró-labore parcelado</SelectItem>
+              <SelectItem value="mensal">Pró-labore mensal</SelectItem>
+              <SelectItem value="exito">Somente êxito</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor={`edit-contract-signature-${contract.id}`}>Data de assinatura (opcional)</Label>
+          <Input id={`edit-contract-signature-${contract.id}`} type="date" value={signatureDate} onChange={(e) => setSignatureDate(e.target.value)} />
         </div>
         <div className="space-y-2 sm:col-span-2">
           <Label>Categoria</Label>
