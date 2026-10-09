@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CalendarDays, Check, ChevronDown, Plus, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { z } from "zod";
 
 import { AppShell } from "@/components/AppShell";
 import { Badge } from "@/components/ui/badge";
@@ -101,6 +102,11 @@ const emptyForm = {
   responsavel: "",
 };
 
+const eventDateSchema = z.object({
+  titulo: z.string().trim().min(1).max(200),
+  data_inicio: z.string().min(1).refine((value) => Number.isFinite(Date.parse(value))),
+});
+
 function localDateKey(value: string) {
   return new Intl.DateTimeFormat("en-CA", { timeZone: APP_TIME_ZONE }).format(new Date(value));
 }
@@ -121,6 +127,9 @@ export function AgendaScreen() {
   const [view, setView] = useState<CalendarView>("lista");
   const [calendarDate, setCalendarDate] = useState(() => new Date());
   const [form, setForm] = useState(emptyForm);
+  const eventStart = form.tipo === "prazo"
+    ? (form.prazo_fatal ? `${form.prazo_fatal}T12:00:00-03:00` : "")
+    : form.data_inicio;
   const [open, setOpen] = useState(false);
   const openNewEvent = (selectedDate?: string) => {
     setForm({ ...emptyForm, data_inicio: selectedDate ? `${selectedDate}T09:00` : "" });
@@ -202,6 +211,7 @@ export function AgendaScreen() {
     const createEvent = useMutation({
     mutationFn: async () => {
       const { id: eventId, ...values } = form;
+      Object.assign(values, eventDateSchema.parse({ titulo: form.titulo, data_inicio: eventStart }));
       const payload = { ...values, cliente_id: form.cliente_id || null, contrato_id: form.contrato_id || null, data_fim: form.data_fim || null, prazo_fatal: form.tipo === "prazo" ? form.prazo_fatal || null : null, prazo_interno: form.tipo === "prazo" ? form.prazo_interno || null : null, local_link: form.tipo !== "prazo" ? form.local_link || null : null, status: form.status };
       if (form.id) {
         const { error } = await supabase.from("eventos" as never).update(payload as never).eq("id", form.id);
@@ -248,10 +258,10 @@ export function AgendaScreen() {
             </div>
             <Dialog open={open} onOpenChange={setOpen}><DialogTrigger asChild><Button><Plus className="size-4" /> Novo evento</Button></DialogTrigger>
               <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl"><DialogHeader><DialogTitle>Novo evento</DialogTitle></DialogHeader>
-                <form className="grid gap-4" onSubmit={(event) => { event.preventDefault(); if (!form.titulo.trim() || !form.data_inicio) { toast.error("Informe o título e a data do evento."); return; } createEvent.mutate(); }}>
+                <form className="grid gap-4" onSubmit={(event) => { event.preventDefault(); if (!eventDateSchema.safeParse({ titulo: form.titulo, data_inicio: eventStart }).success) { toast.error(form.tipo === "prazo" ? "Informe o título (até 200 caracteres) e o prazo fatal." : "Informe o título (até 200 caracteres) e a data do evento."); return; } createEvent.mutate(); }}>
                                     <div className="grid gap-4 sm:grid-cols-2"><Field label="Tipo"><Select value={form.tipo} onValueChange={(value: EventType) => setForm((current) => ({ ...current, tipo: value, contrato_id: "" }))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{Object.entries(labels).map(([value, label]) => <SelectItem key={value} value={value}>{label}</SelectItem>)}</SelectContent></Select></Field><Field label="Responsável"><Input value={form.responsavel} onChange={(event) => setForm((current) => ({ ...current, responsavel: event.target.value }))} /></Field></div>
-                  <Field label="Título"><Input value={form.titulo} onChange={(event) => setForm((current) => ({ ...current, titulo: event.target.value }))} /></Field>
-                  {form.tipo === "prazo" ? <div className="grid gap-4 sm:grid-cols-2"><Field label="Prazo fatal"><Input type="date" value={form.prazo_fatal} onChange={(event) => setForm((current) => ({ ...current, prazo_fatal: event.target.value, prazo_interno: current.prazo_interno || addDays(event.target.value, -2) }))} /></Field><Field label="Prazo interno"><Input type="date" value={form.prazo_interno} onChange={(event) => setForm((current) => ({ ...current, prazo_interno: event.target.value }))} /></Field></div> : <div className="grid gap-4 sm:grid-cols-2"><Field label="Início"><Input type="datetime-local" value={form.data_inicio} onChange={(event) => setForm((current) => ({ ...current, data_inicio: event.target.value }))} /></Field><Field label="Fim"><Input type="datetime-local" value={form.data_fim} onChange={(event) => setForm((current) => ({ ...current, data_fim: event.target.value }))} /></Field><Field label="Local ou link"><Input value={form.local_link} onChange={(event) => setForm((current) => ({ ...current, local_link: event.target.value }))} /></Field></div>}
+                  <Field label="Título"><Input maxLength={200} value={form.titulo} onChange={(event) => setForm((current) => ({ ...current, titulo: event.target.value }))} /></Field>
+                  {form.tipo === "prazo" ? <div className="grid gap-4 sm:grid-cols-2"><Field label="Prazo fatal"><Input type="date" value={form.prazo_fatal} onChange={(event) => setForm((current) => ({ ...current, prazo_fatal: event.target.value, prazo_interno: current.prazo_interno || (event.target.value ? addDays(event.target.value, -2) : "") }))} /></Field><Field label="Prazo interno"><Input type="date" value={form.prazo_interno} onChange={(event) => setForm((current) => ({ ...current, prazo_interno: event.target.value }))} /></Field></div> : <div className="grid gap-4 sm:grid-cols-2"><Field label="Início"><Input type="datetime-local" value={form.data_inicio} onChange={(event) => setForm((current) => ({ ...current, data_inicio: event.target.value }))} /></Field><Field label="Fim"><Input type="datetime-local" value={form.data_fim} onChange={(event) => setForm((current) => ({ ...current, data_fim: event.target.value }))} /></Field><Field label="Local ou link"><Input value={form.local_link} onChange={(event) => setForm((current) => ({ ...current, local_link: event.target.value }))} /></Field></div>}
                   <Field label="Cliente"><div className="relative"><Input placeholder="Buscar cliente…" value={selectedClient?.name ?? ""} onChange={(event) => setForm((current) => ({ ...current, cliente_id: clients.find((client) => client.name.toLowerCase().includes(event.target.value.toLowerCase()))?.id ?? "", contrato_id: "" }))} />{selectedClient && <p className="mt-1 text-xs text-muted-foreground">Cliente selecionado</p>}</div></Field>
                   {form.cliente_id && <Field label="Contrato"><Select value={form.contrato_id || "none"} onValueChange={(value) => setForm((current) => ({ ...current, contrato_id: value === "none" ? "" : value }))}><SelectTrigger><SelectValue placeholder="Sem contrato" /></SelectTrigger><SelectContent><SelectItem value="none">Sem contrato</SelectItem>{contracts.map((contract) => <SelectItem key={contract.id} value={contract.id}>{contract.description || contract.category}</SelectItem>)}</SelectContent></Select></Field>}
                   <Field label="Descrição"><Textarea value={form.descricao} onChange={(event) => setForm((current) => ({ ...current, descricao: event.target.value }))} rows={3} /></Field>
