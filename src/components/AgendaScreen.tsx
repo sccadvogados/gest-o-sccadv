@@ -105,6 +105,12 @@ function localDateKey(value: string) {
   return new Intl.DateTimeFormat("en-CA", { timeZone: APP_TIME_ZONE }).format(new Date(value));
 }
 
+function addDays(date: string, amount: number) {
+  const result = new Date(`${date}T12:00:00`);
+  result.setDate(result.getDate() + amount);
+  return result.toISOString().slice(0, 10);
+}
+
 function addBusinessDays(date: string, amount: number) {
   const result = new Date(`${date}T12:00:00`);
   let remaining = Math.abs(amount);
