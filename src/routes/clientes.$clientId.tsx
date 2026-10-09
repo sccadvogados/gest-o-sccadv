@@ -440,8 +440,6 @@ function ContractActions({
     installments_count: number;
     first_due_date: string;
     payment_method: string | null;
-    modality: ContractModality;
-    signature_date: string | null;
     success_fee_percent: number;
     installments?: Array<{ status: string }>;
   };
@@ -602,21 +600,6 @@ function EditContractDialog({
                 <div className="space-y-2 sm:col-span-2">
           <Label htmlFor={`edit-contract-description-${contract.id}`}>Descrição</Label>
           <Input id={`edit-contract-description-${contract.id}`} value={description} onChange={(e) => setDescription(e.target.value)} />
-        </div>
-        <div className="space-y-2">
-          <Label>Modalidade</Label>
-          <Select value={modality} onValueChange={(value) => setModality(value as ContractModality)}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="parcelado">Pró-labore parcelado</SelectItem>
-              <SelectItem value="mensal">Pró-labore mensal</SelectItem>
-              <SelectItem value="exito">Somente êxito</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor={`edit-contract-signature-${contract.id}`}>Data de assinatura (opcional)</Label>
-          <Input id={`edit-contract-signature-${contract.id}`} type="date" value={signatureDate} onChange={(e) => setSignatureDate(e.target.value)} />
         </div>
         <div className="space-y-2 sm:col-span-2">
           <Label>Categoria</Label>
