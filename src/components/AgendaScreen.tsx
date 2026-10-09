@@ -255,6 +255,19 @@ export function AgendaScreen() {
     onError: () => toast.error("Não foi possível atualizar o evento."),
   });
 
+    const deleteEvent = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("eventos" as never).delete().eq("id", id);
+      if (error) throw error;
+      await syncDeleteEvent(id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["agenda-events"] });
+      toast.success("Evento excluído da agenda.");
+    },
+    onError: () => toast.error("Não foi possível excluir o evento."),
+  });
+
   return (
     <AppShell>
       <TooltipProvider>
