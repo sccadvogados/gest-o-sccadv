@@ -32,7 +32,12 @@ export type ExtractedClientData = z.infer<typeof extractedSchema>;
 export const extractClientDocument = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) => documentSchema.parse(input))
-  .handler(async ({ data }) => {
+    .handler(async ({ data, context }) => {
+    const { data: isActive, error: activeError } = await context.supabase.rpc("is_ativo");
+    if (activeError || !isActive) {
+      throw new Error("Acesso não autorizado");
+    }
+
     const apiKey = process.env["LOVABLE_API_KEY"];
     if (!apiKey) {
       throw new Error("A leitura automática ainda não está disponível. Preencha os dados manualmente.");
