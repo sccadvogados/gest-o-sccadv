@@ -82,7 +82,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                     : "text-sidebar-foreground/80 hover:bg-sidebar-accent/60",
                 )}
               >
-                <Icon className="size-4" />
+                                <NavIcon className="size-4" />
                 {label}
               </Link>
             ))}
