@@ -207,7 +207,7 @@ export function AgendaScreen() {
     const createEvent = useMutation({
     mutationFn: async () => {
       const { id: eventId, ...values } = form;
-      const payload = { ...values, cliente_id: form.cliente_id || null, contrato_id: form.contrato_id || null, data_fim: form.data_fim || null, prazo_fatal: form.tipo === "prazo" ? form.prazo_fatal || null : null, prazo_interno: form.tipo === "prazo" ? form.prazo_interno || null : null, local_link: form.tipo !== "prazo" ? form.local_link || null : null, status: form.status };
+      const payload = { ...values, cliente_id: form.cliente_id || null, contrato_id: form.contrato_id || null, data_inicio: form.tipo === "prazo" ? deadlineStart(form.prazo_interno, form.prazo_fatal) : form.data_inicio, data_fim: form.data_fim || null, prazo_fatal: form.tipo === "prazo" ? form.prazo_fatal || null : null, prazo_interno: form.tipo === "prazo" ? form.prazo_interno || null : null, local_link: form.tipo !== "prazo" ? form.local_link || null : null, status: form.status };
       if (form.id) {
         const { error } = await supabase.from("eventos" as never).update(payload as never).eq("id", form.id);
         if (error) throw error;
