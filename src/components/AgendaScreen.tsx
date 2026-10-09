@@ -136,7 +136,8 @@ export function AgendaScreen() {
     const [cardFilter, setCardFilter] = useState<FilterCard>("todos");
   const [view, setView] = useState<CalendarView>("lista");
   const [calendarDate, setCalendarDate] = useState(() => new Date());
-  const [form, setForm] = useState(emptyForm);
+    const [form, setForm] = useState(emptyForm);
+  const [clientSearch, setClientSearch] = useState("");
   const [open, setOpen] = useState(false);
   const openNewEvent = (selectedDate?: string) => {
     setForm({ ...emptyForm, data_inicio: selectedDate ? `${selectedDate}T09:00` : "" });
