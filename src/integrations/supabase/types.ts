@@ -254,6 +254,90 @@ export type Database = {
           },
         ]
       }
+            eventos: {
+        Row: {
+          id: string
+          tipo: string
+          titulo: string
+          descricao: string | null
+          cliente_id: string | null
+          contrato_id: string | null
+          data_inicio: string
+          data_fim: string | null
+          prazo_fatal: string | null
+          prazo_interno: string | null
+          local_link: string | null
+          responsavel: string | null
+          status: string
+          dia_inteiro: boolean
+          google_event_id: string | null
+          created_by: string | null
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          tipo: string
+          titulo: string
+          descricao?: string | null
+          cliente_id?: string | null
+          contrato_id?: string | null
+          data_inicio: string
+          data_fim?: string | null
+          prazo_fatal?: string | null
+          prazo_interno?: string | null
+          local_link?: string | null
+          responsavel?: string | null
+          status?: string
+          dia_inteiro?: boolean
+          google_event_id?: string | null
+          created_by?: string | null
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          tipo?: string
+          titulo?: string
+          descricao?: string | null
+          cliente_id?: string | null
+          contrato_id?: string | null
+          data_inicio?: string
+          data_fim?: string | null
+          prazo_fatal?: string | null
+          prazo_interno?: string | null
+          local_link?: string | null
+          responsavel?: string | null
+          status?: string
+          dia_inteiro?: boolean
+          google_event_id?: string | null
+          created_by?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      perfis: {
+        Row: {
+          id: string
+          nome: string
+          email: string
+          papel: string
+          ativo: boolean
+        }
+        Insert: {
+          id: string
+          nome: string
+          email: string
+          papel?: string
+          ativo?: boolean
+        }
+        Update: {
+          id?: string
+          nome?: string
+          email?: string
+          papel?: string
+          ativo?: boolean
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
