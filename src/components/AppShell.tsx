@@ -1,5 +1,5 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { LogOut, Users, Wallet } from "lucide-react";
+import { CalendarDays, LogOut, Users, Wallet } from "lucide-react";
 import { useEffect, type ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import logoHorizontalWhite from "@/assets/scc-logo-horizontal-white.png";
 
 const NAV = [
   { to: "/", label: "Clientes", icon: Users },
+    { to: "/agenda", label: "Agenda", icon: CalendarDays },
   { to: "/financeiro", label: "Financeiro", icon: Wallet },
 ] as const;
 
