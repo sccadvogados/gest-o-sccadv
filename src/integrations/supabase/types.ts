@@ -148,8 +148,10 @@ export type Database = {
           first_due_date: string
           id: string
           installments_count: number
-          payment_method: string | null
+                    payment_method: string | null
+          modality: string
           recurring: boolean
+          signature_date: string | null
           success_fee_percent: number
           total_value: number
           updated_at: string
