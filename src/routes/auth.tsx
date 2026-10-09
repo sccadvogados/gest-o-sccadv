@@ -58,7 +58,17 @@ function AuthPage() {
     async function verifyAccountAccess() {
       const { data, error } = await supabase.auth.getUser();
       if (cancelled) return;
-      if (error || !data.user) return;
+            if (error || !data.user) return;
+
+      const { data: active, error: activeError } = await supabase.rpc("is_ativo" as never);
+      if (activeError || active !== true) {
+        await supabase.auth.signOut();
+        sessionStorage.setItem(
+          "scc-access-denied-message",
+          "Seu acesso ainda não foi liberado. Fale com o administrador do escritório.",
+        );
+        return;
+      }
 
       await navigate({ to: "/", replace: true });
     }
