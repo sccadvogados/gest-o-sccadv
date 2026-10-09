@@ -43,6 +43,14 @@ function AuthPage() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
 
+    useEffect(() => {
+    const message = sessionStorage.getItem("scc-access-denied-message");
+    if (!message) return;
+
+    sessionStorage.removeItem("scc-access-denied-message");
+    toast.error(message);
+  }, []);
+
   useEffect(() => {
     if (loading || !user) return;
 
