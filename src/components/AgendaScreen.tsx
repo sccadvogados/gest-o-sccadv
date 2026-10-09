@@ -111,6 +111,11 @@ function addDays(date: string, amount: number) {
   return result.toISOString().slice(0, 10);
 }
 
+function deadlineStart(prazoInterno: string, prazoFatal: string) {
+  const date = prazoInterno || prazoFatal;
+  return date ? `${date}T00:00:00-03:00` : "";
+}
+
 export function AgendaScreen() {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
