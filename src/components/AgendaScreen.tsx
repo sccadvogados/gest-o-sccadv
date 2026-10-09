@@ -244,7 +244,7 @@ export function AgendaScreen() {
 
   const markDone = useMutation({
     mutationFn: async (id: string) => {
-            const { error } = await supabase.from("eventos" as never).update({ status: "cumprido" } as never).eq("id", id);
+                        const { error } = await supabase.from("eventos").update({ status: "cumprido" }).eq("id", id);
       if (error) throw error;
       await syncUpdateEvent(id, { status: "cumprido" });
     },
