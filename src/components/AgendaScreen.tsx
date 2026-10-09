@@ -228,7 +228,7 @@ export function AgendaScreen() {
         await syncUpdateEvent(form.id, payload);
         return;
       }
-      const { data, error } = await supabase.from("eventos" as never).insert(payload as never).select("id").single();
+            const { data, error } = await supabase.from("eventos").insert(payload).select("id").single();
       if (error) throw error;
       await syncCreateEvent(data);
     },
