@@ -25,7 +25,7 @@ import { APP_TIME_ZONE, formatDate } from "@/lib/format";
 import { createEvent as syncCreateEvent, deleteEvent as syncDeleteEvent, updateEvent as syncUpdateEvent } from "@/lib/calendarSync";
 
 type EventType = "prazo" | "audiencia" | "reuniao" | "compromisso";
-type EventStatus = "pendente" | "cumprido";
+type EventStatus = "pendente" | "cumprido" | "cancelado";
 type FilterCard = "todos" | "vencidos" | "hoje" | "proximos";
 type CalendarView = "lista" | "mes" | "semana";
 
@@ -149,7 +149,7 @@ export function AgendaScreen() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("eventos" as never)
-                .select("id, tipo, titulo, descricao, cliente_id, contrato_id, data_inicio, data_fim, prazo_fatal, prazo_interno, local_link, responsavel, status")
+                .select("id, tipo, titulo, descricao, cliente_id, contrato_id, data_inicio, data_fim, prazo_fatal, prazo_interno, local_link, responsavel, status, dia_inteiro, google_event_id, created_by, updated_at")
         .order("data_inicio");
       if (error) throw error;
       return (data ?? []) as unknown as AgendaEvent[];
@@ -212,7 +212,7 @@ export function AgendaScreen() {
     const createEvent = useMutation({
     mutationFn: async () => {
       const { id: eventId, ...values } = form;
-      const payload = { ...values, cliente_id: form.cliente_id || null, contrato_id: form.contrato_id || null, data_inicio: form.tipo === "prazo" ? deadlineStart(form.prazo_interno, form.prazo_fatal) : form.data_inicio, data_fim: form.data_fim || null, prazo_fatal: form.tipo === "prazo" ? form.prazo_fatal || null : null, prazo_interno: form.tipo === "prazo" ? form.prazo_interno || null : null, local_link: form.tipo !== "prazo" ? form.local_link || null : null, status: form.status };
+      const payload = { ...values, cliente_id: form.cliente_id || null, contrato_id: form.contrato_id || null, data_inicio: form.tipo === "prazo" ? deadlineStart(form.prazo_interno, form.prazo_fatal) : form.data_inicio, data_fim: form.data_fim || null, prazo_fatal: form.tipo === "prazo" ? form.prazo_fatal || null : null, prazo_interno: form.tipo === "prazo" ? form.prazo_interno || null : null, local_link: form.tipo !== "prazo" ? form.local_link || null : null, status: form.status, ...(form.id ? {} : { created_by: (await supabase.auth.getUser()).data.user?.id ?? null }) };
       if (form.id) {
         const { error } = await supabase.from("eventos" as never).update(payload as never).eq("id", form.id);
         if (error) throw error;
@@ -281,11 +281,11 @@ export function AgendaScreen() {
         <div className="mt-6 flex flex-wrap items-center gap-3"><div className="relative min-w-64 flex-1"><Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" /><Input className="pl-9" placeholder="Buscar evento…" value={search} onChange={(event) => setSearch(event.target.value)} /></div>
           <Select value={typeFilter} onValueChange={(value: "todos" | EventType) => setTypeFilter(value)}><SelectTrigger className="w-44"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="todos">Todos os tipos</SelectItem>{Object.entries(labels).map(([value, label]) => <SelectItem key={value} value={value}>{label}</SelectItem>)}</SelectContent></Select>
           <Select value={responsibleFilter} onValueChange={setResponsibleFilter}><SelectTrigger className="w-44"><SelectValue placeholder="Responsável" /></SelectTrigger><SelectContent><SelectItem value="todos">Todos os responsáveis</SelectItem>{responsibleNames.map((name) => <SelectItem key={name} value={name}>{name}</SelectItem>)}</SelectContent></Select>
-          <Select value={statusFilter} onValueChange={(value: "todos" | EventStatus) => setStatusFilter(value)}><SelectTrigger className="w-40"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="todos">Todas situações</SelectItem><SelectItem value="pendente">Pendente</SelectItem><SelectItem value="cumprido">Cumprido</SelectItem></SelectContent></Select>
+          <Select value={statusFilter} onValueChange={(value: "todos" | EventStatus) => setStatusFilter(value)}><SelectTrigger className="w-40"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="todos">Todas situações</SelectItem><SelectItem value="pendente">Pendente</SelectItem><SelectItem value="cumprido">Cumprido</SelectItem><SelectItem value="cancelado">Cancelado</SelectItem></SelectContent></Select>
         </div>
 
         <div className="panel mt-6 overflow-hidden"><Table><TableHeader><TableRow><TableHead>Tipo</TableHead><TableHead>Evento</TableHead><TableHead>Data</TableHead><TableHead>Responsável</TableHead><TableHead>Situação</TableHead><TableHead className="text-right">Ação</TableHead></TableRow></TableHeader><TableBody>
-          {isLoading ? <TableRow><TableCell colSpan={6} className="py-10 text-center text-muted-foreground">Carregando agenda…</TableCell></TableRow> : filteredEvents.length === 0 ? <TableRow><TableCell colSpan={6} className="py-10 text-center text-muted-foreground"><CalendarDays className="mx-auto size-8" /><p className="mt-2">Nenhum evento encontrado.</p></TableCell></TableRow> : filteredEvents.map((event) => <TableRow key={event.id}><TableCell><Badge style={{ backgroundColor: colors[event.tipo], color: "white" }}>{labels[event.tipo]}</Badge></TableCell><TableCell><div className="font-medium">{event.titulo}</div><div className="text-xs text-muted-foreground">{clientNames.get(event.cliente_id ?? "") ?? "Sem cliente vinculado"}</div></TableCell><TableCell className="whitespace-nowrap text-sm">{formatDate(event.data_inicio)}<div className="text-xs text-muted-foreground">{new Intl.DateTimeFormat("pt-BR", { timeZone: APP_TIME_ZONE, hour: "2-digit", minute: "2-digit" }).format(new Date(event.data_inicio))}</div></TableCell><TableCell className="text-sm text-muted-foreground">{event.responsavel || "—"}</TableCell><TableCell>{isOverdue(event) ? <Badge variant="destructive">VENCIDO</Badge> : <Badge variant="secondary">{event.status === "cumprido" ? "Cumprido" : "Pendente"}</Badge>}</TableCell><TableCell className="text-right">{event.status !== "cumprido" ? <Button size="sm" variant="outline" onClick={() => markDone.mutate(event.id)} disabled={markDone.isPending}><Check className="size-4" />Cumprido</Button> : <span className="text-xs text-muted-foreground">Concluído</span>}</TableCell></TableRow>)}
+          {isLoading ? <TableRow><TableCell colSpan={6} className="py-10 text-center text-muted-foreground">Carregando agenda…</TableCell></TableRow> : filteredEvents.length === 0 ? <TableRow><TableCell colSpan={6} className="py-10 text-center text-muted-foreground"><CalendarDays className="mx-auto size-8" /><p className="mt-2">Nenhum evento encontrado.</p></TableCell></TableRow> : filteredEvents.map((event) => <TableRow key={event.id}><TableCell><Badge style={{ backgroundColor: colors[event.tipo], color: "white" }}>{labels[event.tipo]}</Badge></TableCell><TableCell><div className="font-medium">{event.titulo}</div><div className="text-xs text-muted-foreground">{clientNames.get(event.cliente_id ?? "") ?? "Sem cliente vinculado"}</div></TableCell><TableCell className="whitespace-nowrap text-sm">{formatDate(event.data_inicio)}<div className="text-xs text-muted-foreground">{new Intl.DateTimeFormat("pt-BR", { timeZone: APP_TIME_ZONE, hour: "2-digit", minute: "2-digit" }).format(new Date(event.data_inicio))}</div></TableCell><TableCell className="text-sm text-muted-foreground">{event.responsavel || "—"}</TableCell><TableCell>{isOverdue(event) ? <Badge variant="destructive">VENCIDO</Badge> : <Badge variant="secondary">{event.status === "cumprido" ? "Cumprido" : event.status === "cancelado" ? "Cancelado" : "Pendente"}</Badge>}</TableCell><TableCell className="text-right">{event.status !== "cumprido" ? <Button size="sm" variant="outline" onClick={() => markDone.mutate(event.id)} disabled={markDone.isPending}><Check className="size-4" />Cumprido</Button> : <span className="text-xs text-muted-foreground">Concluído</span>}</TableCell></TableRow>)}
         </TableBody></Table></div>
       </TooltipProvider>
     </AppShell>
