@@ -60,7 +60,7 @@ function AuthPage() {
       if (cancelled) return;
             if (error || !data.user) return;
 
-      const { data: active, error: activeError } = await supabase.rpc("is_ativo" as never);
+            const { data: active, error: activeError } = await supabase.rpc("is_ativo");
       if (activeError || active !== true) {
         await supabase.auth.signOut();
         sessionStorage.setItem(
