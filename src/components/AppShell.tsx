@@ -31,8 +31,30 @@ export function AppShell({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
-  useEffect(() => {
+    useEffect(() => {
     if (!loading && !user) navigate({ to: "/auth" });
+  }, [loading, user, navigate]);
+
+  useEffect(() => {
+    if (loading || !user) return;
+
+    let cancelled = false;
+    async function verifyActiveAccess() {
+      const { data, error } = await supabase.rpc("is_ativo" as never);
+      if (cancelled || error || data !== false) return;
+
+      sessionStorage.setItem(
+        "scc-access-denied-message",
+        "Seu acesso ainda não foi liberado. Fale com o administrador do escritório.",
+      );
+      await supabase.auth.signOut();
+      if (!cancelled) navigate({ to: "/auth", replace: true });
+    }
+
+    void verifyActiveAccess();
+    return () => {
+      cancelled = true;
+    };
   }, [loading, user, navigate]);
 
   if (loading || !user) {
