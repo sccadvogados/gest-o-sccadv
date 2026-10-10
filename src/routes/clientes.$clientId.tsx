@@ -326,7 +326,7 @@ function ClientDetailPage() {
         )}
 
         {(contracts ?? []).map((contract) => (
-          <div key={contract.id} className="panel mt-4 overflow-hidden">
+                    <div key={contract.id} className="panel mt-4 overflow-hidden rounded-xl border border-[#E6D6C4] border-t-[3px] border-t-[#D4A782] bg-white shadow-panel">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-5">
               <div>
                 <p className="font-medium">{contract.description || contract.category}</p>
