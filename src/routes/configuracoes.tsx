@@ -93,9 +93,20 @@ function SettingsPage() {
             A partir de
             <Input type="date" value={from} onChange={(event) => setFrom(event.target.value)} />
           </label>
-          <Button onClick={() => void previewImport()} disabled={loading || !from}>
+                    <Button onClick={() => void previewImport()} disabled={loading || !from}>
             {loading ? "Lendo agenda…" : "Mostrar prévia"}
           </Button>
+          {rows.length > 0 ? (
+            <Button onClick={() => void importSelected()} disabled={importing || rows.every((row) => !row.selecionado)}>
+              {importing ? "Importando…" : "Importar selecionados"}
+            </Button>
+          ) : null}
+        </div>
+        {summary ? (
+          <p className="mt-4 text-sm text-muted-foreground">
+            Importados: {summary.imported} · Ignorados: {summary.ignored} · Com aviso: {summary.warnings}
+          </p>
+        ) : null
         </div>
       </section>
       <div className="panel mt-6 overflow-auto">
