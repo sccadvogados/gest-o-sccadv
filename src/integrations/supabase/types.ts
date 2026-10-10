@@ -213,6 +213,7 @@ export type Database = {
           local_link: string | null
           numero_processo: string | null
           orgao_vara: string | null
+          parte_contraria: string | null
           prazo_fatal: string | null
           prazo_interno: string | null
           responsavel: string | null
@@ -235,6 +236,7 @@ export type Database = {
           local_link?: string | null
           numero_processo?: string | null
           orgao_vara?: string | null
+          parte_contraria?: string | null
           prazo_fatal?: string | null
           prazo_interno?: string | null
           responsavel?: string | null
@@ -257,6 +259,7 @@ export type Database = {
           local_link?: string | null
           numero_processo?: string | null
           orgao_vara?: string | null
+          parte_contraria?: string | null
           prazo_fatal?: string | null
           prazo_interno?: string | null
           responsavel?: string | null
