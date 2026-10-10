@@ -58,9 +58,7 @@ function parseEvent(event: GoogleCalendarItem, clients: Client[], existingIds: S
   const kind = protocol ? "prazo" : event.colorId === "5" ? "compromisso" : "prazo";
 
   return {
-        googleId: event.id,
-    googleIdFatal: !protocol && kind === "prazo" ? event.id : null,
-    googleIdInterno: protocol ? event.id : null,
+            googleId: event.id,
     tipo: kind,
     titulo: title,
     processo: process,
