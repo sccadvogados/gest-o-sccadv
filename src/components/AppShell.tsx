@@ -18,7 +18,7 @@ export function BrandMark({ className }: { className?: string }) {
   return (
     <div className={cn("flex items-center", className)}>
       <img
-        src={logoHorizontalWhite}
+                src={logoHorizontal}
         alt="Souza, Craveiro & Corradi Advogados"
         className="h-11 w-auto object-contain"
       />
