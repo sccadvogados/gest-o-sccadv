@@ -580,7 +580,7 @@ function NewClientPage() {
         </section>}
 
         {showForm && <div className="flex gap-3">
-          <Button type="submit" disabled={save.isPending}>
+                    <Button type="submit" className="bg-[#0F2340] text-white hover:bg-[#0F2340]/90" disabled={save.isPending}>
             {save.isPending ? "Salvando…" : "Salvar cliente"}
           </Button>
           <Button asChild type="button" variant="outline">
