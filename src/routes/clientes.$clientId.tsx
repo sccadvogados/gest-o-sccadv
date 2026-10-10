@@ -524,6 +524,8 @@ function EditContractDialog({
     installments_count: number;
     first_due_date: string;
     payment_method: string | null;
+    modality: ContractModality;
+    signature_date: string | null;
         success_fee_percent: number;
     installments?: Array<{ status: string }>;
   };
