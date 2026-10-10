@@ -28,9 +28,7 @@ export const Route = createFileRoute("/configuracoes")({
 });
 
 function defaultDate() {
-  const date = new Date();
-  date.setDate(date.getDate() - 30);
-  return date.toISOString().slice(0, 10);
+  return new Date().toISOString().slice(0, 10);
 }
 
 function SettingsPage() {
