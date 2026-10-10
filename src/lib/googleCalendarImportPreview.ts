@@ -26,7 +26,9 @@ export type GoogleImportPreviewRow = {
   responsavel: string;
   prazoFatal: string;
   prazoInterno: string;
-  aviso: string;
+    aviso: string;
+  jaImportado: boolean;
+  selecionado: boolean;
 };
 
 const processPattern = /CNJ\s+(\d{7}-\d{2}\.\d{4}\.\d\.\d{2}\.\d{4})/i;
