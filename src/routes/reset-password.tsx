@@ -52,14 +52,14 @@ function ResetPasswordPage() {
   }
 
   return (
-    <div className="grid min-h-screen lg:grid-cols-2">
-      <div className="hidden bg-sidebar p-12 lg:flex lg:items-start"><BrandMark /></div>
-      <div className="flex items-center justify-center p-6">
-        <form onSubmit={updatePassword} className="panel w-full max-w-sm space-y-5 p-8">
-          <div><h1 className="text-xl">Definir nova senha</h1><p className="mt-1 text-sm text-muted-foreground">Crie uma senha com pelo menos seis caracteres.</p></div>
+        <div className="grid min-h-screen bg-[#F6F4EF] lg:grid-cols-2">
+            <div className="hidden border-t-[3px] border-[#D4A782] bg-white p-12 lg:flex lg:items-start lg:border-b lg:border-[#ECE8E1]"><BrandMark /></div>
+            <div className="flex items-center justify-center p-6 lg:p-12">
+                <form onSubmit={updatePassword} className="panel w-full max-w-md space-y-6 border-t-4 border-t-[#D4A782] p-8 lg:p-10">
+                    <div><h1 className="text-2xl font-bold text-[#0F2340]">Definir nova senha</h1><p className="mt-2 text-sm text-muted-foreground">Crie uma senha com pelo menos seis caracteres.</p></div>
           {!validRecovery && <p className="text-sm text-destructive">Abra esta página pelo link enviado ao seu e-mail.</p>}
-          <div className="space-y-2"><Label htmlFor="password">Nova senha</Label><Input id="password" type="password" minLength={6} value={password} onChange={(event) => setPassword(event.target.value)} required /></div>
-          <div className="space-y-2"><Label htmlFor="confirm">Confirmar nova senha</Label><Input id="confirm" type="password" minLength={6} value={confirm} onChange={(event) => setConfirm(event.target.value)} required /></div>
+                    <div className="space-y-2"><Label className="text-sm font-medium text-[#0F2340]" htmlFor="password">Nova senha</Label><Input className="h-12 bg-white" id="password" type="password" minLength={6} value={password} onChange={(event) => setPassword(event.target.value)} required /></div>
+                    <div className="space-y-2"><Label className="text-sm font-medium text-[#0F2340]" htmlFor="confirm">Confirmar nova senha</Label><Input className="h-12 bg-white" id="confirm" type="password" minLength={6} value={confirm} onChange={(event) => setConfirm(event.target.value)} required /></div>
           <Button className="w-full" type="submit" disabled={busy || !validRecovery}>{busy ? "Salvando…" : "Salvar nova senha"}</Button>
           <Button className="w-full" type="button" variant="ghost" onClick={() => navigate({ to: "/auth" })}>Voltar ao acesso</Button>
         </form>
