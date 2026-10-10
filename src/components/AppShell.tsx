@@ -95,7 +95,8 @@ export function AppShell({ children }: { children: ReactNode }) {
                                 <MenuIcon className="size-4" />
                 {label}
               </Link>
-            ))}
+                          );
+            })}
           </nav>
           <div className="flex items-center gap-3">
                         <span className="hidden text-sm text-[#5B6472] sm:inline">
