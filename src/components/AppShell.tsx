@@ -79,7 +79,9 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <div className="mx-auto flex max-w-[1240px] flex-wrap items-center justify-between gap-4 px-6 py-4">
           <BrandMark />
           <nav className="flex items-center gap-1">
-                        {NAV.filter(({ to }) => to !== "/configuracoes" || isAdmin).map(({ to, label, icon: MenuIcon }) => (
+                        {NAV.filter(({ to }) => to !== "/configuracoes" || isAdmin).map(({ to, label, icon }) => {
+              const NavItemIcon = icon;
+              return (
               <Link
                 key={to}
                 to={to}
@@ -90,10 +92,11 @@ export function AppShell({ children }: { children: ReactNode }) {
                     : "text-[#5B6472] hover:bg-[#F4EDE4]",
                 )}
               >
-                                <MenuIcon className="size-4" />
+                                <NavItemIcon className="size-4" />
                 {label}
               </Link>
-            ))}
+                          );
+            })}
           </nav>
           <div className="flex items-center gap-3">
                         <span className="hidden text-sm text-[#5B6472] sm:inline">
