@@ -170,7 +170,7 @@ export type Database = {
           total_value?: number
           updated_at?: string
         }
-        Update: {
+                Update: {
           category?: string
           client_id?: string
           created_at?: string
@@ -178,8 +178,10 @@ export type Database = {
           first_due_date?: string
           id?: string
           installments_count?: number
+          modality?: string
           payment_method?: string | null
           recurring?: boolean
+          signature_date?: string | null
           success_fee_percent?: number
           total_value?: number
           updated_at?: string
