@@ -186,22 +186,32 @@ export const createEvent = createServerFn({ method: "POST" })
     await ensureActive(context.supabase);
     const googleEvents = buildGoogleEvents(data);
     const ids: GoogleEventIds = { fatal: null, interno: null, comum: null };
-    for (const [index, googleEvent] of googleEvents.entries()) {
-      const id = await insertGoogleEvent(googleEvent);
-      if (data.tipo === "prazo") {
-        if (index === 0) ids.fatal = id;
-        else ids.interno = id;
-      } else {
-        ids.comum = id;
+        try {
+      for (const [index, googleEvent] of googleEvents.entries()) {
+        const id = await insertGoogleEvent(googleEvent);
+        if (data.tipo === "prazo") {
+          if (index === 0) ids.fatal = id;
+          else ids.interno = id;
+        } else ids.comum = id;
       }
+      const { error } = await context.supabase.from("eventos").update({
+        google_event_id_fatal: ids.fatal,
+        google_event_id_interno: ids.interno,
+        google_event_id: ids.comum,
+        google_sync_status: "sincronizado",
+        google_sync_error: null,
+        google_sync_updated_at: new Date().toISOString(),
+      }).eq("id", data.id);
+      if (error) throw error;
+      return { ...ids, synced: true };
+    } catch (error) {
+      await context.supabase.from("eventos").update({
+        google_sync_status: "erro",
+        google_sync_error: error instanceof Error ? error.message : "Falha desconhecida na sincronização.",
+        google_sync_updated_at: new Date().toISOString(),
+      }).eq("id", data.id);
+      return { ...ids, synced: false };
     }
-    const { error } = await context.supabase.from("eventos").update({
-      google_event_id_fatal: ids.fatal,
-      google_event_id_interno: ids.interno,
-      google_event_id: ids.comum,
-    }).eq("id", data.id);
-    if (error) throw error;
-    return ids;
   });
 
 export const updateEvent = createServerFn({ method: "POST" })
