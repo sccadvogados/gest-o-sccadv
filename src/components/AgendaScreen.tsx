@@ -299,7 +299,7 @@ export function AgendaScreen() {
         <div className="mt-6 grid gap-4 md:grid-cols-3">
           <SummaryCard label="VENCIDOS" description="Não cumpridos" value={counts.vencidos} color="#B42318" active={cardFilter === "vencidos"} onClick={() => setCardFilter(cardFilter === "vencidos" ? "todos" : "vencidos")} />
           <SummaryCard label="Hoje" value={counts.hoje} color="#C48B5F" active={cardFilter === "hoje"} onClick={() => setCardFilter(cardFilter === "hoje" ? "todos" : "hoje")} />
-          <SummaryCard label="Próximos 7 dias" value={counts.proximos} color="#0C2340" active={cardFilter === "proximos"} onClick={() => setCardFilter(cardFilter === "proximos" ? "todos" : "proximos")} />
+          <SummaryCard label="PRÓXIMOS 7 DIAS" description="Compromissos futuros" value={counts.proximos} color="#0C2340" active={cardFilter === "proximos"} onClick={() => setCardFilter(cardFilter === "proximos" ? "todos" : "proximos")} />
         </div>
 
         <div className="mt-6 flex flex-wrap items-center gap-3"><div className="relative min-w-64 flex-1"><Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" /><Input className="pl-9" placeholder="Buscar evento…" value={search} onChange={(event) => setSearch(event.target.value)} /></div>
