@@ -76,10 +76,10 @@ export function AppShell({ children }: { children: ReactNode }) {
                 key={to}
                 to={to}
                 className={cn(
-                  "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                                    "flex items-center gap-2 rounded-md border-b-2 border-transparent px-3 py-2 text-sm font-medium transition-colors",
                   pathname === to
-                    ? "bg-sidebar-accent text-sidebar-primary"
-                    : "text-sidebar-foreground/80 hover:bg-sidebar-accent/60",
+                    ? "border-b-[#D4A782] bg-[#F4EDE4] text-[#0F2340]"
+                    : "text-[#5B6472] hover:bg-[#F4EDE4]",
                 )}
               >
                                 <NavIcon className="size-4" />
