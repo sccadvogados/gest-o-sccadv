@@ -59,7 +59,8 @@ type AgendaEvent = {
   tipo: EventType;
   titulo: string;
     descricao: string | null;
-  parte_contraria: string | null;
+    parte_contraria: string | null;
+  numero_processo: string | null;
   cliente_id: string | null;
     data_inicio: string;
   data_fim: string | null;
@@ -161,7 +162,7 @@ export function AgendaScreen() {
     queryFn: async () => {
             const { data, error } = await supabase
                 .from("eventos")
-                .select("id, tipo, titulo, descricao, parte_contraria, cliente_id, contrato_id, data_inicio, data_fim, prazo_fatal, prazo_interno, local_link, responsavel, status, dia_inteiro, google_event_id, created_by, updated_at")
+                .select("id, tipo, titulo, descricao, parte_contraria, numero_processo, cliente_id, contrato_id, data_inicio, data_fim, prazo_fatal, prazo_interno, local_link, responsavel, status, dia_inteiro, google_event_id, created_by, updated_at")
         .order("data_inicio");
       if (error) throw error;
             return (data ?? []) as AgendaEvent[];
@@ -228,12 +229,28 @@ export function AgendaScreen() {
       if (form.id) {
                 const { error } = await officeDatabase(supabase).from("eventos").update(payload).eq("id", form.id);
         if (error) throw error;
-        await syncUpdateEvent(form.id, payload);
+                await syncUpdateEvent({
+          data: {
+            id: form.id,
+            event: {
+              ...payload,
+              id: form.id,
+              cliente_nome: clients.find((client) => client.id === form.cliente_id)?.name ?? null,
+            },
+          },
+        });
         return;
       }
             const { data, error } = await officeDatabase(supabase).from("eventos").insert(payload).select("id").single();
       if (error) throw error;
-      await syncCreateEvent(data);
+            await syncCreateEvent({
+        data: {
+          ...data,
+          ...payload,
+          id: data.id,
+          cliente_nome: clients.find((client) => client.id === form.cliente_id)?.name ?? null,
+        },
+      });
     },
 
     onSuccess: () => {
@@ -249,7 +266,19 @@ export function AgendaScreen() {
     mutationFn: async (id: string) => {
                         const { error } = await officeDatabase(supabase).from("eventos").update({ status: "cumprido" }).eq("id", id);
       if (error) throw error;
-      await syncUpdateEvent(id, { status: "cumprido" });
+            const event = events.find((item) => item.id === id);
+      if (event) {
+        await syncUpdateEvent({
+          data: {
+            id,
+            event: {
+              ...event,
+              status: "cumprido",
+              cliente_nome: clients.find((client) => client.id === event.cliente_id)?.name ?? null,
+            },
+          },
+        });
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["agenda-events"] });
@@ -262,7 +291,7 @@ export function AgendaScreen() {
     mutationFn: async (id: string) => {
             const { error } = await officeDatabase(supabase).from("eventos").delete().eq("id", id);
       if (error) throw error;
-      await syncDeleteEvent(id);
+            await syncDeleteEvent({ data: { id } });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["agenda-events"] });
