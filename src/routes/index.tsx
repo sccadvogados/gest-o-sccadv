@@ -1,11 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { BriefcaseBusiness, FolderOpen, Plus, Search } from "lucide-react";
+import { BriefcaseBusiness, Filter, FolderOpen, Plus, Search } from "lucide-react";
 import { useState } from "react";
 
 import { AppShell } from "@/components/AppShell";
 import { Badge } from "@/components/ui/badge";
+import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -93,23 +94,21 @@ function ClientsPage() {
 
   return (
     <AppShell>
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-2xl">Clientes</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Busque por nome, CPF/CNPJ, e-mail ou telefone.
-          </p>
-        </div>
-        <Button asChild>
-          <Link to="/clientes/novo">
-            <Plus className="size-4" />
-            Novo Cliente
-          </Link>
-        </Button>
-      </div>
+            <PageHeader
+        title="Clientes"
+        subtitle="Busque por nome, CPF/CNPJ, e-mail ou telefone."
+        action={(
+          <Button asChild>
+            <Link to="/clientes/novo">
+              <Plus className="size-4" />
+              Novo cliente
+            </Link>
+          </Button>
+        )}
+      />
 
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
-        <div className="relative w-full max-w-md">
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+        <div className="relative min-w-[280px] flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
             placeholder="Buscar cliente…"
@@ -123,11 +122,14 @@ function ClientsPage() {
           variant={onlyIncomplete ? "default" : "outline"}
           onClick={() => setOnlyIncomplete((current) => !current)}
           aria-pressed={onlyIncomplete}
-        >
+                >
+          <Filter className="size-4" />
           Somente incompletos
         </Button>
-        <div className="flex min-w-44 items-center gap-3 border-l-2 border-accent pl-4">
-          <BriefcaseBusiness className="size-5 text-accent" />
+        <div className="ml-auto flex min-w-44 items-center gap-3 rounded-xl border border-[#E6E1D8] bg-white px-4 py-3 shadow-sm">
+          <div className="rounded-lg bg-[#F1EEE7] p-2">
+            <BriefcaseBusiness className="size-5 text-accent" />
+          </div>
           <div>
             <p className="text-xs text-muted-foreground">Processos ativos</p>
             <p className="text-xl font-semibold tabular-nums">
@@ -137,7 +139,7 @@ function ClientsPage() {
         </div>
       </div>
 
-      <div className="panel mt-6 overflow-hidden">
+            <div className="panel mt-6 overflow-hidden border-t-2 border-t-accent">
         <Table>
           <TableHeader>
             <TableRow>
@@ -170,7 +172,7 @@ function ClientsPage() {
             )}
 
             {filtered.map((client) => (
-              <TableRow key={client.id}>
+                            <TableRow key={client.id} className="h-20">
                 <TableCell>
                   <Link
                     to="/clientes/$clientId"
@@ -231,8 +233,12 @@ function ClientsPage() {
                 </TableCell>
               </TableRow>
             ))}
-          </TableBody>
+                    </TableBody>
         </Table>
+        <div className="flex items-center justify-between border-t border-[#E6E1D8] bg-[#FBFAF7] px-6 py-4 text-sm text-muted-foreground">
+          <span>Exibindo {filtered.length} clientes</span>
+          <span>Ordenado por nome</span>
+        </div>
       </div>
     </AppShell>
   );
