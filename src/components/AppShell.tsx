@@ -92,9 +92,9 @@ export function AppShell({ children }: { children: ReactNode }) {
               {user.email}
             </span>
             <Button
-              variant="ghost"
+                            variant="outline"
               size="sm"
-              className="text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-primary"
+              className="border-[#D4A782] bg-white text-[#0F2340] hover:bg-[#F4EDE4]"
               onClick={async () => {
                 await supabase.auth.signOut();
                 navigate({ to: "/auth" });
