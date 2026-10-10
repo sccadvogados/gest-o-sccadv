@@ -36,11 +36,44 @@ function SettingsPage() {
       ]);
       if (clientsError) throw clientsError;
       if (existingError) throw existingError;
-      setRows(buildGoogleImportPreview(googleEvents, clients ?? [], existing ?? []));
+            setRows(buildGoogleImportPreview(googleEvents, clients ?? [], existing ?? []));
+      setSummary(null);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Não foi possível ler o Google Agenda.");
     } finally {
       setLoading(false);
+    }
+  }
+
+    async function importSelected() {
+    const selected = rows.filter((row) => row.selecionado);
+    if (selected.length === 0) return;
+    setImporting(true);
+    try {
+      const candidates = selected.filter((row) => !row.jaImportado);
+      const { error } = await supabase.from("eventos").insert(candidates.map((row) => ({
+        cliente_id: row.clienteId,
+        data_inicio: row.prazoFatal || row.prazoInterno,
+        dia_inteiro: true,
+        google_event_id_fatal: row.googleIdFatal,
+        google_event_id_interno: row.googleIdInterno,
+        numero_processo: row.processo || null,
+        parte_contraria: row.parteContraria || null,
+        prazo_fatal: row.prazoFatal || null,
+        prazo_interno: row.prazoInterno || null,
+        responsavel: row.responsavel || null,
+        status: "pendente",
+        tipo: row.tipo,
+        titulo: row.titulo || row.googleId,
+      })));
+      if (error) throw error;
+      const warnings = rows.filter((row) => row.aviso).length;
+      setSummary({ imported: candidates.length, ignored: selected.length - candidates.length, warnings });
+      toast.success("Importação concluída.");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Não foi possível importar os eventos.");
+    } finally {
+      setImporting(false);
     }
   }
 
