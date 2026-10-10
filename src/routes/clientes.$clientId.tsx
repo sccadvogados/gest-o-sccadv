@@ -551,15 +551,18 @@ function EditContractDialog({
       if (!firstDue) throw new Error("Informe o primeiro vencimento.");
 
             const contractUpdate = hasPaidInstallment
-        ? { description, category, payment_method: paymentMethod, success_fee_percent: fee }
+                ? { description, category, modality, signature_date: signatureDate || null, payment_method: paymentMethod, success_fee_percent: fee }
         : {
             description,
             category,
+            modality,
+            signature_date: signatureDate || null,
             total_value: total,
             installments_count: installmentsCount,
             first_due_date: firstDue,
             payment_method: paymentMethod,
             success_fee_percent: fee,
+            recurring: modality === "mensal",
           };
       const { error } = await supabase.from("contracts").update(contractUpdate).eq("id", contract.id);
       if (error) throw error;
