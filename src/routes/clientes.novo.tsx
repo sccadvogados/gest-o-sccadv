@@ -10,6 +10,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PageHeader } from "@/components/ui/page-header";
 import {
   Select,
   SelectContent,
@@ -307,17 +308,18 @@ function NewClientPage() {
 
   return (
     <AppShell>
-      <Button asChild variant="ghost" size="sm" className="-ml-2 text-muted-foreground">
+            <Button asChild variant="ghost" size="sm" className="-ml-2 text-muted-foreground">
         <Link to="/">
           <ArrowLeft className="size-4" />
           Voltar para clientes
         </Link>
       </Button>
 
-      <h1 className="mt-4 text-2xl">Novo cliente</h1>
-      <p className="mt-1 text-sm text-muted-foreground">
-        Anexe a identificação e o comprovante de residência para preencher os dados automaticamente.
-      </p>
+      <PageHeader
+        className="mt-4"
+        title="Novo cliente"
+        subtitle="Anexe a identificação e o comprovante de residência para preencher os dados automaticamente."
+      />
 
       <form
         className="mt-8 space-y-8"
@@ -326,13 +328,13 @@ function NewClientPage() {
           save.mutate();
         }}
       >
-        <section className="panel space-y-6 p-6">
+                <section className="panel rounded-xl border border-t-[3px] border-t-accent bg-card p-6 text-card-foreground shadow-panel space-y-6">
           <div className="flex items-start gap-4">
             <div className="grid size-11 shrink-0 place-items-center rounded-md bg-secondary text-primary">
               <FileScan className="size-5" />
             </div>
             <div>
-              <h2 className="text-base font-semibold">Anexe os documentos do cliente</h2>
+                            <h2 className="text-base font-semibold text-[#0F2340]">Anexe os documentos do cliente</h2>
               <p className="mt-1 text-sm text-muted-foreground">
                 Ao anexar, as informações são lidas e preenchidas automaticamente.
               </p>
@@ -381,8 +383,8 @@ function NewClientPage() {
           </Alert>
         )}
 
-        {showForm && <section className="panel space-y-5 p-6">
-          <h2 className="text-base font-semibold">Qualificação</h2>
+        {showForm && <section className="panel rounded-xl border border-t-[3px] border-t-accent bg-card p-6 text-card-foreground shadow-panel space-y-5">
+          <h2 className="text-base font-semibold text-[#0F2340]">Qualificação</h2>
 
           <div className="grid gap-5 sm:grid-cols-2">
             <div className="space-y-2">
@@ -484,8 +486,8 @@ function NewClientPage() {
           </div>
         </section>}
 
-        {showForm && <section className="panel space-y-5 p-6">
-          <h2 className="text-base font-semibold">Endereço e contato</h2>
+        {showForm && <section className="panel rounded-xl border border-t-[3px] border-t-accent bg-card p-6 text-card-foreground shadow-panel space-y-5">
+          <h2 className="text-base font-semibold text-[#0F2340]">Endereço e contato</h2>
 
           <div className="grid gap-5 sm:grid-cols-6">
             <div className="space-y-2 sm:col-span-2">
@@ -567,8 +569,8 @@ function NewClientPage() {
           </div>
         </section>}
 
-        {showForm && <section className="panel space-y-3 p-6">
-          <Label htmlFor="notes">Observações</Label>
+        {showForm && <section className="panel rounded-xl border border-t-[3px] border-t-accent bg-card p-6 text-card-foreground shadow-panel space-y-3">
+          <Label htmlFor="notes" className="text-[#0F2340]">Observações</Label>
           <Textarea
             id="notes"
             rows={3}
@@ -578,7 +580,7 @@ function NewClientPage() {
         </section>}
 
         {showForm && <div className="flex gap-3">
-          <Button type="submit" disabled={save.isPending}>
+                    <Button type="submit" className="bg-[#0F2340] text-white hover:bg-[#0F2340]/90" disabled={save.isPending}>
             {save.isPending ? "Salvando…" : "Salvar cliente"}
           </Button>
           <Button asChild type="button" variant="outline">
