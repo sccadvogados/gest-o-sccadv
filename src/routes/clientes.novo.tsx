@@ -308,17 +308,18 @@ function NewClientPage() {
 
   return (
     <AppShell>
-      <Button asChild variant="ghost" size="sm" className="-ml-2 text-muted-foreground">
+            <Button asChild variant="ghost" size="sm" className="-ml-2 text-muted-foreground">
         <Link to="/">
           <ArrowLeft className="size-4" />
           Voltar para clientes
         </Link>
       </Button>
 
-      <h1 className="mt-4 text-2xl">Novo cliente</h1>
-      <p className="mt-1 text-sm text-muted-foreground">
-        Anexe a identificação e o comprovante de residência para preencher os dados automaticamente.
-      </p>
+      <PageHeader
+        className="mt-4"
+        title="Novo cliente"
+        subtitle="Anexe a identificação e o comprovante de residência para preencher os dados automaticamente."
+      />
 
       <form
         className="mt-8 space-y-8"
