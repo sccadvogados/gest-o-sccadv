@@ -208,7 +208,7 @@ export function EditClientDialog({
           </section>
 
           <section className="space-y-4">
-            <h3 className="text-sm font-semibold">Endereço e contato</h3>
+                        <h3 className="text-sm font-semibold uppercase tracking-wide text-[#0F2340]">Endereço e contato</h3>
             <div className="grid gap-4 sm:grid-cols-6">
               <div className="space-y-2 sm:col-span-2"><Label htmlFor="edit-cep">CEP</Label><Input id="edit-cep" value={form.cep} onChange={(event) => set("cep", maskCep(event.target.value))} onBlur={(event) => lookupCep(event.target.value)} />{cepBusy && <p className="text-xs text-muted-foreground">Consultando CEP…</p>}</div>
               <div className="space-y-2 sm:col-span-3"><Label htmlFor="edit-street">Logradouro</Label><Input id="edit-street" value={form.street} onChange={(event) => set("street", event.target.value)} /></div>
