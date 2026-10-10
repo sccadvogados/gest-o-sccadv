@@ -1,4 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/integrations/supabase/types";
+import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
@@ -20,7 +23,7 @@ type CalendarEvent = {
 type GoogleEvent = {
   id: string;
   summary: string;
-  description?: string;
+  description?: string | undefined;
   colorId: string;
   start: { date: string };
   end: { date: string };
@@ -132,10 +135,9 @@ async function googleRequest(path: string, init?: RequestInit): Promise<unknown>
 }
 
 async function insertGoogleEvent(event: GoogleEvent): Promise<string> {
-  const payload = { ...event };
-  delete payload.id;
+  const { id: omittedId, colorId, ...rest } = event;
+  const payload = { ...rest, ...(colorId ? { colorId } : {}) };
   if (!payload.description) delete payload.description;
-  if (!payload.colorId) delete payload.colorId;
   const result = await googleRequest("/events", {
     method: "POST",
     body: JSON.stringify(payload),
@@ -149,49 +151,70 @@ async function removeGoogleEvent(id: string | null | undefined): Promise<void> {
   await googleRequest(`/events/${encodeURIComponent(id)}`, { method: "DELETE" });
 }
 
-async function ensureActive(supabase: Parameters<typeof requireSupabaseAuth>[0] extends never ? never : any) {
+async function ensureActive(supabase: SupabaseClient<Database>) {
   const { data, error } = await supabase.rpc("is_ativo");
   if (error || !data) throw new Error("Acesso não autorizado");
 }
 
+const calendarEventSchema = z.object({
+  id: z.string().uuid(),
+  tipo: z.string(),
+  titulo: z.string(),
+  data_inicio: z.string(),
+  descricao: z.string().nullable().optional(),
+  numero_processo: z.string().nullable().optional(),
+  parte_contraria: z.string().nullable().optional(),
+  responsavel: z.string().nullable().optional(),
+  cliente_nome: z.string().nullable().optional(),
+  prazo_fatal: z.string().nullable().optional(),
+  prazo_interno: z.string().nullable().optional(),
+  local_link: z.string().nullable().optional(),
+});
+
+async function syncCreatedEvent(supabase: SupabaseClient<Database>, data: z.infer<typeof calendarEventSchema>) {
+  const event: CalendarEvent = {
+    id: data.id, tipo: data.tipo, titulo: data.titulo, data_inicio: data.data_inicio,
+    descricao: data.descricao ?? null, numero_processo: data.numero_processo ?? null,
+    parte_contraria: data.parte_contraria ?? null, responsavel: data.responsavel ?? null,
+    cliente_nome: data.cliente_nome ?? null, prazo_fatal: data.prazo_fatal ?? null,
+    prazo_interno: data.prazo_interno ?? null, local_link: data.local_link ?? null,
+  };
+  const ids: GoogleEventIds = { comum: null };
+  for (const googleEvent of buildGoogleEvents(event)) {
+    ids.comum = await insertGoogleEvent(googleEvent);
+  }
+  const { error } = await supabase.from("eventos").update({ google_event_id: ids.comum }).eq("id", data.id);
+  if (error) throw error;
+  return ids;
+}
+
 export const createEvent = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context, data }: { context: { supabase: any }; data: CalendarEvent }) => {
+  .inputValidator((input) => calendarEventSchema.parse(input))
+  .handler(async ({ context, data }) => {
     await ensureActive(context.supabase);
-    const googleEvents = buildGoogleEvents(data);
-        const ids: GoogleEventIds = { comum: null };
-    for (const [index, googleEvent] of googleEvents.entries()) {
-      const id = await insertGoogleEvent(googleEvent);
-            ids.comum = id;
-    }
-    const { error } = await context.supabase.from("eventos").update({
-      google_event_id_fatal: ids.fatal,
-      google_event_id_interno: ids.interno,
-      google_event_id: ids.comum,
-    }).eq("id", data.id);
-    if (error) throw error;
-    return ids;
+    return syncCreatedEvent(context.supabase, data);
   });
 
 export const updateEvent = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context, data }: { context: { supabase: any }; data: { id: string; event: CalendarEvent } }) => {
+  .inputValidator((input) => z.object({ id: z.string().uuid(), event: calendarEventSchema }).parse(input))
+  .handler(async ({ context, data }) => {
     await ensureActive(context.supabase);
         const { data: previous, error } = await context.supabase.from("eventos").select("google_event_id").eq("id", data.id).single();
     if (error) throw error;
         await removeGoogleEvent(previous.google_event_id);
-    return createEvent({ data: data.event });
+    return syncCreatedEvent(context.supabase, data.event);
   });
 
 export const deleteEvent = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context, data }: { context: { supabase: any }; data: { id: string } }) => {
+  .inputValidator((input) => z.object({ id: z.string().uuid() }).parse(input))
+  .handler(async ({ context, data }) => {
     await ensureActive(context.supabase);
         const { data: event, error } = await context.supabase.from("eventos").select("google_event_id").eq("id", data.id).single();
     if (error) throw error;
     await removeGoogleEvent(event.google_event_id);
-    await removeGoogleEvent(event.google_event_id_fatal);
-    await removeGoogleEvent(event.google_event_id_interno);
     return { id: data.id };
   });
 

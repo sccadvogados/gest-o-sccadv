@@ -9,10 +9,23 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
+import { officeDatabase } from "@/lib/office-database";
 import { listGoogleCalendarEvents } from "@/lib/googleCalendarImport";
 import { buildGoogleImportPreview, type GoogleImportPreviewRow } from "@/lib/googleCalendarImportPreview";
 
-export const Route = createFileRoute("/configuracoes")({ component: SettingsPage });
+export const Route = createFileRoute("/configuracoes")({
+  component: SettingsPage,
+  head: () => ({
+    meta: [
+      { title: "Configurações | Gestão Administrativa | SCC Adv" },
+      { name: "description", content: "Configurações administrativas do escritório Souza, Craveiro & Corradi Advogados." },
+      { property: "og:title", content: "Configurações | Gestão Administrativa | SCC Adv" },
+      { property: "og:description", content: "Configurações administrativas do escritório Souza, Craveiro & Corradi Advogados." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
+});
 
 function defaultDate() {
   const date = new Date();
@@ -25,6 +38,8 @@ function SettingsPage() {
   const [from, setFrom] = useState(defaultDate);
   const [rows, setRows] = useState<GoogleImportPreviewRow[]>([]);
   const [loading, setLoading] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [summary, setSummary] = useState<{ imported: number; ignored: number; warnings: number } | null>(null);
 
   async function previewImport() {
     setLoading(true);
@@ -36,7 +51,7 @@ function SettingsPage() {
       ]);
       if (clientsError) throw clientsError;
       if (existingError) throw existingError;
-            setRows(buildGoogleImportPreview(googleEvents, clients ?? [], existing ?? []));
+      setRows(buildGoogleImportPreview(googleEvents, clients ?? [], existing ?? []));
       setSummary(null);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Não foi possível ler o Google Agenda.");
@@ -45,13 +60,13 @@ function SettingsPage() {
     }
   }
 
-    async function importSelected() {
+  async function importSelected() {
     const selected = rows.filter((row) => row.selecionado);
     if (selected.length === 0) return;
     setImporting(true);
     try {
       const candidates = selected.filter((row) => !row.jaImportado);
-      const { error } = await supabase.from("eventos").insert(candidates.map((row) => ({
+      const { error } = await officeDatabase(supabase).from("eventos").insert(candidates.map((row) => ({
         cliente_id: row.clienteId,
         data_inicio: row.prazoFatal || row.prazoInterno,
         dia_inteiro: true,
@@ -92,7 +107,7 @@ function SettingsPage() {
             A partir de
             <Input type="date" value={from} onChange={(event) => setFrom(event.target.value)} />
           </label>
-                    <Button onClick={() => void previewImport()} disabled={loading || !from}>
+          <Button onClick={() => void previewImport()} disabled={loading || !from}>
             {loading ? "Lendo agenda…" : "Mostrar prévia"}
           </Button>
           {rows.length > 0 ? (
@@ -105,8 +120,7 @@ function SettingsPage() {
           <p className="mt-4 text-sm text-muted-foreground">
             Importados: {summary.imported} · Ignorados: {summary.ignored} · Com aviso: {summary.warnings}
           </p>
-        ) : null
-        </div>
+        ) : null}
       </section>
       <div className="panel mt-6 overflow-auto">
         {rows.length === 0 ? (

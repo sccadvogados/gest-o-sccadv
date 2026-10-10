@@ -16,3 +16,4 @@
 - Keep the public authentication page limited to email/password sign-in and recovery; account provisioning is managed outside the public UI to protect office access.
 - Validate sign-in with Auth's getUser AND require public.is_ativo() = true; only active profiles in public.perfis can access data.
 - Keep migration-backed schema extensions in a shared typed adapter when generated Cloud types omit those objects; preserve runtime permissions and never modify generated clients.
+- Validate Calendar server-function inputs with shared schemas and reuse internal synchronization helpers, because typed RPC handlers must not call another RPC handler as an internal helper.

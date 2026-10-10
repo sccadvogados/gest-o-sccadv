@@ -42,12 +42,12 @@ function parseEvent(event: GoogleCalendarItem, clients: Client[], existingIds: S
   const protocol = /\[PROTOCOLO\]/i.test(rawTitle);
   const parts = rawTitle.split(" - ").map((part) => part.trim()).filter(Boolean);
   const processIndex = parts.findIndex((part) => processPattern.test(part));
-  const process = processIndex >= 0 ? (parts[processIndex].match(processPattern)?.[1] ?? "") : "";
+  const process = processIndex >= 0 ? (parts[processIndex]?.match(processPattern)?.[1] ?? "") : "";
   const partiesIndex = parts.findIndex((part) => part.includes(" x "));
-  const parties = partiesIndex >= 0 ? parts[partiesIndex].split(" x ").map((part) => part.trim()) : [];
+  const parties = partiesIndex >= 0 ? (parts[partiesIndex] ?? "").split(" x ").map((part) => part.trim()) : [];
   const responsibleIndex = parts.findIndex((part) => /^(Dr\.|Dra\.)\s+/i.test(part));
-  const responsible = responsibleIndex >= 0 ? parts[responsibleIndex].replace(/^(Dr\.|Dra\.)\s+/i, "") : "";
-  const title = parts.filter((_, index) => index !== processIndex && index !== partiesIndex && index !== responsibleIndex && !/^\[PROTOCOLO\]$/i.test(parts[index])).join(" - ");
+  const responsible = responsibleIndex >= 0 ? (parts[responsibleIndex] ?? "").replace(/^(Dr\.|Dra\.)\s+/i, "") : "";
+  const title = parts.filter((part, index) => index !== processIndex && index !== partiesIndex && index !== responsibleIndex && !/^\[PROTOCOLO\]$/i.test(part)).join(" - ");
   const clientName = parties[0] ?? "";
   const client = clients.find((item) => normalize(item.name) === normalize(clientName));
     const imported = existingIds.has(event.id);
@@ -63,6 +63,7 @@ function parseEvent(event: GoogleCalendarItem, clients: Client[], existingIds: S
     parteContraria: parties[1] ?? "",
     responsavel: responsible,
         prazoFatal: kind === "prazo" ? dateOf(event) : "",
+    prazoInterno: "",
         aviso: [
       !client && clientName ? "cliente não encontrado" : "",
       imported ? "evento já importado antes" : "",
