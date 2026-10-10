@@ -71,7 +71,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <div className="mx-auto flex max-w-[1240px] flex-wrap items-center justify-between gap-4 px-6 py-4">
           <BrandMark />
           <nav className="flex items-center gap-1">
-            {NAV.map(({ to, label, icon: NavIcon }) => (
+            {NAV.map(({ to, label, icon: Icon }) => (
               <Link
                 key={to}
                 to={to}
