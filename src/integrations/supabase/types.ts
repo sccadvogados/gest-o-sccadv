@@ -146,12 +146,12 @@ export type Database = {
           created_at: string
           description: string | null
           first_due_date: string
-                    id: string
+          id: string
           installments_count: number
           modality: string
-          signature_date: string | null
           payment_method: string | null
           recurring: boolean
+          signature_date: string | null
           success_fee_percent: number
           total_value: number
           updated_at: string
@@ -164,7 +164,7 @@ export type Database = {
           first_due_date?: string
           id?: string
           installments_count?: number
-                    modality?: string
+          modality?: string
           payment_method?: string | null
           recurring?: boolean
           signature_date?: string | null
@@ -172,7 +172,7 @@ export type Database = {
           total_value?: number
           updated_at?: string
         }
-                Update: {
+        Update: {
           category?: string
           client_id?: string
           created_at?: string
@@ -194,6 +194,90 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      eventos: {
+        Row: {
+          cliente_id: string | null
+          contrato_id: string | null
+          created_at: string
+          created_by: string | null
+          data_fim: string | null
+          data_inicio: string
+          descricao: string | null
+          dia_inteiro: boolean
+          google_event_id: string | null
+          id: string
+          local_link: string | null
+          numero_processo: string | null
+          orgao_vara: string | null
+          prazo_fatal: string | null
+          prazo_interno: string | null
+          responsavel: string | null
+          status: string
+          tipo: string
+          titulo: string
+          updated_at: string
+        }
+        Insert: {
+          cliente_id?: string | null
+          contrato_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          data_fim?: string | null
+          data_inicio: string
+          descricao?: string | null
+          dia_inteiro?: boolean
+          google_event_id?: string | null
+          id?: string
+          local_link?: string | null
+          numero_processo?: string | null
+          orgao_vara?: string | null
+          prazo_fatal?: string | null
+          prazo_interno?: string | null
+          responsavel?: string | null
+          status?: string
+          tipo: string
+          titulo: string
+          updated_at?: string
+        }
+        Update: {
+          cliente_id?: string | null
+          contrato_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          data_fim?: string | null
+          data_inicio?: string
+          descricao?: string | null
+          dia_inteiro?: boolean
+          google_event_id?: string | null
+          id?: string
+          local_link?: string | null
+          numero_processo?: string | null
+          orgao_vara?: string | null
+          prazo_fatal?: string | null
+          prazo_interno?: string | null
+          responsavel?: string | null
+          status?: string
+          tipo?: string
+          titulo?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "eventos_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "eventos_contrato_id_fkey"
+            columns: ["contrato_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
             referencedColumns: ["id"]
           },
         ]
@@ -258,96 +342,27 @@ export type Database = {
           },
         ]
       }
-            perfis: {
+      perfis: {
         Row: {
+          ativo: boolean
+          email: string
           id: string
           nome: string
-          email: string
-          papel: "admin" | "usuario"
-          ativo: boolean
+          papel: string
         }
         Insert: {
+          ativo?: boolean
+          email: string
           id: string
           nome: string
-          email: string
-          papel?: "admin" | "usuario"
-          ativo?: boolean
+          papel: string
         }
         Update: {
+          ativo?: boolean
+          email?: string
           id?: string
           nome?: string
-          email?: string
-          papel?: "admin" | "usuario"
-          ativo?: boolean
-        }
-        Relationships: []
-      }
-      eventos: {
-        Row: {
-          id: string
-          tipo: "prazo" | "audiencia" | "reuniao" | "compromisso"
-          titulo: string
-          descricao: string | null
-          cliente_id: string | null
-          contrato_id: string | null
-          numero_processo: string | null
-          orgao_vara: string | null
-          data_inicio: string
-          data_fim: string | null
-          prazo_fatal: string | null
-          prazo_interno: string | null
-          local_link: string | null
-          responsavel: string | null
-          status: "pendente" | "cumprido" | "cancelado"
-          dia_inteiro: boolean
-          google_event_id: string | null
-          created_by: string | null
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          tipo: "prazo" | "audiencia" | "reuniao" | "compromisso"
-          titulo: string
-          descricao?: string | null
-          cliente_id?: string | null
-          contrato_id?: string | null
-          numero_processo?: string | null
-          orgao_vara?: string | null
-          data_inicio: string
-          data_fim?: string | null
-          prazo_fatal?: string | null
-          prazo_interno?: string | null
-          local_link?: string | null
-          responsavel?: string | null
-          status?: "pendente" | "cumprido" | "cancelado"
-          dia_inteiro?: boolean
-          google_event_id?: string | null
-          created_by?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          tipo?: "prazo" | "audiencia" | "reuniao" | "compromisso"
-          titulo?: string
-          descricao?: string | null
-          cliente_id?: string | null
-          contrato_id?: string | null
-          numero_processo?: string | null
-          orgao_vara?: string | null
-          data_inicio?: string
-          data_fim?: string | null
-          prazo_fatal?: string | null
-          prazo_interno?: string | null
-          local_link?: string | null
-          responsavel?: string | null
-          status?: "pendente" | "cumprido" | "cancelado"
-          dia_inteiro?: boolean
-          google_event_id?: string | null
-          created_by?: string | null
-          created_at?: string
-          updated_at?: string
+          papel?: string
         }
         Relationships: []
       }
@@ -379,15 +394,9 @@ export type Database = {
     Views: {
       [_ in never]: never
     }
-        Functions: {
-      is_ativo: {
-        Args: Record<string, never>
-        Returns: boolean
-      }
-      is_admin: {
-        Args: Record<string, never>
-        Returns: boolean
-      }
+    Functions: {
+      is_admin: { Args: never; Returns: boolean }
+      is_ativo: { Args: never; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
