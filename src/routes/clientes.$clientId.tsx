@@ -439,7 +439,9 @@ function ContractActions({
     total_value: number;
     installments_count: number;
     first_due_date: string;
-    payment_method: string | null;
+        payment_method: string | null;
+    modality: ContractModality;
+    signature_date: string | null;
     success_fee_percent: number;
     installments?: Array<{ status: string }>;
   };
@@ -524,6 +526,8 @@ function EditContractDialog({
     installments_count: number;
     first_due_date: string;
     payment_method: string | null;
+    modality: ContractModality;
+    signature_date: string | null;
         success_fee_percent: number;
     installments?: Array<{ status: string }>;
   };
@@ -572,7 +576,7 @@ function EditContractDialog({
       const { error: deleteError } = await supabase.from("installments").delete().eq("contract_id", contract.id);
       if (deleteError) throw deleteError;
 
-      const rows = buildInstallments(total, installmentsCount, firstDue).map((row) => ({
+            const rows = buildContractInstallments(total, installmentsCount, firstDue, modality).map((row) => ({
         ...row,
         contract_id: contract.id,
         client_id: clientId,
