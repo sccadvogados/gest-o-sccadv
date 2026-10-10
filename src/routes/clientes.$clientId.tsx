@@ -317,7 +317,7 @@ function ClientDetailPage() {
 
       <section className="mt-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-lg">Contratos e condições de pagamento</h2>
+                    <h2 className="text-xl font-semibold text-[#0F2340]">Contratos e condições de pagamento</h2>
           <NewContractDialog clientId={clientId} />
         </div>
 
