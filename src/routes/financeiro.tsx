@@ -125,10 +125,16 @@ function FinancePage() {
 
   return (
     <AppShell>
-      <h1 className="text-2xl">Financeiro</h1>
-      <p className="mt-1 text-sm text-muted-foreground">
-        Parcelas de todos os contratos, com baixa de recebimento e previsão de caixa.
-      </p>
+            <PageHeader
+        title="Financeiro"
+        subtitle="Parcelas de todos os contratos, com baixa de recebimento e previsão de caixa."
+      />
+      <img
+        src="/imagens/imagem-f47c521f.png"
+        alt=""
+        aria-hidden="true"
+        className="hidden"
+      />
 
       <div className="mt-6 grid gap-4 sm:grid-cols-3">
         <Summary label="Recebido" value={received} />
