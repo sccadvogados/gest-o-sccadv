@@ -266,7 +266,19 @@ export function AgendaScreen() {
     mutationFn: async (id: string) => {
                         const { error } = await officeDatabase(supabase).from("eventos").update({ status: "cumprido" }).eq("id", id);
       if (error) throw error;
-      await syncUpdateEvent(id, { status: "cumprido" });
+            const event = events.find((item) => item.id === id);
+      if (event) {
+        await syncUpdateEvent({
+          data: {
+            id,
+            event: {
+              ...event,
+              status: "cumprido",
+              cliente_nome: clients.find((client) => client.id === event.cliente_id)?.name ?? null,
+            },
+          },
+        });
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["agenda-events"] });
