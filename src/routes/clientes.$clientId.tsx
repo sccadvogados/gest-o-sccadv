@@ -535,7 +535,9 @@ function EditContractDialog({
   const [category, setCategory] = useState(contract.category);
   const [totalValue, setTotalValue] = useState(String(contract.total_value));
   const [count, setCount] = useState(String(contract.installments_count));
-  const [firstDue, setFirstDue] = useState(contract.first_due_date);
+    const [firstDue, setFirstDue] = useState(contract.first_due_date);
+  const [modality, setModality] = useState<ContractModality>(contract.modality);
+  const [signatureDate, setSignatureDate] = useState(contract.signature_date ?? "");
   const [paymentMethod, setPaymentMethod] = useState(contract.payment_method ?? PAYMENT_METHODS[0]);
   const [successFee, setSuccessFee] = useState(String(contract.success_fee_percent));
 
@@ -549,15 +551,18 @@ function EditContractDialog({
       if (!firstDue) throw new Error("Informe o primeiro vencimento.");
 
             const contractUpdate = hasPaidInstallment
-        ? { description, category, payment_method: paymentMethod, success_fee_percent: fee }
+                ? { description, category, modality, signature_date: signatureDate || null, payment_method: paymentMethod, success_fee_percent: fee }
         : {
             description,
             category,
+            modality,
+            signature_date: signatureDate || null,
             total_value: total,
             installments_count: installmentsCount,
             first_due_date: firstDue,
             payment_method: paymentMethod,
             success_fee_percent: fee,
+            recurring: modality === "mensal",
           };
       const { error } = await supabase.from("contracts").update(contractUpdate).eq("id", contract.id);
       if (error) throw error;
@@ -610,6 +615,8 @@ function EditContractDialog({
         </div>
         <div className="space-y-2"><Label htmlFor={`edit-contract-total-${contract.id}`}>Valor total (R$)</Label><Input id={`edit-contract-total-${contract.id}`} inputMode="decimal" value={totalValue} onChange={(e) => setTotalValue(e.target.value)} disabled={hasPaidInstallment} /></div>
         <div className="space-y-2"><Label htmlFor={`edit-contract-count-${contract.id}`}>Número de parcelas</Label><Input id={`edit-contract-count-${contract.id}`} type="number" min={1} value={count} onChange={(e) => setCount(e.target.value)} disabled={hasPaidInstallment} /></div>
+                <div className="space-y-2"><Label>Modalidade</Label><Select value={modality} onValueChange={(value) => setModality(value as ContractModality)} disabled={hasPaidInstallment}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="parcelado">Pró-labore parcelado</SelectItem><SelectItem value="mensal">Pró-labore mensal</SelectItem><SelectItem value="exito">Somente êxito</SelectItem></SelectContent></Select></div>
+        <div className="space-y-2"><Label htmlFor={`edit-contract-signature-${contract.id}`}>Data de assinatura</Label><Input id={`edit-contract-signature-${contract.id}`} type="date" value={signatureDate} onChange={(e) => setSignatureDate(e.target.value)} /></div>
         <div className="space-y-2"><Label htmlFor={`edit-contract-due-${contract.id}`}>Primeiro vencimento</Label><Input id={`edit-contract-due-${contract.id}`} type="date" value={firstDue} onChange={(e) => setFirstDue(e.target.value)} disabled={hasPaidInstallment} /></div>
         <div className="space-y-2"><Label>Forma de pagamento</Label><Select value={paymentMethod} onValueChange={setPaymentMethod}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{PAYMENT_METHODS.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent></Select></div>
         <div className="space-y-2 sm:col-span-2"><Label htmlFor={`edit-contract-fee-${contract.id}`}>% de êxito</Label><Input id={`edit-contract-fee-${contract.id}`} inputMode="decimal" value={successFee} onChange={(e) => setSuccessFee(e.target.value)} /></div>
