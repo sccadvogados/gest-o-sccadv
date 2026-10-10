@@ -167,8 +167,9 @@ function FinancePage() {
               <p className="mt-1 text-lg">{formatCurrency(partnerShare)}</p>
             </div>
           ))}
-          <div>
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                    <div className="rounded-lg border border-border bg-[#F6F4EF] p-3">
+            <span className="mr-2 inline-block h-2.5 w-2.5 rounded-full bg-[#E6D6C4]" />
+            <p className="inline text-xs uppercase tracking-wide text-muted-foreground">
               Escritório · 10%
             </p>
             <p className="mt-1 text-lg">{formatCurrency(firmShare)}</p>
