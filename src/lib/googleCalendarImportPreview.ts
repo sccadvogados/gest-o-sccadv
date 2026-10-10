@@ -54,7 +54,7 @@ function parseEvent(event: GoogleCalendarItem, clients: Client[], existingIds: S
   const title = parts.filter((_, index) => index !== processIndex && index !== partiesIndex && index !== responsibleIndex && !/^\[PROTOCOLO\]$/i.test(parts[index])).join(" - ");
   const clientName = parties[0] ?? "";
   const client = clients.find((item) => normalize(item.name) === normalize(clientName));
-  const imported = existingIds.has(event.id);
+    const imported = existingIds.has(event.id);
   const kind = protocol ? "prazo" : event.colorId === "5" ? "compromisso" : "prazo";
 
   return {
