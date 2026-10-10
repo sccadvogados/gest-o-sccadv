@@ -45,6 +45,38 @@ function SettingsPage() {
     }
   }
 
+    async function importSelected() {
+    const selected = rows.filter((row) => row.selecionado);
+    if (selected.length === 0) return;
+    setImporting(true);
+    try {
+      const candidates = selected.filter((row) => !row.jaImportado);
+      const { error } = await supabase.from("eventos").insert(candidates.map((row) => ({
+        cliente_id: row.clienteId,
+        data_inicio: row.prazoFatal || row.prazoInterno,
+        dia_inteiro: true,
+        google_event_id_fatal: row.googleIdFatal,
+        google_event_id_interno: row.googleIdInterno,
+        numero_processo: row.processo || null,
+        parte_contraria: row.parteContraria || null,
+        prazo_fatal: row.prazoFatal || null,
+        prazo_interno: row.prazoInterno || null,
+        responsavel: row.responsavel || null,
+        status: "pendente",
+        tipo: row.tipo,
+        titulo: row.titulo || row.googleId,
+      })));
+      if (error) throw error;
+      const warnings = rows.filter((row) => row.aviso).length;
+      setSummary({ imported: candidates.length, ignored: selected.length - candidates.length, warnings });
+      toast.success("Importação concluída.");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Não foi possível importar os eventos.");
+    } finally {
+      setImporting(false);
+    }
+  }
+
   return (
     <AppShell>
       <div className="flex flex-wrap items-end justify-between gap-4">
