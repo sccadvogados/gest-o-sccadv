@@ -169,7 +169,7 @@ function ClientsPage() {
             )}
 
             {filtered.map((client) => (
-              <TableRow key={client.id}>
+                            <TableRow key={client.id} className="h-20">
                 <TableCell>
                   <Link
                     to="/clientes/$clientId"
