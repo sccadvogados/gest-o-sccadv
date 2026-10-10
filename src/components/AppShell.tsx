@@ -88,7 +88,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             ))}
           </nav>
           <div className="flex items-center gap-3">
-            <span className="hidden text-xs text-sidebar-foreground/70 sm:inline">
+                        <span className="hidden text-sm text-[#5B6472] sm:inline">
               {user.email}
             </span>
             <Button
