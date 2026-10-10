@@ -15,3 +15,4 @@
 - Derive active-process counts from Google Drive folders named with a CNJ process number under each client folder, because Drive is the office's process source of truth.
 - Keep the public authentication page limited to email/password sign-in and recovery; account provisioning is managed outside the public UI to protect office access.
 - Validate sign-in with Auth's getUser, not a profile activation flag, because provisioned office accounts have no separate approval table.
+- Keep migration-backed schema extensions in a shared typed adapter when generated Cloud types omit those objects; preserve runtime permissions and never modify generated clients.

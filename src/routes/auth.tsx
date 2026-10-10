@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { officeDatabase } from "@/lib/office-database";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -60,7 +61,7 @@ function AuthPage() {
       if (cancelled) return;
             if (error || !data.user) return;
 
-            const { data: active, error: activeError } = await supabase.rpc("is_ativo");
+            const { data: active, error: activeError } = await officeDatabase(supabase).rpc("is_ativo");
       if (activeError || active !== true) {
         await supabase.auth.signOut();
         sessionStorage.setItem(

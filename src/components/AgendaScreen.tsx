@@ -21,6 +21,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { supabase } from "@/integrations/supabase/client";
+import { officeDatabase } from "@/lib/office-database";
 import { APP_TIME_ZONE, formatDate } from "@/lib/format";
 import { createEvent as syncCreateEvent, deleteEvent as syncDeleteEvent, updateEvent as syncUpdateEvent } from "@/lib/calendarSync";
 
@@ -157,7 +158,7 @@ export function AgendaScreen() {
     queryKey: ["agenda-events"],
     queryFn: async () => {
       const { data, error } = await supabase
-                .from("eventos")
+                .from("eventos" as never)
                 .select("id, tipo, titulo, descricao, cliente_id, contrato_id, data_inicio, data_fim, prazo_fatal, prazo_interno, local_link, responsavel, status, dia_inteiro, google_event_id, created_by, updated_at")
         .order("data_inicio");
       if (error) throw error;
@@ -223,12 +224,12 @@ export function AgendaScreen() {
       const { id: eventId, ...values } = form;
       const payload = { ...values, cliente_id: form.cliente_id || null, contrato_id: form.contrato_id || null, data_inicio: form.tipo === "prazo" ? deadlineStart(form.prazo_interno, form.prazo_fatal) : form.data_inicio, data_fim: form.data_fim || null, prazo_fatal: form.tipo === "prazo" ? form.prazo_fatal || null : null, prazo_interno: form.tipo === "prazo" ? form.prazo_interno || null : null, local_link: form.tipo !== "prazo" ? form.local_link || null : null, status: form.status, ...(form.id ? {} : { created_by: (await supabase.auth.getUser()).data.user?.id ?? null }) };
       if (form.id) {
-                const { error } = await supabase.from("eventos").update(payload).eq("id", form.id);
+                const { error } = await officeDatabase(supabase).from("eventos").update(payload).eq("id", form.id);
         if (error) throw error;
         await syncUpdateEvent(form.id, payload);
         return;
       }
-            const { data, error } = await supabase.from("eventos").insert(payload).select("id").single();
+            const { data, error } = await officeDatabase(supabase).from("eventos").insert(payload).select("id").single();
       if (error) throw error;
       await syncCreateEvent(data);
     },
@@ -244,7 +245,7 @@ export function AgendaScreen() {
 
   const markDone = useMutation({
     mutationFn: async (id: string) => {
-                        const { error } = await supabase.from("eventos").update({ status: "cumprido" }).eq("id", id);
+                        const { error } = await officeDatabase(supabase).from("eventos").update({ status: "cumprido" }).eq("id", id);
       if (error) throw error;
       await syncUpdateEvent(id, { status: "cumprido" });
     },
@@ -257,7 +258,7 @@ export function AgendaScreen() {
 
     const deleteEvent = useMutation({
     mutationFn: async (id: string) => {
-            const { error } = await supabase.from("eventos").delete().eq("id", id);
+            const { error } = await officeDatabase(supabase).from("eventos").delete().eq("id", id);
       if (error) throw error;
       await syncDeleteEvent(id);
     },
