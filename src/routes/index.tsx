@@ -139,7 +139,7 @@ function ClientsPage() {
         </div>
       </div>
 
-      <div className="panel mt-6 overflow-hidden">
+            <div className="panel mt-6 overflow-hidden border-t-2 border-t-accent">
         <Table>
           <TableHeader>
             <TableRow>
