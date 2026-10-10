@@ -105,7 +105,7 @@ export function buildGoogleImportPreview(events: GoogleCalendarItem[], clients: 
 
   return [...grouped.values()].map((row) => ({
     ...row,
-        aviso: [row.aviso, row.prazoInterno && !row.prazoFatal ? "protocolo sem prazo fatal correspondente" : ""].filter(Boolean).join("; "),
+                aviso: row.aviso,
     selecionado: !row.aviso && !row.jaImportado,
   }));
 }
