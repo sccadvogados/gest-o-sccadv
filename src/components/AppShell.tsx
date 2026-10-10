@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
-import logoHorizontalWhite from "@/assets/scc-logo-horizontal-white.png";
+const logoHorizontal = "/__l5e/assets-v1/195a2125-7946-439b-bd3f-5ddac237f27f/scc-logo-horizontal.png";
 
 const NAV = [
   { to: "/", label: "Clientes", icon: Users },
@@ -18,7 +18,7 @@ export function BrandMark({ className }: { className?: string }) {
   return (
     <div className={cn("flex items-center", className)}>
       <img
-        src={logoHorizontalWhite}
+                src={logoHorizontal}
         alt="Souza, Craveiro & Corradi Advogados"
         className="h-11 w-auto object-contain"
       />
@@ -67,8 +67,8 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="bg-sidebar text-sidebar-foreground">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-4">
+            <header className="border-b border-[#ECE8E1] border-t-[3px] border-t-[#D4A782] bg-white text-[#0F2340]">
+                <div className="mx-auto flex max-w-[1240px] flex-wrap items-center justify-between gap-4 px-6 py-4">
           <BrandMark />
           <nav className="flex items-center gap-1">
             {NAV.map(({ to, label, icon: NavIcon }) => (
@@ -76,10 +76,10 @@ export function AppShell({ children }: { children: ReactNode }) {
                 key={to}
                 to={to}
                 className={cn(
-                  "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                                    "flex items-center gap-2 rounded-md border-b-2 border-transparent px-3 py-2 text-sm font-medium transition-colors",
                   pathname === to
-                    ? "bg-sidebar-accent text-sidebar-primary"
-                    : "text-sidebar-foreground/80 hover:bg-sidebar-accent/60",
+                    ? "border-b-[#D4A782] bg-[#F4EDE4] text-[#0F2340]"
+                    : "text-[#5B6472] hover:bg-[#F4EDE4]",
                 )}
               >
                                 <NavIcon className="size-4" />
@@ -88,13 +88,13 @@ export function AppShell({ children }: { children: ReactNode }) {
             ))}
           </nav>
           <div className="flex items-center gap-3">
-            <span className="hidden text-xs text-sidebar-foreground/70 sm:inline">
+                        <span className="hidden text-sm text-[#5B6472] sm:inline">
               {user.email}
             </span>
             <Button
-              variant="ghost"
+                            variant="outline"
               size="sm"
-              className="text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-primary"
+              className="border-[#D4A782] bg-white text-[#0F2340] hover:bg-[#F4EDE4]"
               onClick={async () => {
                 await supabase.auth.signOut();
                 navigate({ to: "/auth" });
@@ -106,7 +106,10 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-6xl px-6 py-8">{children}</main>
+            <main className="mx-auto w-full max-w-[1240px] flex-1 px-6 py-8">{children}</main>
+      <footer className="px-6 py-6 text-center text-[13px] text-[#5B6472]">
+        © 2026 SCC Advogados · Acesso restrito
+      </footer>
     </div>
   );
 }
