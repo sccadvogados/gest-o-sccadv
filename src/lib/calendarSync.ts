@@ -186,9 +186,7 @@ export const updateEvent = createServerFn({ method: "POST" })
     await ensureActive(context.supabase);
     const { data: previous, error } = await context.supabase.from("eventos").select("google_event_id, google_event_id_fatal, google_event_id_interno").eq("id", data.id).single();
     if (error) throw error;
-    await removeGoogleEvent(previous.google_event_id);
-    await removeGoogleEvent(previous.google_event_id_fatal);
-    await removeGoogleEvent(previous.google_event_id_interno);
+        await removeGoogleEvent(previous.google_event_id);
     return createEvent({ data: data.event });
   });
 
