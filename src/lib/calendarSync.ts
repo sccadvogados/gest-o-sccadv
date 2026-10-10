@@ -95,33 +95,16 @@ function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
     const process = event.numero_processo?.trim();
     const party = parties(event);
     const doctor = responsible(event);
-    const fatalTitle = compactParts(["[SCCAdv]", event.titulo, process, party, doctor]);
-    const internalTitle = compactParts(["[SCCAdv] [PROTOCOLO]", event.titulo, party, process, doctor]);
-    const events: GoogleEvent[] = [];
-
-    if (event.prazo_fatal) {
-      const fatalDate = dateOnly(event.prazo_fatal);
-      events.push({
-        id: "",
-        summary: fatalTitle,
-        colorId: "7",
-        start: { date: fatalDate },
-        end: { date: nextDate(fatalDate) },
-        description: common.description,
-      });
-    }
-    if (event.prazo_interno) {
-      const internalDate = dateOnly(event.prazo_interno);
-      events.push({
-        id: "",
-        summary: internalTitle,
-        colorId: "5",
-        start: { date: internalDate },
-        end: { date: nextDate(internalDate) },
-        description: common.description,
-      });
-    }
-    return events;
+        const title = compactParts(["[SCCAdv]", event.titulo, process, party, doctor]);
+    const date = dateOnly(event.prazo_fatal || event.data_inicio);
+    return [{
+      id: "",
+      summary: title,
+      colorId: "7",
+      start: { date },
+      end: { date: nextDate(date) },
+      description: common.description,
+    }];
   }
 
   return [{
