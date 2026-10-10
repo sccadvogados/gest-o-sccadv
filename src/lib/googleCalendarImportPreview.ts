@@ -75,7 +75,7 @@ function parseEvent(event: GoogleCalendarItem, clients: Client[], existingIds: S
 }
 
 export function buildGoogleImportPreview(events: GoogleCalendarItem[], clients: Client[], existing: ExistingEvent[]): GoogleImportPreviewRow[] {
-  const existingIds = new Set(existing.flatMap((event) => [event.google_event_id, event.google_event_id_fatal, event.google_event_id_interno].filter(Boolean) as string[]));
+    const existingIds = new Set(existing.map((event) => event.google_event_id).filter(Boolean) as string[]);
   const rows = events.map((event) => parseEvent(event, clients, existingIds));
   const grouped = new Map<string, GoogleImportPreviewRow>();
 
