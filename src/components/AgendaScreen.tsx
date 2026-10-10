@@ -300,6 +300,25 @@ export function AgendaScreen() {
     onError: () => toast.error("Não foi possível excluir o evento."),
   });
 
+    const retrySync = useMutation({
+    mutationFn: async (event: AgendaEvent) => {
+      await syncUpdateEvent({
+        data: {
+          id: event.id,
+          event: {
+            ...event,
+            cliente_nome: clients.find((client) => client.id === event.cliente_id)?.name ?? null,
+          },
+        },
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["agenda-events"] });
+      toast.success("Sincronização tentada novamente.");
+    },
+    onError: () => toast.error("Não foi possível tentar a sincronização novamente."),
+  });
+
   return (
     <AppShell>
       <img src="/imagens/imagem-e3c618da.png" alt="" aria-hidden="true" className="hidden" />
