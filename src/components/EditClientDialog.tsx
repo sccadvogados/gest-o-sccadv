@@ -166,7 +166,7 @@ export function EditClientDialog({
 
         <div className="space-y-6">
           <section className="space-y-4">
-            <h3 className="text-sm font-semibold">Qualificação</h3>
+                        <h3 className="text-sm font-semibold uppercase tracking-wide text-[#0F2340]">Qualificação</h3>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label>Tipo de pessoa</Label>
