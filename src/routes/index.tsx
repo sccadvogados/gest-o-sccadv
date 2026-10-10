@@ -233,8 +233,12 @@ function ClientsPage() {
                 </TableCell>
               </TableRow>
             ))}
-          </TableBody>
+                    </TableBody>
         </Table>
+        <div className="flex items-center justify-between border-t border-[#E6E1D8] bg-[#FBFAF7] px-6 py-4 text-sm text-muted-foreground">
+          <span>Exibindo {filtered.length} clientes</span>
+          <span>Ordenado por nome</span>
+        </div>
       </div>
     </AppShell>
   );
