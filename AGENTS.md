@@ -14,5 +14,5 @@
 - Run personal-document extraction only in authenticated server functions and never log or expose the document contents, because they contain sensitive client data.
 - Derive active-process counts from Google Drive folders named with a CNJ process number under each client folder, because Drive is the office's process source of truth.
 - Keep the public authentication page limited to email/password sign-in and recovery; account provisioning is managed outside the public UI to protect office access.
-- Validate sign-in with Auth's getUser, not a profile activation flag, because provisioned office accounts have no separate approval table.
+- Validate sign-in with Auth's getUser AND require public.is_ativo() = true; only active profiles in public.perfis can access data.
 - Keep migration-backed schema extensions in a shared typed adapter when generated Cloud types omit those objects; preserve runtime permissions and never modify generated clients.
