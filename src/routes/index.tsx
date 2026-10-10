@@ -107,8 +107,8 @@ function ClientsPage() {
         )}
       />
 
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
-        <div className="relative w-full max-w-md">
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+        <div className="relative min-w-[280px] flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
             placeholder="Buscar cliente…"
