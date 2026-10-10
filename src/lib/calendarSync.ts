@@ -95,7 +95,8 @@ function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
   const common = {
     start: { date },
     end: { date: nextDate(date) },
-    description: description(event),
+        description: description(event),
+    reminders: reminderOverrides(event),
   };
 
   if (event.tipo === "prazo") {
