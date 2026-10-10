@@ -6,6 +6,7 @@ import { useState } from "react";
 
 import { AppShell } from "@/components/AppShell";
 import { Badge } from "@/components/ui/badge";
+import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
