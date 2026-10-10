@@ -209,7 +209,9 @@ export type Database = {
           data_inicio: string
           descricao: string | null
           dia_inteiro: boolean
-          google_event_id: string | null
+                    google_event_id: string | null
+          google_event_id_fatal: string | null
+          google_event_id_interno: string | null
           id: string
           local_link: string | null
           numero_processo: string | null
