@@ -67,7 +67,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="bg-sidebar text-sidebar-foreground">
+            <header className="border-b border-[#ECE8E1] border-t-[3px] border-t-[#D4A782] bg-white text-[#0F2340]">
                 <div className="mx-auto flex max-w-[1240px] flex-wrap items-center justify-between gap-4 px-6 py-4">
           <BrandMark />
           <nav className="flex items-center gap-1">
