@@ -1,6 +1,6 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { CalendarDays, LogOut, Users, Wallet } from "lucide-react";
-import { useEffect, type ReactNode } from "react";
+import { CalendarDays, LogOut, Settings, Users, Wallet } from "lucide-react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -11,7 +11,8 @@ const logoHorizontal = "/__l5e/assets-v1/195a2125-7946-439b-bd3f-5ddac237f27f/sc
 const NAV = [
   { to: "/", label: "Clientes", icon: Users },
     { to: "/agenda", label: "Agenda", icon: CalendarDays },
-  { to: "/financeiro", label: "Financeiro", icon: Wallet },
+    { to: "/financeiro", label: "Financeiro", icon: Wallet },
+  { to: "/configuracoes", label: "Configurações", icon: Settings },
 ] as const;
 
 export function BrandMark({ className }: { className?: string }) {
@@ -29,7 +30,14 @@ export function BrandMark({ className }: { className?: string }) {
 export function AppShell({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
+    const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const [isAdmin, setIsAdmin] = useState(false);
+
+    useEffect(() => {
+    if (!loading && user) {
+      void supabase.rpc("is_admin").then(({ data }) => setIsAdmin(data === true));
+    }
+  }, [loading, user]);
 
     useEffect(() => {
     if (!loading && !user) navigate({ to: "/auth" });
@@ -71,7 +79,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <div className="mx-auto flex max-w-[1240px] flex-wrap items-center justify-between gap-4 px-6 py-4">
           <BrandMark />
           <nav className="flex items-center gap-1">
-            {NAV.map(({ to, label, icon: Icon }) => (
+                        {NAV.filter(({ to }) => to !== "/configuracoes" || isAdmin).map(({ to, label, icon: Icon }) => (
               <Link
                 key={to}
                 to={to}
