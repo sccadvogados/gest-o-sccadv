@@ -535,7 +535,9 @@ function EditContractDialog({
   const [category, setCategory] = useState(contract.category);
   const [totalValue, setTotalValue] = useState(String(contract.total_value));
   const [count, setCount] = useState(String(contract.installments_count));
-  const [firstDue, setFirstDue] = useState(contract.first_due_date);
+    const [firstDue, setFirstDue] = useState(contract.first_due_date);
+  const [modality, setModality] = useState<ContractModality>(contract.modality);
+  const [signatureDate, setSignatureDate] = useState(contract.signature_date ?? "");
   const [paymentMethod, setPaymentMethod] = useState(contract.payment_method ?? PAYMENT_METHODS[0]);
   const [successFee, setSuccessFee] = useState(String(contract.success_fee_percent));
 
