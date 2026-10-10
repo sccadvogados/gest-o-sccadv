@@ -316,8 +316,8 @@ export function AgendaScreen() {
   );
 }
 
-function SummaryCard({ label, value, color, active, onClick }: { label: string; value: number; color: string; active: boolean; onClick: () => void }) {
-  return <button type="button" onClick={onClick} className={`panel flex min-h-24 items-center justify-between border-l-4 p-5 text-left transition-shadow hover:shadow-md ${active ? "ring-2 ring-accent" : ""}`} style={{ borderLeftColor: color }}><span className="text-sm text-muted-foreground">{label}</span><span className="text-3xl font-semibold" style={{ color }}>{value}</span></button>;
+function SummaryCard({ label, description, value, color, active, onClick }: { label: string; description: string; value: number; color: string; active: boolean; onClick: () => void }) {
+  return <button type="button" onClick={onClick} className={`panel flex min-h-28 items-center justify-between border-t-4 p-5 text-left transition-shadow hover:shadow-md ${active ? "ring-2 ring-accent" : ""}`} style={{ borderTopColor: color }}><span><span className="block text-xs font-semibold tracking-wide text-muted-foreground">{label}</span><span className="mt-1 block text-sm text-muted-foreground">{description}</span></span><span className="text-4xl font-semibold" style={{ color }}>{value}</span></button>;
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) { return <div className="grid gap-2"><Label>{label}</Label>{children}</div>; }
