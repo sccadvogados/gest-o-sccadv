@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PageHeader } from "@/components/ui/page-header";
 import {
   Select,
   SelectContent,
@@ -231,28 +232,26 @@ function ClientDetailPage() {
         </div>
       ) : null}
 
-      <div className="mt-4 flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl">{client.name}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {client.person_type === "PJ" ? "Pessoa jurídica" : "Pessoa física"} ·{" "}
-            {client.cpf_cnpj || "CPF/CNPJ não informado"}
-          </p>
-        </div>
-                <div className="flex flex-wrap gap-2">
-          <EditClientDialog clientId={clientId} client={client} />
-          {client.drive_folder_url ? (
-          <Button asChild variant="outline">
-            <a href={client.drive_folder_url} target="_blank" rel="noreferrer">
-              <FolderOpen className="size-4" />
-              Abrir pasta no Drive
-            </a>
-                    </Button>
-          ) : null}
-        </div>
-      </div>
+            <PageHeader
+        className="mt-4"
+        title={client.name}
+        subtitle={`${client.person_type === "PJ" ? "Pessoa jurídica" : "Pessoa física"} · ${client.cpf_cnpj || "CPF/CNPJ não informado"}`}
+        action={
+          <div className="flex flex-wrap gap-2">
+            <EditClientDialog clientId={clientId} client={client} />
+            {client.drive_folder_url ? (
+              <Button asChild variant="outline">
+                <a href={client.drive_folder_url} target="_blank" rel="noreferrer">
+                  <FolderOpen className="size-4" />
+                  Abrir pasta no Drive
+                </a>
+              </Button>
+            ) : null}
+          </div>
+        }
+      />
 
-      <section className="panel mt-6 grid gap-4 p-6 sm:grid-cols-2">
+            <section className="panel mt-6 grid gap-5 rounded-xl border border-[#E6D6C4] border-t-[3px] border-t-[#D4A782] bg-white p-6 shadow-panel sm:grid-cols-2">
         <Field label="Nacionalidade" value={client.nationality} />
         <Field label="Estado civil" value={client.marital_status} />
         <Field label="Profissão" value={client.profession} />
@@ -273,8 +272,8 @@ function ClientDetailPage() {
       </section>
 
       <section className="mt-8">
-        <h2 className="text-lg">Documentos</h2>
-        <div className="panel mt-3 overflow-hidden">
+                <h2 className="text-xl font-semibold text-[#0F2340]">Documentos</h2>
+        <div className="panel mt-3 overflow-hidden rounded-xl border border-[#E6D6C4] border-t-[3px] border-t-[#D4A782] bg-white shadow-panel">
           <Table>
             <TableHeader>
               <TableRow>
@@ -316,7 +315,7 @@ function ClientDetailPage() {
 
       <section className="mt-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-lg">Contratos e condições de pagamento</h2>
+                    <h2 className="text-xl font-semibold text-[#0F2340]">Contratos e condições de pagamento</h2>
           <NewContractDialog clientId={clientId} />
         </div>
 
@@ -327,7 +326,7 @@ function ClientDetailPage() {
         )}
 
         {(contracts ?? []).map((contract) => (
-          <div key={contract.id} className="panel mt-4 overflow-hidden">
+                    <div key={contract.id} className="panel mt-4 overflow-hidden rounded-xl border border-[#E6D6C4] border-t-[3px] border-t-[#D4A782] bg-white shadow-panel">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-5">
               <div>
                 <p className="font-medium">{contract.description || contract.category}</p>

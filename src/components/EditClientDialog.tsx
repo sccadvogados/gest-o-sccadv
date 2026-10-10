@@ -159,14 +159,14 @@ export function EditClientDialog({
           {triggerLabel}
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
+            <DialogContent className="max-h-[90vh] overflow-y-auto rounded-xl border-[#E6D6C4] border-t-[3px] border-t-[#D4A782] bg-[#F6F4EF] shadow-panel sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle>Editar dados do cliente</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
           <section className="space-y-4">
-            <h3 className="text-sm font-semibold">Qualificação</h3>
+                        <h3 className="text-sm font-semibold uppercase tracking-wide text-[#0F2340]">Qualificação</h3>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label>Tipo de pessoa</Label>
@@ -208,7 +208,7 @@ export function EditClientDialog({
           </section>
 
           <section className="space-y-4">
-            <h3 className="text-sm font-semibold">Endereço e contato</h3>
+                        <h3 className="text-sm font-semibold uppercase tracking-wide text-[#0F2340]">Endereço e contato</h3>
             <div className="grid gap-4 sm:grid-cols-6">
               <div className="space-y-2 sm:col-span-2"><Label htmlFor="edit-cep">CEP</Label><Input id="edit-cep" value={form.cep} onChange={(event) => set("cep", maskCep(event.target.value))} onBlur={(event) => lookupCep(event.target.value)} />{cepBusy && <p className="text-xs text-muted-foreground">Consultando CEP…</p>}</div>
               <div className="space-y-2 sm:col-span-3"><Label htmlFor="edit-street">Logradouro</Label><Input id="edit-street" value={form.street} onChange={(event) => set("street", event.target.value)} /></div>
