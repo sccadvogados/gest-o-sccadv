@@ -200,8 +200,9 @@ export type Database = {
       }
       eventos: {
         Row: {
-          cliente_id: string | null
+                    cliente_id: string | null
           contrato_id: string | null
+          parte_contraria: string | null
           created_at: string
           created_by: string | null
           data_fim: string | null
