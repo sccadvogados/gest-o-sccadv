@@ -100,7 +100,6 @@ const emptyForm = {
   data_inicio: "",
   data_fim: "",
   prazo_fatal: "",
-  prazo_interno: "",
   local_link: "",
   responsavel: "",
 };
