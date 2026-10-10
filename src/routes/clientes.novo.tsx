@@ -334,7 +334,7 @@ function NewClientPage() {
               <FileScan className="size-5" />
             </div>
             <div>
-              <h2 className="text-base font-semibold">Anexe os documentos do cliente</h2>
+                            <h2 className="text-base font-semibold text-[#0F2340]">Anexe os documentos do cliente</h2>
               <p className="mt-1 text-sm text-muted-foreground">
                 Ao anexar, as informações são lidas e preenchidas automaticamente.
               </p>
