@@ -7,8 +7,6 @@ type GoogleCalendarItem = {
 
 type ExistingEvent = {
   google_event_id: string | null;
-  google_event_id_fatal: string | null;
-  google_event_id_interno: string | null;
 };
 
 type Client = { id: string; name: string };
