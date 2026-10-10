@@ -90,7 +90,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                     : "text-[#5B6472] hover:bg-[#F4EDE4]",
                 )}
               >
-                                <NavIcon className="size-4" />
+                                <MenuIcon className="size-4" />
                 {label}
               </Link>
             ))}
