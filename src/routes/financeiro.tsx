@@ -267,8 +267,12 @@ function Summary({
   tone?: "danger";
 }) {
   return (
-    <div className="panel p-5">
-      <p className="text-xs uppercase tracking-wide text-muted-foreground">{label}</p>
+        <div
+      className={`panel border-t-4 p-5 ${
+        tone === "danger" ? "border-t-[#B42318]" : label === "A receber" ? "border-t-[#C08A5E]" : "border-t-[#0F2340]"
+      }`}
+    >
+      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{label}</p>
       <p
         className={
           tone === "danger" ? "mt-2 text-2xl text-destructive" : "mt-2 text-2xl"
