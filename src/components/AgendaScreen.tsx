@@ -208,8 +208,8 @@ export function AgendaScreen() {
         const matchesSearch = !term || [event.titulo, event.descricao, clientName, event.responsavel]
           .filter(Boolean).some((value) => value!.toLowerCase().includes(term));
         const matchesCard = cardFilter === "todos" || (cardFilter === "vencidos" && isOverdue(event)) ||
-          (cardFilter === "hoje" && isToday(event) && event.status !== "cumprido") ||
-          (cardFilter === "proximos" && isNextWeek(event) && event.status !== "cumprido");
+          (cardFilter === "hoje" && isToday(event) && event.status !== "cumprido" && event.status !== "cancelado") ||
+          (cardFilter === "proximos" && isNextWeek(event) && event.status !== "cumprido" && event.status !== "cancelado");
         return matchesSearch && matchesCard &&
           (typeFilter === "todos" || event.tipo === typeFilter) &&
           (responsibleFilter === "todos" || event.responsavel === responsibleFilter) &&
