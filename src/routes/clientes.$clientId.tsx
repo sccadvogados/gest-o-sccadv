@@ -576,7 +576,7 @@ function EditContractDialog({
       const { error: deleteError } = await supabase.from("installments").delete().eq("contract_id", contract.id);
       if (deleteError) throw deleteError;
 
-      const rows = buildInstallments(total, installmentsCount, firstDue).map((row) => ({
+            const rows = buildContractInstallments(total, installmentsCount, firstDue, modality).map((row) => ({
         ...row,
         contract_id: contract.id,
         client_id: clientId,
