@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { BriefcaseBusiness, FolderOpen, Plus, Search } from "lucide-react";
+import { BriefcaseBusiness, Filter, FolderOpen, Plus, Search } from "lucide-react";
 import { useState } from "react";
 
 import { AppShell } from "@/components/AppShell";
