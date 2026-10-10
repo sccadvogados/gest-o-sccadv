@@ -30,7 +30,14 @@ export function BrandMark({ className }: { className?: string }) {
 export function AppShell({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
+    const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const [isAdmin, setIsAdmin] = useState(false);
+
+    useEffect(() => {
+    if (!loading && user) {
+      void supabase.rpc("is_admin").then(({ data }) => setIsAdmin(data === true));
+    }
+  }, [loading, user]);
 
     useEffect(() => {
     if (!loading && !user) navigate({ to: "/auth" });
