@@ -7,16 +7,12 @@ type GoogleCalendarItem = {
 
 type ExistingEvent = {
   google_event_id: string | null;
-  google_event_id_fatal: string | null;
-  google_event_id_interno: string | null;
 };
 
 type Client = { id: string; name: string };
 
 export type GoogleImportPreviewRow = {
-    googleId: string;
-  googleIdFatal: string | null;
-  googleIdInterno: string | null;
+      googleId: string;
   tipo: "prazo" | "compromisso";
   titulo: string;
   processo: string;
@@ -58,9 +54,7 @@ function parseEvent(event: GoogleCalendarItem, clients: Client[], existingIds: S
   const kind = protocol ? "prazo" : event.colorId === "5" ? "compromisso" : "prazo";
 
   return {
-        googleId: event.id,
-    googleIdFatal: !protocol && kind === "prazo" ? event.id : null,
-    googleIdInterno: protocol ? event.id : null,
+            googleId: event.id,
     tipo: kind,
     titulo: title,
     processo: process,
@@ -68,8 +62,7 @@ function parseEvent(event: GoogleCalendarItem, clients: Client[], existingIds: S
     clienteId: client?.id ?? null,
     parteContraria: parties[1] ?? "",
     responsavel: responsible,
-    prazoFatal: !protocol && kind === "prazo" ? dateOf(event) : "",
-    prazoInterno: protocol ? dateOf(event) : "",
+        prazoFatal: kind === "prazo" ? dateOf(event) : "",
         aviso: [
       !client && clientName ? "cliente não encontrado" : "",
       imported ? "evento já importado antes" : "",
@@ -80,7 +73,7 @@ function parseEvent(event: GoogleCalendarItem, clients: Client[], existingIds: S
 }
 
 export function buildGoogleImportPreview(events: GoogleCalendarItem[], clients: Client[], existing: ExistingEvent[]): GoogleImportPreviewRow[] {
-  const existingIds = new Set(existing.flatMap((event) => [event.google_event_id, event.google_event_id_fatal, event.google_event_id_interno].filter(Boolean) as string[]));
+    const existingIds = new Set(existing.map((event) => event.google_event_id).filter(Boolean) as string[]);
   const rows = events.map((event) => parseEvent(event, clients, existingIds));
   const grouped = new Map<string, GoogleImportPreviewRow>();
 
@@ -89,10 +82,7 @@ export function buildGoogleImportPreview(events: GoogleCalendarItem[], clients: 
       const key = `${row.processo}|${row.titulo}`;
       const current = grouped.get(key);
       if (current) {
-                current.prazoFatal ||= row.prazoFatal;
-        current.prazoInterno ||= row.prazoInterno;
-        current.googleIdFatal ||= row.googleIdFatal;
-        current.googleIdInterno ||= row.googleIdInterno;
+                        current.prazoFatal ||= row.prazoFatal;
         current.jaImportado ||= row.jaImportado;
         current.aviso = [current.aviso, row.aviso].filter(Boolean).join("; ");
         continue;
@@ -105,7 +95,7 @@ export function buildGoogleImportPreview(events: GoogleCalendarItem[], clients: 
 
   return [...grouped.values()].map((row) => ({
     ...row,
-        aviso: [row.aviso, row.prazoInterno && !row.prazoFatal ? "protocolo sem prazo fatal correspondente" : ""].filter(Boolean).join("; "),
+                aviso: row.aviso,
     selecionado: !row.aviso && !row.jaImportado,
   }));
 }

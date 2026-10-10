@@ -31,7 +31,7 @@ function SettingsPage() {
     try {
       const [{ data: clients, error: clientsError }, { data: existing, error: existingError }, googleEvents] = await Promise.all([
         supabase.from("clients").select("id, name").order("name"),
-        supabase.from("eventos").select("google_event_id, google_event_id_fatal, google_event_id_interno"),
+        supabase.from("eventos").select("google_event_id"),
         fetchGoogleEvents({ data: { from } }),
       ]);
       if (clientsError) throw clientsError;
@@ -55,8 +55,7 @@ function SettingsPage() {
         cliente_id: row.clienteId,
         data_inicio: row.prazoFatal || row.prazoInterno,
         dia_inteiro: true,
-        google_event_id_fatal: row.googleIdFatal,
-        google_event_id_interno: row.googleIdInterno,
+        google_event_id: row.googleId,
         numero_processo: row.processo || null,
         parte_contraria: row.parteContraria || null,
         prazo_fatal: row.prazoFatal || null,
@@ -114,8 +113,8 @@ function SettingsPage() {
           <p className="px-6 py-10 text-center text-sm text-muted-foreground">Escolha a data e mostre a prévia para carregar os eventos.</p>
         ) : (
           <Table>
-            <TableHeader><TableRow><TableHead>Tipo</TableHead><TableHead>Título</TableHead><TableHead>Processo</TableHead><TableHead>Cliente</TableHead><TableHead>Parte contrária</TableHead><TableHead>Responsável</TableHead><TableHead>Prazo fatal</TableHead><TableHead>Prazo interno</TableHead><TableHead>Aviso</TableHead></TableRow></TableHeader>
-            <TableBody>{rows.map((row) => <TableRow key={row.googleId}><TableCell>{row.tipo}</TableCell><TableCell>{row.titulo || "—"}</TableCell><TableCell>{row.processo || "—"}</TableCell><TableCell>{row.cliente || "—"}{row.cliente && !row.clienteId ? <div className="text-xs text-destructive">cliente não encontrado</div> : null}</TableCell><TableCell>{row.parteContraria || "—"}</TableCell><TableCell>{row.responsavel || "—"}</TableCell><TableCell>{row.prazoFatal || "—"}</TableCell><TableCell>{row.prazoInterno || "—"}</TableCell><TableCell className="text-destructive">{row.aviso || "—"}</TableCell></TableRow>)}</TableBody>
+            <TableHeader><TableRow><TableHead>Tipo</TableHead><TableHead>Título</TableHead><TableHead>Processo</TableHead><TableHead>Cliente</TableHead><TableHead>Parte contrária</TableHead><TableHead>Responsável</TableHead><TableHead>Prazo</TableHead><TableHead>Aviso</TableHead></TableRow></TableHeader>
+            <TableBody>{rows.map((row) => <TableRow key={row.googleId}><TableCell>{row.tipo}</TableCell><TableCell>{row.titulo || "—"}</TableCell><TableCell>{row.processo || "—"}</TableCell><TableCell>{row.cliente || "—"}{row.cliente && !row.clienteId ? <div className="text-xs text-destructive">cliente não encontrado</div> : null}</TableCell><TableCell>{row.parteContraria || "—"}</TableCell><TableCell>{row.responsavel || "—"}</TableCell><TableCell>{row.prazoFatal || row.prazoInterno || "—"}</TableCell><TableCell className="text-destructive">{row.aviso || "—"}</TableCell></TableRow>)}</TableBody>
           </Table>
         )}
       </div>

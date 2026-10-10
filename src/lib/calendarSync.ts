@@ -27,8 +27,6 @@ type GoogleEvent = {
 };
 
 type GoogleEventIds = {
-  fatal: string | null;
-  interno: string | null;
   comum: string | null;
 };
 
@@ -95,33 +93,16 @@ function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
     const process = event.numero_processo?.trim();
     const party = parties(event);
     const doctor = responsible(event);
-    const fatalTitle = compactParts(["[SCCAdv]", event.titulo, process, party, doctor]);
-    const internalTitle = compactParts(["[SCCAdv] [PROTOCOLO]", event.titulo, party, process, doctor]);
-    const events: GoogleEvent[] = [];
-
-    if (event.prazo_fatal) {
-      const fatalDate = dateOnly(event.prazo_fatal);
-      events.push({
-        id: "",
-        summary: fatalTitle,
-        colorId: "7",
-        start: { date: fatalDate },
-        end: { date: nextDate(fatalDate) },
-        description: common.description,
-      });
-    }
-    if (event.prazo_interno) {
-      const internalDate = dateOnly(event.prazo_interno);
-      events.push({
-        id: "",
-        summary: internalTitle,
-        colorId: "5",
-        start: { date: internalDate },
-        end: { date: nextDate(internalDate) },
-        description: common.description,
-      });
-    }
-    return events;
+        const title = compactParts(["[SCCAdv]", event.titulo, process, party, doctor]);
+    const date = dateOnly(event.prazo_fatal || event.data_inicio);
+    return [{
+      id: "",
+      summary: title,
+      colorId: "7",
+      start: { date },
+      end: { date: nextDate(date) },
+      description: common.description,
+    }];
   }
 
   return [{
@@ -178,15 +159,10 @@ export const createEvent = createServerFn({ method: "POST" })
   .handler(async ({ context, data }: { context: { supabase: any }; data: CalendarEvent }) => {
     await ensureActive(context.supabase);
     const googleEvents = buildGoogleEvents(data);
-    const ids: GoogleEventIds = { fatal: null, interno: null, comum: null };
+        const ids: GoogleEventIds = { comum: null };
     for (const [index, googleEvent] of googleEvents.entries()) {
       const id = await insertGoogleEvent(googleEvent);
-      if (data.tipo === "prazo") {
-        if (index === 0) ids.fatal = id;
-        else ids.interno = id;
-      } else {
-        ids.comum = id;
-      }
+            ids.comum = id;
     }
     const { error } = await context.supabase.from("eventos").update({
       google_event_id_fatal: ids.fatal,
@@ -201,11 +177,9 @@ export const updateEvent = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context, data }: { context: { supabase: any }; data: { id: string; event: CalendarEvent } }) => {
     await ensureActive(context.supabase);
-    const { data: previous, error } = await context.supabase.from("eventos").select("google_event_id, google_event_id_fatal, google_event_id_interno").eq("id", data.id).single();
+        const { data: previous, error } = await context.supabase.from("eventos").select("google_event_id").eq("id", data.id).single();
     if (error) throw error;
-    await removeGoogleEvent(previous.google_event_id);
-    await removeGoogleEvent(previous.google_event_id_fatal);
-    await removeGoogleEvent(previous.google_event_id_interno);
+        await removeGoogleEvent(previous.google_event_id);
     return createEvent({ data: data.event });
   });
 
@@ -213,7 +187,7 @@ export const deleteEvent = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context, data }: { context: { supabase: any }; data: { id: string } }) => {
     await ensureActive(context.supabase);
-    const { data: event, error } = await context.supabase.from("eventos").select("google_event_id, google_event_id_fatal, google_event_id_interno").eq("id", data.id).single();
+        const { data: event, error } = await context.supabase.from("eventos").select("google_event_id").eq("id", data.id).single();
     if (error) throw error;
     await removeGoogleEvent(event.google_event_id);
     await removeGoogleEvent(event.google_event_id_fatal);
