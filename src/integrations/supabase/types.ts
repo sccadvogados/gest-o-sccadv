@@ -164,8 +164,10 @@ export type Database = {
           first_due_date?: string
           id?: string
           installments_count?: number
+                    modality?: string
           payment_method?: string | null
           recurring?: boolean
+          signature_date?: string | null
           success_fee_percent?: number
           total_value?: number
           updated_at?: string
@@ -256,6 +258,99 @@ export type Database = {
           },
         ]
       }
+            perfis: {
+        Row: {
+          id: string
+          nome: string
+          email: string
+          papel: "admin" | "usuario"
+          ativo: boolean
+        }
+        Insert: {
+          id: string
+          nome: string
+          email: string
+          papel?: "admin" | "usuario"
+          ativo?: boolean
+        }
+        Update: {
+          id?: string
+          nome?: string
+          email?: string
+          papel?: "admin" | "usuario"
+          ativo?: boolean
+        }
+        Relationships: []
+      }
+      eventos: {
+        Row: {
+          id: string
+          tipo: "prazo" | "audiencia" | "reuniao" | "compromisso"
+          titulo: string
+          descricao: string | null
+          cliente_id: string | null
+          contrato_id: string | null
+          numero_processo: string | null
+          orgao_vara: string | null
+          data_inicio: string
+          data_fim: string | null
+          prazo_fatal: string | null
+          prazo_interno: string | null
+          local_link: string | null
+          responsavel: string | null
+          status: "pendente" | "cumprido" | "cancelado"
+          dia_inteiro: boolean
+          google_event_id: string | null
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          tipo: "prazo" | "audiencia" | "reuniao" | "compromisso"
+          titulo: string
+          descricao?: string | null
+          cliente_id?: string | null
+          contrato_id?: string | null
+          numero_processo?: string | null
+          orgao_vara?: string | null
+          data_inicio: string
+          data_fim?: string | null
+          prazo_fatal?: string | null
+          prazo_interno?: string | null
+          local_link?: string | null
+          responsavel?: string | null
+          status?: "pendente" | "cumprido" | "cancelado"
+          dia_inteiro?: boolean
+          google_event_id?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          tipo?: "prazo" | "audiencia" | "reuniao" | "compromisso"
+          titulo?: string
+          descricao?: string | null
+          cliente_id?: string | null
+          contrato_id?: string | null
+          numero_processo?: string | null
+          orgao_vara?: string | null
+          data_inicio?: string
+          data_fim?: string | null
+          prazo_fatal?: string | null
+          prazo_interno?: string | null
+          local_link?: string | null
+          responsavel?: string | null
+          status?: "pendente" | "cumprido" | "cancelado"
+          dia_inteiro?: boolean
+          google_event_id?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -284,8 +379,15 @@ export type Database = {
     Views: {
       [_ in never]: never
     }
-    Functions: {
-      [_ in never]: never
+        Functions: {
+      is_ativo: {
+        Args: Record<string, never>
+        Returns: boolean
+      }
+      is_admin: {
+        Args: Record<string, never>
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never

@@ -86,8 +86,8 @@ function AgendaPage() {
   const { data: events, isLoading } = useQuery({
     queryKey: ["agenda-events"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("eventos" as never)
+            const { data, error } = await supabase
+        .from("eventos")
         .select("id, tipo, titulo, descricao, cliente_id, contrato_id, numero_processo, orgao_vara, data_inicio")
         .order("data_inicio");
       if (error) throw error;
