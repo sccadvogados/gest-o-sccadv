@@ -52,7 +52,7 @@ function ResetPasswordPage() {
   }
 
   return (
-    <div className="grid min-h-screen lg:grid-cols-2">
+        <div className="grid min-h-screen bg-[#F6F4EF] lg:grid-cols-2">
             <div className="hidden border-t-[3px] border-[#D4A782] bg-white p-12 lg:flex lg:items-start lg:border-b lg:border-[#ECE8E1]"><BrandMark /></div>
       <div className="flex items-center justify-center p-6">
         <form onSubmit={updatePassword} className="panel w-full max-w-sm space-y-5 p-8">
