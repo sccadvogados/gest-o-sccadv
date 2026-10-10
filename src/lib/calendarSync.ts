@@ -22,6 +22,7 @@ type GoogleEvent = {
   summary: string;
   description?: string;
   colorId: string;
+  reminders?: { useDefault: false; overrides: Array<{ method: "popup"; minutes: number }> };
   start: { date: string };
   end: { date: string };
 };
