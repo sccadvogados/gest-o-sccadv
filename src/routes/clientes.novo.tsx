@@ -328,7 +328,7 @@ function NewClientPage() {
           save.mutate();
         }}
       >
-        <section className="panel space-y-6 p-6">
+                <section className="panel rounded-xl border border-t-[3px] border-t-accent bg-card p-6 text-card-foreground shadow-panel space-y-6">
           <div className="flex items-start gap-4">
             <div className="grid size-11 shrink-0 place-items-center rounded-md bg-secondary text-primary">
               <FileScan className="size-5" />
