@@ -274,7 +274,7 @@ export function AgendaScreen() {
       <img src="/imagens/imagem-e3c618da.png" alt="" aria-hidden="true" className="hidden" />
       <TooltipProvider>
         <div className="flex flex-wrap items-end justify-between gap-4">
-          <div><h1 className="text-2xl">Prazos e Reuniões</h1><p className="mt-1 text-sm text-muted-foreground">Acompanhe os compromissos do escritório.</p></div>
+          <div><h1 className="text-[32px] font-bold leading-tight text-[#0F2340]">Prazos e reuniões</h1><p className="mt-1 text-sm text-muted-foreground">Acompanhe prazos, reuniões e compromissos do escritório.</p></div>
           <div className="flex items-center gap-3">
             <div className="flex rounded-md border bg-card p-1">
               <Button size="sm" variant="secondary">Lista</Button>
