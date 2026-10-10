@@ -3,6 +3,7 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
+import { PageHeader } from "@/components/ui/page-header";
 import { SituationBadge } from "@/routes/clientes.$clientId";
 import { Button } from "@/components/ui/button";
 import {
