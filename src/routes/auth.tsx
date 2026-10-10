@@ -62,7 +62,8 @@ function AuthPage() {
             if (error || !data.user) return;
 
             const { data: active, error: activeError } = await officeDatabase(supabase).rpc("is_ativo");
-      if (activeError || active !== true) {
+            if (activeError || active !== true) {
+        toast.error("Seu acesso ainda não foi liberado. Fale com o administrador do escritório.");
         await supabase.auth.signOut();
         sessionStorage.setItem(
           "scc-access-denied-message",
