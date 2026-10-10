@@ -36,7 +36,8 @@ function SettingsPage() {
       ]);
       if (clientsError) throw clientsError;
       if (existingError) throw existingError;
-      setRows(buildGoogleImportPreview(googleEvents, clients ?? [], existing ?? []));
+            setRows(buildGoogleImportPreview(googleEvents, clients ?? [], existing ?? []));
+      setSummary(null);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Não foi possível ler o Google Agenda.");
     } finally {
