@@ -124,7 +124,7 @@ function addBusinessDays(date: string, amount: number) {
 }
 
 function deadlineStart(prazoInterno: string, prazoFatal: string) {
-  const date = prazoInterno || prazoFatal;
+  const date = prazoFatal;
   return date ? `${date}T00:00:00-03:00` : "";
 }
 
