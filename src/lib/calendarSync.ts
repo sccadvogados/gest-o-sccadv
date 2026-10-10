@@ -194,7 +194,7 @@ export const deleteEvent = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context, data }: { context: { supabase: any }; data: { id: string } }) => {
     await ensureActive(context.supabase);
-    const { data: event, error } = await context.supabase.from("eventos").select("google_event_id, google_event_id_fatal, google_event_id_interno").eq("id", data.id).single();
+        const { data: event, error } = await context.supabase.from("eventos").select("google_event_id").eq("id", data.id).single();
     if (error) throw error;
     await removeGoogleEvent(event.google_event_id);
     await removeGoogleEvent(event.google_event_id_fatal);
