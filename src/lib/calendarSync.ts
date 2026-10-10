@@ -164,12 +164,7 @@ export const createEvent = createServerFn({ method: "POST" })
         const ids: GoogleEventIds = { comum: null };
     for (const [index, googleEvent] of googleEvents.entries()) {
       const id = await insertGoogleEvent(googleEvent);
-      if (data.tipo === "prazo") {
-        if (index === 0) ids.fatal = id;
-        else ids.interno = id;
-      } else {
-        ids.comum = id;
-      }
+            ids.comum = id;
     }
     const { error } = await context.supabase.from("eventos").update({
       google_event_id_fatal: ids.fatal,
