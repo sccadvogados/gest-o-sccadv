@@ -27,8 +27,6 @@ type GoogleEvent = {
 };
 
 type GoogleEventIds = {
-  fatal: string | null;
-  interno: string | null;
   comum: string | null;
 };
 
