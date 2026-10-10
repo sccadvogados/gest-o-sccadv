@@ -338,7 +338,7 @@ function ClientDetailPage() {
               </div>
                             <div className="flex items-center gap-2">
                 <Badge variant="secondary">{contract.payment_method || "Forma a definir"}</Badge>
-                <ContractActions clientId={clientId} contract={contract} />
+                <ContractActions clientId={clientId} contract={{ ...contract, modality: contract.modality as ContractModality }} />
               </div>
             </div>
 
