@@ -159,7 +159,7 @@ export function EditClientDialog({
           {triggerLabel}
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
+            <DialogContent className="max-h-[90vh] overflow-y-auto rounded-xl border-[#E6D6C4] border-t-[3px] border-t-[#D4A782] bg-[#F6F4EF] shadow-panel sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle>Editar dados do cliente</DialogTitle>
         </DialogHeader>
