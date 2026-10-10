@@ -3,6 +3,7 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
+import { PageHeader } from "@/components/ui/page-header";
 import { SituationBadge } from "@/routes/clientes.$clientId";
 import { Button } from "@/components/ui/button";
 import {
@@ -124,10 +125,16 @@ function FinancePage() {
 
   return (
     <AppShell>
-      <h1 className="text-2xl">Financeiro</h1>
-      <p className="mt-1 text-sm text-muted-foreground">
-        Parcelas de todos os contratos, com baixa de recebimento e previsão de caixa.
-      </p>
+            <PageHeader
+        title="Financeiro"
+        subtitle="Parcelas de todos os contratos, com baixa de recebimento e previsão de caixa."
+      />
+      <img
+        src="/imagens/imagem-f47c521f.png"
+        alt=""
+        aria-hidden="true"
+        className="hidden"
+      />
 
       <div className="mt-6 grid gap-4 sm:grid-cols-3">
         <Summary label="Recebido" value={received} />
@@ -136,20 +143,33 @@ function FinancePage() {
       </div>
 
       <section className="panel mt-6 p-6">
-        <h2 className="text-base font-semibold">
-          Distribuição de honorários sobre o recebido
-        </h2>
-        <div className="mt-4 grid gap-4 sm:grid-cols-4">
-          {["TAC", "RCMT", "ASS"].map((partner) => (
-            <div key={partner}>
+                <div className="flex flex-wrap items-start justify-between gap-2">
+          <h2 className="text-base font-semibold">Distribuição de honorários sobre o recebido</h2>
+          <span className="text-sm text-muted-foreground">Base: {formatCurrency(received)} recebidos</span>
+        </div>
+        <div className="mt-5 flex h-3 overflow-hidden rounded-full" aria-hidden="true">
+          <span className="flex-[3] bg-[#0F2340]" />
+          <span className="flex-[3] bg-[#C08A5E]" />
+          <span className="flex-[3] bg-[#7D8BA0]" />
+          <span className="flex-1 bg-[#E6D6C4]" />
+        </div>
+        <div className="mt-5 grid gap-3 sm:grid-cols-4">
+                    {["TAC", "RCMT", "ASS"].map((partner, index) => (
+            <div key={partner} className="rounded-lg border border-border bg-[#F6F4EF] p-3">
+              <span
+                className={`mr-2 inline-block h-2.5 w-2.5 rounded-full ${
+                  ["bg-[#0F2340]", "bg-[#C08A5E]", "bg-[#7D8BA0]"][index]
+                }`}
+              />
               <p className="text-xs uppercase tracking-wide text-muted-foreground">
                 {partner} · 30%
               </p>
               <p className="mt-1 text-lg">{formatCurrency(partnerShare)}</p>
             </div>
           ))}
-          <div>
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                    <div className="rounded-lg border border-border bg-[#F6F4EF] p-3">
+            <span className="mr-2 inline-block h-2.5 w-2.5 rounded-full bg-[#E6D6C4]" />
+            <p className="inline text-xs uppercase tracking-wide text-muted-foreground">
               Escritório · 10%
             </p>
             <p className="mt-1 text-lg">{formatCurrency(firmShare)}</p>
@@ -267,11 +287,15 @@ function Summary({
   tone?: "danger";
 }) {
   return (
-    <div className="panel p-5">
-      <p className="text-xs uppercase tracking-wide text-muted-foreground">{label}</p>
+        <div
+      className={`panel border-t-4 p-5 ${
+        tone === "danger" ? "border-t-[#B42318]" : label === "A receber" ? "border-t-[#C08A5E]" : "border-t-[#0F2340]"
+      }`}
+    >
+      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{label}</p>
       <p
         className={
-          tone === "danger" ? "mt-2 text-2xl text-destructive" : "mt-2 text-2xl"
+                    tone === "danger" ? "mt-2 text-3xl font-semibold text-[#B42318]" : "mt-2 text-3xl font-semibold text-[#0F2340]"
         }
       >
         {formatCurrency(value)}
