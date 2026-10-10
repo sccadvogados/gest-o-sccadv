@@ -1,0 +1,1 @@
+alter table public.eventos add column if not exists parte_contraria text;
