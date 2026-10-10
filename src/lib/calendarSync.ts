@@ -56,6 +56,12 @@ function nextDate(value: string): string {
   return date.toISOString().slice(0, 10);
 }
 
+function reminderOverrides(event: CalendarEvent) {
+  const hasTwoReminders = event.tipo === "prazo" || event.titulo.toLowerCase().includes("protocolo");
+  const minutes = hasTwoReminders ? [2880, 1440] : [1440];
+  return { useDefault: false as const, overrides: minutes.map((value) => ({ method: "popup" as const, minutes: value })) };
+}
+
 function compactParts(parts: Array<string | null | undefined>): string {
   return parts.map((part) => part?.trim()).filter(Boolean).join(" - ");
 }
