@@ -69,7 +69,9 @@ type AgendaEvent = {
   local_link: string | null;
   contrato_id: string | null;
   responsavel: string | null;
-  status: EventStatus;
+    status: EventStatus;
+  google_sync_status?: string | null;
+  google_sync_error?: string | null;
 };
 
 type Client = { id: string; name: string };
