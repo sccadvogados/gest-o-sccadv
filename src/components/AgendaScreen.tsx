@@ -59,7 +59,8 @@ type AgendaEvent = {
   tipo: EventType;
   titulo: string;
     descricao: string | null;
-  parte_contraria: string | null;
+    parte_contraria: string | null;
+  numero_processo: string | null;
   cliente_id: string | null;
     data_inicio: string;
   data_fim: string | null;
