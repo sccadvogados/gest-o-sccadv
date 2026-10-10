@@ -31,7 +31,7 @@ function SettingsPage() {
     try {
       const [{ data: clients, error: clientsError }, { data: existing, error: existingError }, googleEvents] = await Promise.all([
         supabase.from("clients").select("id, name").order("name"),
-        supabase.from("eventos").select("google_event_id, google_event_id_fatal, google_event_id_interno"),
+        supabase.from("eventos").select("google_event_id"),
         fetchGoogleEvents({ data: { from } }),
       ]);
       if (clientsError) throw clientsError;
