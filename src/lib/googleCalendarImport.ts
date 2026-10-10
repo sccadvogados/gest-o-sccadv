@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
@@ -27,7 +28,8 @@ function getGoogleConfig() {
 
 export const listGoogleCalendarEvents = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context, data }: { context: { supabase: any }; data: { from: string } }) => {
+  .inputValidator((input) => z.object({ from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/) }).parse(input))
+  .handler(async ({ context, data }) => {
     const { data: isAdmin, error: adminError } = await context.supabase.rpc("is_admin");
     if (adminError || !isAdmin) throw new Error("Apenas administradores podem importar do Google Agenda.");
 

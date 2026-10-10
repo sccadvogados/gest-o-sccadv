@@ -9,6 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
+import { officeDatabase } from "@/lib/office-database";
 import { listGoogleCalendarEvents } from "@/lib/googleCalendarImport";
 import { buildGoogleImportPreview, type GoogleImportPreviewRow } from "@/lib/googleCalendarImportPreview";
 
@@ -65,7 +66,7 @@ function SettingsPage() {
     setImporting(true);
     try {
       const candidates = selected.filter((row) => !row.jaImportado);
-      const { error } = await supabase.from("eventos").insert(candidates.map((row) => ({
+      const { error } = await officeDatabase(supabase).from("eventos").insert(candidates.map((row) => ({
         cliente_id: row.clienteId,
         data_inicio: row.prazoFatal || row.prazoInterno,
         dia_inteiro: true,
