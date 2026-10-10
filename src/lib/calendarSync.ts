@@ -179,7 +179,7 @@ export const updateEvent = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context, data }: { context: { supabase: any }; data: { id: string; event: CalendarEvent } }) => {
     await ensureActive(context.supabase);
-    const { data: previous, error } = await context.supabase.from("eventos").select("google_event_id, google_event_id_fatal, google_event_id_interno").eq("id", data.id).single();
+        const { data: previous, error } = await context.supabase.from("eventos").select("google_event_id").eq("id", data.id).single();
     if (error) throw error;
         await removeGoogleEvent(previous.google_event_id);
     return createEvent({ data: data.event });
