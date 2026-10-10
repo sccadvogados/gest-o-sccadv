@@ -14,7 +14,9 @@ type ExistingEvent = {
 type Client = { id: string; name: string };
 
 export type GoogleImportPreviewRow = {
-  googleId: string;
+    googleId: string;
+  googleIdFatal: string | null;
+  googleIdInterno: string | null;
   tipo: "prazo" | "compromisso";
   titulo: string;
   processo: string;
@@ -54,7 +56,9 @@ function parseEvent(event: GoogleCalendarItem, clients: Client[], existingIds: S
   const kind = protocol ? "prazo" : event.colorId === "5" ? "compromisso" : "prazo";
 
   return {
-    googleId: event.id,
+        googleId: event.id,
+    googleIdFatal: !protocol && kind === "prazo" ? event.id : null,
+    googleIdInterno: protocol ? event.id : null,
     tipo: kind,
     titulo: title,
     processo: process,
