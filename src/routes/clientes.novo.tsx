@@ -569,8 +569,8 @@ function NewClientPage() {
           </div>
         </section>}
 
-        {showForm && <section className="panel space-y-3 p-6">
-          <Label htmlFor="notes">Observações</Label>
+        {showForm && <section className="panel rounded-xl border border-t-[3px] border-t-accent bg-card p-6 text-card-foreground shadow-panel space-y-3">
+          <Label htmlFor="notes" className="text-[#0F2340]">Observações</Label>
           <Textarea
             id="notes"
             rows={3}
