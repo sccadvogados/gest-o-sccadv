@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { officeDatabase } from "@/lib/office-database";
 
 const documentSchema = z.object({
   kind: z.enum(["identificacao", "residencia"]),
@@ -33,7 +34,7 @@ export const extractClientDocument = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) => documentSchema.parse(input))
     .handler(async ({ data, context }) => {
-    const { data: isActive, error: activeError } = await context.supabase.rpc("is_ativo");
+    const { data: isActive, error: activeError } = await officeDatabase(context.supabase).rpc("is_ativo");
     if (activeError || !isActive) {
       throw new Error("Acesso não autorizado");
     }

@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { officeDatabase } from "@/lib/office-database";
 
 type DriveFolder = {
   id: string;
@@ -18,7 +19,7 @@ const PROCESS_NUMBER = /\b\d{7}-\d{2}\.\d{4}\.\d\.\d{2}\.\d{4}\b/;
 export const getActiveProcessCounts = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
     .handler(async ({ context }) => {
-    const { data: isActive, error: activeError } = await context.supabase.rpc("is_ativo");
+    const { data: isActive, error: activeError } = await officeDatabase(context.supabase).rpc("is_ativo");
     if (activeError || !isActive) {
       throw new Error("Acesso não autorizado");
     }
