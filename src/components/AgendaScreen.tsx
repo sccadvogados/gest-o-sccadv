@@ -162,7 +162,7 @@ export function AgendaScreen() {
                 .select("id, tipo, titulo, descricao, cliente_id, contrato_id, data_inicio, data_fim, prazo_fatal, prazo_interno, local_link, responsavel, status, dia_inteiro, google_event_id, created_by, updated_at")
         .order("data_inicio");
       if (error) throw error;
-      return (data ?? []) as unknown as AgendaEvent[];
+            return (data ?? []) as AgendaEvent[];
     },
   });
 
