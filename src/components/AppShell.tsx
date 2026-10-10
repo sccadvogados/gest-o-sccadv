@@ -11,7 +11,8 @@ const logoHorizontal = "/__l5e/assets-v1/195a2125-7946-439b-bd3f-5ddac237f27f/sc
 const NAV = [
   { to: "/", label: "Clientes", icon: Users },
     { to: "/agenda", label: "Agenda", icon: CalendarDays },
-  { to: "/financeiro", label: "Financeiro", icon: Wallet },
+    { to: "/financeiro", label: "Financeiro", icon: Wallet },
+  { to: "/configuracoes", label: "Configurações", icon: Settings },
 ] as const;
 
 export function BrandMark({ className }: { className?: string }) {
