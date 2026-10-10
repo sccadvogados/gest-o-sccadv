@@ -58,7 +58,7 @@ function ResetPasswordPage() {
         <form onSubmit={updatePassword} className="panel w-full max-w-sm space-y-5 p-8">
                     <div><h1 className="text-2xl font-bold text-[#0F2340]">Definir nova senha</h1><p className="mt-2 text-sm text-muted-foreground">Crie uma senha com pelo menos seis caracteres.</p></div>
           {!validRecovery && <p className="text-sm text-destructive">Abra esta página pelo link enviado ao seu e-mail.</p>}
-          <div className="space-y-2"><Label htmlFor="password">Nova senha</Label><Input id="password" type="password" minLength={6} value={password} onChange={(event) => setPassword(event.target.value)} required /></div>
+                    <div className="space-y-2"><Label className="text-sm font-medium text-[#0F2340]" htmlFor="password">Nova senha</Label><Input className="h-12 bg-white" id="password" type="password" minLength={6} value={password} onChange={(event) => setPassword(event.target.value)} required /></div>
                     <div className="space-y-2"><Label className="text-sm font-medium text-[#0F2340]" htmlFor="confirm">Confirmar nova senha</Label><Input className="h-12 bg-white" id="confirm" type="password" minLength={6} value={confirm} onChange={(event) => setConfirm(event.target.value)} required /></div>
           <Button className="w-full" type="submit" disabled={busy || !validRecovery}>{busy ? "Salvando…" : "Salvar nova senha"}</Button>
           <Button className="w-full" type="button" variant="ghost" onClick={() => navigate({ to: "/auth" })}>Voltar ao acesso</Button>
