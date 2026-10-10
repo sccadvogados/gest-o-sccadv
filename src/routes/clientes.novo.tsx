@@ -383,8 +383,8 @@ function NewClientPage() {
           </Alert>
         )}
 
-        {showForm && <section className="panel space-y-5 p-6">
-          <h2 className="text-base font-semibold">Qualificação</h2>
+        {showForm && <section className="panel rounded-xl border border-t-[3px] border-t-accent bg-card p-6 text-card-foreground shadow-panel space-y-5">
+          <h2 className="text-base font-semibold text-[#0F2340]">Qualificação</h2>
 
           <div className="grid gap-5 sm:grid-cols-2">
             <div className="space-y-2">
