@@ -54,7 +54,7 @@ function ResetPasswordPage() {
   return (
         <div className="grid min-h-screen bg-[#F6F4EF] lg:grid-cols-2">
             <div className="hidden border-t-[3px] border-[#D4A782] bg-white p-12 lg:flex lg:items-start lg:border-b lg:border-[#ECE8E1]"><BrandMark /></div>
-      <div className="flex items-center justify-center p-6">
+            <div className="flex items-center justify-center p-6 lg:p-12">
                 <form onSubmit={updatePassword} className="panel w-full max-w-md space-y-6 border-t-4 border-t-[#D4A782] p-8 lg:p-10">
                     <div><h1 className="text-2xl font-bold text-[#0F2340]">Definir nova senha</h1><p className="mt-2 text-sm text-muted-foreground">Crie uma senha com pelo menos seis caracteres.</p></div>
           {!validRecovery && <p className="text-sm text-destructive">Abra esta página pelo link enviado ao seu e-mail.</p>}
