@@ -93,20 +93,18 @@ function ClientsPage() {
 
   return (
     <AppShell>
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-2xl">Clientes</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Busque por nome, CPF/CNPJ, e-mail ou telefone.
-          </p>
-        </div>
-        <Button asChild>
-          <Link to="/clientes/novo">
-            <Plus className="size-4" />
-            Novo Cliente
-          </Link>
-        </Button>
-      </div>
+            <PageHeader
+        title="Clientes"
+        subtitle="Busque por nome, CPF/CNPJ, e-mail ou telefone."
+        action={(
+          <Button asChild>
+            <Link to="/clientes/novo">
+              <Plus className="size-4" />
+              Novo cliente
+            </Link>
+          </Button>
+        )}
+      />
 
       <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
         <div className="relative w-full max-w-md">
