@@ -178,7 +178,7 @@ export const createEvent = createServerFn({ method: "POST" })
   .handler(async ({ context, data }: { context: { supabase: any }; data: CalendarEvent }) => {
     await ensureActive(context.supabase);
     const googleEvents = buildGoogleEvents(data);
-    const ids: GoogleEventIds = { fatal: null, interno: null, comum: null };
+        const ids: GoogleEventIds = { comum: null };
     for (const [index, googleEvent] of googleEvents.entries()) {
       const id = await insertGoogleEvent(googleEvent);
       if (data.tipo === "prazo") {
