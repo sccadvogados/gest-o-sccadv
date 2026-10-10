@@ -14,9 +14,7 @@ type ExistingEvent = {
 type Client = { id: string; name: string };
 
 export type GoogleImportPreviewRow = {
-    googleId: string;
-  googleIdFatal: string | null;
-  googleIdInterno: string | null;
+      googleId: string;
   tipo: "prazo" | "compromisso";
   titulo: string;
   processo: string;
