@@ -124,6 +124,10 @@ const EMPTY: Form = {
   notes: "",
 };
 
+function Pending({ value }: { value: string | null | undefined }) {
+  return !value?.trim() ? <span className="ml-0.5 text-destructive" aria-label="pendente">*</span> : null;
+}
+
 function NewClientPage() {
   const [form, setForm] = useState<Form>(EMPTY);
   const [files, setFiles] = useState<Record<string, File[]>>({});
