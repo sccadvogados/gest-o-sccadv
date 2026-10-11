@@ -111,7 +111,7 @@ function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
 
     if (event.tipo === "reunião" || event.tipo === "audiência" || event.tipo === "julgamento") {
     if (!event.data_fim) throw new Error("A reunião precisa ter horário de término.");
-        const marker = event.tipo === "reunião" ? "[REUNIÃO]" : event.tipo === "audiência" ? "[AUDIÊNCIA]" : "[JULGAMENTO]";
+                const marker = event.tipo === "reuniao" ? "[REUNIÃO]" : event.tipo === "audiencia" ? "[AUDIÊNCIA]" : "[JULGAMENTO]";
     const meetingTitle = event.titulo.replace(/^\[(?:REUNIÃO|AUDIÊNCIA|JULGAMENTO)\]\s*/, "");
     return [{
       id: "",
