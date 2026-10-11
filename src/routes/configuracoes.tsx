@@ -66,7 +66,7 @@ function SettingsPage() {
       const candidates = selected.filter((row) => !row.jaImportado);
       const { error } = await officeDatabase(supabase).from("eventos").insert(candidates.map((row) => ({
         cliente_id: row.clienteId,
-        data_inicio: row.prazoFatal || row.prazoInterno,
+                data_inicio: row.prazo,
         dia_inteiro: true,
         google_event_id: row.googleId,
         numero_processo: row.processo || null,
