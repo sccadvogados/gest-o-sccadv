@@ -458,7 +458,7 @@ function NewClientPage() {
                 ) : extractedKinds.includes(kind) ? (
                   <p className="flex items-center gap-2 text-xs text-success"><CheckCircle2 className="size-3.5" />Dados identificados</p>
                 ) : files[kind]?.length ? (
-                  <p className="text-xs text-muted-foreground">{files[kind]?.length} arquivo(s) selecionado(s)</p>
+                                    <p className="truncate text-xs text-muted-foreground">{files[kind]?.map((file) => file.name).join(", ")}</p>
                 ) : null}
               </div>
             ))}
