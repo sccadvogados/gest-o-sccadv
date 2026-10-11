@@ -39,9 +39,11 @@ function dateOf(event: GoogleCalendarItem): string {
 }
 
 function parseEvent(event: GoogleCalendarItem, clients: Client[], existingIds: Set<string>): GoogleImportPreviewRow {
-  const rawTitle = event.summary?.replace(/^\[SCCAdv\]\s*/, "") ?? "";
-    const protocol = /\[PROTOCOLO\]/i.test(rawTitle) || event.colorId === "7";
-  const parts = rawTitle.split(" - ").map((part) => part.trim()).filter(Boolean);
+    const rawTitle = event.summary?.replace(/^\[SCCAdv\]\s*/, "") ?? "";
+  const meeting = /^\[REUNIÃO\]\s*/i.test(rawTitle);
+  const titleSource = rawTitle.replace(/^\[REUNIÃO\]\s*/i, "");
+    const protocol = /\[PROTOCOLO\]/i.test(titleSource) || event.colorId === "7";
+  const parts = titleSource.split(" - ").map((part) => part.trim()).filter(Boolean);
   const processIndex = parts.findIndex((part) => processPattern.test(part));
   const process = processIndex >= 0 ? (parts[processIndex]?.match(processPattern)?.[1] ?? "") : "";
   const partiesIndex = parts.findIndex((part) => part.includes(" x "));
