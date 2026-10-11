@@ -81,8 +81,9 @@ function AuthPage() {
     };
   }, [loading, user, navigate]);
 
-  async function handleSubmit(event: React.FormEvent) {
+    async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
+    setAccessDeniedMessage(null);
     setBusy(true);
     try {
       const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
