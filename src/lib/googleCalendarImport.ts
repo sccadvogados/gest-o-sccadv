@@ -39,17 +39,26 @@ export const listGoogleCalendarEvents = createServerFn({ method: "GET" })
       singleEvents: "true",
       orderBy: "startTime",
     });
-    const response = await fetch(
-      `${GOOGLE_CALENDAR_URL}/${encodeURIComponent(calendarId)}/events?${params.toString()}`,
-      {
-        headers: {
-          Authorization: `Bearer ${lovableApiKey}`,
-          "X-Connection-Api-Key": calendarApiKey,
-        },
-      },
-    );
+        const events: GoogleCalendarItem[] = [];
+    let pageToken: string | undefined;
 
-    if (!response.ok) throw new Error("Não foi possível ler os eventos do Google Agenda.");
-    const result = await response.json() as { items?: GoogleCalendarItem[] };
-    return (result.items ?? []).filter((event) => event.summary?.startsWith("[SCCAdv]"));
+    do {
+      if (pageToken) params.set("pageToken", pageToken);
+      const response = await fetch(
+        `${GOOGLE_CALENDAR_URL}/${encodeURIComponent(calendarId)}/events?${params.toString()}`,
+        {
+          headers: {
+            Authorization: `Bearer ${lovableApiKey}`,
+            "X-Connection-Api-Key": calendarApiKey,
+          },
+        },
+      );
+
+      if (!response.ok) throw new Error("Não foi possível ler os eventos do Google Agenda.");
+      const result = await response.json() as { items?: GoogleCalendarItem[]; nextPageToken?: string };
+      events.push(...(result.items ?? []));
+      pageToken = result.nextPageToken;
+    } while (pageToken);
+
+    return events.filter((event) => event.summary?.startsWith("[SCCAdv]"));
   });
