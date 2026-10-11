@@ -790,7 +790,7 @@ function NewClientPage() {
             initialObject={objeto}
             initialGratuidade={gratuidade}
             existingContractId={savedContractId ?? undefined}
-            submitLabel="Salvar e continuar"
+            submitLabel="Continuar"
             onBack={() => setStep(2)}
             onSaved={(contractId) => {
               setSavedContractId(contractId);
