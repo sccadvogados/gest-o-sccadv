@@ -256,7 +256,7 @@ export function AgendaScreen() {
         return `${localValue}:00-03:00`;
       };
       const brazilDate = (value: string) => value ? `${value.slice(0, 10)}T00:00:00-03:00` : null;
-      const payload = { ...values, cliente_id: form.cliente_id || null, contrato_id: form.contrato_id || null, data_inicio: form.tipo === "prazo" ? brazilDate(form.data_inicio) : brazilDateTime(form.data_inicio), data_fim: form.tipo === "prazo" ? null : brazilDateTime(form.data_fim), dia_inteiro: form.tipo === "reuniao" ? false : undefined, local_link: !["prazo", "julgamento", "acompanhamento"].includes(form.tipo) ? form.local_link || null : null, status: form.status, ...(form.id ? {} : { created_by: (await supabase.auth.getUser()).data.user?.id ?? null }) };
+      const payload = { ...values, cliente_id: form.cliente_id || null, contrato_id: form.contrato_id || null, data_inicio: form.tipo === "prazo" ? brazilDate(form.data_inicio) : brazilDateTime(form.data_inicio), data_fim: form.tipo === "prazo" ? null : brazilDateTime(form.data_fim), dia_inteiro: ["julgamento", "acompanhamento"].includes(form.tipo) ? true : form.tipo === "reuniao" ? false : undefined, local_link: !["prazo", "julgamento", "acompanhamento"].includes(form.tipo) ? form.local_link || null : null, status: form.status, ...(form.id ? {} : { created_by: (await supabase.auth.getUser()).data.user?.id ?? null }) };
       if (form.id) {
                 const { error } = await officeDatabase(supabase).from("eventos").update(payload).eq("id", form.id);
         if (error) throw error;
