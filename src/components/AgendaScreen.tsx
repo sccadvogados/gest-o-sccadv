@@ -426,17 +426,21 @@ export function AgendaScreen() {
       if (form.id) {
                 const { error } = await officeDatabase(supabase).from("eventos").update(payload).eq("id", form.id);
         if (error) throw error;
-                await syncUpdateEvent({
-          data: {
-            id: form.id,
-            event: {
-              ...payload,
+                        try {
+          await syncUpdateEvent({
+            data: {
               id: form.id,
-              cliente_nome: clients.find((client) => client.id === form.cliente_id)?.name ?? null,
+              event: {
+                ...payload,
+                id: form.id,
+                cliente_nome: clients.find((client) => client.id === form.cliente_id)?.name ?? null,
+              },
             },
-          },
-        });
-        return;
+          });
+        } catch {
+          return { googleFailed: true };
+        }
+        return { googleFailed: false };
       }
             const { data, error } = await officeDatabase(supabase).from("eventos").insert(payload).select("id").single();
       if (error) throw error;
