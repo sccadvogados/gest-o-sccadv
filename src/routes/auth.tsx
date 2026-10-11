@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Eye, EyeOff, Lock, Mail } from "lucide-react";
+import { AlertTriangle, Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -40,7 +40,8 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [recovering, setRecovering] = useState(false);
+    const [recovering, setRecovering] = useState(false);
+  const [accessDeniedMessage, setAccessDeniedMessage] = useState<string | null>(null);
   const { user, loading } = useAuth();
   const navigate = useNavigate();
 
@@ -48,8 +49,8 @@ function AuthPage() {
     const message = sessionStorage.getItem("scc-access-denied-message");
     if (!message) return;
 
-    sessionStorage.removeItem("scc-access-denied-message");
-    toast.error(message);
+        sessionStorage.removeItem("scc-access-denied-message");
+    setAccessDeniedMessage(message);
   }, []);
 
   useEffect(() => {
@@ -62,13 +63,9 @@ function AuthPage() {
             if (error || !data.user) return;
 
             const { data: active, error: activeError } = await officeDatabase(supabase).rpc("is_ativo");
-            if (activeError || active !== true) {
-        toast.error("Seu acesso ainda não foi liberado. Fale com o administrador do escritório.");
+                        if (activeError || active !== true) {
         await supabase.auth.signOut();
-        sessionStorage.setItem(
-          "scc-access-denied-message",
-          "Seu acesso ainda não foi liberado. Fale com o administrador do escritório.",
-        );
+        setAccessDeniedMessage("Seu acesso ainda não foi liberado. Entre em contato com o administrador.");
         return;
       }
 
@@ -81,12 +78,22 @@ function AuthPage() {
     };
   }, [loading, user, navigate]);
 
-  async function handleSubmit(event: React.FormEvent) {
+    async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
+    setAccessDeniedMessage(null);
     setBusy(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+            const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
       if (error) throw error;
+
+      const { data: active, error: activeError } = await officeDatabase(supabase).rpc("is_ativo");
+      if (activeError || active !== true) {
+        await supabase.auth.signOut();
+        setAccessDeniedMessage("Seu acesso ainda não foi liberado. Entre em contato com o administrador.");
+        return;
+      }
+
+      await navigate({ to: "/", replace: true });
     } catch (error) {
       const message = error instanceof Error ? error.message : "Erro inesperado";
       toast.error(
@@ -158,6 +165,12 @@ function AuthPage() {
                 {recovering ? "Enviando..." : "Esqueci a senha"}
               </Button>
             </div>
+                        {accessDeniedMessage && (
+              <div role="alert" className="flex items-start gap-2 rounded-[10px] border border-[#FDA29B] bg-[#FEF3F2] px-3.5 py-3 text-[13px] text-[#B42318]">
+                <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+                <span>{accessDeniedMessage}</span>
+              </div>
+            )}
             <Button type="submit" disabled={busy} className="h-[48px] w-full rounded-[10px] bg-[#0B2340] text-[15px] font-semibold text-white hover:bg-[#13325A]">
               {busy ? "Entrando..." : "Entrar"}
             </Button>
