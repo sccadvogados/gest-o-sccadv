@@ -241,6 +241,10 @@ function TimeRangeField({ start, end, onStartChange, onEndChange }: { start: str
   return <div className="relative flex min-w-0 flex-1 items-center gap-2"><div className="flex min-w-0 flex-1 items-center gap-2">{input("start", start.slice(0, 5), onStartChange)}<span className="text-sm text-muted-foreground">–</span>{input("end", end.slice(11, 16) || end.slice(0, 5), onEndChange)}</div>{duration !== null ? <span className="pr-2 text-xs text-muted-foreground">{formatDuration(duration)}</span> : null}</div>;
 }
 
+function DateField({ value, onChange }: { value: string; onChange: (value: string) => void }) {
+  return <Input className="w-[160px] bg-white" type="date" value={value.slice(0, 10)} onChange={(event) => onChange(event.target.value)} />;
+}
+
 export function AgendaScreen() {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
