@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -28,6 +28,10 @@ export function ObjectClauseField({ value, onChange }: ObjectClauseFieldProps) {
     }
   }
 
+  useEffect(() => {
+    resizeObjectTextarea();
+  }, [value]);
+
   return (
     <div className="space-y-2 sm:col-span-2">
       <Label htmlFor="contract-object">Objeto do contrato</Label>
@@ -36,7 +40,8 @@ export function ObjectClauseField({ value, onChange }: ObjectClauseFieldProps) {
         id="contract-object"
         rows={1}
         value={`${PREFIXO}${value}`}
-        className="font-[Georgia,\"Times_New_Roman\",serif] resize-none overflow-hidden"
+        className="resize-none overflow-hidden"
+        style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
         onFocus={(event) => {
           event.currentTarget.setSelectionRange(event.currentTarget.value.length, event.currentTarget.value.length);
           resizeObjectTextarea();
