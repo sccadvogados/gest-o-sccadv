@@ -6,6 +6,8 @@ import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
 import { ContractForm } from "@/components/ContractForm";
+import { DeleteClientDialog } from "@/components/DeleteClientDialog";
+
 import { EditClientDialog } from "@/components/EditClientDialog";
 import { TIPO_CORES } from "@/lib/calendarSync";
 import {
