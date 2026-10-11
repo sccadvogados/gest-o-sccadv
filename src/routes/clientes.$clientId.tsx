@@ -457,6 +457,18 @@ function ClientDetailPage() {
   );
 }
 
+function ContractObjectSummary({ object }: { object: string }) {
+  const [expanded, setExpanded] = useState(false);
+  return (
+    <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
+      <span className={expanded ? "" : "line-clamp-2"}>{object}</span>{" "}
+      <button type="button" className="font-medium text-[#0F2340] underline" onClick={() => setExpanded((value) => !value)}>
+        {expanded ? "ver menos" : "ver mais"}
+      </button>
+    </p>
+  );
+}
+
 function Field({ label, value }: { label: string; value?: string | null }) {
   return (
     <div>
