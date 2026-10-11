@@ -20,8 +20,7 @@ export type GoogleImportPreviewRow = {
   clienteId: string | null;
   parteContraria: string;
   responsavel: string;
-  prazoFatal: string;
-  prazoInterno: string;
+    prazo: string;
     aviso: string;
   jaImportado: boolean;
   selecionado: boolean;
