@@ -692,7 +692,7 @@ function NewClientPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="city">Cidade</Label>
+                            <Label htmlFor="city">Cidade <Pending value={form.city} /></Label>
               <Input
                 id="city"
                 value={form.city}
