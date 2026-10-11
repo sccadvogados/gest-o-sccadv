@@ -74,7 +74,8 @@ type Representative = {
 type Form = {
     person_type: "PF" | "PJ";
   name: string;
-  pj_descricao: string;
+    pj_descricao: string;
+  representatives: Representative[];
   nationality: string;
   marital_status: string;
   profession: string;
