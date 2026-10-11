@@ -67,6 +67,12 @@ function dateOnly(value: string): string {
   return value.slice(0, 10);
 }
 
+function dateTimeSaoPaulo(value: string): string {
+  const date = dateOnly(value);
+  const time = value.includes("T") ? value.slice(11, 16) : "00:00";
+  return `${date}T${time}:00-03:00`;
+}
+
 function nextDate(value: string): string {
   const date = new Date(`${value}T00:00:00Z`);
   date.setUTCDate(date.getUTCDate() + 1);
@@ -109,10 +115,10 @@ function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
     const meetingTitle = event.titulo.replace(/^\[(?:REUNIÃO|AUDIÊNCIA|JULGAMENTO)\]\s*/, "");
     return [{
       id: "",
-            summary: compactParts(["[SCCAdv]", marker, meetingTitle, event.numero_processo, parties(event), responsible(event)]),
+            summary: compactParts([marker, "[SCCAdv]", meetingTitle, event.numero_processo, parties(event), responsible(event)]),
             colorId: TIPO_CORES[event.tipo as keyof typeof TIPO_CORES].colorId,
-      start: { dateTime: event.data_inicio, timeZone: "America/Sao_Paulo" },
-      end: { dateTime: event.data_fim, timeZone: "America/Sao_Paulo" },
+            start: { dateTime: dateTimeSaoPaulo(event.data_inicio), timeZone: "America/Sao_Paulo" },
+      end: { dateTime: dateTimeSaoPaulo(event.data_fim), timeZone: "America/Sao_Paulo" },
       description: description(event),
       location: event.local_link?.trim() || undefined,
       reminders: {
