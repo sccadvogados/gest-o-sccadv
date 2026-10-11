@@ -83,6 +83,12 @@ function compactParts(parts: Array<string | null | undefined>): string {
   return parts.map((part) => part?.trim()).filter(Boolean).join(" - ");
 }
 
+function googleTitle(prefixes: Array<string | null | undefined>, parts: Array<string | null | undefined>): string {
+  const prefix = prefixes.map((part) => part?.trim()).filter(Boolean).join(" ");
+  const rest = compactParts(parts);
+  return [prefix, rest].filter(Boolean).join(" - ");
+}
+
 function parties(event: CalendarEvent): string | null {
   const client = event.cliente_nome?.trim();
   const opponent = event.parte_contraria?.trim();
