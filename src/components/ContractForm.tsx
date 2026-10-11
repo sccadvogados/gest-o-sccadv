@@ -43,7 +43,7 @@ export function ContractForm({ clientId, personType, onSaved }: ContractFormProp
   const [paymentMethod, setPaymentMethod] = useState<string>(PAYMENT_METHODS[0]);
   const [successFee, setSuccessFee] = useState("0");
     const [object, setObject] = useState("");
-  const [parteContraria, setParteContraria] = useState("");
+  
   const [gratuidade, setGratuidade] = useState(true);
   const [preview, setPreview] = useState<PreviewInstallment[]>([]);
   const queryClient = useQueryClient();
