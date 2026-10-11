@@ -140,9 +140,12 @@ function qualificacao(representante: RepresentativeForTemplate): string {
 function representantesTexto(representantes: RepresentativeForTemplate[]): string {
   const ordered = [...representantes].sort((a, b) => (a.ordem ?? 0) - (b.ordem ?? 0));
   if (ordered.length === 0) return "";
-  const first = ordered[0];
-  if (ordered.length === 1 && first) return `sua representante legal, ${qualificacao(first)}`;
-  return `seus sócios ${ordered.map((representante) => qualificacao(representante)).join(", e ")}`;
+  const tipos = ordered.map((representante) => /sóci|soci/i.test(representante.qualidade ?? "") ? "sócio" : "representante legal");
+  const tipo = tipos.every((item) => item === "sócio") ? "sócio" : tipos.every((item) => item === "representante legal") ? "representante legal" : "representante";
+  const prefixo = ordered.length === 1 ? `seu ${tipo}` : `seus ${tipo === "sócio" ? "sócios" : tipo === "representante legal" ? "representantes legais" : "representantes"}`;
+  const qualificacoes = ordered.map((representante) => qualificacao(representante));
+  const lista = qualificacoes.length === 1 ? qualificacoes[0] : `${qualificacoes.slice(0, -1).join("; ")} e ${qualificacoes.at(-1)}`;
+  return `representada por ${prefixo}, ${lista}`;
 }
 
 function grupoParcelas(installments: InstallmentForTemplate[]): string {
