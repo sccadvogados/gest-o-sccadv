@@ -699,9 +699,16 @@ function NewClientPage() {
           <ContractForm
             clientId={savedClientId}
             personType={form.person_type}
-            onSaved={(contractId) => {
+                        onSaved={(contractId) => {
               setSavedContractId(contractId);
               setStep(3);
+              void sendAttachmentsToDrive({ data: { contrato_id: contractId } }).then((result) => {
+                if (!result.ok) {
+                  toast.warning(`Contrato salvo, mas não foi possível enviar os anexos ao Drive: ${result.erro}`);
+                }
+              }).catch((error) => {
+                toast.warning(`Contrato salvo, mas não foi possível enviar os anexos ao Drive: ${error instanceof Error ? error.message : "Erro desconhecido."}`);
+              });
             }}
           />
           <button
