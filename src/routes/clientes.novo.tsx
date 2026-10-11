@@ -505,7 +505,7 @@ function NewClientPage() {
                     {form.person_type === "PJ" && (
             <div className="space-y-4 rounded-lg border border-border p-4">
               <div className="flex items-center justify-between gap-3">
-                <h3 className="text-sm font-semibold text-[#0F2340]">Representantes</h3>
+                                <h3 className="text-sm font-semibold text-[#0F2340]">Representantes <Pending value={form.representatives.length > 0 && form.representatives.every((r) => r.name.trim() && r.nationality.trim() && r.marital_status.trim() && r.profession.trim() && r.cpf.trim()) ? "ok" : ""} /></h3>
                 <Button
                   type="button"
                   variant="outline"
