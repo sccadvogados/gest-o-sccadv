@@ -6,6 +6,7 @@ import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
 import { ContractForm } from "@/components/ContractForm";
+import { CurrencyInput } from "@/components/CurrencyInput";
 import { DeleteClientDialog } from "@/components/DeleteClientDialog";
 
 import { EditClientDialog } from "@/components/EditClientDialog";
