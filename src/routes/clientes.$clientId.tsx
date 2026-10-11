@@ -921,9 +921,9 @@ function NewContractDialog({ clientId, personType }: { clientId: string; personT
               value={count}
               onChange={(e) => setCount(e.target.value)}
             />
-          </div>
+                    </div> : null}
 
-          <div className="space-y-2">
+          {modality !== "exito" ? <div className="space-y-2">
             <Label htmlFor="firstDue">Primeiro vencimento</Label>
             <Input
               id="firstDue"
