@@ -714,7 +714,11 @@ function EditContractDialog({
         <div className="space-y-2"><Label htmlFor={`edit-contract-signature-${contract.id}`}>Data de assinatura</Label><Input id={`edit-contract-signature-${contract.id}`} type="date" value={signatureDate} onChange={(e) => setSignatureDate(e.target.value)} /></div>
                 {modality !== "exito" ? <div className="space-y-2"><Label htmlFor={`edit-contract-due-${contract.id}`}>Primeiro vencimento</Label><Input id={`edit-contract-due-${contract.id}`} type="date" value={firstDue} onChange={(e) => setFirstDue(e.target.value)} disabled={hasPaidInstallment} /></div> : null}
         <div className="space-y-2"><Label>Forma de pagamento</Label><Select value={paymentMethod} onValueChange={setPaymentMethod}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{PAYMENT_METHODS.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent></Select></div>
-                <div className="space-y-2 sm:col-span-2">
+                                <div className="space-y-2 sm:col-span-2">
+          <Label htmlFor={`edit-contract-counterparty-${contract.id}`}>Parte contrária</Label>
+          <Input id={`edit-contract-counterparty-${contract.id}`} value={parteContraria} onChange={(e) => setParteContraria(e.target.value)} />
+        </div>
+        <div className="space-y-2 sm:col-span-2">
           <Label htmlFor={`edit-contract-object-${contract.id}`}>Objeto do contrato</Label>
           <p className="text-sm text-muted-foreground">O objeto do presente contrato é a prestação de serviços advocatícios relativos…</p>
           <Textarea id={`edit-contract-object-${contract.id}`} rows={4} value={object} onChange={(e) => setObject(e.target.value)} />
