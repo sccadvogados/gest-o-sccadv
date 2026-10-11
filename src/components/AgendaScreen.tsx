@@ -76,7 +76,8 @@ type AgendaEvent = {
 type Client = { id: string; name: string };
 
 const labels: Record<EventType, string> = {
-  prazo: "Prazo",
+    prazo: "Prazo",
+  protocolo: "Protocolo",
   audiencia: "Audiência",
   reuniao: "Reunião",
     compromisso: "Compromisso",
