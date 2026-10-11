@@ -847,8 +847,9 @@ function NewContractDialog({ clientId, personType }: { clientId: string; personT
           <DialogTitle>Novo contrato</DialogTitle>
         </DialogHeader>
 
-        <ContractForm clientId={clientId} personType={personType} onSaved={() => setOpen(false)} />
+                <ContractForm clientId={clientId} personType={personType} onSaved={() => setOpen(false)} />
 
+        {false && <>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2 sm:col-span-2">
             <Label htmlFor="description">Descrição</Label>
