@@ -90,6 +90,8 @@ function description(event: CalendarEvent): string | undefined {
 }
 
 function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
+  if (event.tipo === "protocolo") return [];
+
   const date = dateOnly(event.data_inicio);
 
     if (event.tipo === "reunião" || event.tipo === "audiência" || event.tipo === "julgamento") {
