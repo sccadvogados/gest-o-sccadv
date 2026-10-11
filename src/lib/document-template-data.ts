@@ -200,7 +200,11 @@ export function montarDadosModelos(client: ClientForTemplate, contract: Contract
     prolabore_texto: prolabore ? montarProlaboreTexto(contract, installments) : "",
     tem_exito: exito,
     exito_percentual: Number.isInteger(percentual) ? String(percentual) : String(percentual).replace(".", ","),
-    exito_extenso: percentual % 1 === 0 ? numeroPorExtenso(percentual) : `${numeroPorExtenso(Math.floor(percentual))} e meio`,
+        exito_extenso: percentual % 1 === 0
+      ? numeroPorExtenso(percentual)
+      : percentual % 1 === 0.5
+        ? `${numeroPorExtenso(Math.floor(percentual))} e meio`
+        : `${numeroPorExtenso(Math.floor(percentual))} vírgula ${numeroPorExtenso(Math.round((percentual % 1) * 100))}`, 
     data_extenso: dataPorExtenso(now),
   };
 }
