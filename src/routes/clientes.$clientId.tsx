@@ -28,8 +28,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { PageHeader } from "@/components/ui/page-header";
 import {
   Select,
@@ -457,6 +459,18 @@ function ClientDetailPage() {
   );
 }
 
+function ContractObjectSummary({ object }: { object: string }) {
+  const [expanded, setExpanded] = useState(false);
+  return (
+    <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
+      <span className={expanded ? "" : "line-clamp-2"}>{object}</span>{" "}
+      <button type="button" className="font-medium text-[#0F2340] underline" onClick={() => setExpanded((value) => !value)}>
+        {expanded ? "ver menos" : "ver mais"}
+      </button>
+    </p>
+  );
+}
+
 function Field({ label, value }: { label: string; value?: string | null }) {
   return (
     <div>
@@ -532,6 +546,7 @@ function ContractActions({
         </DialogTrigger>
         <EditContractDialog
           clientId={clientId}
+          clientType={contract.client_type ?? "PF"}
           contract={contract}
           onSaved={() => setEditOpen(false)}
         />
@@ -602,7 +617,9 @@ function EditContractDialog({
   const [modality, setModality] = useState<ContractModality>(contract.modality);
   const [signatureDate, setSignatureDate] = useState(contract.signature_date ?? "");
   const [paymentMethod, setPaymentMethod] = useState(contract.payment_method ?? PAYMENT_METHODS[0]);
-  const [successFee, setSuccessFee] = useState(String(contract.success_fee_percent));
+    const [successFee, setSuccessFee] = useState(String(contract.success_fee_percent));
+  const [object, setObject] = useState(contract.objeto ?? "");
+  const [gratuidade, setGratuidade] = useState(contract.gratuidade);
 
   const update = useMutation({
     mutationFn: async () => {
@@ -614,7 +631,8 @@ function EditContractDialog({
       if (!firstDue) throw new Error("Informe o primeiro vencimento.");
 
             const contractUpdate = hasPaidInstallment
-                ? { description, category, modality, signature_date: signatureDate || null, payment_method: paymentMethod, success_fee_percent: fee }
+                ? { description, category, modality, signature_date: signatureDate || null, payment_method: paymentMethod, success_fee_percent: fee, objeto: object || null, gratuidade }
+        : {
         : {
             description,
             category,
@@ -682,6 +700,13 @@ function EditContractDialog({
         <div className="space-y-2"><Label htmlFor={`edit-contract-signature-${contract.id}`}>Data de assinatura</Label><Input id={`edit-contract-signature-${contract.id}`} type="date" value={signatureDate} onChange={(e) => setSignatureDate(e.target.value)} /></div>
         <div className="space-y-2"><Label htmlFor={`edit-contract-due-${contract.id}`}>Primeiro vencimento</Label><Input id={`edit-contract-due-${contract.id}`} type="date" value={firstDue} onChange={(e) => setFirstDue(e.target.value)} disabled={hasPaidInstallment} /></div>
         <div className="space-y-2"><Label>Forma de pagamento</Label><Select value={paymentMethod} onValueChange={setPaymentMethod}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{PAYMENT_METHODS.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent></Select></div>
+                <div className="space-y-2 sm:col-span-2">
+          <Label htmlFor={`edit-contract-object-${contract.id}`}>Objeto do contrato</Label>
+          <p className="text-sm text-muted-foreground">O objeto do presente contrato é a prestação de serviços advocatícios relativos…</p>
+          <Textarea id={`edit-contract-object-${contract.id}`} rows={4} value={object} onChange={(e) => setObject(e.target.value)} />
+          <p className="text-sm text-muted-foreground">O objeto do presente contrato é a prestação de serviços advocatícios relativos… {object}</p>
+        </div>
+        {clientType === "PF" ? <label className="flex items-center gap-2 text-sm sm:col-span-2"><Checkbox checked={gratuidade} onCheckedChange={(checked) => setGratuidade(checked === true)} />Pedir gratuidade de justiça</label> : null}
         <div className="space-y-2 sm:col-span-2"><Label htmlFor={`edit-contract-fee-${contract.id}`}>% de êxito</Label><Input id={`edit-contract-fee-${contract.id}`} inputMode="decimal" value={successFee} onChange={(e) => setSuccessFee(e.target.value)} /></div>
       </div>
       <DialogFooter>
