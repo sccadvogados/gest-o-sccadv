@@ -5,7 +5,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { officeDatabase } from "@/lib/office-database";
 
 const documentSchema = z.object({
-  kind: z.enum(["identificacao", "residencia"]),
+  kind: z.enum(["identificacao", "residencia", "contrato_social"]),
   fileName: z.string().min(1).max(240),
   mimeType: z.enum(["image/jpeg", "image/png", "image/webp", "application/pdf"]),
   base64: z.string().min(1).max(18_000_000),
@@ -13,6 +13,16 @@ const documentSchema = z.object({
 
 const extractedSchema = z.object({
   name: z.string().default(""),
+  representatives: z.array(
+    z.object({
+      name: z.string().default(""),
+      nationality: z.string().default(""),
+      marital_status: z.string().default(""),
+      profession: z.string().default(""),
+      cpf: z.string().default(""),
+      quality: z.enum(["sócio", "representante legal"]).default("representante legal"),
+    }),
+  ).default([]),
   nationality: z.string().default(""),
   marital_status: z.string().default(""),
   profession: z.string().default(""),
@@ -44,10 +54,12 @@ export const extractClientDocument = createServerFn({ method: "POST" })
       throw new Error("A leitura automática ainda não está disponível. Preencha os dados manualmente.");
     }
 
-    const focus =
+        const focus =
       data.kind === "identificacao"
         ? "nome completo, nacionalidade, estado civil, profissão, RG, órgão expedidor/UF e CPF"
-        : "CEP, logradouro, número, complemento, bairro, cidade e UF";
+        : data.kind === "contrato_social"
+          ? "razão social, CNPJ, endereço da sede com CEP e representantes, com nome, nacionalidade, estado civil, profissão, CPF e qualidade (sócio ou representante legal)"
+          : "CEP, logradouro, número, complemento, bairro, cidade e UF";
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -63,7 +75,7 @@ export const extractClientDocument = createServerFn({ method: "POST" })
           {
             role: "system",
             content:
-              "Você extrai dados de documentos brasileiros para conferência humana. Não invente dados. Retorne somente JSON válido com estas chaves: name, nationality, marital_status, profession, rg_number, rg_issuer, cpf_cnpj, cep, street, number, complement, district, city, state. Use string vazia quando o dado não estiver legível ou não constar. Preserve nomes próprios e normalize UF em duas letras.",
+                            "Você extrai dados de documentos brasileiros para conferência humana. Não invente dados. Retorne somente JSON válido com estas chaves: name, nationality, marital_status, profession, rg_number, rg_issuer, cpf_cnpj, cep, street, number, complement, district, city, state, representatives. Cada representante deve conter name, nationality, marital_status, profession, cpf e quality, usando quality como sócio ou representante legal. Use string vazia quando o dado não estiver legível ou não constar. Preserve nomes próprios e normalize UF em duas letras.",
           },
           {
             role: "user",

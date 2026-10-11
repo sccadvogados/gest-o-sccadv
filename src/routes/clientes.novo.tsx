@@ -57,14 +57,25 @@ const MARITAL = [
 
 const ATTACHMENTS: { kind: string; label: string; multiple?: boolean }[] = [
   { kind: "identificacao", label: "Documento de Identificação" },
+  { kind: "contrato_social", label: "Contrato social / Cartão CNPJ" },
   { kind: "residencia", label: "Comprovante de Residência" },
   { kind: "outros", label: "Outros Documentos", multiple: true },
 ];
 
+type Representative = {
+  name: string;
+  nationality: string;
+  marital_status: string;
+  profession: string;
+  cpf: string;
+  quality: "sócio" | "representante legal";
+};
+
 type Form = {
     person_type: "PF" | "PJ";
   name: string;
-  pj_descricao: string;
+    pj_descricao: string;
+  representatives: Representative[];
   nationality: string;
   marital_status: string;
   profession: string;
@@ -86,7 +97,8 @@ type Form = {
 const EMPTY: Form = {
     person_type: "PF",
   name: "",
-  pj_descricao: "pessoa jurídica de direito privado",
+    pj_descricao: "pessoa jurídica de direito privado",
+  representatives: [],
   nationality: "Brasileiro(a)",
   marital_status: "",
   profession: "",
@@ -192,13 +204,14 @@ function NewClientPage() {
       complement: data.complement || current.complement,
       district: data.district || current.district,
       city: data.city || current.city,
-      state: data.state?.toUpperCase() || current.state,
+            state: data.state?.toUpperCase() || current.state,
+      ...(data.representatives.length > 0 ? { representatives: data.representatives } : {}),
     }));
   }
 
   async function handleAttachment(kind: string, selected: File[]) {
     setFiles((prev) => ({ ...prev, [kind]: selected }));
-    if ((kind !== "identificacao" && kind !== "residencia") || !selected[0]) return;
+        if ((kind !== "identificacao" && kind !== "residencia" && kind !== "contrato_social") || !selected[0]) return;
 
     const file = selected[0];
     const supported = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
@@ -222,6 +235,7 @@ function NewClientPage() {
           base64: prepared.base64,
         },
       });
+            if (kind === "contrato_social") set("person_type", "PJ");
       mergeExtracted(data);
       setExtractedKinds((current) => [...new Set([...current, kind])]);
       setShowForm(true);
@@ -271,8 +285,8 @@ function NewClientPage() {
       }
       const { data: auth } = await supabase.auth.getUser();
       const { data: client, error } = await supabase
-        .from("clients")
-        .insert({ ...form, created_by: auth.user?.id ?? null })
+                .from("clients")
+        .insert((({ representatives: _representatives, ...clientForm }) => ({ ...clientForm, created_by: auth.user?.id ?? null }))(form))
         .select("id")
         .single();
       if (error) throw error;
@@ -386,7 +400,29 @@ function NewClientPage() {
         )}
 
         {showForm && <section className="panel rounded-xl border border-t-[3px] border-t-accent bg-card p-6 text-card-foreground shadow-panel space-y-5">
-          <h2 className="text-base font-semibold text-[#0F2340]">Qualificação</h2>
+                    <h2 className="text-base font-semibold text-[#0F2340]">Qualificação</h2>
+
+          {form.person_type === "PJ" && form.representatives.length > 0 && (
+            <div className="space-y-4 rounded-lg border border-border p-4">
+              <h3 className="text-sm font-semibold text-[#0F2340]">Representantes extraídos — revise antes de salvar</h3>
+              {form.representatives.map((representative, index) => (
+                <div key={`${representative.name}-${index}`} className="grid gap-4 sm:grid-cols-2">
+                  <Input aria-label={`Nome do representante ${index + 1}`} value={representative.name} onChange={(event) => setForm((current) => ({ ...current, representatives: current.representatives.map((item, itemIndex) => itemIndex === index ? { ...item, name: event.target.value } : item) }))} />
+                  <Input aria-label={`Nacionalidade do representante ${index + 1}`} value={representative.nationality} onChange={(event) => setForm((current) => ({ ...current, representatives: current.representatives.map((item, itemIndex) => itemIndex === index ? { ...item, nationality: event.target.value } : item) }))} />
+                  <Input aria-label={`Estado civil do representante ${index + 1}`} value={representative.marital_status} onChange={(event) => setForm((current) => ({ ...current, representatives: current.representatives.map((item, itemIndex) => itemIndex === index ? { ...item, marital_status: event.target.value } : item) }))} />
+                  <Input aria-label={`Profissão do representante ${index + 1}`} value={representative.profession} onChange={(event) => setForm((current) => ({ ...current, representatives: current.representatives.map((item, itemIndex) => itemIndex === index ? { ...item, profession: event.target.value } : item) }))} />
+                  <Input aria-label={`CPF do representante ${index + 1}`} value={representative.cpf} onChange={(event) => setForm((current) => ({ ...current, representatives: current.representatives.map((item, itemIndex) => itemIndex === index ? { ...item, cpf: maskCpfCnpj(event.target.value) } : item) }))} />
+                  <Select value={representative.quality} onValueChange={(value) => setForm((current) => ({ ...current, representatives: current.representatives.map((item, itemIndex) => itemIndex === index ? { ...item, quality: value as Representative["quality"] } : item) }))}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="sócio">Sócio</SelectItem>
+                      <SelectItem value="representante legal">Representante legal</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              ))}
+            </div>
+          </div>
 
           <div className="grid gap-5 sm:grid-cols-2">
             <div className="space-y-2">
