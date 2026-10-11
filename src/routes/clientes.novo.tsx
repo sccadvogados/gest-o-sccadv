@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { ArrowLeft, CheckCircle2, FileScan, LoaderCircle, PencilLine, ScanText } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
@@ -11,6 +11,7 @@ import { ObjectClauseField } from "@/components/ObjectClauseField";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PageHeader } from "@/components/ui/page-header";
@@ -29,7 +30,6 @@ import {
   type ExtractedClientData,
 } from "@/lib/document-extraction.functions";
 import { maskCep, maskCpfCnpj, maskPhone, onlyDigits } from "@/lib/format";
-import { enviarAnexosParaDrive } from "@/lib/drive-upload.functions";
 
 export const Route = createFileRoute("/clientes/novo")({
   head: () => ({
@@ -132,12 +132,12 @@ function NewClientPage() {
     const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [savedClientId, setSavedClientId] = useState<string | null>(null);
   const [savedContractId, setSavedContractId] = useState<string | null>(null);
+  const uploadedRef = useRef(new Map<string, { files: File[]; docs: { id: string; path: string }[] }>());
   const [objeto, setObjeto] = useState("");
   const [gratuidade, setGratuidade] = useState(true);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
     const extractDocument = useServerFn(extractClientDocument);
-  const sendAttachmentsToDrive = useServerFn(enviarAnexosParaDrive);
 
     const set = <K extends keyof Form,>(key: K, value: Form[K]) =>
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -296,20 +296,36 @@ function NewClientPage() {
       if (!form.name.trim()) {
         throw new Error("Anexe a identificação para ler os dados ou abra o preenchimento manual.");
       }
-      const { data: auth } = await supabase.auth.getUser();
-      const { data: client, error } = await officeDatabase(supabase)
-                .from("clients")
-        .insert((({ representatives: _representatives, ...clientForm }) => ({ ...clientForm, created_by: auth.user?.id ?? null }))(form))
-        .select("id")
-        .single();
-            if (error) throw error;
+      const { representatives: _representatives, ...clientForm } = form;
+      let clientId = savedClientId;
+
+      if (clientId) {
+        const { error } = await officeDatabase(supabase).from("clients").update(clientForm).eq("id", clientId);
+        if (error) throw error;
+        const { error: deleteRepresentativesError } = await officeDatabase(supabase)
+          .from("cliente_representantes")
+          .delete()
+          .eq("cliente_id", clientId);
+        if (deleteRepresentativesError) throw deleteRepresentativesError;
+      } else {
+        const { data: auth } = await supabase.auth.getUser();
+        const { data: client, error } = await officeDatabase(supabase)
+          .from("clients")
+          .insert({ ...clientForm, created_by: auth.user?.id ?? null })
+          .select("id")
+          .single();
+        if (error) throw error;
+        clientId = client.id;
+        setSavedClientId(client.id);
+      }
+      const currentClientId = clientId;
 
       if (form.person_type === "PJ" && form.representatives.length > 0) {
         const { error: representativesError } = await officeDatabase(supabase)
           .from("cliente_representantes")
           .insert(
             form.representatives.map((representative, ordem) => ({
-              cliente_id: client.id,
+              cliente_id: currentClientId,
               nome: representative.name,
               nacionalidade: representative.nationality || null,
               estado_civil: representative.marital_status || null,
@@ -322,38 +338,47 @@ function NewClientPage() {
         if (representativesError) throw representativesError;
       }
 
-      const uploads = Object.entries(files).flatMap(([kind, list]) =>
-        list.map((file) => ({ kind, file })),
-      );
+      for (const [kind, list] of Object.entries(files)) {
+        const previous = uploadedRef.current.get(kind);
+        const alreadySent = previous && previous.files.length === list.length && previous.files.every((file, index) => file === list[index]);
+        if (alreadySent || list.length === 0) continue;
 
-      for (const { kind, file } of uploads) {
-                const extension = file.name.includes(".") ? file.name.split(".").pop()!.toLowerCase().replace(/[^a-z0-9]/g, "") : "bin";
-        const path = `${client.id}/${kind}/${Date.now()}-${crypto.randomUUID()}.${extension}`;
-        const { error: upErr } = await supabase.storage
-          .from("client-documents")
-          .upload(path, file);
-        if (upErr) throw new Error(`Falha ao enviar "${file.name}": ${upErr.message}`);
-        const { error: docErr } = await supabase.from("client_documents").insert({
-          client_id: client.id,
-          kind,
-          file_name: file.name,
-          file_path: path,
-        });
-        if (docErr) throw docErr;
+        if (previous && previous.docs.length > 0) {
+          await supabase.storage.from("client-documents").remove(previous.docs.map((doc) => doc.path));
+          const { error: removeError } = await supabase.from("client_documents").delete().in("id", previous.docs.map((doc) => doc.id));
+          if (removeError) throw removeError;
+        }
+
+        const docs: { id: string; path: string }[] = [];
+        for (const file of list) {
+          const extension = file.name.includes(".") ? file.name.split(".").pop()!.toLowerCase().replace(/[^a-z0-9]/g, "") || "bin" : "bin";
+          const path = `${currentClientId}/${kind}/${Date.now()}-${crypto.randomUUID()}.${extension}`;
+          const { error: upErr } = await supabase.storage.from("client-documents").upload(path, file);
+          if (upErr) throw new Error(`Falha ao enviar "${file.name}": ${upErr.message}`);
+          const { data: doc, error: docErr } = await supabase
+            .from("client_documents")
+            .insert({ client_id: currentClientId, kind, file_name: file.name, file_path: path })
+            .select("id")
+            .single();
+          if (docErr) throw docErr;
+          docs.push({ id: doc.id, path });
+        }
+        uploadedRef.current.set(kind, { files: list, docs });
       }
 
-      return client.id;
+      return currentClientId;
     },
-        onSuccess: (clientId) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["clients"] });
-      toast.success("Cliente cadastrado com sucesso.");
-      setSavedClientId(clientId);
+      toast.success(savedClientId ? "Qualificação atualizada." : "Cliente cadastrado com sucesso.");
       setStep(2);
     },
-        onError: (error) => {
+    onError: (error) => {
       toast.error(error instanceof Error ? error.message : (error as { message?: string })?.message ?? "Erro ao salvar o cliente.");
     },
   });
+
+  const STEPS = ["Qualificação", "Objeto", "Pagamento", "Revisão"] as const;
 
   return (
     <AppShell>
@@ -370,14 +395,23 @@ function NewClientPage() {
         subtitle="Anexe a identificação e o comprovante de residência para preencher os dados automaticamente."
       />
 
-      <div className="mt-6 text-sm font-medium text-muted-foreground">
-                <span className={step === 1 ? "text-primary" : undefined}>1 Cliente</span>
-        <span className="mx-2">·</span>
-        <span className={step === 2 ? "text-primary" : undefined}>2 Objeto</span>
-        <span className="mx-2">·</span>
-        <span className={step === 3 ? "text-primary" : undefined}>3 Pagamento</span>
-        <span className="mx-2">·</span>
-        <span className={step === 4 ? "text-primary" : undefined}>4 Revisão</span>
+      <div className="mt-6 flex flex-wrap items-center gap-x-2 text-sm font-medium text-muted-foreground">
+        {STEPS.map((label, index) => {
+          const number = (index + 1) as 1 | 2 | 3 | 4;
+          const canGoBack = number < step;
+          return (
+            <span key={label} className="flex items-center gap-2">
+              {index > 0 ? <span>·</span> : null}
+              {canGoBack ? (
+                <button type="button" className="underline-offset-4 hover:underline" onClick={() => setStep(number)}>
+                  {number} {label}
+                </button>
+              ) : (
+                <span className={step === number ? "text-primary" : undefined}>{number} {label}</span>
+              )}
+            </span>
+          );
+        })}
       </div>
 
             {step === 1 && <form
@@ -700,112 +734,76 @@ function NewClientPage() {
         </div>}
             </form>}
 
-            {step === 2 && savedClientId && (
+      {step === 2 && savedClientId ? (
         <section className="panel mt-8 space-y-6 rounded-xl border border-t-[3px] border-t-accent bg-card p-6 text-card-foreground">
           <ObjectClauseField value={objeto} onChange={setObjeto} />
-          {form.person_type === "PF" && (
+          {form.person_type === "PF" ? (
             <label className="flex items-center gap-2 text-sm">
-              <input type="checkbox" checked={gratuidade} onChange={(event) => setGratuidade(event.target.checked)} />
+              <Checkbox checked={gratuidade} onCheckedChange={(checked) => setGratuidade(checked === true)} />
               Pedir gratuidade de justiça
             </label>
-          )}
-          <div className="flex items-center justify-between gap-3">
-            <Button type="button" onClick={() => {
-              if (!objeto.trim()) {
-                toast.error("Preencha o objeto do contrato para continuar.");
-                return;
-              }
-              setStep(3);
-            }}>
-              Continuar
+          ) : null}
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <Button type="button" variant="outline" onClick={() => setStep(1)}>
+              Voltar
             </Button>
-            <button
-              type="button"
-              className="text-sm text-muted-foreground underline-offset-4 hover:underline"
-              onClick={() => navigate({ to: "/clientes/$clientId", params: { clientId: savedClientId } })}
-            >
-              Pular contrato
-            </button>
+            <div className="flex items-center gap-4">
+              <button
+                type="button"
+                className="text-sm text-muted-foreground underline-offset-4 hover:underline"
+                onClick={() => navigate({ to: "/clientes/$clientId", params: { clientId: savedClientId } })}
+              >
+                Pular contrato
+              </button>
+              <Button
+                type="button"
+                onClick={() => {
+                  if (!objeto.trim()) {
+                    toast.error("Preencha o objeto do contrato para continuar.");
+                    return;
+                  }
+                  setStep(3);
+                }}
+              >
+                Continuar
+              </Button>
+            </div>
           </div>
         </section>
-      )}
+      ) : null}
 
-      {step === 3 && savedClientId && (
-        <section className="panel mt-8 rounded-xl border border-t-[3px] border-t-accent bg-card p-6 text-card-foreground">
+      {savedClientId ? (
+        <section className={`panel mt-8 rounded-xl border border-t-[3px] border-t-accent bg-card p-6 text-card-foreground ${step === 3 ? "" : "hidden"}`}>
           <ContractForm
             clientId={savedClientId}
             personType={form.person_type}
             hideObject
             initialObject={objeto}
             initialGratuidade={gratuidade}
+            existingContractId={savedContractId ?? undefined}
+            submitLabel="Salvar e continuar"
+            onBack={() => setStep(2)}
             onSaved={(contractId) => {
               setSavedContractId(contractId);
               setStep(4);
-              void sendAttachmentsToDrive({ data: { contrato_id: contractId } }).then((result) => {
-                if (!result.ok) {
-                  toast.warning(`Contrato salvo, mas não foi possível enviar os anexos ao Drive: ${result.erro}`);
-                }
-              }).catch((error) => {
-                toast.warning(`Contrato salvo, mas não foi possível enviar os anexos ao Drive: ${error instanceof Error ? error.message : "Erro desconhecido."}`);
-              });
             }}
           />
-          <Button type="button" variant="outline" className="mt-3" onClick={() => setStep(2)}>
-            Voltar
-          </Button>
         </section>
-      )}
+      ) : null}
 
-      {step === 4 && savedClientId && savedContractId && (
-        <section className="mt-8 space-y-4">
+      {step === 4 && savedClientId && savedContractId ? (
+        <section className="panel mt-8 space-y-4 rounded-xl border border-t-[3px] border-t-accent bg-card p-6 text-card-foreground">
           <p>Revisão e geração dos documentos (em breve)</p>
-          <Button
-            type="button"
-            onClick={() => navigate({ to: "/clientes/$clientId", params: { clientId: savedClientId } })}
-          >
-            Ir para a ficha
-          </Button>
+          <div className="flex flex-wrap justify-between gap-3">
+            <Button type="button" variant="outline" onClick={() => setStep(3)}>
+              Voltar
+            </Button>
+            <Button type="button" onClick={() => navigate({ to: "/clientes/$clientId", params: { clientId: savedClientId } })}>
+              Ir para a ficha
+            </Button>
+          </div>
         </section>
-      )}
-
-      {false && step === 2 && savedClientId && (
-        <section className="panel mt-8 rounded-xl border border-t-[3px] border-t-accent bg-card p-6 text-card-foreground">
-          <ContractForm
-            clientId={savedClientId}
-            personType={form.person_type}
-                        onSaved={(contractId) => {
-              setSavedContractId(contractId);
-              setStep(3);
-              void sendAttachmentsToDrive({ data: { contrato_id: contractId } }).then((result) => {
-                if (!result.ok) {
-                  toast.warning(`Contrato salvo, mas não foi possível enviar os anexos ao Drive: ${result.erro}`);
-                }
-              }).catch((error) => {
-                toast.warning(`Contrato salvo, mas não foi possível enviar os anexos ao Drive: ${error instanceof Error ? error.message : "Erro desconhecido."}`);
-              });
-            }}
-          />
-          <button
-            type="button"
-            className="mt-3 text-sm text-muted-foreground underline-offset-4 hover:underline"
-            onClick={() => navigate({ to: "/clientes/$clientId", params: { clientId: savedClientId } })}
-          >
-            Pular contrato
-          </button>
-        </section>
-      )}
-
-            {step === 4 && savedClientId && savedContractId && (
-        <section className="mt-8 space-y-4">
-          <p>Revisão e geração dos documentos (em breve)</p>
-          <Button
-            type="button"
-            onClick={() => navigate({ to: "/clientes/$clientId", params: { clientId: savedClientId } })}
-          >
-            Ir para a ficha
-          </Button>
-        </section>
-      )}
+      ) : null}
     </AppShell>
   );
 }
