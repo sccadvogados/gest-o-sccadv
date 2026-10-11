@@ -67,6 +67,12 @@ function dateOnly(value: string): string {
   return value.slice(0, 10);
 }
 
+function dateTimeSaoPaulo(value: string): string {
+  const date = dateOnly(value);
+  const time = value.includes("T") ? value.slice(11, 16) : "00:00";
+  return `${date}T${time}:00-03:00`;
+}
+
 function nextDate(value: string): string {
   const date = new Date(`${value}T00:00:00Z`);
   date.setUTCDate(date.getUTCDate() + 1);
