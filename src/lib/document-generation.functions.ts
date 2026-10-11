@@ -70,7 +70,9 @@ function missingData(client: any, contract: any, representatives: any[], install
   }
 
   if (!required(contract.objeto)) missing.push("objeto do contrato");
-  if (!required(contract.modality) || !required(contract.first_due_date) || installments.length === 0) {
+    if (contract.modality === "exito") {
+    if (!(Number(contract.success_fee_percent) > 0)) missing.push("percentual de êxito");
+  } else if (!required(contract.modality) || !required(contract.first_due_date) || installments.length === 0) {
     missing.push("condições de pagamento");
   }
   return missing;
