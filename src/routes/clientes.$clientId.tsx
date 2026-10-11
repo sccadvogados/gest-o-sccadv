@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { ArrowLeft, Download, FolderOpen, Pencil, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -54,6 +55,7 @@ import {
 } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
 import { officeDatabase } from "@/lib/office-database";
+import { enviarAnexosParaDrive } from "@/lib/drive-upload.functions";
 import {
   buildContractInstallments,
   buildInstallments,
@@ -745,6 +747,7 @@ function EditContractDialog({
 
 function NewContractDialog({ clientId, personType }: { clientId: string; personType: "PF" | "PJ" }) {
   const [open, setOpen] = useState(false);
+  const sendAttachmentsToDrive = useServerFn(enviarAnexosParaDrive);
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -757,7 +760,20 @@ function NewContractDialog({ clientId, personType }: { clientId: string; personT
         <DialogHeader>
           <DialogTitle>Novo contrato</DialogTitle>
         </DialogHeader>
-        <ContractForm clientId={clientId} personType={personType} onSaved={() => setOpen(false)} />
+                <ContractForm
+          clientId={clientId}
+          personType={personType}
+          onSaved={(contractId) => {
+            setOpen(false);
+            void sendAttachmentsToDrive({ data: { contrato_id: contractId } }).then((result) => {
+              if (!result.ok) {
+                toast.warning(`Contrato salvo, mas não foi possível enviar os anexos ao Drive: ${result.erro}`);
+              }
+            }).catch((error) => {
+              toast.warning(`Contrato salvo, mas não foi possível enviar os anexos ao Drive: ${error instanceof Error ? error.message : "Erro desconhecido."}`);
+            });
+          }}
+        />
       </DialogContent>
     </Dialog>
   );

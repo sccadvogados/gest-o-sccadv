@@ -28,6 +28,7 @@ import {
   type ExtractedClientData,
 } from "@/lib/document-extraction.functions";
 import { maskCep, maskCpfCnpj, maskPhone, onlyDigits } from "@/lib/format";
+import { enviarAnexosParaDrive } from "@/lib/drive-upload.functions";
 
 export const Route = createFileRoute("/clientes/novo")({
   head: () => ({
@@ -132,7 +133,8 @@ function NewClientPage() {
   const [savedContractId, setSavedContractId] = useState<string | null>(null);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const extractDocument = useServerFn(extractClientDocument);
+    const extractDocument = useServerFn(extractClientDocument);
+  const sendAttachmentsToDrive = useServerFn(enviarAnexosParaDrive);
 
     const set = <K extends keyof Form,>(key: K, value: Form[K]) =>
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -698,9 +700,16 @@ function NewClientPage() {
           <ContractForm
             clientId={savedClientId}
             personType={form.person_type}
-            onSaved={(contractId) => {
+                        onSaved={(contractId) => {
               setSavedContractId(contractId);
               setStep(3);
+              void sendAttachmentsToDrive({ data: { contrato_id: contractId } }).then((result) => {
+                if (!result.ok) {
+                  toast.warning(`Contrato salvo, mas não foi possível enviar os anexos ao Drive: ${result.erro}`);
+                }
+              }).catch((error) => {
+                toast.warning(`Contrato salvo, mas não foi possível enviar os anexos ao Drive: ${error instanceof Error ? error.message : "Erro desconhecido."}`);
+              });
             }}
           />
           <button
