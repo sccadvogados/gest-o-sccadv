@@ -96,7 +96,7 @@ function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
     const party = parties(event);
     const doctor = responsible(event);
         const title = compactParts(["[SCCAdv]", event.titulo, process, party, doctor]);
-    const date = dateOnly(event.prazo_fatal || event.data_inicio);
+        const date = dateOnly(event.data_inicio);
     return [{
       id: "",
       summary: title,
