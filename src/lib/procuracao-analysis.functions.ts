@@ -47,7 +47,7 @@ function objectWords(value: string): Set<string> {
     value
       .toLocaleLowerCase("pt-BR")
       .normalize("NFD")
-      .replace(/[\\u0300-\\u036f]/g, "")
+      .replace(/[\u0300-\u036f]/g, "")
       .match(/[a-z0-9]{3,}/g)
       ?.filter((word) => !ignored.has(word)) ?? [],
   );
