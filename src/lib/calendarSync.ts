@@ -168,6 +168,7 @@ function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
       start: { date },
       end: { date: nextDate(date) },
       description: common.description,
+      reminders: common.reminders,
     }];
   }
 
