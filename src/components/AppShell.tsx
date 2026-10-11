@@ -113,7 +113,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       </header>
             <main className="mx-auto w-full max-w-[1240px] flex-1 px-6 py-8">{children}</main>
       <footer className="px-6 py-6 text-center text-[13px] text-[#5B6472]">
-        © 2026 SCC Advogados · Acesso restrito
+                © 2026 Souza, Craveiro & Corradi Advogados · Acesso Restrito
       </footer>
     </div>
   );
