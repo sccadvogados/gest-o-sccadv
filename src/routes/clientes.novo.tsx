@@ -123,8 +123,11 @@ function NewClientPage() {
   const [files, setFiles] = useState<Record<string, File[]>>({});
   const [extracting, setExtracting] = useState<Record<string, boolean>>({});
   const [extractedKinds, setExtractedKinds] = useState<string[]>([]);
-  const [showForm, setShowForm] = useState(false);
+    const [showForm, setShowForm] = useState(false);
   const [cepBusy, setCepBusy] = useState(false);
+  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [savedClientId, setSavedClientId] = useState<string | null>(null);
+  const [savedContractId, setSavedContractId] = useState<string | null>(null);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const extractDocument = useServerFn(extractClientDocument);
