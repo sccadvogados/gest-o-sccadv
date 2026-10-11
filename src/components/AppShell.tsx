@@ -12,7 +12,7 @@ const NAV = [
   { to: "/", label: "Clientes", icon: Users },
     { to: "/agenda", label: "Agenda", icon: CalendarDays },
     { to: "/financeiro", label: "Financeiro", icon: Wallet },
-  { to: "/configuracoes", label: "Configurações", icon: Settings },
+  
 ] as const;
 
 export function BrandMark({ className }: { className?: string }) {
