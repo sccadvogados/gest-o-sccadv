@@ -159,7 +159,7 @@ export function AgendaScreen() {
     queryFn: async () => {
             const { data, error } = await officeDatabase(supabase)
                 .from("eventos")
-                .select("id, tipo, titulo, descricao, parte_contraria, numero_processo, cliente_id, contrato_id, data_inicio, data_fim, prazo_fatal, prazo_interno, local_link, responsavel, status, dia_inteiro, google_event_id, created_by, updated_at")
+                .select("id, tipo, titulo, descricao, parte_contraria, numero_processo, cliente_id, contrato_id, data_inicio, data_fim, local_link, responsavel, status, dia_inteiro, google_event_id, created_by, updated_at")
         .order("data_inicio");
       if (error) throw error;
             return (data ?? []) as AgendaEvent[];
