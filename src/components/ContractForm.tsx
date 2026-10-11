@@ -125,7 +125,7 @@ export function ContractForm({ clientId, personType, onSaved }: ContractFormProp
     onSuccess: (contractId) => {
       queryClient.invalidateQueries({ queryKey: ["contracts", clientId] });
       queryClient.invalidateQueries({ queryKey: ["installments"] });
-      toast.success("Contrato cadastrado e parcelas geradas.");
+            toast.success(modality === "exito" ? "Contrato cadastrado." : "Contrato cadastrado e parcelas geradas.");
       onSaved(contractId);
     },
     onError: (error) =>
