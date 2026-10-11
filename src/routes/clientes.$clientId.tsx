@@ -631,7 +631,8 @@ function EditContractDialog({
       if (!firstDue) throw new Error("Informe o primeiro vencimento.");
 
             const contractUpdate = hasPaidInstallment
-                ? { description, category, modality, signature_date: signatureDate || null, payment_method: paymentMethod, success_fee_percent: fee }
+                ? { description, category, modality, signature_date: signatureDate || null, payment_method: paymentMethod, success_fee_percent: fee, objeto: object || null, gratuidade }
+        : {
         : {
             description,
             category,
