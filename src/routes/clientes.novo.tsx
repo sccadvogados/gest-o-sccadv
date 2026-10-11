@@ -709,7 +709,7 @@ function NewClientPage() {
               />
             </div>
             <div className="space-y-2 sm:col-span-3">
-              <Label htmlFor="email">E-mail</Label>
+                            <Label htmlFor="email">E-mail <Pending value={form.email} /></Label>
               <Input
                 id="email"
                 type="email"
