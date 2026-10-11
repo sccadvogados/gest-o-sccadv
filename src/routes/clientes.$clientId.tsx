@@ -650,7 +650,8 @@ function EditContractDialog({
 
 
         : modality === "exito"
-                    ? { category, modality, signature_date: signatureDate || null, total_value: 0, installments_count: 1, payment_method: paymentMethod, success_fee_percent: fee, objeto: object || null, parte_contraria: parteContraria || null, gratuidade }
+                                        ? { category, modality, total_value: 0, installments_count: 1, payment_method: paymentMethod, success_fee_percent: fee, objeto: object || null, parte_contraria: parteContraria || null, gratuidade }
+
 
           : {
               category,
