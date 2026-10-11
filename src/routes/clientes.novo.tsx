@@ -632,7 +632,7 @@ function NewClientPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="rg_issuer">Órgão expedidor / UF</Label>
+                                    <Label htmlFor="rg_issuer">Órgão expedidor / UF <Pending value={form.rg_issuer} /></Label>
                   <Input
                     id="rg_issuer"
                     placeholder="SSP/SP"
