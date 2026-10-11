@@ -77,6 +77,6 @@ export function buildGoogleImportPreview(events: GoogleCalendarItem[], clients: 
 
   return rows.map((row) => ({
     ...row,
-    selecionado: !row.aviso && !row.jaImportado,
+        selecionado: !row.jaImportado,
   }));
 }
