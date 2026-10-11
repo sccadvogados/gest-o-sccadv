@@ -795,7 +795,7 @@ function NewClientPage() {
         </section>
       )}
 
-      {step === 3 && savedClientId && savedContractId && (
+            {step === 4 && savedClientId && savedContractId && (
         <section className="mt-8 space-y-4">
           <p>Revisão e geração dos documentos (em breve)</p>
           <Button
