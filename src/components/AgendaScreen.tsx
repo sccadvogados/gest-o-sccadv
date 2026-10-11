@@ -361,12 +361,21 @@ export function AgendaScreen() {
     },
   });
 
-  const { data: clients = [] } = useQuery({
+    const { data: clients = [] } = useQuery({
     queryKey: ["agenda-clients"],
     queryFn: async () => {
       const { data, error } = await supabase.from("clients").select("id, name").order("name");
       if (error) throw error;
       return data as Client[];
+    },
+  });
+
+  const { data: holidays = [] } = useQuery({
+    queryKey: ["feriados"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("feriados").select("data");
+      if (error) throw error;
+      return (data ?? []).map((holiday) => holiday.data);
     },
   });
 
