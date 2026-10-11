@@ -246,6 +246,7 @@ function DateField({ value, onChange }: { value: string; onChange: (value: strin
 }
 
 function MonthCalendar({ currentDate, onDateChange, onDayClick, events, onEventClick }: { currentDate: Date; onDateChange: (date: Date) => void; onDayClick: (date: string) => void; events: AgendaEvent[]; onEventClick: (event: AgendaEvent) => void }) {
+    const [expandedDay, setExpandedDay] = useState<string | null>(null);
   const days = calendarDays("mes", currentDate);
   const monthLabel = new Intl.DateTimeFormat("pt-BR", { month: "long", year: "numeric" }).format(currentDate);
   const weekDays = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
