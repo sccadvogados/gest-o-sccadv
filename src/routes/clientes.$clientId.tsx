@@ -936,7 +936,15 @@ function NewContractDialog({ clientId, personType }: { clientId: string; personT
             </Select>
           </div>
 
-                    <div className="space-y-2 sm:col-span-2">
+                              <div className="space-y-2 sm:col-span-2">
+            <Label htmlFor="new-contract-object">Objeto do contrato</Label>
+            <p className="text-sm text-muted-foreground">O objeto do presente contrato é a prestação de serviços advocatícios relativos…</p>
+            <Textarea id="new-contract-object" rows={4} value={object} onChange={(e) => setObject(e.target.value)} />
+            <p className="text-sm text-muted-foreground">O objeto do presente contrato é a prestação de serviços advocatícios relativos {object}.</p>
+          </div>
+          {personType === "PF" ? <label className="flex items-center gap-2 text-sm sm:col-span-2"><Checkbox checked={gratuidade} onCheckedChange={(checked) => setGratuidade(checked === true)} />Pedir gratuidade de justiça</label> : null}
+
+          <div className="space-y-2 sm:col-span-2">
             <Label htmlFor="successFee">% de êxito{modality === "exito" ? " (obrigatório)" : ""}</Label>
             <Input
               id="successFee"
