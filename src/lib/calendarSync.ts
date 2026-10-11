@@ -115,7 +115,7 @@ function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
     const meetingTitle = event.titulo.replace(/^\[(?:REUNIÃO|AUDIÊNCIA|JULGAMENTO)\]\s*/, "");
     return [{
       id: "",
-            summary: compactParts(["[SCCAdv]", marker, meetingTitle, event.numero_processo, parties(event), responsible(event)]),
+            summary: googleTitle(["[SCCAdv]", marker], [meetingTitle, event.numero_processo, parties(event), responsible(event)]),
             colorId: TIPO_CORES[event.tipo as keyof typeof TIPO_CORES].colorId,
             start: { dateTime: dateTimeSaoPaulo(event.data_inicio), timeZone: "America/Sao_Paulo" },
       end: { dateTime: dateTimeSaoPaulo(event.data_fim), timeZone: "America/Sao_Paulo" },
