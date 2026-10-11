@@ -14,7 +14,8 @@ type CalendarEvent = {
   parte_contraria?: string | null;
   responsavel?: string | null;
   cliente_nome?: string | null;
-  data_inicio: string;
+    data_inicio: string;
+  data_fim?: string | null;
   
   local_link?: string | null;
 };
@@ -23,9 +24,10 @@ type GoogleEvent = {
   id: string;
   summary: string;
   description?: string | undefined;
+  location?: string | undefined;
   colorId: string;
-  start: { date: string };
-    end: { date: string };
+  start: { date?: string; dateTime?: string; timeZone?: string };
+    end: { date?: string; dateTime?: string; timeZone?: string };
   reminders?: {
     useDefault: boolean;
     overrides: Array<{ method: "popup"; minutes: number }>;
