@@ -656,8 +656,8 @@ function EditContractDialog({
           : {
               category,
               modality,
-              signature_date: signatureDate || null,
-              total_value: total,
+                            total_value: total,
+
               installments_count: installmentsCount,
               first_due_date: firstDue,
               payment_method: paymentMethod,
