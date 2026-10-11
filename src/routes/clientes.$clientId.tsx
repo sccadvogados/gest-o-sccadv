@@ -518,7 +518,8 @@ type ContractRow = {
   modality: ContractModality;
   signature_date: string | null;
   success_fee_percent: number;
-  objeto?: string | null;
+    objeto?: string | null;
+  parte_contraria?: string | null;
   gratuidade?: boolean;
   installments?: Array<{ status: string }>;
 };
@@ -638,26 +639,29 @@ function EditContractDialog({
         if (!firstDue) throw new Error("Informe o primeiro vencimento.");
       }
 
-                        const contractUpdate = hasPaidInstallment || modality === "exito"
-        ? { description, category, modality, signature_date: signatureDate || null, payment_method: paymentMethod, success_fee_percent: fee, objeto: object || null, gratuidade }
-        : {
-            description,
-            category,
-            modality,
-            signature_date: signatureDate || null,
-            total_value: total,
-            installments_count: installmentsCount,
-            first_due_date: firstDue,
-            payment_method: paymentMethod,
-            success_fee_percent: fee,
-                        recurring: modality === "mensal",
-            objeto: object || null,
-            gratuidade,
-          };
+                              const contractUpdate = hasPaidInstallment
+        ? { description, category, modality, signature_date: signatureDate || null, payment_method: paymentMethod, success_fee_percent: fee, objeto: object || null, parte_contraria: parteContraria || null, gratuidade }
+        : modality === "exito"
+          ? { description, category, modality, signature_date: signatureDate || null, total_value: 0, installments_count: 1, payment_method: paymentMethod, success_fee_percent: fee, objeto: object || null, parte_contraria: parteContraria || null, gratuidade }
+          : {
+              description,
+              category,
+              modality,
+              signature_date: signatureDate || null,
+              total_value: total,
+              installments_count: installmentsCount,
+              first_due_date: firstDue,
+              payment_method: paymentMethod,
+              success_fee_percent: fee,
+              recurring: modality === "mensal",
+              objeto: object || null,
+              parte_contraria: parteContraria || null,
+              gratuidade,
+            };
       const { error } = await officeDatabase(supabase).from("contracts").update(contractUpdate).eq("id", contract.id);
       if (error) throw error;
 
-            if (hasPaidInstallment || modality === "exito") return;
+                        if (hasPaidInstallment) return;
 
       const { error: deleteError } = await supabase.from("installments").delete().eq("contract_id", contract.id);
       if (deleteError) throw deleteError;
@@ -711,7 +715,11 @@ function EditContractDialog({
         <div className="space-y-2"><Label htmlFor={`edit-contract-signature-${contract.id}`}>Data de assinatura</Label><Input id={`edit-contract-signature-${contract.id}`} type="date" value={signatureDate} onChange={(e) => setSignatureDate(e.target.value)} /></div>
                 {modality !== "exito" ? <div className="space-y-2"><Label htmlFor={`edit-contract-due-${contract.id}`}>Primeiro vencimento</Label><Input id={`edit-contract-due-${contract.id}`} type="date" value={firstDue} onChange={(e) => setFirstDue(e.target.value)} disabled={hasPaidInstallment} /></div> : null}
         <div className="space-y-2"><Label>Forma de pagamento</Label><Select value={paymentMethod} onValueChange={setPaymentMethod}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{PAYMENT_METHODS.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent></Select></div>
-                <div className="space-y-2 sm:col-span-2">
+                                <div className="space-y-2 sm:col-span-2">
+          <Label htmlFor={`edit-contract-counterparty-${contract.id}`}>Parte contrária</Label>
+          <Input id={`edit-contract-counterparty-${contract.id}`} value={parteContraria} onChange={(e) => setParteContraria(e.target.value)} />
+        </div>
+        <div className="space-y-2 sm:col-span-2">
           <Label htmlFor={`edit-contract-object-${contract.id}`}>Objeto do contrato</Label>
           <p className="text-sm text-muted-foreground">O objeto do presente contrato é a prestação de serviços advocatícios relativos…</p>
           <Textarea id={`edit-contract-object-${contract.id}`} rows={4} value={object} onChange={(e) => setObject(e.target.value)} />
