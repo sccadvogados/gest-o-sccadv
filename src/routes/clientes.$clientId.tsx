@@ -268,7 +268,8 @@ function ClientDetailPage() {
       />
 
             <section className="panel mt-6 grid gap-5 rounded-xl border border-[#E6D6C4] border-t-[3px] border-t-[#D4A782] bg-white p-6 shadow-panel sm:grid-cols-2">
-        <Field label="Nacionalidade" value={client.nationality} />
+                <Field label="Nacionalidade" value={client.nationality} />
+        {client.person_type === "PJ" ? <Field label="Descrição da pessoa jurídica" value={client.pj_descricao} /> : null}
         <Field label="Estado civil" value={client.marital_status} />
         <Field label="Profissão" value={client.profession} />
         <Field

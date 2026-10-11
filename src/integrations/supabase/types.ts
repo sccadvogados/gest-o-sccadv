@@ -93,7 +93,8 @@ export type Database = {
           notes: string | null
           number: string | null
           person_type: string
-          phone: string | null
+                    phone: string | null
+          pj_descricao: string
           profession: string | null
           rg_issuer: string | null
           rg_number: string | null

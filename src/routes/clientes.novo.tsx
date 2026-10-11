@@ -62,8 +62,9 @@ const ATTACHMENTS: { kind: string; label: string; multiple?: boolean }[] = [
 ];
 
 type Form = {
-  person_type: "PF" | "PJ";
+    person_type: "PF" | "PJ";
   name: string;
+  pj_descricao: string;
   nationality: string;
   marital_status: string;
   profession: string;
@@ -83,8 +84,9 @@ type Form = {
 };
 
 const EMPTY: Form = {
-  person_type: "PF",
+    person_type: "PF",
   name: "",
+  pj_descricao: "pessoa jurídica de direito privado",
   nationality: "Brasileiro(a)",
   marital_status: "",
   profession: "",
@@ -414,6 +416,13 @@ function NewClientPage() {
                 onChange={(e) => set("name", e.target.value)}
               />
             </div>
+
+                        {form.person_type === "PJ" && (
+              <div className="space-y-2 sm:col-span-2">
+                <Label htmlFor="pj_descricao">Descrição da pessoa jurídica</Label>
+                <Textarea id="pj_descricao" rows={3} value={form.pj_descricao} onChange={(e) => set("pj_descricao", e.target.value)} />
+              </div>
+            )}
 
             <div className="space-y-2">
               <Label htmlFor="cpf_cnpj">CPF/CNPJ</Label>

@@ -26,8 +26,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { maskCep, maskCpfCnpj, maskPhone, onlyDigits } from "@/lib/format";
 
 type ClientForm = {
-  person_type: "PF" | "PJ";
+    person_type: "PF" | "PJ";
   name: string;
+  pj_descricao: string;
   nationality: string;
   marital_status: string;
   profession: string;
@@ -57,7 +58,8 @@ const MARITAL = [
 function clientToForm(client: Record<string, unknown>): ClientForm {
   return {
     person_type: client["person_type"] === "PJ" ? "PJ" : "PF",
-    name: String(client["name"] ?? ""),
+        name: String(client["name"] ?? ""),
+    pj_descricao: String(client["pj_descricao"] ?? "pessoa jurídica de direito privado"),
     nationality: String(client["nationality"] ?? ""),
     marital_status: String(client["marital_status"] ?? ""),
     profession: String(client["profession"] ?? ""),
@@ -182,6 +184,12 @@ export function EditClientDialog({
                 <Label htmlFor="edit-name">{form.person_type === "PJ" ? "Razão social" : "Nome completo"}</Label>
                 <Input id="edit-name" value={form.name} onChange={(event) => set("name", event.target.value)} />
               </div>
+                            {form.person_type === "PJ" && (
+                <div className="space-y-2 sm:col-span-2">
+                  <Label htmlFor="edit-pj-descricao">Descrição da pessoa jurídica</Label>
+                  <Textarea id="edit-pj-descricao" rows={3} value={form.pj_descricao} onChange={(event) => set("pj_descricao", event.target.value)} />
+                </div>
+              )}
               <div className="space-y-2">
                 <Label htmlFor="edit-cpf">CPF/CNPJ</Label>
                 <Input id="edit-cpf" value={form.cpf_cnpj} onChange={(event) => set("cpf_cnpj", maskCpfCnpj(event.target.value))} />
