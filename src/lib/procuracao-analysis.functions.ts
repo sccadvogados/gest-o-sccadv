@@ -47,7 +47,7 @@ function objectWords(value: string): Set<string> {
     value
       .toLocaleLowerCase("pt-BR")
       .normalize("NFD")
-      .replace(/[\\u0300-\\u036f]/g, "")
+      .replace(/[\u0300-\u036f]/g, "")
       .match(/[a-z0-9]{3,}/g)
       ?.filter((word) => !ignored.has(word)) ?? [],
   );
@@ -86,6 +86,7 @@ function applyAnalysisGuards(
   result: z.infer<typeof resultSchema>,
   objeto: string,
   tribunaisAtivos: Tribunal[],
+  ufDomicilio: string,
 ) {
   if (objeto.length < 30) {
     return blockedAnalysisResult("Preencha o objeto do contrato.");
@@ -95,7 +96,7 @@ function applyAnalysisGuards(
   let poderes = result.poderes_especificos;
   for (const term of forbiddenPowerTerms) {
     if (poderes.toLocaleLowerCase("pt-BR").includes(term)) {
-      poderes = poderes.replace(new RegExp(term, "gi"), "").replace(/\\s{2,}/g, " ").trim();
+            poderes = "";
       const alerta = `O objeto menciona ${term}. Avalie se é necessário poder especial.`;
       if (!alertas.includes(alerta)) alertas.push(alerta);
     }
@@ -107,11 +108,22 @@ function applyAnalysisGuards(
     }
   }
 
-  const reconhecido = tribunaisAtivos.some((tribunal) =>
-    result.destino.includes(tribunal.nome_oficial),
-  );
-  if (result.destino && !reconhecido && !alertas.includes("Tribunal não reconhecido. Selecione na lista.")) {
-    alertas.push("Tribunal não reconhecido. Selecione na lista.");
+    const reconhecido = !result.destino || tribunaisAtivos
+    .filter((tribunal) => result.destino.includes(tribunal.nome_oficial))
+    .every((tribunal) => result.destino.includes(tribunal.nome_oficial));
+  const tribunaisCitados = tribunaisAtivos.filter((tribunal) => result.destino.includes(tribunal.nome_oficial));
+  const temTribunalNaoReconhecido = result.destino.length > 0 && tribunaisCitados.length === 0;
+  if (temTribunalNaoReconhecido || !reconhecido) {
+    const tjDomicilio = tribunaisAtivos.find((tribunal) =>
+      tribunal.uf === ufDomicilio && tribunal.sigla.startsWith("TJ"),
+    );
+    result = {
+      ...result,
+      destino: tjDomicilio?.nome_oficial ?? result.destino,
+    };
+    if (!alertas.includes("Tribunal não reconhecido. Selecione na lista.")) {
+      alertas.push("Tribunal não reconhecido. Selecione na lista.");
+    }
   }
 
   return {
@@ -153,7 +165,18 @@ export const analisarObjetoProcuracao = createServerFn({ method: "POST" })
 
     const objeto = typeof contract.objeto === "string" ? contract.objeto.trim() : "";
     const tipoCliente = client.person_type === "PJ" ? "PJ" : "PF";
-    const ufDomicilio = typeof client.state === "string" ? client.state.toUpperCase() : "";
+        const ufDomicilio = typeof client.state === "string" ? client.state.toUpperCase() : "";
+
+    if (objeto.length < 30) {
+      return blockedAnalysisResult("Preencha o objeto do contrato.");
+    }
+
+    const hasPartContraria = /\b(em face de|contra|réu|ré|parte contrária)\b/i.test(objeto);
+    const hasAssunto = /\b(ação|processo|demanda|cobrança|indenização|execução|contrato|divórcio|inventário|benefício|aposentadoria|acidente|verbas?|rescisão|danos?)\b/i.test(objeto) ||
+      /\b(sobre|relativo ao?|referente ao?|acerca do?)\b/i.test(objeto);
+    if (!hasAssunto && !hasPartContraria) {
+      return blockedAnalysisResult("Informe o assunto e a parte contrária do objeto do contrato.");
+    }
 
     const [{ data: tribunais, error: tribunaisError }, { data: exemplos, error: exemplosError }] = await Promise.all([
       database
@@ -232,8 +255,8 @@ export const analisarObjetoProcuracao = createServerFn({ method: "POST" })
 
 
         try {
-      const result = resultSchema.parse(JSON.parse(content.replace(/^```json\\s*|\\s*```$/g, "")));
-      return applyAnalysisGuards(result, objeto, (tribunais ?? []) as Tribunal[]);
+      const result = resultSchema.parse(JSON.parse(content.replace(/^```json\s*|\s*```$/g, "")));
+      return applyAnalysisGuards(result, objeto, (tribunais ?? []) as Tribunal[], ufDomicilio);
     } catch {
       return blockedAnalysisResult("Não foi possível analisar o objeto. Tente novamente ou preencha manualmente.");
     }
