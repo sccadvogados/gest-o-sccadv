@@ -57,7 +57,8 @@ const MARITAL = [
 function clientToForm(client: Record<string, unknown>): ClientForm {
   return {
     person_type: client["person_type"] === "PJ" ? "PJ" : "PF",
-    name: String(client["name"] ?? ""),
+        name: String(client["name"] ?? ""),
+    pj_descricao: String(client["pj_descricao"] ?? "pessoa jurídica de direito privado"),
     nationality: String(client["nationality"] ?? ""),
     marital_status: String(client["marital_status"] ?? ""),
     profession: String(client["profession"] ?? ""),
