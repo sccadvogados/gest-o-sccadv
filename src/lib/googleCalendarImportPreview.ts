@@ -2,7 +2,8 @@ type GoogleCalendarItem = {
   id: string;
   summary?: string;
   colorId?: string;
-  start?: { date?: string; dateTime?: string };
+    start?: { date?: string; dateTime?: string };
+  end?: { date?: string; dateTime?: string };
 };
 
 type ExistingEvent = {
