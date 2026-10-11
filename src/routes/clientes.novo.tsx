@@ -618,7 +618,7 @@ function NewClientPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="rg_number">RG (número)</Label>
+                  <Label htmlFor="rg_number">RG</Label>
                   <Input
                     id="rg_number"
                     value={form.rg_number}
