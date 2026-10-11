@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { Checkbox } from "@/components/ui/checkbox";
@@ -19,6 +19,7 @@ const CATEGORIES = [
 ] as const;
 
 const PAYMENT_METHODS = ["Cartão", "PIX", "Boleto"] as const;
+const PREFIXO = "CLÁUSULA PRIMEIRA – OBJETO\n\n1.1 O objeto do presente contrato é a prestação de serviços advocatícios relativos ";
 
 type PreviewInstallment = {
   number: number;
@@ -42,7 +43,23 @@ export function ContractForm({ clientId, personType, onSaved }: ContractFormProp
   const [firstDue, setFirstDue] = useState(todayISO());
   const [paymentMethod, setPaymentMethod] = useState<string>(PAYMENT_METHODS[0]);
   const [successFee, setSuccessFee] = useState("0");
-    const [object, setObject] = useState("");
+      const [object, setObject] = useState("");
+  const objectRef = useRef<HTMLTextAreaElement>(null);
+
+  function keepCursorAfterPrefix() {
+    const textarea = objectRef.current;
+    if (textarea && (textarea.selectionStart ?? 0) < PREFIXO.length) {
+      textarea.setSelectionRange(PREFIXO.length, PREFIXO.length);
+    }
+  }
+
+  function resizeObjectTextarea() {
+    const textarea = objectRef.current;
+    if (textarea) {
+      textarea.style.height = "auto";
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+  }
   
   const [gratuidade, setGratuidade] = useState(true);
   const [preview, setPreview] = useState<PreviewInstallment[]>([]);
@@ -101,7 +118,7 @@ export function ContractForm({ clientId, personType, onSaved }: ContractFormProp
           parte_contraria: parteContraria || null,
           success_fee_percent: fee,
           recurring: modality === "mensal",
-          objeto: object || null,
+                    objeto: object.trim().replace(/\.$/, "").trim() || null,
           gratuidade: personType === "PF" ? gratuidade : false,
         })
         .select("id")
@@ -184,11 +201,33 @@ export function ContractForm({ clientId, personType, onSaved }: ContractFormProp
 
                 
 
-        <div className="space-y-2 sm:col-span-2">
+                <div className="space-y-2 sm:col-span-2">
           <Label htmlFor="new-contract-object">Objeto do contrato</Label>
-          <p className="text-sm text-muted-foreground">O objeto do presente contrato é a prestação de serviços advocatícios relativos…</p>
-          <Textarea id="new-contract-object" rows={4} value={object} onChange={(e) => setObject(e.target.value)} />
-          <p className="text-sm text-muted-foreground">O objeto do presente contrato é a prestação de serviços advocatícios relativos {object}.</p>
+          <Textarea
+            ref={objectRef}
+            id="new-contract-object"
+            rows={1}
+            value={`${PREFIXO}${object}`}
+            className="font-[Georgia,\"Times_New_Roman\",serif] resize-none overflow-hidden"
+            onFocus={(event) => {
+              event.currentTarget.setSelectionRange(event.currentTarget.value.length, event.currentTarget.value.length);
+              resizeObjectTextarea();
+            }}
+            onClick={keepCursorAfterPrefix}
+            onSelect={keepCursorAfterPrefix}
+            onKeyDown={(event) => {
+              if (event.key === "Backspace" && event.currentTarget.selectionStart === PREFIXO.length && event.currentTarget.selectionEnd === PREFIXO.length) {
+                event.preventDefault();
+              }
+              keepCursorAfterPrefix();
+            }}
+            onChange={(event) => {
+              if (!event.target.value.startsWith(PREFIXO)) return;
+              setObject(event.target.value.slice(PREFIXO.length));
+              resizeObjectTextarea();
+            }}
+          />
+          <p className="text-xs text-muted-foreground">Comece com "a", "à" ou "ao".</p>
         </div>
         {personType === "PF" ? <label className="flex items-center gap-2 text-sm sm:col-span-2"><Checkbox checked={gratuidade} onCheckedChange={(checked) => setGratuidade(checked === true)} />Pedir gratuidade de justiça</label> : null}
 

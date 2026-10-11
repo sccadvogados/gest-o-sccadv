@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { ArrowLeft, Download, FolderOpen, Pencil, Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
@@ -94,6 +94,7 @@ export const CATEGORIES = [
 ] as const;
 
 const PAYMENT_METHODS = ["Cartão", "PIX", "Boleto"] as const;
+const PREFIXO = "CLÁUSULA PRIMEIRA – OBJETO\n\n1.1 O objeto do presente contrato é a prestação de serviços advocatícios relativos ";
 
 const DOC_LABELS: Record<string, string> = {
   identificacao: "Documento de Identificação",
@@ -634,7 +635,23 @@ function EditContractDialog({
     const [paymentMethod, setPaymentMethod] = useState(contract.payment_method ?? PAYMENT_METHODS[0]);
   const paymentMethodOptions = PAYMENT_METHODS.includes(paymentMethod as (typeof PAYMENT_METHODS)[number]) ? PAYMENT_METHODS : [paymentMethod, ...PAYMENT_METHODS];
     const [successFee, setSuccessFee] = useState(String(contract.success_fee_percent));
-    const [object, setObject] = useState(contract.objeto ?? "");
+      const [object, setObject] = useState(contract.objeto ?? "");
+  const objectRef = useRef<HTMLTextAreaElement>(null);
+
+  function keepCursorAfterPrefix() {
+    const textarea = objectRef.current;
+    if (textarea && (textarea.selectionStart ?? 0) < PREFIXO.length) {
+      textarea.setSelectionRange(PREFIXO.length, PREFIXO.length);
+    }
+  }
+
+  function resizeObjectTextarea() {
+    const textarea = objectRef.current;
+    if (textarea) {
+      textarea.style.height = "auto";
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+  }
   const [parteContraria, setParteContraria] = useState(contract.parte_contraria ?? "");
   const [gratuidade, setGratuidade] = useState(contract.gratuidade ?? false);
 
