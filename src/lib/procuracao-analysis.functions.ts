@@ -244,8 +244,8 @@ export const analisarObjetoProcuracao = createServerFn({ method: "POST" })
 
 
         try {
-      const result = resultSchema.parse(JSON.parse(content.replace(/^```json\\s*|\\s*```$/g, "")));
-      return applyAnalysisGuards(result, objeto, (tribunais ?? []) as Tribunal[]);
+      const result = resultSchema.parse(JSON.parse(content.replace(/^```json\s*|\s*```$/g, "")));
+      return applyAnalysisGuards(result, objeto, (tribunais ?? []) as Tribunal[], ufDomicilio);
     } catch {
       return blockedAnalysisResult("Não foi possível analisar o objeto. Tente novamente ou preencha manualmente.");
     }
