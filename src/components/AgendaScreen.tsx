@@ -245,6 +245,30 @@ function DateField({ value, onChange }: { value: string; onChange: (value: strin
   return <Input className="w-[160px] bg-white" type="date" value={value.slice(0, 10)} onChange={(event) => onChange(event.target.value)} />;
 }
 
+function MonthCalendar({ currentDate, onDateChange, onDayClick }: { currentDate: Date; onDateChange: (date: Date) => void; onDayClick: (date: string) => void }) {
+  const days = calendarDays("mes", currentDate);
+  const monthLabel = new Intl.DateTimeFormat("pt-BR", { month: "long", year: "numeric" }).format(currentDate);
+  const weekDays = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+  const goToMonth = (amount: number) => {
+    const next = new Date(currentDate.getFullYear(), currentDate.getMonth() + amount, 1);
+    onDateChange(next);
+  };
+
+  return <div className="panel mt-6 overflow-hidden">
+    <div className="flex flex-wrap items-center justify-between gap-3 border-b p-4">
+      <div className="flex items-center gap-2"><Button type="button" variant="outline" size="sm" onClick={() => goToMonth(-1)}>&lt;</Button><Button type="button" variant="outline" size="sm" onClick={() => goToMonth(1)}>&gt;</Button><Button type="button" variant="outline" size="sm" onClick={() => onDateChange(new Date())}>Hoje</Button></div>
+      <h2 className="text-lg font-semibold capitalize text-[#0F2340]">{monthLabel}</h2>
+      <div className="w-[156px]" />
+    </div>
+    <div className="grid grid-cols-7 border-b bg-muted/30">{weekDays.map((day) => <div key={day} className="p-3 text-center text-xs font-semibold text-muted-foreground">{day}</div>)}</div>
+    <div className="grid grid-cols-7">{days.map((day) => {
+      const inMonth = day.getMonth() === currentDate.getMonth();
+      const key = dateKey(day);
+      return <button key={key} type="button" onClick={() => onDayClick(key)} className={`min-h-28 border-b border-r p-2 text-left align-top transition-colors hover:bg-accent/40 ${inMonth ? "bg-card" : "bg-muted/20 text-muted-foreground"}`}><span className={`inline-flex size-7 items-center justify-center rounded-full text-sm ${key === localDateKey(new Date().toISOString()) ? "bg-[#0F2340] font-semibold text-white" : ""}`}>{day.getDate()}</span></button>;
+    })}</div>
+  </div>;
+}
+
 export function AgendaScreen() {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
