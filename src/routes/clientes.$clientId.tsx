@@ -521,7 +521,8 @@ type ContractRow = {
   first_due_date: string;
   payment_method: string | null;
   modality: ContractModality;
-  signature_date: string | null;
+    created_at: string;
+
   success_fee_percent: number;
     objeto?: string | null;
   parte_contraria?: string | null;
