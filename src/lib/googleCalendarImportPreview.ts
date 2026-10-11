@@ -72,7 +72,7 @@ function parseEvent(event: GoogleCalendarItem, clients: Client[], existingIds: S
     clienteId: client?.id ?? null,
     parteContraria: parties[1] ?? "",
     responsavel: responsible,
-            prazo: kind === "prazo" ? dateOf(event) : "",
+            prazo: kind === "prazo" || kind === "protocolo" ? dateOf(event) : "",
         aviso: [
       !client && clientName ? "cliente não encontrado" : "",
       imported ? "evento já importado antes" : "",
