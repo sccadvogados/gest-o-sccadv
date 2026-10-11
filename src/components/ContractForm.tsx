@@ -182,10 +182,7 @@ export function ContractForm({ clientId, personType, onSaved }: ContractFormProp
           </Select>
         </div>
 
-                <div className="space-y-2 sm:col-span-2">
-          <Label htmlFor="new-contract-counterparty">Parte contrária</Label>
-          <Input id="new-contract-counterparty" value={parteContraria} onChange={(e) => setParteContraria(e.target.value)} />
-        </div>
+                
 
         <div className="space-y-2 sm:col-span-2">
           <Label htmlFor="new-contract-object">Objeto do contrato</Label>
