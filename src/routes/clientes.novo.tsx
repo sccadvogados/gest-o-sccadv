@@ -116,7 +116,7 @@ function NewClientPage() {
   const queryClient = useQueryClient();
   const extractDocument = useServerFn(extractClientDocument);
 
-  const set = <K extends keyof Form>(key: K, value: Form[K]) =>
+    const set = <K extends keyof Form,>(key: K, value: Form[K]) =>
     setForm((prev) => ({ ...prev, [key]: value }));
 
   async function fileToBase64(file: File) {
