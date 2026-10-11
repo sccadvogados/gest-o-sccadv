@@ -87,35 +87,58 @@ async function driveRequest(
   return (await response.json()) as DriveResponse;
 }
 
+const KEEP_UPPERCASE = new Set(["ltda", "me", "mei", "epp", "eireli", "sa", "s/a", "s.a.", "slu", "ss"]);
+
 export function formatClientFolderName(name: string): string {
   const lowercaseWords = new Set(["da", "de", "do", "das", "dos", "e"]);
+  const words = name.trim().split(/\s+/);
+  // Se o nome veio com mistura de maiúsculas e minúsculas, palavras todas em maiúsculas são siglas (ex.: BINDS).
+  const mixedCase = words.some((word) => word !== word.toLocaleUpperCase("pt-BR"));
 
-  return name
-    .trim()
-    .split(/\s+/)
+  return words
     .map((word, index) => {
+      const upper = word.toLocaleUpperCase("pt-BR");
       const normalized = word.toLocaleLowerCase("pt-BR");
+      if (KEEP_UPPERCASE.has(normalized) || /\d/.test(word)) return upper;
+      if (mixedCase && word.length > 1 && word === upper) return word;
       if (index > 0 && lowercaseWords.has(normalized)) return normalized;
       return normalized.charAt(0).toLocaleUpperCase("pt-BR") + normalized.slice(1);
     })
     .join(" ");
 }
 
-export async function findOrCreateFolder(
-  parentId: string,
-  name: string,
-): Promise<string> {
-  const query = [
-    "mimeType = 'application/vnd.google-apps.folder'",
-    "trashed = false",
-    `'${escapeDriveQueryValue(parentId)}' in parents`,
-    `name = '${escapeDriveQueryValue(name)}'`,
-  ].join(" and ");
-  const params = new URLSearchParams({ q: query, fields: "files(id,name)" });
-  const result = await driveRequest(`/drive/v3/files?${params}`);
-  const existingFolder = result.files?.[0];
-  if (existingFolder?.id) return existingFolder.id;
+/** Compara nomes ignorando espaços extras, maiúsculas e acentos. */
+function normalizeName(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLocaleLowerCase("pt-BR")
+    .replace(/\s+/g, " ")
+    .trim();
+}
 
+async function listChildFolders(parentId: string): Promise<DriveFile[]> {
+  const folders: DriveFile[] = [];
+  let pageToken: string | undefined;
+  do {
+    const params = new URLSearchParams({
+      q: [
+        "mimeType = 'application/vnd.google-apps.folder'",
+        "trashed = false",
+        `'${escapeDriveQueryValue(parentId)}' in parents`,
+      ].join(" and "),
+      fields: "nextPageToken,files(id,name)",
+      pageSize: "1000",
+    });
+    if (pageToken) params.set("pageToken", pageToken);
+    const result = (await driveRequest(`/drive/v3/files?${params}`)) as DriveResponse & { nextPageToken?: string };
+    folders.push(...(result.files ?? []));
+    pageToken = result.nextPageToken;
+  } while (pageToken);
+  return folders;
+}
+
+async function createFolder(parentId: string, name: string): Promise<string> {
   const created = await driveRequest("/drive/v3/files", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -125,11 +148,29 @@ export async function findOrCreateFolder(
       parents: [parentId],
     }),
   });
-
   if (!created.id) {
     throw new Error("O Google Drive não retornou o ID da pasta criada.");
   }
   return created.id;
+}
+
+/**
+ * Procura uma subpasta que satisfaça o critério (comparação sem acentos, maiúsculas
+ * e espaços extras); se não houver, cria com o nome informado.
+ */
+async function findOrCreateMatchingFolder(
+  parentId: string,
+  matches: (normalizedName: string) => boolean,
+  nameToCreate: string,
+): Promise<string> {
+  const existing = (await listChildFolders(parentId)).find((folder) => folder.name && matches(normalizeName(folder.name)));
+  if (existing?.id) return existing.id;
+  return createFolder(parentId, nameToCreate);
+}
+
+export async function findOrCreateFolder(parentId: string, name: string): Promise<string> {
+  const target = normalizeName(name);
+  return findOrCreateMatchingFolder(parentId, (folderName) => folderName === target, name);
 }
 
 export async function ensureClientFolder(
@@ -138,10 +179,7 @@ export async function ensureClientFolder(
 ): Promise<string> {
   if (client.drive_folder_id) return client.drive_folder_id;
 
-  const folderId = await findOrCreateFolder(
-    ARQUIVO_DIGITAL_FOLDER_ID,
-    formatClientFolderName(client.name),
-  );
+  const folderId = await findOrCreateFolder(ARQUIVO_DIGITAL_FOLDER_ID, formatClientFolderName(client.name));
   const driveDatabase = database as unknown as DriveDatabase;
   const { error } = await driveDatabase
     .from("clients")
@@ -155,16 +193,22 @@ export async function ensureClientFolder(
   return folderId;
 }
 
+/**
+ * Pasta do contrato: "NNN-AAAA" (ou "NNN-AAAA_<número do processo>", sem espaços).
+ * Dentro dela ficam as pastas de praxe: "1. Peças do Escritório" e "2. Documentos Prévios".
+ * Devolve o id da pasta de Documentos Prévios.
+ */
 export async function ensureContractDocsFolder(
   database: DriveClient,
   client: Client,
   contract: Contract,
 ): Promise<string> {
   const clientFolderId = await ensureClientFolder(database, client);
-  const contractFolderName = `${String(contract.numero).padStart(3, "0")}-${contract.ano}`;
-  const contractFolderId = contract.drive_folder_id ?? await findOrCreateFolder(
+  const contractPrefix = `${String(contract.numero).padStart(3, "0")}-${contract.ano}`;
+  const contractFolderId = contract.drive_folder_id ?? await findOrCreateMatchingFolder(
     clientFolderId,
-    contractFolderName,
+    (folderName) => folderName === contractPrefix || folderName.startsWith(`${contractPrefix}_`) || folderName.startsWith(`${contractPrefix}-`),
+    contractPrefix,
   );
 
   if (!contract.drive_folder_id) {
@@ -176,7 +220,17 @@ export async function ensureContractDocsFolder(
     if (error) throw new Error(error.message);
   }
 
-  return findOrCreateFolder(contractFolderId, "2. Documentos Prévios");
+  // Se houver uma pasta de processo dentro do contrato com as pastas de praxe, usa a dela.
+  const children = await listChildFolders(contractFolderId);
+  const hasOwnPraxe = children.some((folder) => folder.name && normalizeName(folder.name).includes("documentos previos"));
+  let praxeParentId = contractFolderId;
+  if (!hasOwnPraxe) {
+    const processFolders = children.filter((folder) => folder.name && /\d{7}-\d{2}\.\d{4}\.\d\.\d{2}\.\d{4}/.test(folder.name));
+    if (processFolders.length === 1 && processFolders[0]?.id) praxeParentId = processFolders[0].id;
+  }
+
+  await findOrCreateMatchingFolder(praxeParentId, (folderName) => folderName.includes("pecas do escritorio"), "1. Peças do Escritório");
+  return findOrCreateMatchingFolder(praxeParentId, (folderName) => folderName.includes("documentos previos"), "2. Documentos Prévios");
 }
 
 export async function fileExistsInFolder(
@@ -202,7 +256,7 @@ export async function uploadToDrive(
   const metadata = JSON.stringify({ name: fileName, parents: [folderId] });
   const form = new FormData();
   form.append("metadata", new Blob([metadata], { type: "application/json" }));
-    form.append("file", new Blob([new Uint8Array(bytes)], { type: mimeType }), fileName);
+  form.append("file", new Blob([new Uint8Array(bytes)], { type: mimeType }), fileName);
 
   const result = await driveRequest("/upload/drive/v3/files?uploadType=multipart", {
     method: "POST",
@@ -212,7 +266,7 @@ export async function uploadToDrive(
   if (!result.id) {
     throw new Error("O Google Drive não retornou o ID do arquivo enviado.");
   }
-    return result.id;
+  return result.id;
 }
 
 const ATTACHMENT_KINDS = ["identificacao", "contrato_social", "residencia", "outros"];
@@ -303,4 +357,5 @@ export async function sendContractPackageToDrive(
     return { ok: false, erro };
   }
 }
+
 
