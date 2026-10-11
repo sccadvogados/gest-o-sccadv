@@ -716,7 +716,7 @@ function EditContractDialog({
           </Select>
         </div>
                 {modality !== "exito" ? <>
-          <div className="space-y-2"><Label htmlFor={`edit-contract-total-${contract.id}`}>Valor total (R$)</Label><Input id={`edit-contract-total-${contract.id}`} inputMode="decimal" value={totalValue} onChange={(e) => setTotalValue(e.target.value)} disabled={hasPaidInstallment} /></div>
+                    <div className="space-y-2"><Label htmlFor={`edit-contract-total-${contract.id}`}>Valor total</Label><CurrencyInput id={`edit-contract-total-${contract.id}`} value={totalValue} onChange={setTotalValue} disabled={hasPaidInstallment} /></div>
           <div className="space-y-2"><Label htmlFor={`edit-contract-count-${contract.id}`}>Número de parcelas</Label><Input id={`edit-contract-count-${contract.id}`} type="number" min={1} value={count} onChange={(e) => setCount(e.target.value)} disabled={hasPaidInstallment} /></div>
         </> : null}
                 <div className="space-y-2"><Label>Modalidade</Label><Select value={modality} onValueChange={(value) => setModality(value as ContractModality)} disabled={hasPaidInstallment}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="parcelado">Pró-labore parcelado</SelectItem><SelectItem value="mensal">Pró-labore mensal</SelectItem><SelectItem value="exito">Somente êxito</SelectItem></SelectContent></Select></div>
