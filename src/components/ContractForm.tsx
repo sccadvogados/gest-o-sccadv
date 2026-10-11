@@ -62,8 +62,8 @@ export function ContractForm({ clientId, personType, onSaved }: ContractFormProp
     setPreview(buildContractInstallments(value, installmentsCount, firstDue, modality));
   }
 
-  function updatePreview(index: number, field: "amount" | "due_date", value: string) {
-    setPreview((current) => current.map((row, rowIndex) => rowIndex === index ? { ...row, [field]: field === "amount" ? Number(value.replace(",", ".")) || 0 : value } : row));
+    function updatePreview(index: number, field: "amount" | "due_date", value: number | string) {
+    setPreview((current) => current.map((row, rowIndex) => rowIndex === index ? { ...row, [field]: field === "amount" ? value as number : value } : row));
   }
 
   const create = useMutation({
