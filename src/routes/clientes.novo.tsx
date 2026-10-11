@@ -36,7 +36,7 @@ import { maskCep, maskCpfCnpj, maskPhone, onlyDigits } from "@/lib/format";
 export const Route = createFileRoute("/clientes/novo")({
   head: () => ({
     meta: [
-      { title: "Novo cliente | Gestão Administrativa | SCC Adv" },
+      { title: "Novo Cliente | Gestão Administrativa | SCC Adv" },
       {
         name: "description",
         content:
@@ -397,7 +397,7 @@ function NewClientPage() {
 
             <PageHeader
         className="mt-4"
-        title="Novo cliente"
+        title="Novo Cliente"
         subtitle="Anexe a identificação e o comprovante de residência para preencher os dados automaticamente."
       />
 
@@ -540,7 +540,7 @@ function NewClientPage() {
 
           <div className="grid gap-5 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label>Tipo de pessoa</Label>
+              <Label>Tipo de Pessoa</Label>
               <Select
                 value={form.person_type}
                 onValueChange={(v) => set("person_type", v as "PF" | "PJ")}
@@ -549,15 +549,15 @@ function NewClientPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="PF">Pessoa física</SelectItem>
-                  <SelectItem value="PJ">Pessoa jurídica</SelectItem>
+                  <SelectItem value="PF">Pessoa Física</SelectItem>
+                  <SelectItem value="PJ">Pessoa Jurídica</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
                             <Label htmlFor="name">
-                {form.person_type === "PJ" ? "Razão social" : "Nome completo"} <Pending value={form.name} />
+                {form.person_type === "PJ" ? "Razão Social" : "Nome Completo"} <Pending value={form.name} />
               </Label>
               <Input
                 id="name"
@@ -595,7 +595,7 @@ function NewClientPage() {
             {form.person_type === "PF" && (
               <>
                 <div className="space-y-2">
-                                    <Label>Estado civil <Pending value={form.marital_status} /></Label>
+                                    <Label>Estado Civil <Pending value={form.marital_status} /></Label>
                   <Select
                     value={form.marital_status}
                     onValueChange={(v) => set("marital_status", v)}
@@ -632,7 +632,7 @@ function NewClientPage() {
                 </div>
 
                 <div className="space-y-2">
-                                    <Label htmlFor="rg_issuer">Órgão expedidor / UF <Pending value={form.rg_issuer} /></Label>
+                                    <Label htmlFor="rg_issuer">Órgão Expedidor / UF <Pending value={form.rg_issuer} /></Label>
                   <Input
                     id="rg_issuer"
                     placeholder="SSP/SP"
