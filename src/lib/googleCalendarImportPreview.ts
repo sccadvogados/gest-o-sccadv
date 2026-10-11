@@ -26,7 +26,7 @@ export type GoogleImportPreviewRow = {
   selecionado: boolean;
 };
 
-const processPattern = /CNJ\s+(\d{7}-\d{2}\.\d{4}\.\d\.\d{2}\.\d{4})/i;
+const processPattern = /(\d{7}-\d{2}\.\d{4}\.\d\.\d{2}\.\d{4})/;
 
 function normalize(value: string): string {
   return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
