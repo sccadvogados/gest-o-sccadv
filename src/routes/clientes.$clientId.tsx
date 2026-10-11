@@ -523,22 +523,12 @@ type ContractRow = {
 
 function ContractActions({
   clientId,
+  personType,
   contract,
 }: {
   clientId: string;
-  contract: {
-    id: string;
-    description: string | null;
-    category: string;
-    total_value: number;
-    installments_count: number;
-    first_due_date: string;
-        payment_method: string | null;
-    modality: ContractModality;
-    signature_date: string | null;
-    success_fee_percent: number;
-    installments?: Array<{ status: string }>;
-  };
+  personType: "PF" | "PJ";
+  contract: ContractRow;
 }) {
   const queryClient = useQueryClient();
     const [editOpen, setEditOpen] = useState(false);
