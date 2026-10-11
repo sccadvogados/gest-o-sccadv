@@ -679,7 +679,39 @@ function NewClientPage() {
             <Link to="/">Cancelar</Link>
           </Button>
         </div>}
-      </form>
+            </form>}
+
+      {step === 2 && savedClientId && (
+        <section className="panel mt-8 rounded-xl border border-t-[3px] border-t-accent bg-card p-6 text-card-foreground shadow-panel">
+          <ContractForm
+            clientId={savedClientId}
+            personType={form.person_type}
+            onSaved={(contractId) => {
+              setSavedContractId(contractId);
+              setStep(3);
+            }}
+          />
+          <button
+            type="button"
+            className="mt-3 text-sm text-muted-foreground underline-offset-4 hover:underline"
+            onClick={() => navigate({ to: "/clientes/$clientId", params: { clientId: savedClientId } })}
+          >
+            Pular contrato
+          </button>
+        </section>
+      )}
+
+      {step === 3 && savedClientId && savedContractId && (
+        <section className="mt-8 space-y-4">
+          <p>Revisão e geração dos documentos (em breve)</p>
+          <Button
+            type="button"
+            onClick={() => navigate({ to: "/clientes/$clientId", params: { clientId: savedClientId } })}
+          >
+            Ir para a ficha
+          </Button>
+        </section>
+      )}
     </AppShell>
   );
 }
