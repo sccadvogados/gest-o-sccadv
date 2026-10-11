@@ -164,6 +164,12 @@ function AuthPage() {
                 {recovering ? "Enviando..." : "Esqueci a senha"}
               </Button>
             </div>
+                        {accessDeniedMessage && (
+              <div role="alert" className="flex items-start gap-2 rounded-[10px] border border-[#FDA29B] bg-[#FEF3F2] px-3.5 py-3 text-[13px] text-[#B42318]">
+                <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+                <span>{accessDeniedMessage}</span>
+              </div>
+            )}
             <Button type="submit" disabled={busy} className="h-[48px] w-full rounded-[10px] bg-[#0B2340] text-[15px] font-semibold text-white hover:bg-[#13325A]">
               {busy ? "Entrando..." : "Entrar"}
             </Button>
