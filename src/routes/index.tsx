@@ -147,7 +147,7 @@ function ClientsPage() {
               <TableHead>CPF/CNPJ</TableHead>
               <TableHead>Contato</TableHead>
               <TableHead>Cidade</TableHead>
-              <TableHead>Contratos ativos</TableHead>
+              <TableHead>Contratos Ativos</TableHead>
               <TableHead>Cadastro</TableHead>
               <TableHead className="text-right">Pasta</TableHead>
             </TableRow>
