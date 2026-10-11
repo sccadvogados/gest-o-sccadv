@@ -322,7 +322,7 @@ export function AgendaScreen() {
   const [clientSearch, setClientSearch] = useState("");
   const [open, setOpen] = useState(false);
         const openNewEvent = (selectedDate?: string) => {
-        setForm({ ...emptyForm, data_inicio: selectedDate ? (selectedDate.includes("T") ? selectedDate : `${selectedDate}T09:00`) : "" });
+                setForm({ ...emptyForm, ...defaultTimedValues(selectedDate) });
     setResponsibleOtherSelected(false);
     setClientSearch("");
     setOpen(true);
