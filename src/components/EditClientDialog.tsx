@@ -47,6 +47,16 @@ type ClientForm = {
   notes: string;
 };
 
+type RepresentativeForm = {
+  id?: string;
+  nome: string;
+  nacionalidade: string;
+  estado_civil: string;
+  profissao: string;
+  cpf: string;
+  qualidade: "representante legal" | "sócio";
+};
+
 const MARITAL = [
   "Solteiro(a)",
   "Casado(a)",
