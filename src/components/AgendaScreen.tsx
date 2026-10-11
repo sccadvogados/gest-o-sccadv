@@ -27,7 +27,7 @@ import { officeDatabase } from "@/lib/office-database";
 import { APP_TIME_ZONE, formatDate } from "@/lib/format";
 import { createEvent as syncCreateEvent, deleteEvent as syncDeleteEvent, updateEvent as syncUpdateEvent } from "@/lib/calendarSync";
 
-type EventType = "prazo" | "audiencia" | "reuniao" | "compromisso";
+type EventType = "prazo" | "audiencia" | "reuniao" | "compromisso" | "julgamento" | "acompanhamento";
 type EventStatus = "pendente" | "cumprido" | "cancelado";
 type FilterCard = "todos" | "vencidos" | "hoje" | "proximos";
 type CalendarView = "lista" | "mes" | "semana";
