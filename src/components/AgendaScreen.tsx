@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CalendarDays, Check, ChevronDown, Plus, Search, Trash2 } from "lucide-react";
+import { CalendarDays, Check, ChevronDown, Plus, Search, Trash2, X } from "lucide-react";
 
 import { GoogleCalendarImportDialog } from "@/components/GoogleCalendarImportDialog";
 import { useEffect, useMemo, useRef, useState } from "react";
