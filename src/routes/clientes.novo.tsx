@@ -336,10 +336,11 @@ function NewClientPage() {
 
       return client.id;
     },
-    onSuccess: (clientId) => {
+        onSuccess: (clientId) => {
       queryClient.invalidateQueries({ queryKey: ["clients"] });
       toast.success("Cliente cadastrado com sucesso.");
-      navigate({ to: "/clientes/$clientId", params: { clientId } });
+      setSavedClientId(clientId);
+      setStep(2);
     },
     onError: (error) => {
       toast.error(error instanceof Error ? error.message : "Erro ao salvar o cliente.");
