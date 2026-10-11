@@ -192,9 +192,7 @@ function ClientsPage() {
                   >
                     {client.name}
                   </Link>
-                                    <Badge variant="secondary" className="ml-2 align-middle text-[10px]">
-                    {client.person_type === "PJ" ? "Pessoa jurídica" : "Pessoa física"}
-                  </Badge>
+                                    
                   {isClientIncomplete(client) ? (
                     <Badge className="ml-2 align-middle border-transparent bg-[#E8B9A5] text-[#7A3F2D] hover:bg-[#E8B9A5] text-[10px]">
                       Cadastro incompleto
