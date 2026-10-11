@@ -28,6 +28,7 @@ import {
   type ExtractedClientData,
 } from "@/lib/document-extraction.functions";
 import { maskCep, maskCpfCnpj, maskPhone, onlyDigits } from "@/lib/format";
+import { enviarAnexosParaDrive } from "@/lib/drive-upload.functions";
 
 export const Route = createFileRoute("/clientes/novo")({
   head: () => ({
