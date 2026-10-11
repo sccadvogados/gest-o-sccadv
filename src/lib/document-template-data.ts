@@ -145,7 +145,7 @@ function representantesTexto(representantes: RepresentativeForTemplate[]): strin
   const prefixo = ordered.length === 1 ? `seu ${tipo}` : `seus ${tipo === "sócio" ? "sócios" : tipo === "representante legal" ? "representantes legais" : "representantes"}`;
   const qualificacoes = ordered.map((representante) => qualificacao(representante));
   const lista = qualificacoes.length === 1 ? qualificacoes[0] : `${qualificacoes.slice(0, -1).join("; ")} e ${qualificacoes.at(-1)}`;
-  return `representada por ${prefixo}, ${lista}`;
+    return `${prefixo}, ${lista}`;
 }
 
 function grupoParcelas(installments: InstallmentForTemplate[]): string {
