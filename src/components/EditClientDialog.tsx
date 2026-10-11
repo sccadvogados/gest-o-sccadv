@@ -101,7 +101,8 @@ export function EditClientDialog({
   triggerClassName?: string;
 }) {
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState<ClientForm>(() => clientToForm(client));
+    const [form, setForm] = useState<ClientForm>(() => clientToForm(client));
+  const [representatives, setRepresentatives] = useState<RepresentativeForm[]>([]);
   const [cepBusy, setCepBusy] = useState(false);
   const queryClient = useQueryClient();
 
