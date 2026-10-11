@@ -41,7 +41,8 @@ export function ContractForm({ clientId, personType, onSaved }: ContractFormProp
   const [firstDue, setFirstDue] = useState(todayISO());
   const [paymentMethod, setPaymentMethod] = useState<string>(PAYMENT_METHODS[0]);
   const [successFee, setSuccessFee] = useState("0");
-  const [object, setObject] = useState("");
+    const [object, setObject] = useState("");
+  const [parteContraria, setParteContraria] = useState("");
   const [gratuidade, setGratuidade] = useState(true);
   const [preview, setPreview] = useState<PreviewInstallment[]>([]);
   const queryClient = useQueryClient();
@@ -69,10 +70,10 @@ export function ContractForm({ clientId, personType, onSaved }: ContractFormProp
       const value = Number(totalValue.replace(",", "."));
       const installmentsCount = Math.max(1, Number(count));
       const fee = Number(successFee.replace(",", ".")) || 0;
-      if (!Number.isFinite(value) || value <= 0) throw new Error("Informe um valor válido.");
-      if (!Number.isInteger(installmentsCount)) throw new Error("Informe um número inteiro de meses/parcelas.");
-      if (!firstDue) throw new Error("Informe o primeiro vencimento.");
-      if (modality === "exito" && (fee <= 0 || fee > 100)) throw new Error("Informe um percentual de êxito entre 0 e 100.");
+            if (modality !== "exito" && (!Number.isFinite(value) || value <= 0)) throw new Error("Informe um valor válido.");
+      if (modality !== "exito" && !Number.isInteger(installmentsCount)) throw new Error("Informe um número inteiro de meses/parcelas.");
+      if (modality !== "exito" && !firstDue) throw new Error("Informe o primeiro vencimento.");
+      if (modality === "exito" && (fee < 0 || fee > 100)) throw new Error("Informe um percentual de êxito entre 0 e 100.");
       if (modality !== "exito" && preview.length !== installmentsCount) throw new Error("Preencha as condições para gerar a prévia das parcelas.");
       if (modality !== "exito") {
         const expectedTotal = modality === "mensal" ? value * installmentsCount : value;
@@ -89,13 +90,15 @@ export function ContractForm({ clientId, personType, onSaved }: ContractFormProp
       const { data: contract, error } = await officeDatabase(supabase)
         .from("contracts")
         .insert({
-          client_id: clientId,
+                    client_id: clientId,
           description,
+          modality,
           category,
-          total_value: total,
-          installments_count: installmentsCount,
-          first_due_date: firstDue,
+          total_value: modality === "exito" ? 0 : total,
+          installments_count: modality === "exito" ? 1 : installmentsCount,
+          ...(modality !== "exito" ? { first_due_date: firstDue } : {}),
           payment_method: paymentMethod,
+          parte_contraria: parteContraria || null,
           success_fee_percent: fee,
           recurring: modality === "mensal",
           objeto: object || null,
@@ -122,7 +125,7 @@ export function ContractForm({ clientId, personType, onSaved }: ContractFormProp
     onSuccess: (contractId) => {
       queryClient.invalidateQueries({ queryKey: ["contracts", clientId] });
       queryClient.invalidateQueries({ queryKey: ["installments"] });
-      toast.success("Contrato cadastrado e parcelas geradas.");
+            toast.success(modality === "exito" ? "Contrato cadastrado." : "Contrato cadastrado e parcelas geradas.");
       onSaved(contractId);
     },
     onError: (error) =>
@@ -188,6 +191,11 @@ export function ContractForm({ clientId, personType, onSaved }: ContractFormProp
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>{PAYMENT_METHODS.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
           </Select>
+        </div>
+
+                <div className="space-y-2 sm:col-span-2">
+          <Label htmlFor="new-contract-counterparty">Parte contrária</Label>
+          <Input id="new-contract-counterparty" value={parteContraria} onChange={(e) => setParteContraria(e.target.value)} />
         </div>
 
         <div className="space-y-2 sm:col-span-2">
