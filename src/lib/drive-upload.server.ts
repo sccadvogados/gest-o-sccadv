@@ -202,7 +202,7 @@ export async function uploadToDrive(
   const metadata = JSON.stringify({ name: fileName, parents: [folderId] });
   const form = new FormData();
   form.append("metadata", new Blob([metadata], { type: "application/json" }));
-  form.append("file", new Blob([bytes], { type: mimeType }), fileName);
+    form.append("file", new Blob([new Uint8Array(bytes)], { type: mimeType }), fileName);
 
   const result = await driveRequest("/upload/drive/v3/files?uploadType=multipart", {
     method: "POST",
