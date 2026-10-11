@@ -235,6 +235,7 @@ function NewClientPage() {
           base64: prepared.base64,
         },
       });
+            if (kind === "contrato_social") set("person_type", "PJ");
       mergeExtracted(data);
       setExtractedKinds((current) => [...new Set([...current, kind])]);
       setShowForm(true);
