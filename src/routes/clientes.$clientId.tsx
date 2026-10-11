@@ -727,12 +727,6 @@ function EditContractDialog({
   );
 }
 
-type PreviewInstallment = {
-  number: number;
-  amount: number;
-  due_date: string;
-};
-
 function NewContractDialog({ clientId, personType }: { clientId: string; personType: "PF" | "PJ" }) {
   const [open, setOpen] = useState(false);
     const [description, setDescription] = useState("");
