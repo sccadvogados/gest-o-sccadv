@@ -32,7 +32,7 @@ type ContractFormProps = {
 };
 
 export function ContractForm({ clientId, personType, onSaved }: ContractFormProps) {
-  const [description, setDescription] = useState("");
+  
   const [modality, setModality] = useState<ContractModality>("parcelado");
   const [signatureDate, setSignatureDate] = useState("");
   const [category, setCategory] = useState<string>(CATEGORIES[0]);
