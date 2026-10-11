@@ -127,8 +127,21 @@ function addBusinessDays(date: string, amount: number) {
   return result.toISOString().slice(0, 10);
 }
 
-function deadlineStart(prazo: string) {
-  return prazo ? `${prazo}T00:00:00-03:00` : "";
+function saoPauloInput(value: string | null | undefined, dateOnly = false) {
+  if (!value) return "";
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: APP_TIME_ZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    ...(dateOnly ? {} : { hour: "2-digit", minute: "2-digit", hourCycle: "h23" }),
+  }).formatToParts(new Date(value));
+  const values = Object.fromEntries(parts.filter((part) => part.type !== "literal").map((part) => [part.type, part.value]));
+  return dateOnly ? `${values.year}-${values.month}-${values.day}` : `${values.year}-${values.month}-${values.day}T${values.hour}:${values.minute}`;
+}
+
+function saoPauloValue(value: string, dateOnly = false) {
+  return value ? `${dateOnly ? value.slice(0, 10) : value}:00-03:00` : "";
 }
 
 export function AgendaScreen() {
@@ -149,7 +162,7 @@ export function AgendaScreen() {
     setOpen(true);
   };
   const openEditEvent = (event: AgendaEvent) => {
-        setForm({ ...emptyForm, ...event, protocolo: event.titulo.startsWith("[PROTOCOLO]"), descricao: event.descricao ?? "", cliente_id: event.cliente_id ?? "", contrato_id: event.contrato_id ?? "", data_inicio: event.data_inicio?.slice(0, 16) ?? "", data_fim: event.data_fim?.slice(0, 16) ?? "",  parte_contraria: event.parte_contraria ?? "", local_link: event.local_link ?? "", responsavel: event.responsavel ?? "" });
+        setForm({ ...emptyForm, ...event, protocolo: event.titulo.startsWith("[PROTOCOLO]"), descricao: event.descricao ?? "", cliente_id: event.cliente_id ?? "", contrato_id: event.contrato_id ?? "", data_inicio: saoPauloInput(event.data_inicio, event.tipo === "prazo"), data_fim: saoPauloInput(event.data_fim, false),  parte_contraria: event.parte_contraria ?? "", local_link: event.local_link ?? "", responsavel: event.responsavel ?? "" });
     setClientSearch(clients.find((client) => client.id === event.cliente_id)?.name ?? "");
     setOpen(true);
   };
@@ -225,7 +238,7 @@ export function AgendaScreen() {
     const createEvent = useMutation({
     mutationFn: async () => {
       const { id: eventId, protocolo: _protocolo, ...values } = form;
-      const payload = { ...values, cliente_id: form.cliente_id || null, contrato_id: form.contrato_id || null, data_inicio: form.tipo === "prazo" ? deadlineStart(form.data_inicio) : form.data_inicio, data_fim: form.data_fim || null, local_link: form.tipo !== "prazo" ? form.local_link || null : null, status: form.status, ...(form.id ? {} : { created_by: (await supabase.auth.getUser()).data.user?.id ?? null }) };
+      const payload = { ...values, cliente_id: form.cliente_id || null, contrato_id: form.contrato_id || null, data_inicio: saoPauloValue(form.data_inicio, form.tipo === "prazo"), data_fim: form.tipo === "prazo" ? null : saoPauloValue(form.data_fim) || null, local_link: form.tipo !== "prazo" ? form.local_link || null : null, status: form.status, ...(form.id ? {} : { created_by: (await supabase.auth.getUser()).data.user?.id ?? null }) };
       if (form.id) {
                 const { error } = await officeDatabase(supabase).from("eventos").update(payload).eq("id", form.id);
         if (error) throw error;
