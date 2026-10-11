@@ -847,10 +847,12 @@ function NewContractDialog({ clientId, personType }: { clientId: string; personT
           Novo contrato
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-lg">
+            <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Novo contrato</DialogTitle>
         </DialogHeader>
+
+        <ContractForm clientId={clientId} personType={personType} onSaved={() => setOpen(false)} />
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2 sm:col-span-2">
