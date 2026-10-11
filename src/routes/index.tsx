@@ -101,7 +101,7 @@ function ClientsPage() {
           <Button asChild>
             <Link to="/clientes/novo">
               <Plus className="size-4" />
-              Novo cliente
+                            Novo Cliente
             </Link>
           </Button>
         )}
