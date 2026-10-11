@@ -397,7 +397,7 @@ function NewClientPage() {
 
             <PageHeader
         className="mt-4"
-        title="Novo cliente"
+        title="Novo Cliente"
         subtitle="Anexe a identificação e o comprovante de residência para preencher os dados automaticamente."
       />
 
