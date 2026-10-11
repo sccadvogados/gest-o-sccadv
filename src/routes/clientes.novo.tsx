@@ -718,7 +718,7 @@ function NewClientPage() {
               />
             </div>
             <div className="space-y-2 sm:col-span-3">
-              <Label htmlFor="phone">Telefone</Label>
+                            <Label htmlFor="phone">Telefone <Pending value={form.phone} /></Label>
               <Input
                 id="phone"
                 value={form.phone}
