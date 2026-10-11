@@ -70,7 +70,8 @@ type AgendaEvent = {
   local_link: string | null;
   contrato_id: string | null;
   responsavel: string | null;
-  status: EventStatus;
+    status: EventStatus;
+  dia_inteiro: boolean | null;
 };
 
 type Client = { id: string; name: string };
@@ -245,6 +246,43 @@ function DateField({ value, onChange }: { value: string; onChange: (value: strin
   return <Input className="w-[160px] bg-white" type="date" value={value.slice(0, 10)} onChange={(event) => onChange(event.target.value)} />;
 }
 
+function WeekCalendar({ currentDate, onDateChange, onSlotClick, events, onEventClick }: { currentDate: Date; onDateChange: (date: Date) => void; onSlotClick: (dateTime: string) => void; events: AgendaEvent[]; onEventClick: (event: AgendaEvent) => void }) {
+  const days = calendarDays("semana", currentDate);
+  const weekLabel = `${new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "short" }).format(days[0])} – ${new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "short", year: "numeric" }).format(days[6])}`;
+  const weekDays = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+  const hours = Array.from({ length: 14 }, (_, index) => index + 7);
+  const todayKey = localDateKey(new Date().toISOString());
+  const timedTypes = ["reuniao", "audiencia", "julgamento"];
+  const isTimed = (event: AgendaEvent) => !event.dia_inteiro && (Boolean(event.data_fim) || timedTypes.includes(event.tipo));
+  const formatTime = (value: string) => new Intl.DateTimeFormat("pt-BR", { timeZone: APP_TIME_ZONE, hour: "2-digit", minute: "2-digit" }).format(new Date(value));
+  const goToWeek = (amount: number) => {
+    const next = new Date(currentDate);
+    next.setDate(next.getDate() + amount * 7);
+    onDateChange(next);
+  };
+
+  return <div className="panel mt-6 overflow-hidden">
+    <div className="flex flex-wrap items-center justify-between gap-3 border-b p-4">
+      <div className="flex items-center gap-2"><Button type="button" variant="outline" size="sm" onClick={() => goToWeek(-1)}>&lt;</Button><Button type="button" variant="outline" size="sm" onClick={() => goToWeek(1)}>&gt;</Button><Button type="button" variant="outline" size="sm" onClick={() => onDateChange(new Date())}>Hoje</Button></div>
+      <h2 className="text-lg font-semibold capitalize text-[#0F2340]">{weekLabel}</h2>
+      <div className="w-[156px]" />
+    </div>
+    <div className="grid min-w-[900px] grid-cols-7 border-b bg-muted/30">{days.map((day, index) => <div key={dateKey(day)} className="border-r p-3 text-center text-xs font-semibold text-muted-foreground"><span className="block">{weekDays[index]}</span><span className={`mx-auto mt-1 flex size-7 items-center justify-center rounded-full text-sm ${dateKey(day) === todayKey ? "bg-[#0F2340] text-white" : ""}`}>{day.getDate()}</span></div>)}</div>
+    <div className="max-h-[640px] overflow-auto"><div className="grid min-w-[900px] grid-cols-7">
+      {days.map((day) => {
+        const key = dateKey(day);
+        const dayEvents = events.filter((event) => localDateKey(event.data_inicio) === key);
+        const allDayEvents = dayEvents.filter((event) => !isTimed(event));
+        const timedEvents = dayEvents.filter(isTimed);
+        return <div key={key} className="relative border-r bg-card">
+          <div className="min-h-16 border-b p-1.5">{allDayEvents.map((event) => <button key={event.id} type="button" onClick={() => onEventClick(event)} className="mb-1 block w-full truncate rounded px-1.5 py-1 text-left text-[11px] font-medium" style={{ backgroundColor: colors[event.tipo], color: typeTextColor(event.tipo), opacity: event.status === "cumprido" || event.status === "cancelado" ? 0.5 : 1 }} title={event.titulo}>{event.titulo}</button>)}</div>
+          <div className="relative" style={{ height: `${hours.length * 56}px` }}>{hours.map((hour) => <button key={hour} type="button" aria-label={`Novo evento em ${key} às ${String(hour).padStart(2, "0")}:00`} onClick={() => onSlotClick(`${key}T${String(hour).padStart(2, "0")}:00`)} className="absolute inset-x-0 h-14 border-b text-left hover:bg-accent/40" style={{ top: `${(hour - 7) * 56}px` }} />)}{key === todayKey ? <div className="pointer-events-none absolute inset-x-0 z-10 border-t-2 border-red-500" style={{ top: `${Math.max(0, (new Date().getHours() + new Date().getMinutes() / 60 - 7) * 56)}px` }} /> : null}{timedEvents.map((event) => { const start = new Date(event.data_inicio); const end = event.data_fim ? new Date(event.data_fim) : new Date(start.getTime() + 60 * 60 * 1000); const startMinutes = start.getHours() * 60 + start.getMinutes(); const endMinutes = Math.max(startMinutes + 30, end.getHours() * 60 + end.getMinutes()); return <button key={event.id} type="button" onClick={() => onEventClick(event)} className="absolute z-20 overflow-hidden rounded px-2 py-1 text-left text-xs font-medium shadow-sm" style={{ top: `${Math.max(0, (startMinutes - 7 * 60) / 60 * 56)}px`, height: `${Math.max(28, (endMinutes - startMinutes) / 60 * 56)}px`, left: "4px", right: "4px", backgroundColor: colors[event.tipo], color: typeTextColor(event.tipo), opacity: event.status === "cumprido" || event.status === "cancelado" ? 0.5 : 1 }} title={event.titulo}>{formatTime(event.data_inicio)} {event.titulo}</button>; })}</div>
+        </div>;
+      })}
+    </div></div>
+  </div>;
+}
+
 function MonthCalendar({ currentDate, onDateChange, onDayClick, events, onEventClick }: { currentDate: Date; onDateChange: (date: Date) => void; onDayClick: (date: string) => void; events: AgendaEvent[]; onEventClick: (event: AgendaEvent) => void }) {
     const [expandedDay, setExpandedDay] = useState<string | null>(null);
   const days = calendarDays("mes", currentDate);
@@ -283,8 +321,8 @@ export function AgendaScreen() {
   const [responsibleOtherSelected, setResponsibleOtherSelected] = useState(false);
   const [clientSearch, setClientSearch] = useState("");
   const [open, setOpen] = useState(false);
-    const openNewEvent = (selectedDate?: string) => {
-        setForm({ ...emptyForm, data_inicio: selectedDate ? `${selectedDate}T09:00` : "" });
+        const openNewEvent = (selectedDate?: string) => {
+        setForm({ ...emptyForm, data_inicio: selectedDate ? (selectedDate.includes("T") ? selectedDate : `${selectedDate}T09:00`) : "" });
     setResponsibleOtherSelected(false);
     setClientSearch("");
     setOpen(true);
@@ -456,9 +494,9 @@ export function AgendaScreen() {
           <div><h1 className="text-[32px] font-bold leading-tight text-[#0F2340]">Prazos e reuniões</h1><p className="mt-1 text-sm text-muted-foreground">Acompanhe prazos, reuniões e compromissos do escritório.</p></div>
           <div className="flex items-center gap-3">
             <div className="flex rounded-md border bg-card p-1">
-              <Button size="sm" variant="secondary">Lista</Button>
+              <Button size="sm" variant={view === "lista" ? "secondary" : "ghost"} onClick={() => setView("lista")}>Lista</Button>
                             <Button size="sm" variant={view === "mes" ? "secondary" : "ghost"} onClick={() => setView("mes")}>Mês</Button>
-              <Tooltip><TooltipTrigger asChild><span><Button size="sm" variant="ghost" disabled>Semana</Button></span></TooltipTrigger><TooltipContent>em breve</TooltipContent></Tooltip>
+              <Button size="sm" variant={view === "semana" ? "secondary" : "ghost"} onClick={() => setView("semana")}>Semana</Button>
                         </div>
             <GoogleCalendarImportDialog onImported={() => queryClient.invalidateQueries({ queryKey: ["agenda-events"] })} />
             <Dialog open={open} onOpenChange={setOpen}><DialogTrigger asChild><Button><Plus className="size-4" /> Novo evento</Button></DialogTrigger>
@@ -492,7 +530,7 @@ export function AgendaScreen() {
 
         <div className="panel mt-6 overflow-hidden"><Table><TableHeader><TableRow><TableHead>Tipo</TableHead><TableHead>Evento</TableHead><TableHead>Data</TableHead><TableHead>Responsável</TableHead><TableHead>Situação</TableHead><TableHead className="text-right">Ação</TableHead></TableRow></TableHeader><TableBody>
           {isLoading ? <TableRow><TableCell colSpan={6} className="py-10 text-center text-muted-foreground">Carregando agenda…</TableCell></TableRow> : filteredEvents.length === 0 ? <TableRow><TableCell colSpan={6} className="py-16 text-center"><span className="mx-auto flex size-14 items-center justify-center rounded-full bg-[#F1E8DD] text-[#0F2340]"><CalendarDays className="size-7" /></span><p className="mt-4 font-semibold text-[#0F2340]">Nenhum compromisso por aqui</p><p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">Cadastre seu primeiro evento para acompanhar prazos e reuniões.</p><Button className="mt-5" variant="outline" onClick={() => openNewEvent()}><Plus className="size-4" />Cadastrar primeiro evento</Button></TableCell></TableRow> : filteredEvents.map((event) => <TableRow key={event.id}><TableCell><Badge style={{ backgroundColor: colors[event.tipo], color: typeTextColor(event.tipo) }}>{labels[event.tipo]}</Badge></TableCell><TableCell><button type="button" className="font-medium text-left hover:underline" onClick={() => openEditEvent(event)}>{event.titulo}</button><div className="text-xs text-muted-foreground">{clientNames.get(event.cliente_id ?? "") ?? "Sem cliente vinculado"}</div></TableCell><TableCell className="whitespace-nowrap text-sm">{formatDate(event.data_inicio)}<div className="text-xs text-muted-foreground">{new Intl.DateTimeFormat("pt-BR", { timeZone: APP_TIME_ZONE, hour: "2-digit", minute: "2-digit" }).format(new Date(event.data_inicio))}</div></TableCell><TableCell className="text-sm text-muted-foreground">{event.responsavel || "—"}</TableCell><TableCell>{isOverdue(event) ? <Badge variant="destructive">VENCIDO</Badge> : <Badge variant="secondary">{event.status === "cumprido" ? "Cumprido" : event.status === "cancelado" ? "Cancelado" : "Pendente"}</Badge>}</TableCell><TableCell className="text-right"><div className="flex justify-end gap-2">{event.status !== "cumprido" && event.status !== "cancelado" ? <Button size="sm" variant="outline" onClick={() => markDone.mutate(event.id)} disabled={markDone.isPending}><Check className="size-4" />Cumprido</Button> : <span className="text-xs text-muted-foreground">Concluído</span>}<Button size="sm" variant="outline" onClick={() => { if (window.confirm("Excluir este evento?")) deleteEvent.mutate(event.id); }} disabled={deleteEvent.isPending} aria-label="Excluir evento"><Trash2 className="size-4" /></Button></div></TableCell></TableRow>)}
-                </TableBody></Table></div> : view === "mes" ? <MonthCalendar currentDate={calendarDate} onDateChange={setCalendarDate} onDayClick={openNewEvent} events={filteredEvents} onEventClick={openEditEvent} /> : null}
+                </TableBody></Table></div> : view === "mes" ? <MonthCalendar currentDate={calendarDate} onDateChange={setCalendarDate} onDayClick={openNewEvent} events={filteredEvents} onEventClick={openEditEvent} /> : view === "semana" ? <WeekCalendar currentDate={calendarDate} onDateChange={setCalendarDate} onSlotClick={openNewEvent} events={filteredEvents} onEventClick={openEditEvent} /> : null}
       </TooltipProvider>
     </AppShell>
   );
