@@ -207,7 +207,7 @@ function NewClientPage() {
 
   async function handleAttachment(kind: string, selected: File[]) {
     setFiles((prev) => ({ ...prev, [kind]: selected }));
-    if ((kind !== "identificacao" && kind !== "residencia") || !selected[0]) return;
+        if ((kind !== "identificacao" && kind !== "residencia" && kind !== "contrato_social") || !selected[0]) return;
 
     const file = selected[0];
     const supported = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
