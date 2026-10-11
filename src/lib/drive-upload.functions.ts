@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { officeDatabase } from "@/lib/office-database";
@@ -37,7 +38,8 @@ function getErrorMessage(error: unknown): string {
 
 export const enviarAnexosParaDrive = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context, data }: { context: { supabase: typeof import("@/integrations/supabase/client").supabase }; data: { contrato_id: string } }) => {
+  .inputValidator((input: { contrato_id: string }) => z.object({ contrato_id: z.string().uuid() }).parse(input))
+  .handler(async ({ context, data }) => {
     const database = officeDatabase(context.supabase);
     const { data: isActive, error: activeError } = await database.rpc("is_ativo");
     if (activeError || !isActive) throw new Error("Acesso não autorizado");
@@ -97,7 +99,7 @@ export const enviarAnexosParaDrive = createServerFn({ method: "POST" })
         if (documentUpdateError) throw documentUpdateError;
       }
 
-      return { ok: true as const };
+      return { ok: true as const, pasta_url: `https://drive.google.com/drive/folders/${folderId}` };
     } catch (error) {
       const erro = getErrorMessage(error);
       if (clientId) {
