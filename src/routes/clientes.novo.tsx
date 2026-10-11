@@ -7,6 +7,8 @@ import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
 import { ContractForm } from "@/components/ContractForm";
+import { ContractReview } from "@/components/ContractReview";
+
 import { ObjectClauseField } from "@/components/ObjectClauseField";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
