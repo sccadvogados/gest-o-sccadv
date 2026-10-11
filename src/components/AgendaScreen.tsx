@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CalendarDays, Check, ChevronDown, CloudOff, Plus, Search, Trash2, X } from "lucide-react";
 
+import { EventFormDialog } from "@/components/EventFormDialog";
 import { GoogleCalendarImportDialog } from "@/components/GoogleCalendarImportDialog";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -540,7 +541,7 @@ export function AgendaScreen() {
               <Button size="sm" variant={view === "semana" ? "secondary" : "ghost"} onClick={() => setView("semana")}>Semana</Button>
                         </div>
             <GoogleCalendarImportDialog onImported={() => queryClient.invalidateQueries({ queryKey: ["agenda-events"] })} />
-            <Dialog open={open} onOpenChange={setOpen}><DialogTrigger asChild><Button><Plus className="size-4" /> Novo evento</Button></DialogTrigger>
+                        <EventFormDialog open={open} onOpenChange={setOpen}><DialogTrigger asChild><Button><Plus className="size-4" /> Novo evento</Button></DialogTrigger>
               <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl"><DialogHeader><DialogTitle>{form.id ? "Editar evento" : "Novo evento"}</DialogTitle></DialogHeader>
                 <form className="grid gap-4" onSubmit={(event) => { event.preventDefault(); const hasRequiredFields = ["prazo", "protocolo", "julgamento", "acompanhamento"].includes(form.tipo) ? form.titulo.trim() && form.data_inicio : ["reuniao", "audiencia", "julgamento"].includes(form.tipo) ? form.titulo.trim() && form.data_inicio.slice(0, 10) && timeToMinutes(form.data_inicio.slice(11, 16)) !== null && timeToMinutes(form.data_fim.slice(11, 16)) !== null : form.titulo.trim() && form.data_inicio; if (!hasRequiredFields) { toast.error(form.tipo === "prazo" ? "Informe o título e o prazo." : ["reuniao", "audiencia", "julgamento"].includes(form.tipo) ? "Informe os horários." : "Informe o título e a data do evento."); return; } if (["reuniao", "audiencia", "julgamento"].includes(form.tipo) && new Date(form.data_fim).getTime() <= new Date(form.data_inicio).getTime()) { toast.error("A hora de término deve ser depois da hora de início."); return; } createEvent.mutate(); }}>
                                     <div className="grid gap-4 sm:grid-cols-2"><Field label="Tipo"><Select value={form.tipo} onValueChange={(value: EventType) => setForm((current) => {
@@ -556,8 +557,8 @@ export function AgendaScreen() {
                   <Field label="Descrição"><Textarea value={form.descricao} onChange={(event) => setForm((current) => ({ ...current, descricao: event.target.value }))} rows={3} /></Field>
                   <DialogFooter><Button type="submit" disabled={createEvent.isPending}>{createEvent.isPending ? "Salvando…" : "Salvar"}</Button></DialogFooter>
                 </form>
-              </DialogContent>
-            </Dialog>
+                            </DialogContent>
+            </EventFormDialog>
           </div>
         </div>
 
