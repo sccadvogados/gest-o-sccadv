@@ -170,6 +170,15 @@ function addOneHourToTime(value: string) {
   return `${String(Math.floor(totalMinutes / 60)).padStart(2, "0")}:${String(totalMinutes % 60).padStart(2, "0")}`;
 }
 
+function defaultTimedValues(selectedDate?: string) {
+  const now = new Date();
+  now.setMinutes(0, 0, 0);
+  now.setHours(now.getHours() + 1);
+  const date = selectedDate?.slice(0, 10) || localDateKey(now.toISOString());
+  const start = selectedDate?.includes("T") ? selectedDate.slice(11, 16) : `${String(now.getHours()).padStart(2, "0")}:00`;
+  return { data_inicio: `${date}T${start}`, data_fim: `${date}T${addOneHourToTime(start)}` };
+}
+
 function timeToMinutes(value: string) {
   const match = /^(\\d{1,2}):(\\d{2})$/.exec(value);
   if (!match) return null;
