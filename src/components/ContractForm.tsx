@@ -43,7 +43,23 @@ export function ContractForm({ clientId, personType, onSaved }: ContractFormProp
   const [firstDue, setFirstDue] = useState(todayISO());
   const [paymentMethod, setPaymentMethod] = useState<string>(PAYMENT_METHODS[0]);
   const [successFee, setSuccessFee] = useState("0");
-    const [object, setObject] = useState("");
+      const [object, setObject] = useState("");
+  const objectRef = useRef<HTMLTextAreaElement>(null);
+
+  function keepCursorAfterPrefix() {
+    const textarea = objectRef.current;
+    if (textarea && (textarea.selectionStart ?? 0) < PREFIXO.length) {
+      textarea.setSelectionRange(PREFIXO.length, PREFIXO.length);
+    }
+  }
+
+  function resizeObjectTextarea() {
+    const textarea = objectRef.current;
+    if (textarea) {
+      textarea.style.height = "auto";
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+  }
   
   const [gratuidade, setGratuidade] = useState(true);
   const [preview, setPreview] = useState<PreviewInstallment[]>([]);
