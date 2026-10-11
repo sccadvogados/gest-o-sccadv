@@ -45,8 +45,8 @@ function parseEvent(event: GoogleCalendarItem, clients: Client[], existingIds: S
   const hearing = /^\[AUDIÊNCIA\]\s*/i.test(rawTitle);
   const judgment = /^\[JULGAMENTO\]\s*/i.test(rawTitle);
   const followUp = /^\[ACOMPANHAMENTO\]\s*/i.test(rawTitle);
-  const titleSource = rawTitle.replace(/^\[(?:REUNIÃO|AUDIÊNCIA|JULGAMENTO|ACOMPANHAMENTO)\]\s*/i, "");
-    const protocol = !meeting && !hearing && !judgment && !followUp && (/\[PROTOCOLO\]/i.test(titleSource) || event.colorId === "7");
+    const titleSource = rawTitle.replace(/^\[(?:REUNIÃO|AUDIÊNCIA|JULGAMENTO|ACOMPANHAMENTO|PROTOCOLO)\]\s*/i, "");
+    const protocol = !meeting && !hearing && !judgment && !followUp && /^\[PROTOCOLO\]\s*/i.test(rawTitle);
   const parts = titleSource.split(" - ").map((part) => part.trim()).filter(Boolean);
   const processIndex = parts.findIndex((part) => processPattern.test(part));
   const process = processIndex >= 0 ? (parts[processIndex]?.match(processPattern)?.[1] ?? "") : "";
