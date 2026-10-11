@@ -36,7 +36,7 @@ import { maskCep, maskCpfCnpj, maskPhone, onlyDigits } from "@/lib/format";
 export const Route = createFileRoute("/clientes/novo")({
   head: () => ({
     meta: [
-      { title: "Novo cliente | Gestão Administrativa | SCC Adv" },
+      { title: "Novo Cliente | Gestão Administrativa | SCC Adv" },
       {
         name: "description",
         content:
