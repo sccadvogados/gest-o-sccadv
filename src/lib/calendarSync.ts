@@ -142,8 +142,8 @@ function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
     const title = event.titulo.replace(/^\[(?:JULGAMENTO|ACOMPANHAMENTO)\]\s*/, "");
     return [{
       id: "",
-      summary: compactParts(["[SCCAdv]", marker, title, event.numero_processo, parties(event), responsible(event)]),
-      colorId: "",
+            summary: compactParts(["[SCCAdv]", marker, title, event.numero_processo, parties(event), responsible(event)]),
+      colorId: TIPO_CORES[event.tipo as keyof typeof TIPO_CORES].colorId,
       ...common,
     }];
   }
