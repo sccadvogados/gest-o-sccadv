@@ -620,7 +620,8 @@ function EditContractDialog({
   const [signatureDate, setSignatureDate] = useState(contract.signature_date ?? "");
   const [paymentMethod, setPaymentMethod] = useState(contract.payment_method ?? PAYMENT_METHODS[0]);
     const [successFee, setSuccessFee] = useState(String(contract.success_fee_percent));
-  const [object, setObject] = useState(contract.objeto ?? "");
+    const [object, setObject] = useState(contract.objeto ?? "");
+  const [parteContraria, setParteContraria] = useState(contract.parte_contraria ?? "");
   const [gratuidade, setGratuidade] = useState(contract.gratuidade ?? false);
 
   const update = useMutation({
