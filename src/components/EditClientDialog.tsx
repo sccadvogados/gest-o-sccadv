@@ -240,6 +240,38 @@ export function EditClientDialog({
             </div>
           </section>
 
+                    {form.person_type === "PJ" && (
+            <section className="space-y-4">
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="text-sm font-semibold uppercase tracking-wide text-[#0F2340]">Representantes</h3>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setRepresentatives((current) => [...current, { nome: "", nacionalidade: "", estado_civil: "", profissao: "", cpf: "", qualidade: "representante legal" }])}
+                >
+                  + Adicionar representante
+                </Button>
+              </div>
+              {representatives.map((representative, index) => (
+                <div key={representative.id ?? `new-${index}`} className="space-y-3 rounded-md border border-border p-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-sm font-medium">Representante {index + 1}</p>
+                    <Button type="button" variant="ghost" size="sm" onClick={() => setRepresentatives((current) => current.filter((_, itemIndex) => itemIndex !== index))}>Remover</Button>
+                  </div>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="space-y-2 sm:col-span-2"><Label>Nome</Label><Input value={representative.nome} onChange={(event) => setRepresentatives((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, nome: event.target.value } : item))} /></div>
+                    <div className="space-y-2"><Label>Nacionalidade</Label><Input value={representative.nacionalidade} onChange={(event) => setRepresentatives((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, nacionalidade: event.target.value } : item))} /></div>
+                    <div className="space-y-2"><Label>Estado civil</Label><Input value={representative.estado_civil} onChange={(event) => setRepresentatives((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, estado_civil: event.target.value } : item))} /></div>
+                    <div className="space-y-2"><Label>Profissão</Label><Input value={representative.profissao} onChange={(event) => setRepresentatives((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, profissao: event.target.value } : item))} /></div>
+                    <div className="space-y-2"><Label>CPF</Label><Input value={representative.cpf} onChange={(event) => setRepresentatives((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, cpf: maskCpfCnpj(event.target.value) } : item))} /></div>
+                    <div className="space-y-2"><Label>Qualidade</Label><Select value={representative.qualidade} onValueChange={(value) => setRepresentatives((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, qualidade: value as RepresentativeForm["qualidade"] } : item))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="representante legal">Representante legal</SelectItem><SelectItem value="sócio">Sócio</SelectItem></SelectContent></Select></div>
+                  </div>
+                </div>
+              ))}
+            </section>
+          )}
+
           <section className="space-y-2"><Label htmlFor="edit-notes">Observações</Label><Textarea id="edit-notes" rows={3} value={form.notes} onChange={(event) => set("notes", event.target.value)} /></section>
         </div>
 
