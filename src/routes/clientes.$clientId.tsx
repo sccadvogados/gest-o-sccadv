@@ -609,23 +609,13 @@ function ContractActions({
 
 function EditContractDialog({
   clientId,
+  personType,
   contract,
   onSaved,
 }: {
   clientId: string;
-  contract: {
-    id: string;
-    description: string | null;
-    category: string;
-    total_value: number;
-    installments_count: number;
-    first_due_date: string;
-    payment_method: string | null;
-    modality: ContractModality;
-    signature_date: string | null;
-        success_fee_percent: number;
-    installments?: Array<{ status: string }>;
-  };
+  personType: "PF" | "PJ";
+  contract: ContractRow;
   onSaved: () => void;
 }) {
   const queryClient = useQueryClient();
