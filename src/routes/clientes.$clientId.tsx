@@ -930,8 +930,8 @@ function NewContractDialog({ clientId, personType }: { clientId: string; personT
               type="date"
               value={firstDue}
               onChange={(e) => setFirstDue(e.target.value)}
-            />
-          </div>
+                        />
+          </div> : null}
 
           <div className="space-y-2">
             <Label>Forma de pagamento</Label>
