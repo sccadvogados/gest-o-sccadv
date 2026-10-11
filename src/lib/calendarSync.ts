@@ -108,12 +108,13 @@ function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
     const process = event.numero_processo?.trim();
     const party = parties(event);
     const doctor = responsible(event);
-        const title = compactParts(["[SCCAdv]", event.titulo, process, party, doctor]);
-        const date = dateOnly(event.data_inicio);
+            const isProtocol = event.titulo.startsWith("[PROTOCOLO]");
+    const title = compactParts(["[SCCAdv]", isProtocol ? "[PROTOCOLO]" : null, event.titulo.replace(/^\[PROTOCOLO\]\s*/, ""), process, party, doctor]);
+    const date = dateOnly(event.data_inicio);
     return [{
       id: "",
       summary: title,
-            colorId: event.titulo.startsWith("[PROTOCOLO]") ? "5" : "7",
+      colorId: isProtocol ? "5" : "7",
       start: { date },
       end: { date: nextDate(date) },
       description: common.description,
