@@ -48,11 +48,11 @@ function parseEvent(event: GoogleCalendarItem, clients: Client[], existingIds: S
   const parties = partiesIndex >= 0 ? (parts[partiesIndex] ?? "").split(" x ").map((part) => part.trim()) : [];
   const responsibleIndex = parts.findIndex((part) => /^(Dr\.|Dra\.)\s+/i.test(part));
   const responsible = responsibleIndex >= 0 ? (parts[responsibleIndex] ?? "").replace(/^(Dr\.|Dra\.)\s+/i, "") : "";
-    const title = `${protocol ? "[PROTOCOLO] " : ""}${parts.filter((part, index) => index !== processIndex && index !== partiesIndex && index !== responsibleIndex && !/^\[PROTOCOLO\]$/i.test(part)).join(" - ")}`.trim();
+        const title = `${meeting ? "[REUNIÃO] " : ""}${protocol ? "[PROTOCOLO] " : ""}${parts.filter((part, index) => index !== processIndex && index !== partiesIndex && index !== responsibleIndex && !/^\[PROTOCOLO\]$/i.test(part)).join(" - ")}`.trim();
   const clientName = parties[0] ?? "";
   const client = clients.find((item) => normalize(item.name) === normalize(clientName));
     const imported = existingIds.has(event.id);
-    const kind = protocol ? "prazo" : "compromisso";
+    const kind = meeting ? "reunião" : protocol ? "prazo" : "compromisso";
 
     return {
             googleId: event.id,
