@@ -354,7 +354,11 @@ function ClientDetailPage() {
               </div>
                             <div className="flex items-center gap-2">
                 <Badge variant="secondary">{contract.payment_method || "Forma a definir"}</Badge>
-                <ContractActions clientId={clientId} contract={{ ...contract, modality: contract.modality as ContractModality }} />
+                <ContractActions
+                  clientId={clientId}
+                  personType={client.person_type as "PF" | "PJ"}
+                  contract={{ ...contract, modality: contract.modality as ContractModality }}
+                />
               </div>
             </div>
 
@@ -501,24 +505,30 @@ export function SituationBadge({
   return <Badge variant="secondary">Pendente</Badge>;
 }
 
+type ContractRow = {
+  id: string;
+  description: string | null;
+  category: string;
+  total_value: number;
+  installments_count: number;
+  first_due_date: string;
+  payment_method: string | null;
+  modality: ContractModality;
+  signature_date: string | null;
+  success_fee_percent: number;
+  objeto: string | null;
+  gratuidade: boolean;
+  installments?: Array<{ status: string }>;
+};
+
 function ContractActions({
   clientId,
+  personType,
   contract,
 }: {
   clientId: string;
-  contract: {
-    id: string;
-    description: string | null;
-    category: string;
-    total_value: number;
-    installments_count: number;
-    first_due_date: string;
-        payment_method: string | null;
-    modality: ContractModality;
-    signature_date: string | null;
-    success_fee_percent: number;
-    installments?: Array<{ status: string }>;
-  };
+  personType: "PF" | "PJ";
+  contract: ContractRow;
 }) {
   const queryClient = useQueryClient();
     const [editOpen, setEditOpen] = useState(false);
@@ -547,7 +557,7 @@ function ContractActions({
         </DialogTrigger>
         <EditContractDialog
           clientId={clientId}
-          clientType={contract.client_type ?? "PF"}
+                    personType={personType}
           contract={contract}
           onSaved={() => setEditOpen(false)}
         />
@@ -589,23 +599,13 @@ function ContractActions({
 
 function EditContractDialog({
   clientId,
+  personType,
   contract,
   onSaved,
 }: {
   clientId: string;
-  contract: {
-    id: string;
-    description: string | null;
-    category: string;
-    total_value: number;
-    installments_count: number;
-    first_due_date: string;
-    payment_method: string | null;
-    modality: ContractModality;
-    signature_date: string | null;
-        success_fee_percent: number;
-    installments?: Array<{ status: string }>;
-  };
+  personType: "PF" | "PJ";
+  contract: ContractRow;
   onSaved: () => void;
 }) {
   const queryClient = useQueryClient();
@@ -631,9 +631,8 @@ function EditContractDialog({
       if (!Number.isInteger(installmentsCount)) throw new Error("Informe um número inteiro de parcelas.");
       if (!firstDue) throw new Error("Informe o primeiro vencimento.");
 
-            const contractUpdate = hasPaidInstallment
-                ? { description, category, modality, signature_date: signatureDate || null, payment_method: paymentMethod, success_fee_percent: fee, objeto: object || null, gratuidade }
-        : {
+                  const contractUpdate = hasPaidInstallment
+        ? { description, category, modality, signature_date: signatureDate || null, payment_method: paymentMethod, success_fee_percent: fee, objeto: object || null, gratuidade }
         : {
             description,
             category,
@@ -707,7 +706,7 @@ function EditContractDialog({
           <Textarea id={`edit-contract-object-${contract.id}`} rows={4} value={object} onChange={(e) => setObject(e.target.value)} />
           <p className="text-sm text-muted-foreground">O objeto do presente contrato é a prestação de serviços advocatícios relativos… {object}</p>
         </div>
-        {clientType === "PF" ? <label className="flex items-center gap-2 text-sm sm:col-span-2"><Checkbox checked={gratuidade} onCheckedChange={(checked) => setGratuidade(checked === true)} />Pedir gratuidade de justiça</label> : null}
+        {personType === "PF" ? <label className="flex items-center gap-2 text-sm sm:col-span-2"><Checkbox checked={gratuidade} onCheckedChange={(checked) => setGratuidade(checked === true)} />Pedir gratuidade de justiça</label> : null}
         <div className="space-y-2 sm:col-span-2"><Label htmlFor={`edit-contract-fee-${contract.id}`}>% de êxito</Label><Input id={`edit-contract-fee-${contract.id}`} inputMode="decimal" value={successFee} onChange={(e) => setSuccessFee(e.target.value)} /></div>
       </div>
       <DialogFooter>
