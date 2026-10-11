@@ -629,7 +629,8 @@ function EditContractDialog({
     const [firstDue, setFirstDue] = useState(contract.first_due_date);
   const [modality, setModality] = useState<ContractModality>(contract.modality);
   
-  const [paymentMethod, setPaymentMethod] = useState(contract.payment_method ?? PAYMENT_METHODS[0]);
+    const [paymentMethod, setPaymentMethod] = useState(contract.payment_method ?? PAYMENT_METHODS[0]);
+  const paymentMethodOptions = PAYMENT_METHODS.includes(paymentMethod as (typeof PAYMENT_METHODS)[number]) ? PAYMENT_METHODS : [paymentMethod, ...PAYMENT_METHODS];
     const [successFee, setSuccessFee] = useState(String(contract.success_fee_percent));
     const [object, setObject] = useState(contract.objeto ?? "");
   const [parteContraria, setParteContraria] = useState(contract.parte_contraria ?? "");
