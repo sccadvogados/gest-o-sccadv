@@ -94,6 +94,7 @@ export const CATEGORIES = [
 ] as const;
 
 const PAYMENT_METHODS = ["Cartão", "PIX", "Boleto"] as const;
+const PREFIXO = "CLÁUSULA PRIMEIRA – OBJETO\n\n1.1 O objeto do presente contrato é a prestação de serviços advocatícios relativos ";
 
 const DOC_LABELS: Record<string, string> = {
   identificacao: "Documento de Identificação",
