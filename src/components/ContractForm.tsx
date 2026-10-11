@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { Checkbox } from "@/components/ui/checkbox";
@@ -7,7 +7,6 @@ import { CurrencyInput } from "@/components/CurrencyInput";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { officeDatabase } from "@/lib/office-database";
 import { buildContractInstallments, formatCurrency, todayISO, type ContractModality } from "@/lib/format";
@@ -19,8 +18,6 @@ const CATEGORIES = [
 ] as const;
 
 const PAYMENT_METHODS = ["Cartão", "PIX", "Boleto"] as const;
-const PREFIXO = "CLÁUSULA PRIMEIRA – OBJETO\n\n1.1 O objeto do presente contrato é a prestação de serviços advocatícios relativos ";
-
 type PreviewInstallment = {
   number: number;
   amount: number;
@@ -31,9 +28,19 @@ type ContractFormProps = {
   clientId: string;
   personType: "PF" | "PJ";
   onSaved: (contractId: string) => void;
+  initialObject?: string;
+  initialGratuidade?: boolean;
+  hideObject?: boolean;
 };
 
-export function ContractForm({ clientId, personType, onSaved }: ContractFormProps) {
+export function ContractForm({
+  clientId,
+  personType,
+  onSaved,
+  initialObject,
+  initialGratuidade,
+  hideObject = false,
+}: ContractFormProps) {
   
   const [modality, setModality] = useState<ContractModality>("parcelado");
   
@@ -43,25 +50,9 @@ export function ContractForm({ clientId, personType, onSaved }: ContractFormProp
   const [firstDue, setFirstDue] = useState(todayISO());
   const [paymentMethod, setPaymentMethod] = useState<string>(PAYMENT_METHODS[0]);
   const [successFee, setSuccessFee] = useState("0");
-      const [object, setObject] = useState("");
-  const objectRef = useRef<HTMLTextAreaElement>(null);
-
-  function keepCursorAfterPrefix() {
-    const textarea = objectRef.current;
-    if (textarea && (textarea.selectionStart ?? 0) < PREFIXO.length) {
-      textarea.setSelectionRange(PREFIXO.length, PREFIXO.length);
-    }
-  }
-
-  function resizeObjectTextarea() {
-    const textarea = objectRef.current;
-    if (textarea) {
-      textarea.style.height = "auto";
-      textarea.style.height = `${textarea.scrollHeight}px`;
-    }
-  }
+            const [object, setObject] = useState(initialObject ?? "");
   
-  const [gratuidade, setGratuidade] = useState(true);
+  const [gratuidade, setGratuidade] = useState(initialGratuidade ?? true);
   const [preview, setPreview] = useState<PreviewInstallment[]>([]);
   const queryClient = useQueryClient();
 

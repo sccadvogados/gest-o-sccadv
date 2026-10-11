@@ -2,12 +2,13 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { ArrowLeft, Download, FolderOpen, Pencil, Plus, Trash2 } from "lucide-react";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
 import { ContractForm } from "@/components/ContractForm";
 import { CurrencyInput } from "@/components/CurrencyInput";
+import { ObjectClauseField } from "@/components/ObjectClauseField";
 import { DeleteClientDialog } from "@/components/DeleteClientDialog";
 
 import { EditClientDialog } from "@/components/EditClientDialog";
@@ -36,7 +37,6 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { PageHeader } from "@/components/ui/page-header";
 import {
   Select,
