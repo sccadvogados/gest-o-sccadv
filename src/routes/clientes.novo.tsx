@@ -6,6 +6,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
+import { ContractForm } from "@/components/ContractForm";
+
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -123,8 +125,11 @@ function NewClientPage() {
   const [files, setFiles] = useState<Record<string, File[]>>({});
   const [extracting, setExtracting] = useState<Record<string, boolean>>({});
   const [extractedKinds, setExtractedKinds] = useState<string[]>([]);
-  const [showForm, setShowForm] = useState(false);
+    const [showForm, setShowForm] = useState(false);
   const [cepBusy, setCepBusy] = useState(false);
+  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [savedClientId, setSavedClientId] = useState<string | null>(null);
+  const [savedContractId, setSavedContractId] = useState<string | null>(null);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const extractDocument = useServerFn(extractClientDocument);
@@ -331,10 +336,11 @@ function NewClientPage() {
 
       return client.id;
     },
-    onSuccess: (clientId) => {
+        onSuccess: (clientId) => {
       queryClient.invalidateQueries({ queryKey: ["clients"] });
       toast.success("Cliente cadastrado com sucesso.");
-      navigate({ to: "/clientes/$clientId", params: { clientId } });
+      setSavedClientId(clientId);
+      setStep(2);
     },
     onError: (error) => {
       toast.error(error instanceof Error ? error.message : "Erro ao salvar o cliente.");
@@ -350,13 +356,21 @@ function NewClientPage() {
         </Link>
       </Button>
 
-      <PageHeader
+            <PageHeader
         className="mt-4"
         title="Novo cliente"
         subtitle="Anexe a identificação e o comprovante de residência para preencher os dados automaticamente."
       />
 
-      <form
+      <div className="mt-6 text-sm font-medium text-muted-foreground">
+        <span className={step === 1 ? "text-primary" : undefined}>1 Cliente</span>
+        <span className="mx-2">·</span>
+        <span className={step === 2 ? "text-primary" : undefined}>2 Contrato</span>
+        <span className="mx-2">·</span>
+        <span className={step === 3 ? "text-primary" : undefined}>3 Revisão</span>
+      </div>
+
+            {step === 1 && <form
         className="mt-8 space-y-8"
         onSubmit={(event) => {
           event.preventDefault();
@@ -668,13 +682,45 @@ function NewClientPage() {
 
         {showForm && <div className="flex gap-3">
                     <Button type="submit" className="bg-[#0F2340] text-white hover:bg-[#0F2340]/90" disabled={save.isPending}>
-            {save.isPending ? "Salvando…" : "Salvar cliente"}
+                        {save.isPending ? "Salvando…" : "Salvar e continuar"}
           </Button>
           <Button asChild type="button" variant="outline">
             <Link to="/">Cancelar</Link>
           </Button>
         </div>}
-      </form>
+            </form>}
+
+      {step === 2 && savedClientId && (
+        <section className="panel mt-8 rounded-xl border border-t-[3px] border-t-accent bg-card p-6 text-card-foreground shadow-panel">
+          <ContractForm
+            clientId={savedClientId}
+            personType={form.person_type}
+            onSaved={(contractId) => {
+              setSavedContractId(contractId);
+              setStep(3);
+            }}
+          />
+          <button
+            type="button"
+            className="mt-3 text-sm text-muted-foreground underline-offset-4 hover:underline"
+            onClick={() => navigate({ to: "/clientes/$clientId", params: { clientId: savedClientId } })}
+          >
+            Pular contrato
+          </button>
+        </section>
+      )}
+
+      {step === 3 && savedClientId && savedContractId && (
+        <section className="mt-8 space-y-4">
+          <p>Revisão e geração dos documentos (em breve)</p>
+          <Button
+            type="button"
+            onClick={() => navigate({ to: "/clientes/$clientId", params: { clientId: savedClientId } })}
+          >
+            Ir para a ficha
+          </Button>
+        </section>
+      )}
     </AppShell>
   );
 }
