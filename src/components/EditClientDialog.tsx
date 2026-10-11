@@ -105,9 +105,34 @@ export function EditClientDialog({
   const [cepBusy, setCepBusy] = useState(false);
   const queryClient = useQueryClient();
 
-  useEffect(() => {
-    if (open) setForm(clientToForm(client));
-  }, [client, open]);
+    useEffect(() => {
+    if (!open) return;
+    setForm(clientToForm(client));
+    if (client.person_type !== "PJ") {
+      setRepresentatives([]);
+      return;
+    }
+    void supabase
+      .from("cliente_representantes")
+      .select("id, nome, nacionalidade, estado_civil, profissao, cpf, qualidade, ordem")
+      .eq("cliente_id", clientId)
+      .order("ordem")
+      .then(({ data, error }) => {
+        if (error) {
+          toast.error("Não foi possível carregar os representantes.");
+          return;
+        }
+        setRepresentatives((data ?? []).map((representative) => ({
+          id: representative.id,
+          nome: representative.nome,
+          nacionalidade: representative.nacionalidade ?? "",
+          estado_civil: representative.estado_civil ?? "",
+          profissao: representative.profissao ?? "",
+          cpf: representative.cpf ?? "",
+          qualidade: representative.qualidade as RepresentativeForm["qualidade"],
+        })));
+      });
+  }, [client, clientId, open]);
 
           const set = <Key extends keyof ClientForm,>(key: Key, value: ClientForm[Key]) =>
     setForm((current) => ({ ...current, [key]: value }));
