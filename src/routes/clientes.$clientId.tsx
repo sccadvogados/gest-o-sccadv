@@ -759,7 +759,20 @@ function NewContractDialog({ clientId, personType }: { clientId: string; personT
         <DialogHeader>
           <DialogTitle>Novo contrato</DialogTitle>
         </DialogHeader>
-        <ContractForm clientId={clientId} personType={personType} onSaved={() => setOpen(false)} />
+                <ContractForm
+          clientId={clientId}
+          personType={personType}
+          onSaved={(contractId) => {
+            setOpen(false);
+            void sendAttachmentsToDrive({ data: { contrato_id: contractId } }).then((result) => {
+              if (!result.ok) {
+                toast.warning(`Contrato salvo, mas não foi possível enviar os anexos ao Drive: ${result.erro}`);
+              }
+            }).catch((error) => {
+              toast.warning(`Contrato salvo, mas não foi possível enviar os anexos ao Drive: ${error instanceof Error ? error.message : "Erro desconhecido."}`);
+            });
+          }}
+        />
       </DialogContent>
     </Dialog>
   );
