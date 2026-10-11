@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
+
 import { BriefcaseBusiness, Filter, FolderOpen, Plus, Search } from "lucide-react";
 import { useState } from "react";
 
@@ -18,7 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
-import { getActiveProcessCounts } from "@/lib/drive-processes.functions";
+
 import { formatDate } from "@/lib/format";
 
 export const Route = createFileRoute("/")({
@@ -58,7 +58,17 @@ function isClientIncomplete(client: {
 function ClientsPage() {
   const [term, setTerm] = useState("");
   const [onlyIncomplete, setOnlyIncomplete] = useState(false);
-  const fetchProcessCounts = useServerFn(getActiveProcessCounts);
+    const { data: contractCounts, isLoading: contractCountsLoading } = useQuery({
+    queryKey: ["contract-counts"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("contracts").select("client_id");
+      if (error) throw error;
+      const counts: Record<string, number> = {};
+      for (const row of data ?? []) counts[row.client_id] = (counts[row.client_id] ?? 0) + 1;
+      return counts;
+    },
+  });
+
 
   const { data: clients, isLoading } = useQuery({
     queryKey: ["clients"],
@@ -87,10 +97,11 @@ function ClientsPage() {
           .some((field) => String(field).toLowerCase().includes(search));
     return matchesSearch && (!onlyIncomplete || isClientIncomplete(c));
   });
-    const totalActiveProcesses = (clients ?? []).reduce(
-    (total, client) => total + (processCounts?.[client.drive_folder_id ?? ""] ?? 0),
+      const totalActiveProcesses = (clients ?? []).reduce(
+    (total, client) => total + (contractCounts?.[client.id] ?? 0),
     0,
   );
+
 
   return (
     <AppShell>
@@ -133,7 +144,7 @@ function ClientsPage() {
           <div>
             <p className="text-xs text-muted-foreground">Contratos Ativos</p>
             <p className="text-xl font-semibold tabular-nums">
-              {processCountsLoading ? "—" : totalActiveProcesses}
+                            {contractCountsLoading ? "—" : totalActiveProcesses}
             </p>
           </div>
         </div>
@@ -201,9 +212,9 @@ function ClientsPage() {
                   {[client.city, client.state].filter(Boolean).join(" / ") || "—"}
                 </TableCell>
                 <TableCell className="text-sm font-medium tabular-nums">
-                  {processCountsLoading
+                                    {contractCountsLoading
                     ? "—"
-                    : processCounts?.[client.drive_folder_id ?? ""] ?? 0}
+                    : contractCounts?.[client.id] ?? 0}
                 </TableCell>
                 <TableCell className="text-sm text-muted-foreground">
                   {formatDate(client.created_at)}
