@@ -86,9 +86,13 @@ function numeroInteiroExtenso(value: number): string {
   if (n < 1_000_000) {
     const milhares = Math.floor(n / 1000);
     const resto = n % 1000;
-    return (milhares === 1 ? "mil" : `${numeroInteiroExtenso(milhares)} mil`) + (resto ? ` e ${numeroInteiroExtenso(resto)}` : "");
+    const conector = resto && (resto < 100 || resto % 100 === 0) ? " e " : " ";
+    return (milhares === 1 ? "mil" : `${numeroInteiroExtenso(milhares)} mil`) + (resto ? `${conector}${numeroInteiroExtenso(resto)}` : "");
   }
-  return String(n);
+  const milhoes = Math.floor(n / 1_000_000);
+  const resto = n % 1_000_000;
+  const conector = resto && (resto < 100 || resto % 100 === 0) ? " e " : " ";
+  return `${numeroInteiroExtenso(milhoes)} ${milhoes === 1 ? "milhão" : "milhões"}${resto ? `${conector}${numeroInteiroExtenso(resto)}` : ""}`;
 }
 
 export function numeroPorExtenso(value: number): string {
@@ -136,9 +140,12 @@ function qualificacao(representante: RepresentativeForTemplate): string {
 function representantesTexto(representantes: RepresentativeForTemplate[]): string {
   const ordered = [...representantes].sort((a, b) => (a.ordem ?? 0) - (b.ordem ?? 0));
   if (ordered.length === 0) return "";
-  const first = ordered[0];
-  if (ordered.length === 1 && first) return `sua representante legal, ${qualificacao(first)}`;
-  return `seus sócios ${ordered.map((representante) => qualificacao(representante)).join(", e ")}`;
+  const tipos = ordered.map((representante) => /sóci|soci/i.test(representante.qualidade ?? "") ? "sócio" : "representante legal");
+  const tipo = tipos.every((item) => item === "sócio") ? "sócio" : tipos.every((item) => item === "representante legal") ? "representante legal" : "representante";
+  const prefixo = ordered.length === 1 ? `seu ${tipo}` : `seus ${tipo === "sócio" ? "sócios" : tipo === "representante legal" ? "representantes legais" : "representantes"}`;
+  const qualificacoes = ordered.map((representante) => qualificacao(representante));
+  const lista = qualificacoes.length === 1 ? qualificacoes[0] : `${qualificacoes.slice(0, -1).join("; ")} e ${qualificacoes.at(-1)}`;
+  return `representada por ${prefixo}, ${lista}`;
 }
 
 function grupoParcelas(installments: InstallmentForTemplate[]): string {
@@ -193,7 +200,11 @@ export function montarDadosModelos(client: ClientForTemplate, contract: Contract
     prolabore_texto: prolabore ? montarProlaboreTexto(contract, installments) : "",
     tem_exito: exito,
     exito_percentual: Number.isInteger(percentual) ? String(percentual) : String(percentual).replace(".", ","),
-    exito_extenso: percentual % 1 === 0 ? numeroPorExtenso(percentual) : `${numeroPorExtenso(Math.floor(percentual))} e meio`,
+        exito_extenso: percentual % 1 === 0
+      ? numeroPorExtenso(percentual)
+      : percentual % 1 === 0.5
+        ? `${numeroPorExtenso(Math.floor(percentual))} e meio`
+        : `${numeroPorExtenso(Math.floor(percentual))} vírgula ${numeroPorExtenso(Math.round((percentual % 1) * 100))}`, 
     data_extenso: dataPorExtenso(now),
   };
 }
