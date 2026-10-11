@@ -104,7 +104,7 @@ function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
     return [{
       id: "",
       summary: title,
-      colorId: "7",
+            colorId: event.titulo.startsWith("[PROTOCOLO]") ? "5" : "7",
       start: { date },
       end: { date: nextDate(date) },
       description: common.description,
