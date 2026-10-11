@@ -43,8 +43,8 @@ const GOOGLE_CALENDAR_URL = "https://connector-gateway.lovable.dev/google_calend
 export const TIPO_CORES = {
   prazo: { colorId: "7", hex: "#039BE5" },
   protocolo: { colorId: "5", hex: "#F6BF26" },
-  reunião: { colorId: "9", hex: "#3F51B5" },
-  audiência: { colorId: "11", hex: "#D50000" },
+    reuniao: { colorId: "9", hex: "#3F51B5" },
+  audiencia: { colorId: "11", hex: "#D50000" },
   julgamento: { colorId: "3", hex: "#8E24AA" },
   acompanhamento: { colorId: "2", hex: "#33B679" },
   compromisso: { colorId: "8", hex: "#616161" },
@@ -109,9 +109,9 @@ function description(event: CalendarEvent): string | undefined {
 function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
   const date = dateOnly(event.data_inicio);
 
-    if (event.tipo === "reunião" || event.tipo === "audiência" || event.tipo === "julgamento") {
+        if (event.tipo === "reuniao" || event.tipo === "audiencia" || event.tipo === "julgamento") {
     if (!event.data_fim) throw new Error("A reunião precisa ter horário de término.");
-        const marker = event.tipo === "reunião" ? "[REUNIÃO]" : event.tipo === "audiência" ? "[AUDIÊNCIA]" : "[JULGAMENTO]";
+                const marker = event.tipo === "reuniao" ? "[REUNIÃO]" : event.tipo === "audiencia" ? "[AUDIÊNCIA]" : "[JULGAMENTO]";
     const meetingTitle = event.titulo.replace(/^\[(?:REUNIÃO|AUDIÊNCIA|JULGAMENTO)\]\s*/, "");
     return [{
       id: "",

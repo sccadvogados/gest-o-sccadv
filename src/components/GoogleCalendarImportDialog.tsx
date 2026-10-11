@@ -72,9 +72,9 @@ export function GoogleCalendarImportDialog({ onImported }: { onImported: () => v
       const candidates = selected.filter((row) => !row.jaImportado);
       const { error } = await officeDatabase(supabase).from("eventos").insert(candidates.map((row) => ({
         cliente_id: row.clienteId,
-                                data_inicio: ["reunião", "audiência", "julgamento"].includes(row.tipo) ? row.dataInicio : row.prazo,
-        data_fim: ["reunião", "audiência", "julgamento"].includes(row.tipo) ? row.dataFim : null,
-        dia_inteiro: ["reunião", "audiência", "julgamento"].includes(row.tipo) ? false : true,
+                                                                data_inicio: ["reuniao", "audiencia", "julgamento"].includes(row.tipo) ? row.dataInicio : row.prazo,
+                data_fim: ["reuniao", "audiencia", "julgamento"].includes(row.tipo) ? row.dataFim : null,
+        dia_inteiro: ["reuniao", "audiencia", "julgamento"].includes(row.tipo) ? false : true,
         google_event_id: row.googleId,
         numero_processo: row.processo || null,
         parte_contraria: row.parteContraria || null,
@@ -125,7 +125,7 @@ export function GoogleCalendarImportDialog({ onImported }: { onImported: () => v
           ) : (
             <Table>
               <TableHeader><TableRow><TableHead><Checkbox checked={rows.length > 0 && rows.filter((row) => !row.jaImportado).every((row) => row.selecionado)} disabled={rows.every((row) => row.jaImportado)} onCheckedChange={(checked) => setRows((current) => current.map((row) => row.jaImportado ? row : { ...row, selecionado: checked === true }))} /> Selecionar</TableHead><TableHead>Tipo</TableHead><TableHead>Título</TableHead><TableHead>Processo</TableHead><TableHead>Cliente</TableHead><TableHead>Parte contrária</TableHead><TableHead>Responsável</TableHead><TableHead>Prazo</TableHead><TableHead>Horário</TableHead><TableHead>Aviso</TableHead></TableRow></TableHeader>
-              <TableBody>{rows.map((row) => <TableRow key={row.googleId}><TableCell><Checkbox checked={row.selecionado} disabled={row.jaImportado} onCheckedChange={(checked) => setRows((current) => current.map((item) => item.googleId === row.googleId ? { ...item, selecionado: checked === true } : item))} /></TableCell><TableCell>{row.tipo}</TableCell><TableCell>{row.titulo || "—"}</TableCell><TableCell>{row.processo || "—"}</TableCell><TableCell>{row.cliente || "—"}{row.cliente && !row.clienteId ? <div className="text-xs text-destructive">cliente não encontrado</div> : null}</TableCell><TableCell>{row.parteContraria || "—"}</TableCell><TableCell>{row.responsavel || "—"}</TableCell><TableCell>{row.prazo || "—"}</TableCell><TableCell>{["reunião", "audiência", "julgamento"].includes(row.tipo) ? `${row.dataInicio} – ${row.dataFim}` : "—"}</TableCell><TableCell className="text-destructive">{row.aviso || "—"}</TableCell></TableRow>)}</TableBody>
+              <TableBody>{rows.map((row) => <TableRow key={row.googleId}><TableCell><Checkbox checked={row.selecionado} disabled={row.jaImportado} onCheckedChange={(checked) => setRows((current) => current.map((item) => item.googleId === row.googleId ? { ...item, selecionado: checked === true } : item))} /></TableCell><TableCell>{row.tipo}</TableCell><TableCell>{row.titulo || "—"}</TableCell><TableCell>{row.processo || "—"}</TableCell><TableCell>{row.cliente || "—"}{row.cliente && !row.clienteId ? <div className="text-xs text-destructive">cliente não encontrado</div> : null}</TableCell><TableCell>{row.parteContraria || "—"}</TableCell><TableCell>{row.responsavel || "—"}</TableCell><TableCell>{row.prazo || "—"}</TableCell><TableCell>{["reuniao", "audiencia", "julgamento"].includes(row.tipo) ? `${row.dataInicio} – ${row.dataFim}` : "—"}</TableCell><TableCell className="text-destructive">{row.aviso || "—"}</TableCell></TableRow>)}</TableBody>
             </Table>
           )}
         </div>
