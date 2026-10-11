@@ -25,7 +25,11 @@ type GoogleEvent = {
   description?: string | undefined;
   colorId: string;
   start: { date: string };
-  end: { date: string };
+    end: { date: string };
+  reminders?: {
+    useDefault: boolean;
+    overrides: Array<{ method: "popup"; minutes: number }>;
+  };
 };
 
 type GoogleEventIds = {
