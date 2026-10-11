@@ -118,7 +118,7 @@ export function ContractForm({ clientId, personType, onSaved }: ContractFormProp
           parte_contraria: parteContraria || null,
           success_fee_percent: fee,
           recurring: modality === "mensal",
-          objeto: object || null,
+                    objeto: object.trim().replace(/\.$/, "").trim() || null,
           gratuidade: personType === "PF" ? gratuidade : false,
         })
         .select("id")
