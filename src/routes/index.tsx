@@ -124,7 +124,7 @@ function ClientsPage() {
           aria-pressed={onlyIncomplete}
                 >
           <Filter className="size-4" />
-          Somente incompletos
+          Somente Incompletos
         </Button>
         <div className="ml-auto flex min-w-44 items-center gap-3 rounded-xl border border-[#E6E1D8] bg-white px-4 py-3 shadow-sm">
           <div className="rounded-lg bg-[#F1EEE7] p-2">
