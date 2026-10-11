@@ -57,6 +57,7 @@ const MARITAL = [
 
 const ATTACHMENTS: { kind: string; label: string; multiple?: boolean }[] = [
   { kind: "identificacao", label: "Documento de Identificação" },
+  { kind: "contrato_social", label: "Contrato social / Cartão CNPJ" },
   { kind: "residencia", label: "Comprovante de Residência" },
   { kind: "outros", label: "Outros Documentos", multiple: true },
 ];
