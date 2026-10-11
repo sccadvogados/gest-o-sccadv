@@ -37,7 +37,7 @@ export function ContractForm({ clientId, personType, onSaved }: ContractFormProp
   const [modality, setModality] = useState<ContractModality>("parcelado");
   
   const [category, setCategory] = useState<string>(CATEGORIES[0]);
-  const [totalValue, setTotalValue] = useState("");
+    const [totalValue, setTotalValue] = useState(0);
   const [count, setCount] = useState("1");
   const [firstDue, setFirstDue] = useState(todayISO());
   const [paymentMethod, setPaymentMethod] = useState<string>(PAYMENT_METHODS[0]);
