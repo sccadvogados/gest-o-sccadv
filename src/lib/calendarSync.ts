@@ -83,6 +83,12 @@ function compactParts(parts: Array<string | null | undefined>): string {
   return parts.map((part) => part?.trim()).filter(Boolean).join(" - ");
 }
 
+function googleTitle(prefixes: Array<string | null | undefined>, parts: Array<string | null | undefined>): string {
+  const prefix = prefixes.map((part) => part?.trim()).filter(Boolean).join(" ");
+  const rest = compactParts(parts);
+  return [prefix, rest].filter(Boolean).join(" - ");
+}
+
 function parties(event: CalendarEvent): string | null {
   const client = event.cliente_nome?.trim();
   const opponent = event.parte_contraria?.trim();
@@ -115,7 +121,7 @@ function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
     const meetingTitle = event.titulo.replace(/^\[(?:REUNIÃO|AUDIÊNCIA|JULGAMENTO)\]\s*/, "");
     return [{
       id: "",
-            summary: compactParts([marker, "[SCCAdv]", meetingTitle, event.numero_processo, parties(event), responsible(event)]),
+            summary: googleTitle(["[SCCAdv]", marker], [meetingTitle, event.numero_processo, parties(event), responsible(event)]),
             colorId: TIPO_CORES[event.tipo as keyof typeof TIPO_CORES].colorId,
             start: { dateTime: dateTimeSaoPaulo(event.data_inicio), timeZone: "America/Sao_Paulo" },
       end: { dateTime: dateTimeSaoPaulo(event.data_fim), timeZone: "America/Sao_Paulo" },
@@ -148,7 +154,7 @@ function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
     const title = event.titulo.replace(/^\[(?:JULGAMENTO|ACOMPANHAMENTO)\]\s*/, "");
     return [{
       id: "",
-            summary: compactParts(["[SCCAdv]", marker, title, event.numero_processo, parties(event), responsible(event)]),
+            summary: googleTitle(["[SCCAdv]", marker], [title, event.numero_processo, parties(event), responsible(event)]),
       colorId: TIPO_CORES[event.tipo as keyof typeof TIPO_CORES].colorId,
       ...common,
     }];
@@ -159,7 +165,7 @@ function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
     const party = parties(event);
     const doctor = responsible(event);
             const isProtocol = event.tipo === "protocolo";
-    const title = compactParts(["[SCCAdv]", isProtocol ? "[PROTOCOLO]" : null, isProtocol ? event.titulo.replace(/^\[PROTOCOLO\]\s*/, "") : event.titulo, process, party, doctor]);
+    const title = googleTitle(["[SCCAdv]", isProtocol ? "[PROTOCOLO]" : null], [isProtocol ? event.titulo.replace(/^\[PROTOCOLO\]\s*/, "") : event.titulo, process, party, doctor]);
     const date = dateOnly(event.data_inicio);
     return [{
       id: "",
@@ -168,12 +174,13 @@ function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
       start: { date },
       end: { date: nextDate(date) },
       description: common.description,
+      reminders: common.reminders,
     }];
   }
 
   return [{
     id: "",
-        summary: compactParts(["[SCCAdv]", event.titulo, event.numero_processo, parties(event), responsible(event)]),
+        summary: googleTitle(["[SCCAdv]"], [event.titulo, event.numero_processo, parties(event), responsible(event)]),
     colorId: TIPO_CORES[event.tipo as keyof typeof TIPO_CORES].colorId,
     ...common,
   }];
