@@ -732,7 +732,9 @@ function NewContractDialog({ clientId, personType }: { clientId: string; personT
   const [count, setCount] = useState("1");
   const [firstDue, setFirstDue] = useState(todayISO());
   const [paymentMethod, setPaymentMethod] = useState<string>(PAYMENT_METHODS[0]);
-    const [successFee, setSuccessFee] = useState("0");
+        const [successFee, setSuccessFee] = useState("0");
+  const [object, setObject] = useState("");
+  const [gratuidade, setGratuidade] = useState(true);
   const [preview, setPreview] = useState<PreviewInstallment[]>([]);
     const queryClient = useQueryClient();
 
