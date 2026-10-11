@@ -129,9 +129,11 @@ function NewClientPage() {
   const [extractedKinds, setExtractedKinds] = useState<string[]>([]);
     const [showForm, setShowForm] = useState(false);
   const [cepBusy, setCepBusy] = useState(false);
-  const [step, setStep] = useState<1 | 2 | 3>(1);
+    const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [savedClientId, setSavedClientId] = useState<string | null>(null);
   const [savedContractId, setSavedContractId] = useState<string | null>(null);
+  const [objeto, setObjeto] = useState("");
+  const [gratuidade, setGratuidade] = useState(true);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
     const extractDocument = useServerFn(extractClientDocument);
