@@ -157,6 +157,25 @@ async function removeGoogleEvent(id: string | null | undefined): Promise<void> {
   }
 }
 
+async function updateGoogleEvent(id: string, event: GoogleEvent): Promise<string> {
+  const { id: omittedId, colorId, ...rest } = event;
+  const payload = { ...rest, ...(colorId ? { colorId } : {}) };
+  if (!payload.description) delete payload.description;
+
+  try {
+    await googleRequest(`/events/${encodeURIComponent(id)}`, {
+      method: "PATCH",
+      body: JSON.stringify(payload),
+    });
+    return id;
+  } catch (error) {
+    const status = (error as { status?: number }).status;
+    if (status !== 404 && status !== 410) throw error;
+  }
+
+  return insertGoogleEvent(event);
+}
+
 async function ensureActive(supabase: SupabaseClient<Database>) {
   const { data, error } = await supabase.rpc("is_ativo");
   if (error || !data) throw new Error("Acesso não autorizado");
@@ -205,10 +224,20 @@ export const updateEvent = createServerFn({ method: "POST" })
   .inputValidator((input) => z.object({ id: z.string().uuid(), event: calendarEventSchema }).parse(input))
   .handler(async ({ context, data }) => {
     await ensureActive(context.supabase);
-        const { data: previous, error } = await context.supabase.from("eventos").select("google_event_id").eq("id", data.id).single();
+            const { data: previous, error } = await context.supabase.from("eventos").select("google_event_id").eq("id", data.id).single();
     if (error) throw error;
-        await removeGoogleEvent(previous.google_event_id);
-    return syncCreatedEvent(context.supabase, data.event);
+
+    const googleEvent = buildGoogleEvents(data.event)[0];
+    const googleId = previous.google_event_id
+      ? await updateGoogleEvent(previous.google_event_id, googleEvent)
+      : await insertGoogleEvent(googleEvent);
+
+    const { error: updateError } = await context.supabase
+      .from("eventos")
+      .update({ google_event_id: googleId })
+      .eq("id", data.id);
+    if (updateError) throw updateError;
+    return { comum: googleId };
   });
 
 export const deleteEvent = createServerFn({ method: "POST" })
