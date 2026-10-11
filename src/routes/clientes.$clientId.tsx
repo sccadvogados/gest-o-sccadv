@@ -511,8 +511,10 @@ export function SituationBadge({
 }
 
 type ContractRow = {
-  id: string;
+    id: string;
   description: string | null;
+  numero: number;
+  ano: number;
   category: string;
   total_value: number;
   installments_count: number;
