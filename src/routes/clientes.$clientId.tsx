@@ -746,6 +746,7 @@ function EditContractDialog({
 
 function NewContractDialog({ clientId, personType }: { clientId: string; personType: "PF" | "PJ" }) {
   const [open, setOpen] = useState(false);
+  const sendAttachmentsToDrive = useServerFn(enviarAnexosParaDrive);
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
