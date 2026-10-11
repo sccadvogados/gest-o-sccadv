@@ -236,9 +236,15 @@ export function AgendaScreen() {
   }, [cardFilter, clientNames, events, responsibleFilter, search, statusFilter, today, typeFilter]);
 
     const createEvent = useMutation({
-    mutationFn: async () => {
+        mutationFn: async () => {
       const { id: eventId, protocolo: _protocolo, ...values } = form;
-      const payload = { ...values, cliente_id: form.cliente_id || null, contrato_id: form.contrato_id || null, data_inicio: saoPauloValue(form.data_inicio, form.tipo === "prazo"), data_fim: form.tipo === "prazo" ? null : saoPauloValue(form.data_fim) || null, local_link: form.tipo !== "prazo" ? form.local_link || null : null, status: form.status, ...(form.id ? {} : { created_by: (await supabase.auth.getUser()).data.user?.id ?? null }) };
+      const brazilDateTime = (value: string) => {
+        if (!value) return null;
+        const localValue = value.slice(0, 16);
+        return `${localValue}:00-03:00`;
+      };
+      const brazilDate = (value: string) => value ? `${value.slice(0, 10)}T00:00:00-03:00` : null;
+      const payload = { ...values, cliente_id: form.cliente_id || null, contrato_id: form.contrato_id || null, data_inicio: form.tipo === "prazo" ? brazilDate(form.data_inicio) : brazilDateTime(form.data_inicio), data_fim: form.tipo === "prazo" ? null : brazilDateTime(form.data_fim), local_link: form.tipo !== "prazo" ? form.local_link || null : null, status: form.status, ...(form.id ? {} : { created_by: (await supabase.auth.getUser()).data.user?.id ?? null }) };
       if (form.id) {
                 const { error } = await officeDatabase(supabase).from("eventos").update(payload).eq("id", form.id);
         if (error) throw error;
