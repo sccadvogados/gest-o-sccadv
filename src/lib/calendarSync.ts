@@ -165,7 +165,7 @@ function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
     const party = parties(event);
     const doctor = responsible(event);
             const isProtocol = event.tipo === "protocolo";
-    const title = compactParts(["[SCCAdv]", isProtocol ? "[PROTOCOLO]" : null, isProtocol ? event.titulo.replace(/^\[PROTOCOLO\]\s*/, "") : event.titulo, process, party, doctor]);
+    const title = googleTitle(["[SCCAdv]", isProtocol ? "[PROTOCOLO]" : null], [isProtocol ? event.titulo.replace(/^\[PROTOCOLO\]\s*/, "") : event.titulo, process, party, doctor]);
     const date = dateOnly(event.data_inicio);
     return [{
       id: "",
