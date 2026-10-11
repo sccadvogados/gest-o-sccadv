@@ -386,7 +386,7 @@ export function AgendaScreen() {
     queryFn: async () => {
       const { data, error } = await supabase.from("contracts").select("id, description, category").eq("client_id", form.cliente_id).order("created_at", { ascending: false });
       if (error) throw error;
-      return data as { id: string; description: string | null; category: string }[];
+      return data as { id: string; numero: number; ano: number; description: string | null; category: string }[];
     },
   });
   const selectedClient = clients.find((client) => client.id === form.cliente_id);
