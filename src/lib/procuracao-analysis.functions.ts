@@ -86,6 +86,7 @@ function applyAnalysisGuards(
   result: z.infer<typeof resultSchema>,
   objeto: string,
   tribunaisAtivos: Tribunal[],
+  ufDomicilio: string,
 ) {
   if (objeto.length < 30) {
     return blockedAnalysisResult("Preencha o objeto do contrato.");
