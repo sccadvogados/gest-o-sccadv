@@ -90,13 +90,15 @@ export function ContractForm({ clientId, personType, onSaved }: ContractFormProp
       const { data: contract, error } = await officeDatabase(supabase)
         .from("contracts")
         .insert({
-          client_id: clientId,
+                    client_id: clientId,
           description,
+          modality,
           category,
-          total_value: total,
-          installments_count: installmentsCount,
-          first_due_date: firstDue,
+          total_value: modality === "exito" ? 0 : total,
+          installments_count: modality === "exito" ? 1 : installmentsCount,
+          ...(modality !== "exito" ? { first_due_date: firstDue } : {}),
           payment_method: paymentMethod,
+          parte_contraria: parteContraria || null,
           success_fee_percent: fee,
           recurring: modality === "mensal",
           objeto: object || null,
