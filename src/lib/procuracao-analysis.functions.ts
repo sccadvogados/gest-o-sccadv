@@ -108,11 +108,22 @@ function applyAnalysisGuards(
     }
   }
 
-  const reconhecido = tribunaisAtivos.some((tribunal) =>
-    result.destino.includes(tribunal.nome_oficial),
-  );
-  if (result.destino && !reconhecido && !alertas.includes("Tribunal não reconhecido. Selecione na lista.")) {
-    alertas.push("Tribunal não reconhecido. Selecione na lista.");
+    const reconhecido = !result.destino || tribunaisAtivos
+    .filter((tribunal) => result.destino.includes(tribunal.nome_oficial))
+    .every((tribunal) => result.destino.includes(tribunal.nome_oficial));
+  const tribunaisCitados = tribunaisAtivos.filter((tribunal) => result.destino.includes(tribunal.nome_oficial));
+  const temTribunalNaoReconhecido = result.destino.length > 0 && tribunaisCitados.length === 0;
+  if (temTribunalNaoReconhecido || !reconhecido) {
+    const tjDomicilio = tribunaisAtivos.find((tribunal) =>
+      tribunal.uf === ufDomicilio && tribunal.sigla.startsWith("TJ"),
+    );
+    result = {
+      ...result,
+      destino: tjDomicilio?.nome_oficial ?? result.destino,
+    };
+    if (!alertas.includes("Tribunal não reconhecido. Selecione na lista.")) {
+      alertas.push("Tribunal não reconhecido. Selecione na lista.");
+    }
   }
 
   return {
