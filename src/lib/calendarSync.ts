@@ -117,8 +117,8 @@ function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
       id: "",
             summary: compactParts([marker, "[SCCAdv]", meetingTitle, event.numero_processo, parties(event), responsible(event)]),
             colorId: TIPO_CORES[event.tipo as keyof typeof TIPO_CORES].colorId,
-      start: { dateTime: event.data_inicio, timeZone: "America/Sao_Paulo" },
-      end: { dateTime: event.data_fim, timeZone: "America/Sao_Paulo" },
+            start: { dateTime: dateTimeSaoPaulo(event.data_inicio), timeZone: "America/Sao_Paulo" },
+      end: { dateTime: dateTimeSaoPaulo(event.data_fim), timeZone: "America/Sao_Paulo" },
       description: description(event),
       location: event.local_link?.trim() || undefined,
       reminders: {
