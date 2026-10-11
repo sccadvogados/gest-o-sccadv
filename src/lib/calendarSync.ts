@@ -125,6 +125,17 @@ function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
     },
   };
 
+    if (event.tipo === "julgamento" || event.tipo === "acompanhamento") {
+    const marker = event.tipo === "julgamento" ? "[JULGAMENTO]" : "[ACOMPANHAMENTO]";
+    const title = event.titulo.replace(/^\[(?:JULGAMENTO|ACOMPANHAMENTO)\]\s*/, "");
+    return [{
+      id: "",
+      summary: compactParts(["[SCCAdv]", marker, title, event.numero_processo, parties(event), responsible(event)]),
+      colorId: "",
+      ...common,
+    }];
+  }
+
   if (event.tipo === "prazo") {
     const process = event.numero_processo?.trim();
     const party = parties(event);
