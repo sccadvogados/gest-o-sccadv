@@ -90,7 +90,8 @@ const colors: Record<EventType, string> = {
 const emptyForm = {
   id: "",
   status: "pendente" as EventStatus,
-  tipo: "prazo" as EventType,
+    tipo: "prazo" as EventType,
+  protocolo: false,
     titulo: "",
   descricao: "",
   parte_contraria: "",
