@@ -6,6 +6,7 @@ import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
 import { EditClientDialog } from "@/components/EditClientDialog";
+import { TIPO_CORES } from "@/lib/calendarSync";
 import {
   AlertDialog,
   AlertDialogAction,
