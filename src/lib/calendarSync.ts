@@ -79,7 +79,7 @@ function description(event: CalendarEvent): string | undefined {
     if (time) details.push(`Hora: ${time}`);
     if (event.local_link?.trim()) details.push(`Local/link: ${event.local_link.trim()}`);
   }
-  const value = details.filter(Boolean).join("\\n");
+    const value = details.filter(Boolean).join("\n");
   return value || undefined;
 }
 
