@@ -139,7 +139,7 @@ function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
     }];
   }
 
-  if (event.tipo === "prazo") {
+  if (event.tipo === "prazo" || event.tipo === "protocolo") {
     const process = event.numero_processo?.trim();
     const party = parties(event);
     const doctor = responsible(event);
