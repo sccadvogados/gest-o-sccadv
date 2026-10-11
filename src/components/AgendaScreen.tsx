@@ -144,6 +144,14 @@ function saoPauloValue(value: string, dateOnly = false) {
   return value ? `${dateOnly ? value.slice(0, 10) : value}:00-03:00` : "";
 }
 
+function addOneHourToTime(value: string) {
+  if (!value) return "";
+  const [hours, minutes] = value.split(":").map(Number);
+  if (!Number.isFinite(hours) || !Number.isFinite(minutes)) return "";
+  const totalMinutes = (hours * 60 + minutes + 60) % (24 * 60);
+  return `${String(Math.floor(totalMinutes / 60)).padStart(2, "0")}:${String(totalMinutes % 60).padStart(2, "0")}`;
+}
+
 export function AgendaScreen() {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
