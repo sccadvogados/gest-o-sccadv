@@ -157,8 +157,8 @@ function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
     const date = dateOnly(event.data_inicio);
     return [{
       id: "",
-      summary: title,
-      colorId: event.tipo === "protocolo" ? "5" : "7",
+            summary: title,
+      colorId: TIPO_CORES[event.tipo as keyof typeof TIPO_CORES].colorId,
       start: { date },
       end: { date: nextDate(date) },
       description: common.description,
