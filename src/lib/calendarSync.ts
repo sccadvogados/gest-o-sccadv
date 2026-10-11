@@ -25,7 +25,11 @@ type GoogleEvent = {
   description?: string | undefined;
   colorId: string;
   start: { date: string };
-  end: { date: string };
+    end: { date: string };
+  reminders?: {
+    useDefault: boolean;
+    overrides: Array<{ method: "popup"; minutes: number }>;
+  };
 };
 
 type GoogleEventIds = {
@@ -79,7 +83,7 @@ function description(event: CalendarEvent): string | undefined {
     if (time) details.push(`Hora: ${time}`);
     if (event.local_link?.trim()) details.push(`Local/link: ${event.local_link.trim()}`);
   }
-  const value = details.filter(Boolean).join("\\n");
+    const value = details.filter(Boolean).join("\n");
   return value || undefined;
 }
 
@@ -88,7 +92,16 @@ function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
   const common = {
     start: { date },
     end: { date: nextDate(date) },
-    description: description(event),
+        description: description(event),
+    reminders: {
+      useDefault: false,
+      overrides: event.tipo === "prazo"
+        ? [
+            { method: "popup", minutes: 2340 },
+            { method: "popup", minutes: 900 },
+          ]
+        : [{ method: "popup", minutes: 900 }],
+    },
   };
 
   if (event.tipo === "prazo") {
@@ -100,7 +113,7 @@ function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
     return [{
       id: "",
       summary: title,
-      colorId: "7",
+            colorId: event.titulo.startsWith("[PROTOCOLO]") ? "5" : "7",
       start: { date },
       end: { date: nextDate(date) },
       description: common.description,
