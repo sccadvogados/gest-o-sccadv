@@ -66,13 +66,11 @@ function SettingsPage() {
       const candidates = selected.filter((row) => !row.jaImportado);
       const { error } = await officeDatabase(supabase).from("eventos").insert(candidates.map((row) => ({
         cliente_id: row.clienteId,
-        data_inicio: row.prazoFatal || row.prazoInterno,
+                data_inicio: row.prazo,
         dia_inteiro: true,
         google_event_id: row.googleId,
         numero_processo: row.processo || null,
-        parte_contraria: row.parteContraria || null,
-        prazo_fatal: row.prazoFatal || null,
-        prazo_interno: row.prazoInterno || null,
+                parte_contraria: row.parteContraria || null,
         responsavel: row.responsavel || null,
         status: "pendente",
         tipo: row.tipo,
@@ -125,8 +123,8 @@ function SettingsPage() {
           <p className="px-6 py-10 text-center text-sm text-muted-foreground">Escolha a data e mostre a prévia para carregar os eventos.</p>
         ) : (
           <Table>
-            <TableHeader><TableRow><TableHead>Tipo</TableHead><TableHead>Título</TableHead><TableHead>Processo</TableHead><TableHead>Cliente</TableHead><TableHead>Parte contrária</TableHead><TableHead>Responsável</TableHead><TableHead>Prazo</TableHead><TableHead>Aviso</TableHead></TableRow></TableHeader>
-            <TableBody>{rows.map((row) => <TableRow key={row.googleId}><TableCell>{row.tipo}</TableCell><TableCell>{row.titulo || "—"}</TableCell><TableCell>{row.processo || "—"}</TableCell><TableCell>{row.cliente || "—"}{row.cliente && !row.clienteId ? <div className="text-xs text-destructive">cliente não encontrado</div> : null}</TableCell><TableCell>{row.parteContraria || "—"}</TableCell><TableCell>{row.responsavel || "—"}</TableCell><TableCell>{row.prazoFatal || row.prazoInterno || "—"}</TableCell><TableCell className="text-destructive">{row.aviso || "—"}</TableCell></TableRow>)}</TableBody>
+            <TableHeader><TableRow><TableHead>Selecionar</TableHead><TableHead>Tipo</TableHead><TableHead>Título</TableHead><TableHead>Processo</TableHead><TableHead>Cliente</TableHead><TableHead>Parte contrária</TableHead><TableHead>Responsável</TableHead><TableHead>Prazo</TableHead><TableHead>Aviso</TableHead></TableRow></TableHeader>
+            <TableBody>{rows.map((row) => <TableRow key={row.googleId}><TableCell><Checkbox checked={row.selecionado} disabled={row.jaImportado} onCheckedChange={(checked) => setRows((current) => current.map((item) => item.googleId === row.googleId ? { ...item, selecionado: checked === true } : item))} /></TableCell><TableCell>{row.tipo}</TableCell><TableCell>{row.titulo || "—"}</TableCell><TableCell>{row.processo || "—"}</TableCell><TableCell>{row.cliente || "—"}{row.cliente && !row.clienteId ? <div className="text-xs text-destructive">cliente não encontrado</div> : null}</TableCell><TableCell>{row.parteContraria || "—"}</TableCell><TableCell>{row.responsavel || "—"}</TableCell><TableCell>{row.prazo || "—"}</TableCell><TableCell className="text-destructive">{row.aviso || "—"}</TableCell></TableRow>)}</TableBody>
           </Table>
         )}
       </div>

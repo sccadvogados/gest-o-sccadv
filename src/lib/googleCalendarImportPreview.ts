@@ -20,8 +20,7 @@ export type GoogleImportPreviewRow = {
   clienteId: string | null;
   parteContraria: string;
   responsavel: string;
-  prazoFatal: string;
-  prazoInterno: string;
+    prazo: string;
     aviso: string;
   jaImportado: boolean;
   selecionado: boolean;
@@ -62,8 +61,7 @@ function parseEvent(event: GoogleCalendarItem, clients: Client[], existingIds: S
     clienteId: client?.id ?? null,
     parteContraria: parties[1] ?? "",
     responsavel: responsible,
-        prazoFatal: kind === "prazo" ? dateOf(event) : "",
-    prazoInterno: "",
+            prazo: kind === "prazo" ? dateOf(event) : "",
         aviso: [
       !client && clientName ? "cliente não encontrado" : "",
       imported ? "evento já importado antes" : "",
@@ -83,7 +81,7 @@ export function buildGoogleImportPreview(events: GoogleCalendarItem[], clients: 
       const key = `${row.processo}|${row.titulo}`;
       const current = grouped.get(key);
       if (current) {
-                        current.prazoFatal ||= row.prazoFatal;
+                                current.prazo ||= row.prazo;
         current.jaImportado ||= row.jaImportado;
         current.aviso = [current.aviso, row.aviso].filter(Boolean).join("; ");
         continue;
