@@ -635,7 +635,23 @@ function EditContractDialog({
     const [paymentMethod, setPaymentMethod] = useState(contract.payment_method ?? PAYMENT_METHODS[0]);
   const paymentMethodOptions = PAYMENT_METHODS.includes(paymentMethod as (typeof PAYMENT_METHODS)[number]) ? PAYMENT_METHODS : [paymentMethod, ...PAYMENT_METHODS];
     const [successFee, setSuccessFee] = useState(String(contract.success_fee_percent));
-    const [object, setObject] = useState(contract.objeto ?? "");
+      const [object, setObject] = useState(contract.objeto ?? "");
+  const objectRef = useRef<HTMLTextAreaElement>(null);
+
+  function keepCursorAfterPrefix() {
+    const textarea = objectRef.current;
+    if (textarea && (textarea.selectionStart ?? 0) < PREFIXO.length) {
+      textarea.setSelectionRange(PREFIXO.length, PREFIXO.length);
+    }
+  }
+
+  function resizeObjectTextarea() {
+    const textarea = objectRef.current;
+    if (textarea) {
+      textarea.style.height = "auto";
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+  }
   const [parteContraria, setParteContraria] = useState(contract.parte_contraria ?? "");
   const [gratuidade, setGratuidade] = useState(contract.gratuidade ?? false);
 
