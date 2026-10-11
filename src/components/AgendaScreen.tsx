@@ -459,13 +459,17 @@ export function AgendaScreen() {
       return { googleFailed: false };
     },
 
-    onSuccess: () => {
+        onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: ["agenda-events"] });
       setForm(emptyForm);
       setOpen(false);
-      toast.success("Evento criado na agenda.");
+      if (result?.googleFailed) {
+        toast.error("Evento salvo, mas não foi possível enviar ao Google Agenda.");
+      } else {
+        toast.success(form.id ? "Evento atualizado." : "Evento criado.");
+      }
     },
-    onError: () => toast.error("Não foi possível criar o evento."),
+    onError: () => toast.error("Não foi possível salvar o evento."),
   });
 
   const markDone = useMutation({
