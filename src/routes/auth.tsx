@@ -86,8 +86,17 @@ function AuthPage() {
     setAccessDeniedMessage(null);
     setBusy(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+            const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
       if (error) throw error;
+
+      const { data: active, error: activeError } = await officeDatabase(supabase).rpc("is_ativo");
+      if (activeError || active !== true) {
+        await supabase.auth.signOut();
+        setAccessDeniedMessage("Seu acesso ainda não foi liberado. Entre em contato com o administrador.");
+        return;
+      }
+
+      await navigate({ to: "/", replace: true });
     } catch (error) {
       const message = error instanceof Error ? error.message : "Erro inesperado";
       toast.error(
