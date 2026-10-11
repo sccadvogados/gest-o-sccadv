@@ -47,6 +47,16 @@ type ClientForm = {
   notes: string;
 };
 
+type RepresentativeForm = {
+  id?: string;
+  nome: string;
+  nacionalidade: string;
+  estado_civil: string;
+  profissao: string;
+  cpf: string;
+  qualidade: "representante legal" | "sócio";
+};
+
 const MARITAL = [
   "Solteiro(a)",
   "Casado(a)",
@@ -91,13 +101,39 @@ export function EditClientDialog({
   triggerClassName?: string;
 }) {
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState<ClientForm>(() => clientToForm(client));
+    const [form, setForm] = useState<ClientForm>(() => clientToForm(client));
+  const [representatives, setRepresentatives] = useState<RepresentativeForm[]>([]);
   const [cepBusy, setCepBusy] = useState(false);
   const queryClient = useQueryClient();
 
-  useEffect(() => {
-    if (open) setForm(clientToForm(client));
-  }, [client, open]);
+    useEffect(() => {
+    if (!open) return;
+    setForm(clientToForm(client));
+    if (client.person_type !== "PJ") {
+      setRepresentatives([]);
+      return;
+    }
+    void supabase
+      .from("cliente_representantes")
+      .select("id, nome, nacionalidade, estado_civil, profissao, cpf, qualidade, ordem")
+      .eq("cliente_id", clientId)
+      .order("ordem")
+      .then(({ data, error }) => {
+        if (error) {
+          toast.error("Não foi possível carregar os representantes.");
+          return;
+        }
+        setRepresentatives((data ?? []).map((representative) => ({
+          id: representative.id,
+          nome: representative.nome,
+          nacionalidade: representative.nacionalidade ?? "",
+          estado_civil: representative.estado_civil ?? "",
+          profissao: representative.profissao ?? "",
+          cpf: representative.cpf ?? "",
+          qualidade: representative.qualidade as RepresentativeForm["qualidade"],
+        })));
+      });
+  }, [client, clientId, open]);
 
           const set = <Key extends keyof ClientForm,>(key: Key, value: ClientForm[Key]) =>
     setForm((current) => ({ ...current, [key]: value }));
@@ -140,8 +176,31 @@ export function EditClientDialog({
       if (form.cep && onlyDigits(form.cep).length !== 8) {
         throw new Error("Informe um CEP válido.");
       }
-      const { error } = await supabase.from("clients").update(form).eq("id", clientId);
+            const { error } = await supabase.from("clients").update(form).eq("id", clientId);
       if (error) throw error;
+
+      if (form.person_type === "PJ") {
+        const { error: deleteError } = await supabase
+          .from("cliente_representantes")
+          .delete()
+          .eq("cliente_id", clientId);
+        if (deleteError) throw deleteError;
+        if (representatives.length > 0) {
+          const { error: insertError } = await supabase.from("cliente_representantes").insert(
+            representatives.map((representative, ordem) => ({
+              cliente_id: clientId,
+              nome: representative.nome.trim(),
+              nacionalidade: representative.nacionalidade.trim() || null,
+              estado_civil: representative.estado_civil.trim() || null,
+              profissao: representative.profissao.trim() || null,
+              cpf: onlyDigits(representative.cpf) || null,
+              qualidade: representative.qualidade,
+              ordem,
+            })),
+          );
+          if (insertError) throw insertError;
+        }
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["client", clientId] });
@@ -229,6 +288,38 @@ export function EditClientDialog({
               <div className="space-y-2 sm:col-span-3"><Label htmlFor="edit-phone">Telefone</Label><Input id="edit-phone" value={form.phone} onChange={(event) => set("phone", maskPhone(event.target.value))} /></div>
             </div>
           </section>
+
+                    {form.person_type === "PJ" && (
+            <section className="space-y-4">
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="text-sm font-semibold uppercase tracking-wide text-[#0F2340]">Representantes</h3>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setRepresentatives((current) => [...current, { nome: "", nacionalidade: "", estado_civil: "", profissao: "", cpf: "", qualidade: "representante legal" }])}
+                >
+                  + Adicionar representante
+                </Button>
+              </div>
+              {representatives.map((representative, index) => (
+                <div key={representative.id ?? `new-${index}`} className="space-y-3 rounded-md border border-border p-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-sm font-medium">Representante {index + 1}</p>
+                    <Button type="button" variant="ghost" size="sm" onClick={() => setRepresentatives((current) => current.filter((_, itemIndex) => itemIndex !== index))}>Remover</Button>
+                  </div>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="space-y-2 sm:col-span-2"><Label>Nome</Label><Input value={representative.nome} onChange={(event) => setRepresentatives((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, nome: event.target.value } : item))} /></div>
+                    <div className="space-y-2"><Label>Nacionalidade</Label><Input value={representative.nacionalidade} onChange={(event) => setRepresentatives((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, nacionalidade: event.target.value } : item))} /></div>
+                    <div className="space-y-2"><Label>Estado civil</Label><Input value={representative.estado_civil} onChange={(event) => setRepresentatives((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, estado_civil: event.target.value } : item))} /></div>
+                    <div className="space-y-2"><Label>Profissão</Label><Input value={representative.profissao} onChange={(event) => setRepresentatives((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, profissao: event.target.value } : item))} /></div>
+                    <div className="space-y-2"><Label>CPF</Label><Input value={representative.cpf} onChange={(event) => setRepresentatives((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, cpf: maskCpfCnpj(event.target.value) } : item))} /></div>
+                    <div className="space-y-2"><Label>Qualidade</Label><Select value={representative.qualidade} onValueChange={(value) => setRepresentatives((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, qualidade: value as RepresentativeForm["qualidade"] } : item))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="representante legal">Representante legal</SelectItem><SelectItem value="sócio">Sócio</SelectItem></SelectContent></Select></div>
+                  </div>
+                </div>
+              ))}
+            </section>
+          )}
 
           <section className="space-y-2"><Label htmlFor="edit-notes">Observações</Label><Textarea id="edit-notes" rows={3} value={form.notes} onChange={(event) => set("notes", event.target.value)} /></section>
         </div>
