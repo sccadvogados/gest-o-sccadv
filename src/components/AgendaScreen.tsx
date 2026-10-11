@@ -71,7 +71,8 @@ type AgendaEvent = {
   contrato_id: string | null;
   responsavel: string | null;
     status: EventStatus;
-  dia_inteiro: boolean | null;
+    dia_inteiro: boolean | null;
+  google_event_id: string | null;
 };
 
 type Client = { id: string; name: string };
