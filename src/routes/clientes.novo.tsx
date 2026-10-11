@@ -7,6 +7,8 @@ import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
 import { ContractForm } from "@/components/ContractForm";
+import { ContractReview } from "@/components/ContractReview";
+
 import { ObjectClauseField } from "@/components/ObjectClauseField";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -792,16 +794,14 @@ function NewClientPage() {
       ) : null}
 
       {step === 4 && savedClientId && savedContractId ? (
-        <section className="panel mt-8 space-y-4 rounded-xl border border-t-[3px] border-t-accent bg-card p-6 text-card-foreground">
-          <p>Revisão e geração dos documentos (em breve)</p>
-          <div className="flex flex-wrap justify-between gap-3">
-            <Button type="button" variant="outline" onClick={() => setStep(3)}>
-              Voltar
-            </Button>
-            <Button type="button" onClick={() => navigate({ to: "/clientes/$clientId", params: { clientId: savedClientId } })}>
-              Ir para a ficha
-            </Button>
-          </div>
+                <section className="panel mt-8 rounded-xl border border-t-[3px] border-t-accent bg-card p-6 text-card-foreground">
+          <ContractReview
+            contractId={savedContractId}
+            personType={form.person_type}
+            onBack={() => setStep(3)}
+            onEditObject={() => setStep(2)}
+            onFinish={() => navigate({ to: "/clientes/$clientId", params: { clientId: savedClientId } })}
+          />
         </section>
       ) : null}
     </AppShell>
