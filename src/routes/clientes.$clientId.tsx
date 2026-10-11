@@ -1,6 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
 import { ArrowLeft, Download, FolderOpen, Pencil, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -55,7 +54,6 @@ import {
 } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
 import { officeDatabase } from "@/lib/office-database";
-import { enviarAnexosParaDrive } from "@/lib/drive-upload.functions";
 import {
   buildContractInstallments,
   buildInstallments,
@@ -94,7 +92,6 @@ export const CATEGORIES = [
 ] as const;
 
 const PAYMENT_METHODS = ["Cartão", "PIX", "Boleto"] as const;
-const PREFIXO = "CLÁUSULA PRIMEIRA – OBJETO\n\n1.1 O objeto do presente contrato é a prestação de serviços advocatícios relativos ";
 
 const DOC_LABELS: Record<string, string> = {
   identificacao: "Documento de Identificação",
@@ -625,80 +622,50 @@ function EditContractDialog({
 }) {
   const queryClient = useQueryClient();
   const hasPaidInstallment = (contract.installments ?? []).some((installment) => installment.status === "Pago");
-  
   const [category, setCategory] = useState(contract.category);
-    const [totalValue, setTotalValue] = useState(contract.total_value);
+  const [totalValue, setTotalValue] = useState(Number(contract.total_value) || 0);
   const [count, setCount] = useState(String(contract.installments_count));
-    const [firstDue, setFirstDue] = useState(contract.first_due_date);
+  const [firstDue, setFirstDue] = useState(contract.first_due_date);
   const [modality, setModality] = useState<ContractModality>(contract.modality);
-  
-    const [paymentMethod, setPaymentMethod] = useState(contract.payment_method ?? PAYMENT_METHODS[0]);
-  const paymentMethodOptions = PAYMENT_METHODS.includes(paymentMethod as (typeof PAYMENT_METHODS)[number]) ? PAYMENT_METHODS : [paymentMethod, ...PAYMENT_METHODS];
-    const [successFee, setSuccessFee] = useState(String(contract.success_fee_percent));
-      const [object, setObject] = useState(contract.objeto ?? "");
-  const objectRef = useRef<HTMLTextAreaElement>(null);
-
-  function keepCursorAfterPrefix() {
-    const textarea = objectRef.current;
-    if (textarea && (textarea.selectionStart ?? 0) < PREFIXO.length) {
-      textarea.setSelectionRange(PREFIXO.length, PREFIXO.length);
-    }
-  }
-
-  function resizeObjectTextarea() {
-    const textarea = objectRef.current;
-    if (textarea) {
-      textarea.style.height = "auto";
-      textarea.style.height = `${textarea.scrollHeight}px`;
-    }
-  }
-  const [parteContraria, setParteContraria] = useState(contract.parte_contraria ?? "");
+  const [paymentMethod, setPaymentMethod] = useState(contract.payment_method ?? PAYMENT_METHODS[0]);
+  const paymentMethodOptions: string[] = PAYMENT_METHODS.includes(paymentMethod as (typeof PAYMENT_METHODS)[number])
+    ? [...PAYMENT_METHODS]
+    : [paymentMethod, ...PAYMENT_METHODS];
+  const [successFee, setSuccessFee] = useState(String(contract.success_fee_percent));
+  const [object, setObject] = useState(contract.objeto ?? "");
   const [gratuidade, setGratuidade] = useState(contract.gratuidade ?? false);
+  const cadastro = new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", year: "numeric" }).format(new Date(contract.created_at));
 
   const update = useMutation({
     mutationFn: async () => {
-                        const total = totalValue;
       const installmentsCount = Math.max(1, Number(count));
       const fee = Number(successFee.replace(",", ".")) || 0;
+      const objeto = object.trim().replace(/\.+$/, "").trim() || null;
+      const gratuidadeToSave = personType === "PF" ? gratuidade : false;
       if (modality === "exito") {
         if (fee <= 0) throw new Error("Informe um percentual de êxito válido.");
-      } else {
-        if (!Number.isFinite(total) || total <= 0) throw new Error("Informe um valor total válido.");
-        if (!Number.isInteger(installmentsCount)) throw new Error("Informe um número inteiro de parcelas.");
+      } else if (!hasPaidInstallment) {
+        if (!Number.isFinite(totalValue) || totalValue <= 0) throw new Error("Informe um valor total válido.");
+        if (!Number.isInteger(Number(count)) || Number(count) < 1) throw new Error("Informe um número inteiro de parcelas.");
         if (!firstDue) throw new Error("Informe o primeiro vencimento.");
       }
 
-                              const contractUpdate = hasPaidInstallment
-                                ? { category, modality, payment_method: paymentMethod, success_fee_percent: fee, objeto: object || null, parte_contraria: parteContraria || null, gratuidade }
-
-
+      const common = { category, payment_method: paymentMethod, success_fee_percent: fee, objeto, gratuidade: gratuidadeToSave };
+      const contractUpdate = hasPaidInstallment
+        ? common
         : modality === "exito"
-                                        ? { category, modality, total_value: 0, installments_count: 1, payment_method: paymentMethod, success_fee_percent: fee, objeto: object || null, parte_contraria: parteContraria || null, gratuidade }
-
-
-          : {
-              category,
-              modality,
-                            total_value: total,
-
-              installments_count: installmentsCount,
-              first_due_date: firstDue,
-              payment_method: paymentMethod,
-              success_fee_percent: fee,
-              recurring: modality === "mensal",
-              objeto: object || null,
-              parte_contraria: parteContraria || null,
-              gratuidade,
-            };
+          ? { ...common, modality, total_value: 0, installments_count: 1, recurring: false }
+          : { ...common, modality, total_value: totalValue, installments_count: installmentsCount, first_due_date: firstDue, recurring: modality === "mensal" };
       const { error } = await officeDatabase(supabase).from("contracts").update(contractUpdate).eq("id", contract.id);
       if (error) throw error;
 
-                        if (hasPaidInstallment) return;
+      if (hasPaidInstallment) return;
 
       const { error: deleteError } = await supabase.from("installments").delete().eq("contract_id", contract.id);
       if (deleteError) throw deleteError;
+      if (modality === "exito") return;
 
-            const rows = buildContractInstallments(total, installmentsCount, firstDue, modality).map((row) => ({
+      const rows = buildContractInstallments(totalValue, installmentsCount, firstDue, modality).map((row) => ({
         ...row,
         contract_id: contract.id,
         client_id: clientId,
@@ -711,49 +678,78 @@ function EditContractDialog({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["contracts", clientId] });
       queryClient.invalidateQueries({ queryKey: ["installments"] });
-            toast.success(hasPaidInstallment ? "Contrato atualizado sem alterar as parcelas." : "Contrato atualizado e parcelas regeneradas.");
+      toast.success(hasPaidInstallment ? "Contrato atualizado sem alterar as parcelas." : "Contrato atualizado.");
       onSaved();
     },
-    onError: (error) => toast.error(error instanceof Error ? error.message : "Não foi possível atualizar o contrato."),
+    onError: (error) => toast.error(error instanceof Error ? error.message : (error as { message?: string })?.message ?? "Não foi possível atualizar o contrato."),
   });
 
   return (
-    <DialogContent className="sm:max-w-lg">
+    <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
       <DialogHeader>
-        <DialogTitle>Editar contrato</DialogTitle>
+        <DialogTitle>Editar contrato {String(contract.numero).padStart(3, "0")}/{contract.ano}</DialogTitle>
       </DialogHeader>
       <div className="grid gap-4 sm:grid-cols-2">
         {hasPaidInstallment ? (
           <p className="rounded-md border border-border bg-muted/40 px-3 py-2 text-sm text-muted-foreground sm:col-span-2">
-            Há parcelas pagas; valor e parcelas não podem ser alterados.
+            Há parcelas pagas; modalidade, valor e parcelas não podem ser alterados.
           </p>
         ) : null}
-                
-        <div className="space-y-2 sm:col-span-2">
+        <p className="text-sm text-muted-foreground sm:col-span-2">Data de cadastro: {cadastro}</p>
+        <div className="space-y-2">
+          <Label>Modalidade</Label>
+          <Select value={modality} onValueChange={(value) => setModality(value as ContractModality)} disabled={hasPaidInstallment}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="parcelado">Pró-labore parcelado</SelectItem>
+              <SelectItem value="mensal">Pró-labore mensal</SelectItem>
+              <SelectItem value="exito">Somente êxito</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-2">
           <Label>Categoria</Label>
           <Select value={category} onValueChange={setCategory}>
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>{CATEGORIES.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
           </Select>
         </div>
-                {modality !== "exito" ? <>
-                    <div className="space-y-2"><Label htmlFor={`edit-contract-total-${contract.id}`}>Valor total</Label><CurrencyInput id={`edit-contract-total-${contract.id}`} value={totalValue} onChange={setTotalValue} disabled={hasPaidInstallment} /></div>
-          <div className="space-y-2"><Label htmlFor={`edit-contract-count-${contract.id}`}>Número de parcelas</Label><Input id={`edit-contract-count-${contract.id}`} type="number" min={1} value={count} onChange={(e) => setCount(e.target.value)} disabled={hasPaidInstallment} /></div>
-        </> : null}
-                <div className="space-y-2"><Label>Modalidade</Label><Select value={modality} onValueChange={(value) => setModality(value as ContractModality)} disabled={hasPaidInstallment}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="parcelado">Pró-labore parcelado</SelectItem><SelectItem value="mensal">Pró-labore mensal</SelectItem><SelectItem value="exito">Somente êxito</SelectItem></SelectContent></Select></div>
-                <div className="space-y-2"><Label>Data de cadastro</Label><p className="text-sm text-muted-foreground">{`Data de cadastro: ${new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", year: "numeric" }).format(new Date(contract.created_at))}`}</p></div>
-
-                {modality !== "exito" ? <div className="space-y-2"><Label htmlFor={`edit-contract-due-${contract.id}`}>Primeiro vencimento</Label><Input id={`edit-contract-due-${contract.id}`} type="date" value={firstDue} onChange={(e) => setFirstDue(e.target.value)} disabled={hasPaidInstallment} /></div> : null}
-        <div className="space-y-2"><Label>Forma de pagamento</Label><Select value={paymentMethod} onValueChange={setPaymentMethod}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{paymentMethodOptions.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent></Select></div>
-                                
-        <div className="space-y-2 sm:col-span-2">
-          <Label htmlFor={`edit-contract-object-${contract.id}`}>Objeto do contrato</Label>
-          <p className="text-sm text-muted-foreground">O objeto do presente contrato é a prestação de serviços advocatícios relativos…</p>
-          <Textarea id={`edit-contract-object-${contract.id}`} rows={4} value={object} onChange={(e) => setObject(e.target.value)} />
-                    <p className="text-sm text-muted-foreground">O objeto do presente contrato é a prestação de serviços advocatícios relativos {object}.</p>
+        {modality !== "exito" ? (
+          <>
+            <div className="space-y-2">
+              <Label htmlFor={`edit-contract-total-${contract.id}`}>{modality === "mensal" ? "Valor mensal" : "Valor total"}</Label>
+              <CurrencyInput id={`edit-contract-total-${contract.id}`} value={totalValue} onChange={setTotalValue} disabled={hasPaidInstallment} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor={`edit-contract-count-${contract.id}`}>Número de parcelas</Label>
+              <Input id={`edit-contract-count-${contract.id}`} type="number" min={1} value={count} onChange={(e) => setCount(e.target.value)} disabled={hasPaidInstallment} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor={`edit-contract-due-${contract.id}`}>Primeiro vencimento</Label>
+              <Input id={`edit-contract-due-${contract.id}`} type="date" value={firstDue} onChange={(e) => setFirstDue(e.target.value)} disabled={hasPaidInstallment} />
+            </div>
+          </>
+        ) : null}
+        <div className="space-y-2">
+          <Label>Forma de pagamento</Label>
+          <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>{paymentMethodOptions.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
+          </Select>
         </div>
-        {personType === "PF" ? <label className="flex items-center gap-2 text-sm sm:col-span-2"><Checkbox checked={gratuidade} onCheckedChange={(checked) => setGratuidade(checked === true)} />Pedir gratuidade de justiça</label> : null}
-        <div className="space-y-2 sm:col-span-2"><Label htmlFor={`edit-contract-fee-${contract.id}`}>% de êxito</Label><Input id={`edit-contract-fee-${contract.id}`} inputMode="decimal" value={successFee} onChange={(e) => setSuccessFee(e.target.value)} /></div>
+        <div className="space-y-2 sm:col-span-2">
+          <Label htmlFor={`edit-contract-fee-${contract.id}`}>% de êxito{modality === "exito" ? " (obrigatório)" : ""}</Label>
+          <Input id={`edit-contract-fee-${contract.id}`} inputMode="decimal" value={successFee} onChange={(e) => setSuccessFee(e.target.value)} />
+        </div>
+        <div className="sm:col-span-2">
+          <ObjectClauseField value={object} onChange={setObject} />
+        </div>
+        {personType === "PF" ? (
+          <label className="flex items-center gap-2 text-sm sm:col-span-2">
+            <Checkbox checked={gratuidade} onCheckedChange={(checked) => setGratuidade(checked === true)} />
+            Pedir gratuidade de justiça
+          </label>
+        ) : null}
       </div>
       <DialogFooter>
         <Button onClick={() => update.mutate()} disabled={update.isPending}>{update.isPending ? "Salvando…" : "Salvar alterações"}</Button>
@@ -764,7 +760,6 @@ function EditContractDialog({
 
 function NewContractDialog({ clientId, personType }: { clientId: string; personType: "PF" | "PJ" }) {
   const [open, setOpen] = useState(false);
-  const sendAttachmentsToDrive = useServerFn(enviarAnexosParaDrive);
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -773,24 +768,11 @@ function NewContractDialog({ clientId, personType }: { clientId: string; personT
           Novo contrato
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Novo contrato</DialogTitle>
         </DialogHeader>
-                <ContractForm
-          clientId={clientId}
-          personType={personType}
-          onSaved={(contractId) => {
-            setOpen(false);
-            void sendAttachmentsToDrive({ data: { contrato_id: contractId } }).then((result) => {
-              if (!result.ok) {
-                toast.warning(`Contrato salvo, mas não foi possível enviar os anexos ao Drive: ${result.erro}`);
-              }
-            }).catch((error) => {
-              toast.warning(`Contrato salvo, mas não foi possível enviar os anexos ao Drive: ${error instanceof Error ? error.message : "Erro desconhecido."}`);
-            });
-          }}
-        />
+        <ContractForm clientId={clientId} personType={personType} onSaved={() => setOpen(false)} />
       </DialogContent>
     </Dialog>
   );
