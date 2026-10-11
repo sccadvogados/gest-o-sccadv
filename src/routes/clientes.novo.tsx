@@ -595,7 +595,7 @@ function NewClientPage() {
             {form.person_type === "PF" && (
               <>
                 <div className="space-y-2">
-                                    <Label>Estado civil <Pending value={form.marital_status} /></Label>
+                                    <Label>Estado Civil <Pending value={form.marital_status} /></Label>
                   <Select
                     value={form.marital_status}
                     onValueChange={(v) => set("marital_status", v)}
