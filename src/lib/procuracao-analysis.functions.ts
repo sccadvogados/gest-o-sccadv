@@ -230,7 +230,7 @@ export const analisarObjetoProcuracao = createServerFn({ method: "POST" })
             role: "user",
             content: JSON.stringify({
               contrato_id: data.contrato_id,
-              objeto,
+                            objeto: parteContraria ? `${objeto}\nParte contrária: ${parteContraria}` : objeto,
               tipo_cliente: tipoCliente,
               uf_domicilio: ufDomicilio,
               tribunais_ativos: (tribunais ?? []) as Tribunal[],
