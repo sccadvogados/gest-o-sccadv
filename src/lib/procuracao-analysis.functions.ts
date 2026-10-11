@@ -9,15 +9,31 @@ const inputSchema = z.object({
   contrato_id: z.string().uuid(),
 });
 
+const texto = z.preprocess((value) => (typeof value === "string" ? value : value == null ? "" : String(value)), z.string());
+const lista = z.preprocess(
+  (value) => (Array.isArray(value) ? value.map(String) : typeof value === "string" && value.trim() ? [value] : []),
+  z.array(z.string()),
+);
+
 const resultSchema = z.object({
-  situacao: z.enum(["ok", "alerta", "bloqueado"]),
-  poderes_especificos: z.string(),
-  destino: z.string(),
-  tribunais: z.array(z.string()),
-  parte_contraria: z.string(),
-  alertas: z.array(z.string()),
-  motivo_bloqueio: z.string(),
+  situacao: z.preprocess(
+    (value) => (typeof value === "string" ? value.toLowerCase().trim() : value),
+    z.enum(["ok", "alerta", "bloqueado"]).catch("alerta"),
+  ),
+  poderes_especificos: texto,
+  destino: texto,
+  tribunais: lista,
+  parte_contraria: texto,
+  alertas: lista,
+  motivo_bloqueio: texto,
 });
+
+function extrairJson(content: string): unknown {
+  const inicio = content.indexOf("{");
+  const fim = content.lastIndexOf("}");
+  if (inicio === -1 || fim <= inicio) throw new Error("Resposta sem JSON.");
+  return JSON.parse(content.slice(inicio, fim + 1));
+}
 
 type QueryClient = SupabaseClient<any>;
 
@@ -72,6 +88,27 @@ const forbiddenPowerTerms = [
   "hipossuficiência",
 ];
 
+type AnalysisResult = {
+  situacao: "ok" | "alerta" | "bloqueado" | "erro";
+  poderes_especificos: string;
+  destino: string;
+  tribunais: string[];
+  parte_contraria: string;
+  alertas: string[];
+  motivo_bloqueio: string;
+};
+
+/** Falha técnica da análise: permite preencher manualmente e tentar de novo. */
+const technicalFailure = (motivo: string, destinoPadrao = ""): AnalysisResult => ({
+  situacao: "erro",
+  poderes_especificos: "",
+  destino: destinoPadrao,
+  tribunais: [],
+  parte_contraria: "",
+  alertas: [],
+  motivo_bloqueio: motivo,
+});
+
 const blockedAnalysisResult = (motivo_bloqueio: string) => ({
   situacao: "bloqueado" as const,
   poderes_especificos: "",
@@ -108,7 +145,7 @@ function applyAnalysisGuards(
     }
   }
 
-      if (!result.destino.trim()) {
+  if (!result.destino.trim()) {
     const tjDomicilio = tribunaisAtivos.find((tribunal) => tribunal.uf === ufDomicilio && tribunal.sigla.startsWith("TJ"));
     if (tjDomicilio) {
       result = { ...result, destino: tjDomicilio.nome_oficial };
@@ -216,43 +253,59 @@ export const analisarObjetoProcuracao = createServerFn({ method: "POST" })
       .slice(0, 10)
       .map(({ example }) => example);
 
+    const tjDomicilio = ((tribunais ?? []) as Tribunal[]).find(
+      (tribunal) => tribunal.uf === ufDomicilio && tribunal.sigla.startsWith("TJ"),
+    )?.nome_oficial ?? "";
+
     const apiKey = process.env["LOVABLE_API_KEY"];
     if (!apiKey) {
-      throw new Error("A análise automática ainda não está disponível.");
+      return technicalFailure("A chave da IA (LOVABLE_API_KEY) não está configurada.", tjDomicilio);
     }
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        temperature: 0,
-        response_format: { type: "json_object" },
-        messages: [
-          {
-            role: "system",
-            content: `Você analisa objetos de contratos advocatícios brasileiros para conferência humana. Responda somente JSON válido com exatamente estas chaves: situacao, poderes_especificos, destino, tribunais, parte_contraria, alertas, motivo_bloqueio. Regras obrigatórias:\n1. Não redija poderes gerais nem especiais: eles já estão fixos no modelo. Produza só poderes_especificos (finalidade do contrato) e destino (órgãos perante os quais haverá representação).\n2. poderes_especificos começa com ", especialmente para " e descreve só o que está no objeto: o ato (propor ação, promover execução, atuar no processo n. …), o tipo de ação se informado e a parte contrária como escrita no objeto. Máximo de 300 caracteres.\n3. Se o tipo de ação não estiver no objeto, use redação neutra: "propor ação judicial em face de {parte} relativa a {assunto}". Nunca escolha o tipo de ação.\n4. Nunca complete nem invente a razão social da parte contrária.\n5. destino usa SOMENTE nome_oficial da lista de tribunais, unidos por " e ". Se o objeto citar o tribunal, use-o; se citar número de processo CNJ, identifique o tribunal pelo segmento J.TR; se não houver indicação, use o TJ da UF do domicílio e gere o alerta "Tribunal inferido pelo domicílio do cliente. Confirme.".\n6. Se o objeto tiver mais de uma finalidade, inclua todas em poderes_especificos e gere o alerta "Mais de uma finalidade. Confirme o tribunal de cada uma.".\n7. Se o objeto não tiver assunto NEM parte contrária identificável, situacao = "bloqueado" e explique o que falta.\n8. Se o objeto mencionar levantamento de valores, alvará, acordo, renúncia, confissão ou citação, NÃO inclua isso em poderes_especificos; gere o alerta "O objeto menciona {item}. Avalie se é necessário poder especial.". Não invente informações e use string vazia quando não houver valor.`,
-          },
-          {
-            role: "user",
-            content: JSON.stringify({
-              contrato_id: data.contrato_id,
-                            objeto: parteContraria ? `${objeto}\nParte contrária: ${parteContraria}` : objeto,
-              tipo_cliente: tipoCliente,
-              uf_domicilio: ufDomicilio,
-              tribunais_ativos: (tribunais ?? []) as Tribunal[],
-              exemplos_ativos: exemplosSelecionados,
-            }),
-          },
-        ],
-      }),
-    });
+    let response: Response;
+    try {
+      response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-2.5-flash",
+          temperature: 0,
+          response_format: { type: "json_object" },
+          messages: [
+            {
+              role: "system",
+              content: `Você analisa objetos de contratos advocatícios brasileiros para conferência humana. Responda somente JSON válido com exatamente estas chaves: situacao, poderes_especificos, destino, tribunais, parte_contraria, alertas, motivo_bloqueio. Regras obrigatórias:\n1. Não redija poderes gerais nem especiais: eles já estão fixos no modelo. Produza só poderes_especificos (finalidade do contrato) e destino (órgãos perante os quais haverá representação).\n2. poderes_especificos começa com ", especialmente para " e descreve só o que está no objeto: o ato (propor ação, promover execução, atuar no processo n. …), o tipo de ação se informado e a parte contrária como escrita no objeto. Máximo de 300 caracteres.\n3. Se o tipo de ação não estiver no objeto, use redação neutra: "propor ação judicial em face de {parte} relativa a {assunto}". Nunca escolha o tipo de ação.\n4. Nunca complete nem invente a razão social da parte contrária.\n5. destino usa SOMENTE nome_oficial da lista de tribunais, unidos por " e ". Se o objeto citar o tribunal, use-o; se citar número de processo CNJ, identifique o tribunal pelo segmento J.TR; se não houver indicação, use o TJ da UF do domicílio e gere o alerta "Tribunal inferido pelo domicílio do cliente. Confirme.".\n6. Se o objeto tiver mais de uma finalidade, inclua todas em poderes_especificos e gere o alerta "Mais de uma finalidade. Confirme o tribunal de cada uma.".\n7. Se o objeto não tiver assunto NEM parte contrária identificável, situacao = "bloqueado" e explique o que falta.\n8. Se o objeto mencionar levantamento de valores, alvará, acordo, renúncia, confissão ou citação, NÃO inclua isso em poderes_especificos; gere o alerta "O objeto menciona {item}. Avalie se é necessário poder especial.". Não invente informações e use string vazia quando não houver valor.`,
+            },
+            {
+              role: "user",
+              content: JSON.stringify({
+                contrato_id: data.contrato_id,
+                              objeto: parteContraria ? `${objeto}\nParte contrária: ${parteContraria}` : objeto,
+                tipo_cliente: tipoCliente,
+                uf_domicilio: ufDomicilio,
+                tribunais_ativos: (tribunais ?? []) as Tribunal[],
+                exemplos_ativos: exemplosSelecionados,
+              }),
+            },
+          ],
+        }),
+      });
+    } catch (error) {
+      console.error("analisarObjetoProcuracao: falha de conexão", error instanceof Error ? error.message : error);
+      return technicalFailure("Não foi possível conectar à IA. Tente novamente ou preencha manualmente.", tjDomicilio);
+    }
 
-        if (!response.ok) {
-      return blockedAnalysisResult("Não foi possível analisar o objeto. Tente novamente ou preencha manualmente.");
+    if (!response.ok) {
+      console.error("analisarObjetoProcuracao: gateway respondeu", response.status);
+      const motivo = response.status === 402
+        ? "Os créditos de IA do Lovable acabaram. Recarregue os créditos ou preencha manualmente."
+        : response.status === 429
+          ? "Muitas análises seguidas. Aguarde um minuto e tente novamente, ou preencha manualmente."
+          : `A IA não respondeu (código ${response.status}). Tente novamente ou preencha manualmente.`;
+      return technicalFailure(motivo, tjDomicilio);
     }
 
     const payload = (await response.json()) as {
@@ -260,15 +313,17 @@ export const analisarObjetoProcuracao = createServerFn({ method: "POST" })
     };
     const content = payload.choices?.[0]?.message?.content;
     if (!content) {
-      return blockedAnalysisResult("Não foi possível analisar o objeto. Tente novamente ou preencha manualmente.");
+      console.error("analisarObjetoProcuracao: resposta vazia da IA");
+      return technicalFailure("A IA devolveu uma resposta vazia. Tente novamente ou preencha manualmente.", tjDomicilio);
     }
 
 
-        try {
-      const result = resultSchema.parse(JSON.parse(content.replace(/^```json\s*|\s*```$/g, "")));
-      return applyAnalysisGuards(result, objeto, (tribunais ?? []) as Tribunal[], ufDomicilio);
-    } catch {
-      return blockedAnalysisResult("Não foi possível analisar o objeto. Tente novamente ou preencha manualmente.");
+    try {
+      const result = resultSchema.parse(extrairJson(content));
+      return applyAnalysisGuards(result, objeto, (tribunais ?? []) as Tribunal[], ufDomicilio) as AnalysisResult;
+    } catch (error) {
+      console.error("analisarObjetoProcuracao: resposta fora do formato", error instanceof Error ? error.message : error);
+      return technicalFailure("A resposta da IA veio fora do formato esperado. Tente novamente ou preencha manualmente.", tjDomicilio);
     }
 
   });
