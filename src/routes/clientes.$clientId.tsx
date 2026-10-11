@@ -632,7 +632,7 @@ function EditContractDialog({
       if (!Number.isInteger(installmentsCount)) throw new Error("Informe um número inteiro de parcelas.");
       if (!firstDue) throw new Error("Informe o primeiro vencimento.");
 
-                  const contractUpdate = hasPaidInstallment
+                        const contractUpdate = hasPaidInstallment || modality === "exito"
         ? { description, category, modality, signature_date: signatureDate || null, payment_method: paymentMethod, success_fee_percent: fee, objeto: object || null, gratuidade }
         : {
             description,
