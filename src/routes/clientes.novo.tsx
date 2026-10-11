@@ -660,7 +660,7 @@ function NewClientPage() {
               {cepBusy && <p className="text-xs text-muted-foreground">Consultando CEP…</p>}
             </div>
             <div className="space-y-2 sm:col-span-3">
-              <Label htmlFor="street">Logradouro</Label>
+                            <Label htmlFor="street">Logradouro <Pending value={form.street} /></Label>
               <Input
                 id="street"
                 value={form.street}
