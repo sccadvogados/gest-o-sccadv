@@ -83,8 +83,9 @@ type Form = {
 };
 
 const EMPTY: Form = {
-  person_type: "PF",
+    person_type: "PF",
   name: "",
+  pj_descricao: "pessoa jurídica de direito privado",
   nationality: "Brasileiro(a)",
   marital_status: "",
   profession: "",
