@@ -218,15 +218,18 @@ export const analisarObjetoProcuracao = createServerFn({ method: "POST" })
       }),
     });
 
-    if (!response.ok) {
-      throw new Error("Não foi possível analisar o objeto da procuração.");
+        if (!response.ok) {
+      return blockedAnalysisResult("Não foi possível analisar o objeto. Tente novamente ou preencha manualmente.");
     }
 
     const payload = (await response.json()) as {
       choices?: Array<{ message?: { content?: string } }>;
     };
     const content = payload.choices?.[0]?.message?.content;
-    if (!content) throw new Error("A análise não retornou um resultado.");
+    if (!content) {
+      return blockedAnalysisResult("Não foi possível analisar o objeto. Tente novamente ou preencha manualmente.");
+    }
+
 
     try {
       return resultSchema.parse(JSON.parse(content.replace(/^```json\\s*|\\s*```$/g, "")));
