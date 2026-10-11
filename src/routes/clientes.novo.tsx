@@ -133,7 +133,8 @@ function NewClientPage() {
   const [savedContractId, setSavedContractId] = useState<string | null>(null);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const extractDocument = useServerFn(extractClientDocument);
+    const extractDocument = useServerFn(extractClientDocument);
+  const sendAttachmentsToDrive = useServerFn(enviarAnexosParaDrive);
 
     const set = <K extends keyof Form,>(key: K, value: Form[K]) =>
     setForm((prev) => ({ ...prev, [key]: value }));
