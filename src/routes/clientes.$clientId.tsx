@@ -146,7 +146,7 @@ function ClientDetailPage() {
   const { data: contracts } = useQuery({
     queryKey: ["contracts", clientId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await officeDatabase(supabase)
         .from("contracts")
         .select("*, installments(*)")
         .eq("client_id", clientId)
@@ -270,7 +270,7 @@ function ClientDetailPage() {
 
             <section className="panel mt-6 grid gap-5 rounded-xl border border-[#E6D6C4] border-t-[3px] border-t-[#D4A782] bg-white p-6 shadow-panel sm:grid-cols-2">
                 <Field label="Nacionalidade" value={client.nationality} />
-        {client.person_type === "PJ" ? <Field label="Descrição da pessoa jurídica" value={client.pj_descricao} /> : null}
+        {client.person_type === "PJ" ? <Field label="Descrição da pessoa jurídica" value={client.pj_descricao ?? null} /> : null}
         <Field label="Estado civil" value={client.marital_status} />
         <Field label="Profissão" value={client.profession} />
         <Field
@@ -621,7 +621,7 @@ function EditContractDialog({
   const [paymentMethod, setPaymentMethod] = useState(contract.payment_method ?? PAYMENT_METHODS[0]);
     const [successFee, setSuccessFee] = useState(String(contract.success_fee_percent));
   const [object, setObject] = useState(contract.objeto ?? "");
-  const [gratuidade, setGratuidade] = useState(contract.gratuidade);
+  const [gratuidade, setGratuidade] = useState(contract.gratuidade ?? false);
 
   const update = useMutation({
     mutationFn: async () => {
@@ -648,7 +648,7 @@ function EditContractDialog({
             objeto: object || null,
             gratuidade,
           };
-      const { error } = await supabase.from("contracts").update(contractUpdate).eq("id", contract.id);
+      const { error } = await officeDatabase(supabase).from("contracts").update(contractUpdate).eq("id", contract.id);
       if (error) throw error;
 
       if (hasPaidInstallment) return;
@@ -781,7 +781,7 @@ function NewContractDialog({ clientId, personType }: { clientId: string; personT
       }
 
       const total = modality === "mensal" ? value * installmentsCount : value;
-      const { data: contract, error } = await supabase
+      const { data: contract, error } = await officeDatabase(supabase)
         .from("contracts")
         .insert({
           client_id: clientId,

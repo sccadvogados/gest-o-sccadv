@@ -3,6 +3,7 @@ import type { Database } from "@/integrations/supabase/types";
 
 type EventTable = Database["public"]["Tables"]["eventos"];
 type ClientTable = Database["public"]["Tables"]["clients"];
+type ContractTable = Database["public"]["Tables"]["contracts"];
 
 // Compatibility declarations do not create database objects or grant access.
 type RepresentativeRow = {
@@ -21,7 +22,12 @@ type RepresentativeInsert = Pick<RepresentativeRow, "cliente_id" | "nome"> &
 
 type OfficeDatabase = Omit<Database, "public"> & {
   public: Omit<Database["public"], "Tables"> & {
-    Tables: Omit<Database["public"]["Tables"], "eventos" | "clients"> & {
+    Tables: Omit<Database["public"]["Tables"], "eventos" | "clients" | "contracts"> & {
+      contracts: Omit<ContractTable, "Row" | "Insert" | "Update"> & {
+        Row: ContractTable["Row"] & { objeto?: string | null; gratuidade?: boolean };
+        Insert: ContractTable["Insert"] & { objeto?: string | null; gratuidade?: boolean };
+        Update: ContractTable["Update"] & { objeto?: string | null; gratuidade?: boolean };
+      };
       clients: Omit<ClientTable, "Row" | "Insert" | "Update"> & {
         Row: ClientTable["Row"] & { pj_descricao?: string | null };
         Insert: ClientTable["Insert"] & { pj_descricao?: string | null };
