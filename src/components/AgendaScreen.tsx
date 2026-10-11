@@ -79,7 +79,9 @@ const labels: Record<EventType, string> = {
   prazo: "Prazo",
   audiencia: "Audiência",
   reuniao: "Reunião",
-  compromisso: "Compromisso",
+    compromisso: "Compromisso",
+  julgamento: "Julgamento",
+  acompanhamento: "Acompanhamento",
 };
 
 const colors: Record<EventType, string> = {
