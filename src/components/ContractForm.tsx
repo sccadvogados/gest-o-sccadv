@@ -4,6 +4,8 @@ import { toast } from "sonner";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { CurrencyInput } from "@/components/CurrencyInput";
+import { ObjectClauseField } from "@/components/ObjectClauseField";
+
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -52,7 +54,7 @@ export function ContractForm({
   const [successFee, setSuccessFee] = useState("0");
             const [object, setObject] = useState(initialObject ?? "");
   
-  const [gratuidade, setGratuidade] = useState(initialGratuidade ?? true);
+    const [gratuidade, setGratuidade] = useState(initialGratuidade ?? (personType === "PF"));
   const [preview, setPreview] = useState<PreviewInstallment[]>([]);
   const queryClient = useQueryClient();
 
