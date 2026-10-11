@@ -540,7 +540,7 @@ function NewClientPage() {
 
           <div className="grid gap-5 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label>Tipo de pessoa</Label>
+              <Label>Tipo de Pessoa</Label>
               <Select
                 value={form.person_type}
                 onValueChange={(v) => set("person_type", v as "PF" | "PJ")}
