@@ -371,11 +371,13 @@ function NewClientPage() {
       />
 
       <div className="mt-6 text-sm font-medium text-muted-foreground">
-        <span className={step === 1 ? "text-primary" : undefined}>1 Cliente</span>
+                <span className={step === 1 ? "text-primary" : undefined}>1 Cliente</span>
         <span className="mx-2">·</span>
-        <span className={step === 2 ? "text-primary" : undefined}>2 Contrato</span>
+        <span className={step === 2 ? "text-primary" : undefined}>2 Objeto</span>
         <span className="mx-2">·</span>
-        <span className={step === 3 ? "text-primary" : undefined}>3 Revisão</span>
+        <span className={step === 3 ? "text-primary" : undefined}>3 Pagamento</span>
+        <span className="mx-2">·</span>
+        <span className={step === 4 ? "text-primary" : undefined}>4 Revisão</span>
       </div>
 
             {step === 1 && <form
