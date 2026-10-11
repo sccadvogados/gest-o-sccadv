@@ -5,13 +5,53 @@ import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { montarDadosModelos } from "@/lib/document-template-data";
+import { formatClientFolderName, sendContractPackageToDrive, type DriveExtraFile, type DrivePackageResult } from "@/lib/drive-upload.server";
 
 const inputSchema = z.object({
   contrato_id: z.string().uuid(),
   poderes_especificos: z.string(),
   destino: z.string(),
   parte_contraria: z.string(),
+  situacao_analise: z.enum(["ok", "alerta"]).default("ok"),
+  editado: z.boolean().default(false),
 });
+
+const DOCX_MIME = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+
+const PODERES_PROIBIDOS = [
+  "citação",
+  "citacao",
+  "levantar",
+  "levantamento",
+  "alvará",
+  "alvara",
+  "renunciar",
+  "renúncia",
+  "confessar",
+  "reconhecer a procedência",
+  "firmar compromisso",
+];
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function pareceEmpresa(nome: string): boolean {
+  return /\b(s\.?\/?a\.?|ltda|eireli|me|epp|saúde|saude|seguro|seguros|seguradora|banco|bank|unimed|amil|bradesco|hapvida|sulam[eé]rica|porto|plano|operadora|associa[cç][aã]o|cooperativa|munic[ií]pio|estado|uni[aã]o|inss|instituto|companhia|empresa|caixa|fazenda)\b/i.test(nome);
+}
+
+function anonimizar(texto: string | null | undefined, nomes: string[], parteContraria: string): string {
+  let resultado = texto ?? "";
+  for (const nome of nomes.filter((item) => item && item.trim().length > 2)) {
+    resultado = resultado.replace(new RegExp(escapeRegExp(nome.trim()), "gi"), "[CLIENTE]");
+  }
+  if (parteContraria && !pareceEmpresa(parteContraria)) {
+    resultado = resultado.replace(new RegExp(escapeRegExp(parteContraria.trim()), "gi"), "[PARTE CONTRÁRIA]");
+  }
+  return resultado
+    .replace(/\d{2}\.?\d{3}\.?\d{3}\/?\d{4}-?\d{2}/g, "[DOCUMENTO]")
+    .replace(/\d{3}\.?\d{3}\.?\d{3}-?\d{2}/g, "[DOCUMENTO]");
+}
 
 type QueryClient = any;
 
@@ -86,12 +126,11 @@ function todayInSaoPaulo(): string {
     day: "2-digit",
   }).formatToParts(new Date());
   const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
-  return `${values.year}-${values.month}-${values.day}`;
+  return `${values["year"]}-${values["month"]}-${values["day"]}`;
 }
 
 function clientFileName(name: string): string {
-  const normalized = name.trim();
-  return normalized ? normalized.charAt(0).toLocaleUpperCase("pt-BR") + normalized.slice(1) : normalized;
+  return formatClientFolderName(name);
 }
 
 function sanitizeFilePart(value: string): string {
@@ -135,6 +174,13 @@ export const gerarPacoteDocumentos = createServerFn({ method: "POST" })
     const { data: isActive, error: activeError } = await database.rpc("is_ativo");
     if (activeError || !isActive) throw new Error("Acesso não autorizado");
 
+    const poderesNormalizados = data.poderes_especificos.toLocaleLowerCase("pt-BR");
+    const proibido = PODERES_PROIBIDOS.find((termo) => poderesNormalizados.includes(termo));
+    if (proibido) {
+      throw new Error(`Os poderes específicos não podem incluir "${proibido}". Poderes especiais exigem autorização expressa e não são gerados pelo sistema.`);
+    }
+    if (!data.destino.trim()) throw new Error("Informe o tribunal (destino) da procuração.");
+
     const { data: contract, error: contractError } = await database
       .from("contracts")
       .select("*")
@@ -153,7 +199,7 @@ export const gerarPacoteDocumentos = createServerFn({ method: "POST" })
     const isPj = String(client.person_type).toUpperCase() === "PJ";
     const documentsToGenerate = documents.filter((document) => document.kind !== "declaracao_hipossuficiencia" || (!isPj && contract.gratuidade === true));
     const missing = missingData(client, contract, representatives ?? [], installments ?? []);
-    if (missing.length > 0) return { gerados: [], faltantes: [...new Set(missing)] };
+    if (missing.length > 0) return { gerados: [] as Array<{ kind: string; file_name: string; file_path: string }>, faltantes: [...new Set(missing)], drive: null };
 
     const templateData = montarDadosModelos(
       client,
@@ -173,28 +219,55 @@ export const gerarPacoteDocumentos = createServerFn({ method: "POST" })
       .select("file_name")
       .eq("client_id", contract.client_id);
     if (documentsError) throw new Error("Não foi possível verificar os nomes de arquivos existentes.");
-    const existingNames = new Set((existingDocuments ?? []).map((document: { file_name: string }) => document.file_name));
+    const existingNames = new Set<string>((existingDocuments ?? []).map((document: { file_name: string }) => document.file_name));
     const generated: Array<{ kind: string; file_name: string; file_path: string }> = [];
+    const driveFiles: DriveExtraFile[] = [];
     const date = todayInSaoPaulo();
 
     for (const document of documentsToGenerate) {
       const fileName = versionedName(baseFileName(date, document.number, client.name, data.parte_contraria), existingNames);
       const filePath = `${contract.client_id}/gerados/${data.contrato_id}-${document.kind}-${Date.now()}.docx`;
       const content = await renderTemplate(database, document.template, dataWithApprovedReview);
-      const { error: uploadError } = await database.storage.from("client-documents").upload(filePath, new Blob([content], { type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" }), { upsert: false, contentType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
+      const { error: uploadError } = await database.storage.from("client-documents").upload(filePath, new Blob([new Uint8Array(content)], { type: DOCX_MIME }), { upsert: false, contentType: DOCX_MIME });
       if (uploadError) throw new Error(`Não foi possível salvar ${fileName}.`);
 
-      const { error: documentError } = await database.from("client_documents").insert({
+      const { data: savedDocument, error: documentError } = await database.from("client_documents").insert({
         client_id: contract.client_id,
         contract_id: data.contrato_id,
         file_name: fileName,
         file_path: filePath,
         kind: document.kind,
-      });
-      if (documentError) throw new Error(`Não foi possível registrar ${fileName}.`);
+      }).select("id").single();
+      if (documentError || !savedDocument) throw new Error(`Não foi possível registrar ${fileName}.`);
+      driveFiles.push({ documentId: savedDocument.id, fileName, mimeType: DOCX_MIME, bytes: content });
       existingNames.add(fileName);
       generated.push({ kind: document.kind, file_name: fileName, file_path: filePath });
     }
 
-    return { gerados: generated, faltantes: [] };
+    await database
+      .from("contracts")
+      .update({ parte_contraria: data.parte_contraria.trim() || null })
+      .eq("id", data.contrato_id);
+
+    // Aprendizado: guarda o exemplo aprovado, sem nome nem documento do cliente.
+    try {
+      const nomes = [client.name, ...(representatives ?? []).map((representative: { nome: string }) => representative.nome)];
+      await database.from("procuracao_exemplos").insert({
+        objeto: anonimizar(contract.objeto, nomes, data.parte_contraria),
+        tipo_cliente: isPj ? "PJ" : "PF",
+        uf_domicilio: typeof client.state === "string" ? client.state.toUpperCase() : null,
+        poderes_especificos: anonimizar(data.poderes_especificos, nomes, data.parte_contraria) || null,
+        destino: data.destino,
+        situacao: data.situacao_analise,
+        observacao: data.editado ? "aprovado com ajuste manual." : "aprovado sem ajuste.",
+        origem: "aprovado",
+      });
+    } catch {
+      // O aprendizado nunca impede a geração.
+    }
+
+    const drive: DrivePackageResult = await sendContractPackageToDrive(context.supabase as never, data.contrato_id, driveFiles);
+
+    return { gerados: generated, faltantes: [] as string[], drive };
   });
+
