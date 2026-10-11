@@ -544,7 +544,8 @@ function ContractActions({
   contract: ContractRow;
 }) {
   const queryClient = useQueryClient();
-    const [editOpen, setEditOpen] = useState(false);
+        const [editOpen, setEditOpen] = useState(false);
+  const [reviewOpen, setReviewOpen] = useState(false);
   const hasPaidInstallment = (contract.installments ?? []).some((installment) => installment.status === "Pago");
 
   const remove = useMutation({
