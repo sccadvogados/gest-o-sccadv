@@ -13,7 +13,25 @@ export type Database = {
     PostgrestVersion: "14.18"
   }
   public: {
-    Tables: {
+        Tables: {
+      feriados: {
+        Row: {
+          abrangencia: string
+          data: string
+          descricao: string
+        }
+        Insert: {
+          abrangencia: string
+          data: string
+          descricao: string
+        }
+        Update: {
+          abrangencia?: string
+          data?: string
+          descricao?: string
+        }
+        Relationships: []
+      }
       client_documents: {
         Row: {
           client_id: string
