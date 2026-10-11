@@ -53,7 +53,7 @@ export function ContractForm({ clientId, personType, onSaved }: ContractFormProp
   }, [totalValue, count, firstDue, modality]);
 
   function refreshPreview() {
-    const value = Number(totalValue.replace(",", "."));
+        const value = totalValue;
     const installmentsCount = Number(count);
     if (!Number.isFinite(value) || value <= 0 || !Number.isInteger(installmentsCount) || installmentsCount < 1 || !firstDue || modality === "exito") {
       setPreview([]);
