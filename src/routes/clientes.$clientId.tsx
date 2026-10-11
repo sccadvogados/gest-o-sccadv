@@ -624,7 +624,7 @@ function EditContractDialog({
   const hasPaidInstallment = (contract.installments ?? []).some((installment) => installment.status === "Pago");
   
   const [category, setCategory] = useState(contract.category);
-  const [totalValue, setTotalValue] = useState(String(contract.total_value));
+    const [totalValue, setTotalValue] = useState(contract.total_value);
   const [count, setCount] = useState(String(contract.installments_count));
     const [firstDue, setFirstDue] = useState(contract.first_due_date);
   const [modality, setModality] = useState<ContractModality>(contract.modality);
