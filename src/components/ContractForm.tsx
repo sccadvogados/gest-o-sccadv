@@ -68,7 +68,7 @@ export function ContractForm({ clientId, personType, onSaved }: ContractFormProp
 
   const create = useMutation({
     mutationFn: async () => {
-      const value = Number(totalValue.replace(",", "."));
+            const value = totalValue;
       const installmentsCount = Math.max(1, Number(count));
       const fee = Number(successFee.replace(",", ".")) || 0;
             if (modality !== "exito" && (!Number.isFinite(value) || value <= 0)) throw new Error("Informe um valor válido.");
