@@ -40,14 +40,18 @@ export function DeadlineCalculator({ holidays, onUseDate }: DeadlineCalculatorPr
 
   const result = useMemo(() => {
     const amount = Number(days);
-    if (!startDate || !Number.isInteger(amount) || amount < 0) return "";
-    if (mode === "corridos") return shiftDate(startDate, amount);
+        if (!startDate || !Number.isInteger(amount) || amount < 0) return "";
 
     const holidaySet = new Set(holidays);
     const isBusinessDay = (date: string) => {
       const day = new Date(`${date}T12:00:00`).getDay();
       return day !== 0 && day !== 6 && !holidaySet.has(date) && !isRecess(date);
     };
+    if (mode === "corridos") {
+      let current = shiftDate(startDate, amount);
+      while (!isBusinessDay(current)) current = shiftDate(current, 1);
+      return current;
+    }
     let current = startDate;
     let counted = 0;
     while (counted < amount) {
