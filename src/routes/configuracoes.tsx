@@ -28,7 +28,16 @@ export const Route = createFileRoute("/configuracoes")({
 });
 
 function defaultDate() {
-  return new Date().toISOString().slice(0, 10);
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Sao_Paulo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date());
+  const values = Object.fromEntries(parts.filter((part) => part.type !== "literal").map((part) => [part.type, part.value]));
+  const date = new Date(Date.UTC(Number(values.year), Number(values.month) - 1, Number(values.day)));
+  date.setUTCDate(date.getUTCDate() - 30);
+  return date.toISOString().slice(0, 10);
 }
 
 function SettingsPage() {
