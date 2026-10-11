@@ -165,6 +165,78 @@ function addOneHourToTime(value: string) {
   return `${String(Math.floor(totalMinutes / 60)).padStart(2, "0")}:${String(totalMinutes % 60).padStart(2, "0")}`;
 }
 
+function timeToMinutes(value: string) {
+  const match = /^(\\d{1,2}):(\\d{2})$/.exec(value);
+  if (!match) return null;
+  const hours = Number(match[1]);
+  const minutes = Number(match[2]);
+  if (hours > 23 || minutes > 59) return null;
+  return hours * 60 + minutes;
+}
+
+function minutesToTime(value: number) {
+  const normalized = Math.max(0, Math.min(23 * 60 + 59, value));
+  return `${String(Math.floor(normalized / 60)).padStart(2, "0")}:${String(normalized % 60).padStart(2, "0")}`;
+}
+
+function formatDuration(minutes: number) {
+  const hours = Math.floor(minutes / 60);
+  const rest = minutes % 60;
+  if (!hours) return `${rest} min`;
+  if (!rest) return `${hours} h`;
+  return `${hours} h ${rest} min`;
+}
+
+function TimeRangeField({ start, end, onStartChange, onEndChange }: { start: string; end: string; onStartChange: (value: string) => void; onEndChange: (value: string) => void }) {
+  const [open, setOpen] = useState<"start" | "end" | null>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+  const selectedValue = open === "start" ? start : end;
+  const selectedMinutes = timeToMinutes(selectedValue);
+  const startMinutes = timeToMinutes(start);
+  const endMinutes = timeToMinutes(end);
+  const duration = startMinutes !== null && endMinutes !== null && endMinutes > startMinutes ? endMinutes - startMinutes : null;
+  const options = Array.from({ length: 96 }, (_, index) => index * 15)
+    .filter((minutes) => open !== "end" || startMinutes === null || minutes > startMinutes);
+
+  useEffect(() => {
+    if (!open || !listRef.current) return;
+    const target = selectedMinutes === null ? 0 : options.findIndex((minutes) => minutes >= selectedMinutes);
+    listRef.current.scrollTop = Math.max(0, target) * 36;
+  }, [open, selectedMinutes, options.length]);
+
+  const choose = (minutes: number) => {
+    const value = minutesToTime(minutes);
+    if (open === "start") onStartChange(value);
+    if (open === "end") onEndChange(value);
+    setOpen(null);
+  };
+
+  const input = (kind: "start" | "end", value: string, onChange: (value: string) => void) => (
+    <div className="relative min-w-0 flex-1">
+      <input
+        aria-label={kind === "start" ? "Hora de início" : "Hora de término"}
+        value={value}
+        onFocus={() => setOpen(kind)}
+        onChange={(event) => onChange(event.target.value)}
+        onBlur={(event) => {
+          if (!event.relatedTarget || !listRef.current?.contains(event.relatedTarget as Node)) setOpen(null);
+        }}
+        placeholder="00:00"
+        inputMode="numeric"
+        className={`h-10 w-full bg-transparent px-3 text-sm outline-none ${open === kind ? "border-b-2 border-[#0F2340]" : "border-b-2 border-transparent"}`}
+      />
+      {open === kind ? <div ref={listRef} className="absolute left-0 top-11 z-30 max-h-56 w-48 overflow-y-auto rounded-md border bg-popover p-1 shadow-lg">
+        {options.map((minutes) => {
+          const option = minutesToTime(minutes);
+          return <button key={option} type="button" className={`flex w-full items-center justify-between rounded px-3 py-2 text-left text-sm hover:bg-accent ${selectedMinutes === minutes ? "bg-accent font-semibold" : ""}`} onMouseDown={(event) => event.preventDefault()} onClick={() => choose(minutes)}><span>{option}</span>{kind === "end" && startMinutes !== null && minutes > startMinutes ? <span className="text-xs text-muted-foreground">({formatDuration(minutes - startMinutes)})</span> : null}</button>;
+        })}
+      </div> : null}
+    </div>
+  );
+
+  return <div className="relative flex items-center rounded-md bg-gray-100 px-1"><div className="flex min-w-0 flex-1 items-center">{input("start", start.slice(0, 5), onStartChange)}<span className="text-sm text-muted-foreground">–</span>{input("end", end.slice(11, 16) || end.slice(0, 5), onEndChange)}</div>{duration !== null ? <span className="pr-2 text-xs text-muted-foreground">{formatDuration(duration)}</span> : null}</div>;
+}
+
 export function AgendaScreen() {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
