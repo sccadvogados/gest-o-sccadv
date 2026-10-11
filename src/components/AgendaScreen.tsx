@@ -223,7 +223,7 @@ function TimeRangeField({ start, end, onStartChange, onEndChange }: { start: str
         }}
         placeholder="00:00"
         inputMode="numeric"
-        className={`h-10 w-full bg-transparent px-3 text-sm outline-none ${open === kind ? "border-b-2 border-[#0F2340]" : "border-b-2 border-transparent"}`}
+        className={`h-[52px] w-full rounded-lg border border-input bg-white px-3 py-1 text-base shadow-sm transition-colors outline-none focus-visible:ring-1 focus-visible:ring-ring md:text-sm ${open === kind ? "ring-1 ring-ring" : ""}`}
       />
       {open === kind ? <div ref={listRef} className="absolute left-0 top-11 z-30 max-h-56 w-48 overflow-y-auto rounded-md border bg-popover p-1 shadow-lg">
         {options.map((minutes) => {
