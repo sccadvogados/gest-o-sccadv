@@ -211,7 +211,8 @@ const calendarEventSchema = z.object({
 
 async function syncCreatedEvent(supabase: SupabaseClient<Database>, data: z.infer<typeof calendarEventSchema>) {
   const event: CalendarEvent = {
-    id: data.id, tipo: data.tipo, titulo: data.titulo, data_inicio: data.data_inicio,
+        id: data.id, tipo: data.tipo, titulo: data.titulo, data_inicio: data.data_inicio,
+    data_fim: data.data_fim ?? null,
     descricao: data.descricao ?? null, numero_processo: data.numero_processo ?? null,
     parte_contraria: data.parte_contraria ?? null, responsavel: data.responsavel ?? null,
         cliente_nome: data.cliente_nome ?? null, local_link: data.local_link ?? null,
