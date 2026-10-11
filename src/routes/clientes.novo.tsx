@@ -62,8 +62,9 @@ const ATTACHMENTS: { kind: string; label: string; multiple?: boolean }[] = [
 ];
 
 type Form = {
-  person_type: "PF" | "PJ";
+    person_type: "PF" | "PJ";
   name: string;
+  pj_descricao: string;
   nationality: string;
   marital_status: string;
   profession: string;
