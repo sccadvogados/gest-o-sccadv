@@ -650,7 +650,7 @@ function NewClientPage() {
 
           <div className="grid gap-5 sm:grid-cols-6">
             <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="cep">CEP</Label>
+                            <Label htmlFor="cep">CEP <Pending value={form.cep} /></Label>
               <Input
                 id="cep"
                 value={form.cep}
@@ -660,7 +660,7 @@ function NewClientPage() {
               {cepBusy && <p className="text-xs text-muted-foreground">Consultando CEP…</p>}
             </div>
             <div className="space-y-2 sm:col-span-3">
-              <Label htmlFor="street">Logradouro</Label>
+                            <Label htmlFor="street">Logradouro <Pending value={form.street} /></Label>
               <Input
                 id="street"
                 value={form.street}
@@ -668,7 +668,7 @@ function NewClientPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="number">Número</Label>
+                            <Label htmlFor="number">Número <Pending value={form.number} /></Label>
               <Input
                 id="number"
                 value={form.number}
@@ -684,7 +684,7 @@ function NewClientPage() {
               />
             </div>
             <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="district">Bairro</Label>
+                            <Label htmlFor="district">Bairro <Pending value={form.district} /></Label>
               <Input
                 id="district"
                 value={form.district}
@@ -692,7 +692,7 @@ function NewClientPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="city">Cidade</Label>
+                            <Label htmlFor="city">Cidade <Pending value={form.city} /></Label>
               <Input
                 id="city"
                 value={form.city}
@@ -700,7 +700,7 @@ function NewClientPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="state">UF</Label>
+                            <Label htmlFor="state">UF <Pending value={form.state} /></Label>
               <Input
                 id="state"
                 maxLength={2}
@@ -709,7 +709,7 @@ function NewClientPage() {
               />
             </div>
             <div className="space-y-2 sm:col-span-3">
-              <Label htmlFor="email">E-mail</Label>
+                            <Label htmlFor="email">E-mail <Pending value={form.email} /></Label>
               <Input
                 id="email"
                 type="email"
@@ -718,7 +718,7 @@ function NewClientPage() {
               />
             </div>
             <div className="space-y-2 sm:col-span-3">
-              <Label htmlFor="phone">Telefone</Label>
+                            <Label htmlFor="phone">Telefone <Pending value={form.phone} /></Label>
               <Input
                 id="phone"
                 value={form.phone}
