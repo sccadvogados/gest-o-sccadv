@@ -48,8 +48,8 @@ function AuthPage() {
     const message = sessionStorage.getItem("scc-access-denied-message");
     if (!message) return;
 
-    sessionStorage.removeItem("scc-access-denied-message");
-    toast.error(message);
+        sessionStorage.removeItem("scc-access-denied-message");
+    setAccessDeniedMessage(message);
   }, []);
 
   useEffect(() => {
