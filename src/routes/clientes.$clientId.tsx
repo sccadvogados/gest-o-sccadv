@@ -333,7 +333,7 @@ function ClientDetailPage() {
       <section className="mt-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
                     <h2 className="text-xl font-semibold text-[#0F2340]">Contratos e condições de pagamento</h2>
-          <NewContractDialog clientId={clientId} />
+          <NewContractDialog clientId={clientId} personType={client.person_type as "PF" | "PJ"} />
         </div>
 
         {(contracts ?? []).length === 0 && (
@@ -643,7 +643,9 @@ function EditContractDialog({
             first_due_date: firstDue,
             payment_method: paymentMethod,
             success_fee_percent: fee,
-            recurring: modality === "mensal",
+                        recurring: modality === "mensal",
+            objeto: object || null,
+            gratuidade,
           };
       const { error } = await supabase.from("contracts").update(contractUpdate).eq("id", contract.id);
       if (error) throw error;
@@ -704,7 +706,7 @@ function EditContractDialog({
           <Label htmlFor={`edit-contract-object-${contract.id}`}>Objeto do contrato</Label>
           <p className="text-sm text-muted-foreground">O objeto do presente contrato é a prestação de serviços advocatícios relativos…</p>
           <Textarea id={`edit-contract-object-${contract.id}`} rows={4} value={object} onChange={(e) => setObject(e.target.value)} />
-          <p className="text-sm text-muted-foreground">O objeto do presente contrato é a prestação de serviços advocatícios relativos… {object}</p>
+                    <p className="text-sm text-muted-foreground">O objeto do presente contrato é a prestação de serviços advocatícios relativos {object}.</p>
         </div>
         {personType === "PF" ? <label className="flex items-center gap-2 text-sm sm:col-span-2"><Checkbox checked={gratuidade} onCheckedChange={(checked) => setGratuidade(checked === true)} />Pedir gratuidade de justiça</label> : null}
         <div className="space-y-2 sm:col-span-2"><Label htmlFor={`edit-contract-fee-${contract.id}`}>% de êxito</Label><Input id={`edit-contract-fee-${contract.id}`} inputMode="decimal" value={successFee} onChange={(e) => setSuccessFee(e.target.value)} /></div>
@@ -722,7 +724,7 @@ type PreviewInstallment = {
   due_date: string;
 };
 
-function NewContractDialog({ clientId }: { clientId: string }) {
+function NewContractDialog({ clientId, personType }: { clientId: string; personType: "PF" | "PJ" }) {
   const [open, setOpen] = useState(false);
   const [description, setDescription] = useState("");
   const [modality, setModality] = useState<ContractModality>("parcelado");
@@ -732,7 +734,9 @@ function NewContractDialog({ clientId }: { clientId: string }) {
   const [count, setCount] = useState("1");
   const [firstDue, setFirstDue] = useState(todayISO());
   const [paymentMethod, setPaymentMethod] = useState<string>(PAYMENT_METHODS[0]);
-    const [successFee, setSuccessFee] = useState("0");
+        const [successFee, setSuccessFee] = useState("0");
+  const [object, setObject] = useState("");
+  const [gratuidade, setGratuidade] = useState(true);
   const [preview, setPreview] = useState<PreviewInstallment[]>([]);
     const queryClient = useQueryClient();
 
@@ -787,7 +791,9 @@ function NewContractDialog({ clientId }: { clientId: string }) {
           first_due_date: firstDue,
           payment_method: paymentMethod,
           success_fee_percent: fee,
-          recurring: modality === "mensal",
+                    recurring: modality === "mensal",
+          objeto: object || null,
+          gratuidade: personType === "PF" ? gratuidade : false,
         })
         .select("id")
         .single();
@@ -816,7 +822,9 @@ function NewContractDialog({ clientId }: { clientId: string }) {
       setTotalValue("");
       setCount("1");
       setFirstDue(todayISO());
-      setSuccessFee("0");
+            setSuccessFee("0");
+      setObject("");
+      setGratuidade(true);
       setPreview([]);
     },
     onError: (error) =>
@@ -934,7 +942,15 @@ function NewContractDialog({ clientId }: { clientId: string }) {
             </Select>
           </div>
 
-                    <div className="space-y-2 sm:col-span-2">
+                              <div className="space-y-2 sm:col-span-2">
+            <Label htmlFor="new-contract-object">Objeto do contrato</Label>
+            <p className="text-sm text-muted-foreground">O objeto do presente contrato é a prestação de serviços advocatícios relativos…</p>
+            <Textarea id="new-contract-object" rows={4} value={object} onChange={(e) => setObject(e.target.value)} />
+            <p className="text-sm text-muted-foreground">O objeto do presente contrato é a prestação de serviços advocatícios relativos {object}.</p>
+          </div>
+          {personType === "PF" ? <label className="flex items-center gap-2 text-sm sm:col-span-2"><Checkbox checked={gratuidade} onCheckedChange={(checked) => setGratuidade(checked === true)} />Pedir gratuidade de justiça</label> : null}
+
+          <div className="space-y-2 sm:col-span-2">
             <Label htmlFor="successFee">% de êxito{modality === "exito" ? " (obrigatório)" : ""}</Label>
             <Input
               id="successFee"
