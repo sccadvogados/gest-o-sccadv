@@ -166,8 +166,7 @@ const calendarEventSchema = z.object({
   parte_contraria: z.string().nullable().optional(),
   responsavel: z.string().nullable().optional(),
   cliente_nome: z.string().nullable().optional(),
-  prazo_fatal: z.string().nullable().optional(),
-  prazo_interno: z.string().nullable().optional(),
+  
   local_link: z.string().nullable().optional(),
 });
 
