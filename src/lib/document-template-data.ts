@@ -86,9 +86,13 @@ function numeroInteiroExtenso(value: number): string {
   if (n < 1_000_000) {
     const milhares = Math.floor(n / 1000);
     const resto = n % 1000;
-    return (milhares === 1 ? "mil" : `${numeroInteiroExtenso(milhares)} mil`) + (resto ? ` e ${numeroInteiroExtenso(resto)}` : "");
+    const conector = resto && (resto < 100 || resto % 100 === 0) ? " e " : " ";
+    return (milhares === 1 ? "mil" : `${numeroInteiroExtenso(milhares)} mil`) + (resto ? `${conector}${numeroInteiroExtenso(resto)}` : "");
   }
-  return String(n);
+  const milhoes = Math.floor(n / 1_000_000);
+  const resto = n % 1_000_000;
+  const conector = resto && (resto < 100 || resto % 100 === 0) ? " e " : " ";
+  return `${numeroInteiroExtenso(milhoes)} ${milhoes === 1 ? "milhão" : "milhões"}${resto ? `${conector}${numeroInteiroExtenso(resto)}` : ""}`;
 }
 
 export function numeroPorExtenso(value: number): string {
