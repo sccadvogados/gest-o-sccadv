@@ -245,7 +245,7 @@ function DateField({ value, onChange }: { value: string; onChange: (value: strin
   return <Input className="w-[160px] bg-white" type="date" value={value.slice(0, 10)} onChange={(event) => onChange(event.target.value)} />;
 }
 
-function MonthCalendar({ currentDate, onDateChange, onDayClick }: { currentDate: Date; onDateChange: (date: Date) => void; onDayClick: (date: string) => void }) {
+function MonthCalendar({ currentDate, onDateChange, onDayClick, events, onEventClick }: { currentDate: Date; onDateChange: (date: Date) => void; onDayClick: (date: string) => void; events: AgendaEvent[]; onEventClick: (event: AgendaEvent) => void }) {
   const days = calendarDays("mes", currentDate);
   const monthLabel = new Intl.DateTimeFormat("pt-BR", { month: "long", year: "numeric" }).format(currentDate);
   const weekDays = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
