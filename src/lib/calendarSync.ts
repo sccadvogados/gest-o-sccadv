@@ -92,7 +92,16 @@ function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
   const common = {
     start: { date },
     end: { date: nextDate(date) },
-    description: description(event),
+        description: description(event),
+    reminders: {
+      useDefault: false,
+      overrides: event.tipo === "prazo"
+        ? [
+            { method: "popup", minutes: 2340 },
+            { method: "popup", minutes: 900 },
+          ]
+        : [{ method: "popup", minutes: 900 }],
+    },
   };
 
   if (event.tipo === "prazo") {
