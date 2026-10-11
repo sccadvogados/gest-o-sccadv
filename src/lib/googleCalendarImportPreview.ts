@@ -14,7 +14,7 @@ type Client = { id: string; name: string };
 
 export type GoogleImportPreviewRow = {
       googleId: string;
-                tipo: "prazo" | "compromisso" | "reunião" | "audiência" | "julgamento" | "acompanhamento";
+                tipo: "prazo" | "protocolo" | "compromisso" | "reunião" | "audiência" | "julgamento" | "acompanhamento";
   titulo: string;
   dataInicio: string;
   dataFim: string;
@@ -59,7 +59,7 @@ function parseEvent(event: GoogleCalendarItem, clients: Client[], existingIds: S
   const clientName = parties[0] ?? "";
   const client = clients.find((item) => normalize(item.name) === normalize(clientName));
     const imported = existingIds.has(event.id);
-                const kind = judgment ? "julgamento" : followUp ? "acompanhamento" : hearing ? "audiência" : meeting ? "reunião" : protocol ? "prazo" : "compromisso";
+                const kind = judgment ? "julgamento" : followUp ? "acompanhamento" : hearing ? "audiência" : meeting ? "reunião" : protocol ? "protocolo" : "compromisso";
 
     return {
             googleId: event.id,
@@ -72,7 +72,7 @@ function parseEvent(event: GoogleCalendarItem, clients: Client[], existingIds: S
     clienteId: client?.id ?? null,
     parteContraria: parties[1] ?? "",
     responsavel: responsible,
-            prazo: kind === "prazo" ? dateOf(event) : "",
+            prazo: kind === "prazo" || kind === "protocolo" ? dateOf(event) : "",
         aviso: [
       !client && clientName ? "cliente não encontrado" : "",
       imported ? "evento já importado antes" : "",
