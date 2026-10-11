@@ -351,7 +351,7 @@ function ClientDetailPage() {
                     <div key={contract.id} className="panel mt-4 overflow-hidden rounded-xl border border-[#E6D6C4] border-t-[3px] border-t-[#D4A782] bg-white shadow-panel">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-5">
               <div>
-                <p className="font-medium">{contract.description || contract.category}</p>
+                                <p className="font-medium">Contrato {String(contract.numero).padStart(3, "0")}/{contract.ano}</p>
                 <p className="text-sm text-muted-foreground">
                   {contract.category} · {formatCurrency(contract.total_value)} em{" "}
                   {contract.installments_count}x · êxito {contract.success_fee_percent}%
@@ -511,8 +511,10 @@ export function SituationBadge({
 }
 
 type ContractRow = {
-  id: string;
+    id: string;
   description: string | null;
+  numero: number;
+  ano: number;
   category: string;
   total_value: number;
   installments_count: number;
@@ -616,7 +618,7 @@ function EditContractDialog({
 }) {
   const queryClient = useQueryClient();
   const hasPaidInstallment = (contract.installments ?? []).some((installment) => installment.status === "Pago");
-  const [description, setDescription] = useState(contract.description ?? "");
+  
   const [category, setCategory] = useState(contract.category);
   const [totalValue, setTotalValue] = useState(String(contract.total_value));
   const [count, setCount] = useState(String(contract.installments_count));
@@ -643,11 +645,12 @@ function EditContractDialog({
       }
 
                               const contractUpdate = hasPaidInstallment
-        ? { description, category, modality, signature_date: signatureDate || null, payment_method: paymentMethod, success_fee_percent: fee, objeto: object || null, parte_contraria: parteContraria || null, gratuidade }
+                ? { category, modality, signature_date: signatureDate || null, payment_method: paymentMethod, success_fee_percent: fee, objeto: object || null, parte_contraria: parteContraria || null, gratuidade }
+
         : modality === "exito"
-          ? { description, category, modality, signature_date: signatureDate || null, total_value: 0, installments_count: 1, payment_method: paymentMethod, success_fee_percent: fee, objeto: object || null, parte_contraria: parteContraria || null, gratuidade }
+                    ? { category, modality, signature_date: signatureDate || null, total_value: 0, installments_count: 1, payment_method: paymentMethod, success_fee_percent: fee, objeto: object || null, parte_contraria: parteContraria || null, gratuidade }
+
           : {
-              description,
               category,
               modality,
               signature_date: signatureDate || null,
@@ -699,10 +702,7 @@ function EditContractDialog({
             Há parcelas pagas; valor e parcelas não podem ser alterados.
           </p>
         ) : null}
-                <div className="space-y-2 sm:col-span-2">
-          <Label htmlFor={`edit-contract-description-${contract.id}`}>Descrição</Label>
-          <Input id={`edit-contract-description-${contract.id}`} value={description} onChange={(e) => setDescription(e.target.value)} />
-        </div>
+                
         <div className="space-y-2 sm:col-span-2">
           <Label>Categoria</Label>
           <Select value={category} onValueChange={setCategory}>

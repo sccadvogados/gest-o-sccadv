@@ -32,7 +32,7 @@ type ContractFormProps = {
 };
 
 export function ContractForm({ clientId, personType, onSaved }: ContractFormProps) {
-  const [description, setDescription] = useState("");
+  
   const [modality, setModality] = useState<ContractModality>("parcelado");
   const [signatureDate, setSignatureDate] = useState("");
   const [category, setCategory] = useState<string>(CATEGORIES[0]);
@@ -90,8 +90,7 @@ export function ContractForm({ clientId, personType, onSaved }: ContractFormProp
       const { data: contract, error } = await officeDatabase(supabase)
         .from("contracts")
         .insert({
-                    client_id: clientId,
-          description,
+                                        client_id: clientId,
           modality,
           category,
           total_value: modality === "exito" ? 0 : total,
@@ -135,15 +134,7 @@ export function ContractForm({ clientId, personType, onSaved }: ContractFormProp
   return (
     <>
       <div className="grid gap-4 sm:grid-cols-2">
-        <div className="space-y-2 sm:col-span-2">
-          <Label htmlFor="description">Descrição</Label>
-          <Input
-            id="description"
-            placeholder="Ex.: Ação trabalhista — pró-labore"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </div>
+        
 
         <div className="space-y-2">
           <Label>Modalidade</Label>
