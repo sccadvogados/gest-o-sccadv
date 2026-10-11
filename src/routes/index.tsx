@@ -134,7 +134,7 @@ function ClientsPage() {
           <div>
             <p className="text-xs text-muted-foreground">Contratos Ativos</p>
             <p className="text-xl font-semibold tabular-nums">
-              {processCountsLoading ? "—" : totalActiveProcesses}
+                            {contractCountsLoading ? "—" : totalActiveProcesses}
             </p>
           </div>
         </div>
