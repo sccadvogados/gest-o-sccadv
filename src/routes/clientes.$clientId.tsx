@@ -625,12 +625,16 @@ function EditContractDialog({
 
   const update = useMutation({
     mutationFn: async () => {
-      const total = Number(totalValue.replace(",", "."));
+            const total = Number(totalValue.replace(",", "."));
       const installmentsCount = Math.max(1, Number(count));
       const fee = Number(successFee.replace(",", ".")) || 0;
-      if (!Number.isFinite(total) || total <= 0) throw new Error("Informe um valor total válido.");
-      if (!Number.isInteger(installmentsCount)) throw new Error("Informe um número inteiro de parcelas.");
-      if (!firstDue) throw new Error("Informe o primeiro vencimento.");
+      if (modality === "exito") {
+        if (fee <= 0) throw new Error("Informe um percentual de êxito válido.");
+      } else {
+        if (!Number.isFinite(total) || total <= 0) throw new Error("Informe um valor total válido.");
+        if (!Number.isInteger(installmentsCount)) throw new Error("Informe um número inteiro de parcelas.");
+        if (!firstDue) throw new Error("Informe o primeiro vencimento.");
+      }
 
                         const contractUpdate = hasPaidInstallment || modality === "exito"
         ? { description, category, modality, signature_date: signatureDate || null, payment_method: paymentMethod, success_fee_percent: fee, objeto: object || null, gratuidade }
