@@ -147,7 +147,7 @@ export function AgendaScreen() {
     setOpen(true);
   };
   const openEditEvent = (event: AgendaEvent) => {
-        setForm({ ...emptyForm, ...event, descricao: event.descricao ?? "", cliente_id: event.cliente_id ?? "", contrato_id: event.contrato_id ?? "", data_inicio: event.data_inicio?.slice(0, 16) ?? "", data_fim: event.data_fim?.slice(0, 16) ?? "",  parte_contraria: event.parte_contraria ?? "", local_link: event.local_link ?? "", responsavel: event.responsavel ?? "" });
+        setForm({ ...emptyForm, ...event, protocolo: event.titulo.startsWith("[PROTOCOLO]"), descricao: event.descricao ?? "", cliente_id: event.cliente_id ?? "", contrato_id: event.contrato_id ?? "", data_inicio: event.data_inicio?.slice(0, 16) ?? "", data_fim: event.data_fim?.slice(0, 16) ?? "",  parte_contraria: event.parte_contraria ?? "", local_link: event.local_link ?? "", responsavel: event.responsavel ?? "" });
     setClientSearch(clients.find((client) => client.id === event.cliente_id)?.name ?? "");
     setOpen(true);
   };
