@@ -13,6 +13,16 @@ const documentSchema = z.object({
 
 const extractedSchema = z.object({
   name: z.string().default(""),
+  representatives: z.array(
+    z.object({
+      name: z.string().default(""),
+      nationality: z.string().default(""),
+      marital_status: z.string().default(""),
+      profession: z.string().default(""),
+      cpf: z.string().default(""),
+      quality: z.enum(["sócio", "representante legal"]).default("representante legal"),
+    }),
+  ).default([]),
   nationality: z.string().default(""),
   marital_status: z.string().default(""),
   profession: z.string().default(""),
