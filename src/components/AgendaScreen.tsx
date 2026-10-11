@@ -190,7 +190,7 @@ export function AgendaScreen() {
     () => [...new Set(events.map((event) => event.responsavel).filter(Boolean) as string[])].sort(),
     [events],
   );
-  const isOverdue = (event: AgendaEvent) => event.status !== "cumprido" && event.status !== "cancelado" && localDateKey(event.tipo === "prazo" ? (event.prazo_fatal || event.data_inicio) : event.data_inicio) < today;
+  const isOverdue = (event: AgendaEvent) => event.status !== "cumprido" && event.status !== "cancelado" && localDateKey(event.data_inicio) < today;
   const isToday = (event: AgendaEvent) => event.status !== "cancelado" && localDateKey(event.data_inicio) === today;
   const isNextWeek = (event: AgendaEvent) => event.status !== "cancelado" && localDateKey(event.data_inicio) > today && localDateKey(event.data_inicio) <= nextWeek;
 
