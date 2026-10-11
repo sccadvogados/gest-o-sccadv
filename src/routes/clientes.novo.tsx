@@ -355,11 +355,19 @@ function NewClientPage() {
         </Link>
       </Button>
 
-      <PageHeader
+            <PageHeader
         className="mt-4"
         title="Novo cliente"
         subtitle="Anexe a identificação e o comprovante de residência para preencher os dados automaticamente."
       />
+
+      <div className="mt-6 text-sm font-medium text-muted-foreground">
+        <span className={step === 1 ? "text-primary" : undefined}>1 Cliente</span>
+        <span className="mx-2">·</span>
+        <span className={step === 2 ? "text-primary" : undefined}>2 Contrato</span>
+        <span className="mx-2">·</span>
+        <span className={step === 3 ? "text-primary" : undefined}>3 Revisão</span>
+      </div>
 
             {step === 1 && <form
         className="mt-8 space-y-8"
