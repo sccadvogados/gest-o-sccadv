@@ -234,7 +234,7 @@ function TimeRangeField({ start, end, onStartChange, onEndChange }: { start: str
     </div>
   );
 
-  return <div className="relative flex items-center rounded-md bg-gray-100 px-1"><div className="flex min-w-0 flex-1 items-center">{input("start", start.slice(0, 5), onStartChange)}<span className="text-sm text-muted-foreground">–</span>{input("end", end.slice(11, 16) || end.slice(0, 5), onEndChange)}</div>{duration !== null ? <span className="pr-2 text-xs text-muted-foreground">{formatDuration(duration)}</span> : null}</div>;
+  return <div className="relative flex min-w-0 flex-1 items-center gap-2"><div className="flex min-w-0 flex-1 items-center gap-2">{input("start", start.slice(0, 5), onStartChange)}<span className="text-sm text-muted-foreground">–</span>{input("end", end.slice(11, 16) || end.slice(0, 5), onEndChange)}</div>{duration !== null ? <span className="pr-2 text-xs text-muted-foreground">{formatDuration(duration)}</span> : null}</div>;
 }
 
 export function AgendaScreen() {
