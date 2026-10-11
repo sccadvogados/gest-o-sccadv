@@ -286,9 +286,9 @@ export function AgendaScreen() {
 
     const deleteEvent = useMutation({
     mutationFn: async (id: string) => {
+                        await syncDeleteEvent({ data: { id } });
             const { error } = await officeDatabase(supabase).from("eventos").delete().eq("id", id);
       if (error) throw error;
-            await syncDeleteEvent({ data: { id } });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["agenda-events"] });

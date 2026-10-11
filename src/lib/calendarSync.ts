@@ -127,8 +127,10 @@ async function googleRequest(path: string, init?: RequestInit): Promise<unknown>
     },
   });
 
-  if (!response.ok) {
-    throw new Error("Não foi possível sincronizar o evento com o Google Agenda.");
+    if (!response.ok) {
+    const error = new Error("Não foi possível sincronizar o evento com o Google Agenda.");
+    Object.assign(error, { status: response.status });
+    throw error;
   }
   return response.status === 204 ? null : response.json();
 }
@@ -147,7 +149,12 @@ async function insertGoogleEvent(event: GoogleEvent): Promise<string> {
 
 async function removeGoogleEvent(id: string | null | undefined): Promise<void> {
   if (!id) return;
-  await googleRequest(`/events/${encodeURIComponent(id)}`, { method: "DELETE" });
+  try {
+    await googleRequest(`/events/${encodeURIComponent(id)}`, { method: "DELETE" });
+  } catch (error) {
+    const status = (error as { status?: number }).status;
+    if (status !== 404 && status !== 410) throw error;
+  }
 }
 
 async function ensureActive(supabase: SupabaseClient<Database>) {
