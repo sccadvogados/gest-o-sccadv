@@ -52,7 +52,7 @@ export function ContractForm({
   const [successFee, setSuccessFee] = useState("0");
             const [object, setObject] = useState(initialObject ?? "");
   
-  const [gratuidade, setGratuidade] = useState(initialGratuidade ?? true);
+    const [gratuidade, setGratuidade] = useState(initialGratuidade ?? (personType === "PF"));
   const [preview, setPreview] = useState<PreviewInstallment[]>([]);
   const queryClient = useQueryClient();
 
