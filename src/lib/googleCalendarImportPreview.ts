@@ -83,7 +83,7 @@ export function buildGoogleImportPreview(events: GoogleCalendarItem[], clients: 
       const key = `${row.processo}|${row.titulo}`;
       const current = grouped.get(key);
       if (current) {
-                        current.prazoFatal ||= row.prazoFatal;
+                                current.prazo ||= row.prazo;
         current.jaImportado ||= row.jaImportado;
         current.aviso = [current.aviso, row.aviso].filter(Boolean).join("; ");
         continue;
