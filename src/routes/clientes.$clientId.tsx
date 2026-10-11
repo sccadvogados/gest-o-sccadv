@@ -727,12 +727,6 @@ function EditContractDialog({
   );
 }
 
-type PreviewInstallment = {
-  number: number;
-  amount: number;
-  due_date: string;
-};
-
 function NewContractDialog({ clientId, personType }: { clientId: string; personType: "PF" | "PJ" }) {
   const [open, setOpen] = useState(false);
     const [description, setDescription] = useState("");
@@ -853,8 +847,9 @@ function NewContractDialog({ clientId, personType }: { clientId: string; personT
           <DialogTitle>Novo contrato</DialogTitle>
         </DialogHeader>
 
-        <ContractForm clientId={clientId} personType={personType} onSaved={() => setOpen(false)} />
+                <ContractForm clientId={clientId} personType={personType} onSaved={() => setOpen(false)} />
 
+        {false && <>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2 sm:col-span-2">
             <Label htmlFor="description">Descrição</Label>
@@ -1019,6 +1014,7 @@ function NewContractDialog({ clientId, personType }: { clientId: string; personT
             {create.isPending ? "Salvando…" : "Salvar e gerar parcelas"}
           </Button>
         </DialogFooter>
+        </>}
       </DialogContent>
     </Dialog>
   );
