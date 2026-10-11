@@ -344,8 +344,8 @@ function NewClientPage() {
       setSavedClientId(clientId);
       setStep(2);
     },
-    onError: (error) => {
-      toast.error(error instanceof Error ? error.message : "Erro ao salvar o cliente.");
+        onError: (error) => {
+      toast.error(error instanceof Error ? error.message : (error as { message?: string })?.message ?? "Erro ao salvar o cliente.");
     },
   });
 
