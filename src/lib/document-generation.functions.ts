@@ -166,15 +166,18 @@ export const gerarPacoteDocumentos = createServerFn({ method: "POST" })
       parte_contraria: data.parte_contraria,
     };
 
-    const { data: existingFiles, error: listError } = await database.storage.from("client-documents").list(contract.client_id, { limit: 1000 });
-    if (listError) throw new Error("Não foi possível verificar os nomes de arquivos existentes.");
-    const existingNames = new Set((existingFiles ?? []).map((file: { name: string }) => file.name));
+        const { data: existingDocuments, error: documentsError } = await database
+      .from("client_documents")
+      .select("file_name")
+      .eq("client_id", contract.client_id);
+    if (documentsError) throw new Error("Não foi possível verificar os nomes de arquivos existentes.");
+    const existingNames = new Set((existingDocuments ?? []).map((document: { file_name: string }) => document.file_name));
     const generated: Array<{ kind: string; file_name: string; file_path: string }> = [];
     const date = todayInSaoPaulo();
 
     for (const document of documentsToGenerate) {
       const fileName = versionedName(baseFileName(date, document.number, client.name, data.parte_contraria), existingNames);
-      const filePath = `${contract.client_id}/${fileName}`;
+      const filePath = `${contract.client_id}/gerados/${data.contrato_id}-${document.kind}-${Date.now()}.docx`;
       const content = await renderTemplate(database, document.template, dataWithApprovedReview);
       const { error: uploadError } = await database.storage.from("client-documents").upload(filePath, new Blob([content], { type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" }), { upsert: false, contentType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
       if (uploadError) throw new Error(`Não foi possível salvar ${fileName}.`);
