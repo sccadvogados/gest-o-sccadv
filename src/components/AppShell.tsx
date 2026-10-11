@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 const logoHorizontal = "/__l5e/assets-v1/195a2125-7946-439b-bd3f-5ddac237f27f/scc-logo-horizontal.png";
 
 const NAV = [
+    { to: "/inicio", label: "Início", icon: House },
   { to: "/", label: "Clientes", icon: Users },
     { to: "/agenda", label: "Agenda", icon: CalendarDays },
     { to: "/financeiro", label: "Financeiro", icon: Wallet },
