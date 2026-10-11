@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CalendarDays, Check, ChevronDown, Plus, Search, Trash2, X } from "lucide-react";
+import { CalendarDays, Check, ChevronDown, CloudOff, Plus, Search, Trash2, X } from "lucide-react";
 
 import { GoogleCalendarImportDialog } from "@/components/GoogleCalendarImportDialog";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -71,7 +71,8 @@ type AgendaEvent = {
   contrato_id: string | null;
   responsavel: string | null;
     status: EventStatus;
-  dia_inteiro: boolean | null;
+    dia_inteiro: boolean | null;
+  google_event_id: string | null;
 };
 
 type Client = { id: string; name: string };
@@ -426,37 +427,66 @@ export function AgendaScreen() {
       if (form.id) {
                 const { error } = await officeDatabase(supabase).from("eventos").update(payload).eq("id", form.id);
         if (error) throw error;
-                await syncUpdateEvent({
-          data: {
-            id: form.id,
-            event: {
-              ...payload,
+                        try {
+          await syncUpdateEvent({
+            data: {
               id: form.id,
-              cliente_nome: clients.find((client) => client.id === form.cliente_id)?.name ?? null,
+              event: {
+                ...payload,
+                id: form.id,
+                cliente_nome: clients.find((client) => client.id === form.cliente_id)?.name ?? null,
+              },
             },
-          },
-        });
-        return;
+          });
+        } catch {
+          return { googleFailed: true };
+        }
+        return { googleFailed: false };
       }
             const { data, error } = await officeDatabase(supabase).from("eventos").insert(payload).select("id").single();
       if (error) throw error;
-            await syncCreateEvent({
-        data: {
-          ...data,
-          ...payload,
-          id: data.id,
-          cliente_nome: clients.find((client) => client.id === form.cliente_id)?.name ?? null,
-        },
-      });
+                        try {
+              await syncCreateEvent({
+          data: {
+            ...data,
+            ...payload,
+            id: data.id,
+            cliente_nome: clients.find((client) => client.id === form.cliente_id)?.name ?? null,
+          },
+        });
+            } catch {
+              return { googleFailed: true };
+            }
+      return { googleFailed: false };
     },
 
-    onSuccess: () => {
+        onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: ["agenda-events"] });
       setForm(emptyForm);
       setOpen(false);
-      toast.success("Evento criado na agenda.");
+      if (result?.googleFailed) {
+        toast.error("Evento salvo, mas não foi possível enviar ao Google Agenda.");
+      } else {
+        toast.success(form.id ? "Evento atualizado." : "Evento criado.");
+      }
     },
-    onError: () => toast.error("Não foi possível criar o evento."),
+    onError: () => toast.error("Não foi possível salvar o evento."),
+  });
+
+    const retrySync = useMutation({
+    mutationFn: async (event: AgendaEvent) => {
+      await syncCreateEvent({
+        data: {
+          ...event,
+          cliente_nome: clients.find((client) => client.id === event.cliente_id)?.name ?? null,
+        },
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["agenda-events"] });
+      toast.success("Evento enviado ao Google Agenda.");
+    },
+    onError: () => toast.error("Não foi possível enviar ao Google Agenda."),
   });
 
   const markDone = useMutation({
@@ -544,7 +574,7 @@ export function AgendaScreen() {
         </div>
 
         {view === "lista" ? <div className="panel mt-6 overflow-hidden"><Table><TableHeader><TableRow><TableHead>Tipo</TableHead><TableHead>Evento</TableHead><TableHead>Data</TableHead><TableHead>Responsável</TableHead><TableHead>Situação</TableHead><TableHead className="text-right">Ação</TableHead></TableRow></TableHeader><TableBody>
-          {isLoading ? <TableRow><TableCell colSpan={6} className="py-10 text-center text-muted-foreground">Carregando agenda…</TableCell></TableRow> : filteredEvents.length === 0 ? <TableRow><TableCell colSpan={6} className="py-16 text-center"><span className="mx-auto flex size-14 items-center justify-center rounded-full bg-[#F1E8DD] text-[#0F2340]"><CalendarDays className="size-7" /></span><p className="mt-4 font-semibold text-[#0F2340]">Nenhum compromisso por aqui</p><p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">Cadastre seu primeiro evento para acompanhar prazos e reuniões.</p><Button className="mt-5" variant="outline" onClick={() => openNewEvent()}><Plus className="size-4" />Cadastrar primeiro evento</Button></TableCell></TableRow> : filteredEvents.map((event) => <TableRow key={event.id}><TableCell><Badge style={{ backgroundColor: colors[event.tipo], color: typeTextColor(event.tipo) }}>{labels[event.tipo]}</Badge></TableCell><TableCell><button type="button" className="font-medium text-left hover:underline" onClick={() => openEditEvent(event)}>{event.titulo}</button><div className="text-xs text-muted-foreground">{clientNames.get(event.cliente_id ?? "") ?? "Sem cliente vinculado"}</div></TableCell><TableCell className="whitespace-nowrap text-sm">{formatDate(event.data_inicio)}<div className="text-xs text-muted-foreground">{new Intl.DateTimeFormat("pt-BR", { timeZone: APP_TIME_ZONE, hour: "2-digit", minute: "2-digit" }).format(new Date(event.data_inicio))}</div></TableCell><TableCell className="text-sm text-muted-foreground">{event.responsavel || "—"}</TableCell><TableCell>{isOverdue(event) ? <Badge variant="destructive">VENCIDO</Badge> : <Badge variant="secondary">{event.status === "cumprido" ? "Cumprido" : event.status === "cancelado" ? "Cancelado" : "Pendente"}</Badge>}</TableCell><TableCell className="text-right"><div className="flex justify-end gap-2">{event.status !== "cumprido" && event.status !== "cancelado" ? <Button size="sm" variant="outline" onClick={() => markDone.mutate(event.id)} disabled={markDone.isPending}><Check className="size-4" />Cumprido</Button> : <span className="text-xs text-muted-foreground">Concluído</span>}<Button size="sm" variant="outline" onClick={() => { if (window.confirm("Excluir este evento?")) deleteEvent.mutate(event.id); }} disabled={deleteEvent.isPending} aria-label="Excluir evento"><Trash2 className="size-4" /></Button></div></TableCell></TableRow>)}
+          {isLoading ? <TableRow><TableCell colSpan={6} className="py-10 text-center text-muted-foreground">Carregando agenda…</TableCell></TableRow> : filteredEvents.length === 0 ? <TableRow><TableCell colSpan={6} className="py-16 text-center"><span className="mx-auto flex size-14 items-center justify-center rounded-full bg-[#F1E8DD] text-[#0F2340]"><CalendarDays className="size-7" /></span><p className="mt-4 font-semibold text-[#0F2340]">Nenhum compromisso por aqui</p><p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">Cadastre seu primeiro evento para acompanhar prazos e reuniões.</p><Button className="mt-5" variant="outline" onClick={() => openNewEvent()}><Plus className="size-4" />Cadastrar primeiro evento</Button></TableCell></TableRow> : filteredEvents.map((event) => <TableRow key={event.id}><TableCell><Badge style={{ backgroundColor: colors[event.tipo], color: typeTextColor(event.tipo) }}>{labels[event.tipo]}</Badge></TableCell><TableCell><div className="flex items-center gap-2"><button type="button" className="font-medium text-left hover:underline" onClick={() => openEditEvent(event)}>{event.titulo}</button>{!event.google_event_id ? <Tooltip><TooltipTrigger asChild><CloudOff className="size-4 text-muted-foreground" aria-label="Não sincronizado" /></TooltipTrigger><TooltipContent>Não sincronizado</TooltipContent></Tooltip> : null}</div><div className="text-xs text-muted-foreground">{clientNames.get(event.cliente_id ?? "") ?? "Sem cliente vinculado"}</div>{!event.google_event_id ? <Button type="button" variant="ghost" size="sm" className="mt-1 h-7 px-2 text-xs" onClick={() => retrySync.mutate(event)} disabled={retrySync.isPending}>Tentar novamente</Button> : null}</TableCell><TableCell className="whitespace-nowrap text-sm">{formatDate(event.data_inicio)}<div className="text-xs text-muted-foreground">{new Intl.DateTimeFormat("pt-BR", { timeZone: APP_TIME_ZONE, hour: "2-digit", minute: "2-digit" }).format(new Date(event.data_inicio))}</div></TableCell><TableCell className="text-sm text-muted-foreground">{event.responsavel || "—"}</TableCell><TableCell>{isOverdue(event) ? <Badge variant="destructive">VENCIDO</Badge> : <Badge variant="secondary">{event.status === "cumprido" ? "Cumprido" : event.status === "cancelado" ? "Cancelado" : "Pendente"}</Badge>}</TableCell><TableCell className="text-right"><div className="flex justify-end gap-2">{event.status !== "cumprido" && event.status !== "cancelado" ? <Button size="sm" variant="outline" onClick={() => markDone.mutate(event.id)} disabled={markDone.isPending}><Check className="size-4" />Cumprido</Button> : <span className="text-xs text-muted-foreground">Concluído</span>}<Button size="sm" variant="outline" onClick={() => { if (window.confirm("Excluir este evento?")) deleteEvent.mutate(event.id); }} disabled={deleteEvent.isPending} aria-label="Excluir evento"><Trash2 className="size-4" /></Button></div></TableCell></TableRow>)}
                 </TableBody></Table></div> : view === "mes" ? <MonthCalendar currentDate={calendarDate} onDateChange={setCalendarDate} onDayClick={openNewEvent} events={filteredEvents} onEventClick={openEditEvent} /> : view === "semana" ? <WeekCalendar currentDate={calendarDate} onDateChange={setCalendarDate} onSlotClick={openNewEvent} events={filteredEvents} onEventClick={openEditEvent} /> : null}
       </TooltipProvider>
     </AppShell>
