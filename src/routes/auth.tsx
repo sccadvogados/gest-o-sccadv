@@ -69,7 +69,7 @@ function AuthPage() {
         return;
       }
 
-      await navigate({ to: "/", replace: true });
+            await navigate({ to: "/inicio", replace: true });
     }
 
     void verifyAccountAccess();
