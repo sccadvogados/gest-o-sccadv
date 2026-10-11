@@ -268,7 +268,7 @@ export function EditClientDialog({
                     </Select>
                   </div>
                   <div className="space-y-2"><Label htmlFor="edit-profession">Profissão</Label><Input id="edit-profession" value={form.profession} onChange={(event) => set("profession", event.target.value)} /></div>
-                  <div className="space-y-2"><Label htmlFor="edit-rg">RG (número)</Label><Input id="edit-rg" value={form.rg_number} onChange={(event) => set("rg_number", event.target.value)} /></div>
+                  <div className="space-y-2"><Label htmlFor="edit-rg">RG</Label><Input id="edit-rg" value={form.rg_number} onChange={(event) => set("rg_number", event.target.value)} /></div>
                   <div className="space-y-2"><Label htmlFor="edit-rg-issuer">Órgão expedidor / UF</Label><Input id="edit-rg-issuer" value={form.rg_issuer} onChange={(event) => set("rg_issuer", event.target.value)} /></div>
                 </>
               )}
