@@ -439,13 +439,20 @@ function NewClientPage() {
             {ATTACHMENTS.map(({ kind, label, multiple }) => (
               <div key={kind} className="space-y-2">
                 <Label htmlFor={`file-${kind}`}>{label}</Label>
-                <Input
+                                <input
                   id={`file-${kind}`}
                   type="file"
+                  className="sr-only"
                   accept={kind === "outros" ? undefined : "image/jpeg,image/png,image/webp,application/pdf"}
                   multiple={Boolean(multiple)}
                   onChange={(event) => handleAttachment(kind, Array.from(event.target.files ?? []))}
                 />
+                <label
+                  htmlFor={`file-${kind}`}
+                  className="flex h-10 w-full cursor-pointer items-center justify-center rounded-md border border-input bg-background px-3 text-sm font-medium text-[#0F2340] transition-colors hover:bg-secondary"
+                >
+                  Clique aqui
+                </label>
                 {extracting[kind] ? (
                   <p className="flex items-center gap-2 text-xs text-muted-foreground"><LoaderCircle className="size-3.5 animate-spin" />Identificando dados…</p>
                 ) : extractedKinds.includes(kind) ? (
