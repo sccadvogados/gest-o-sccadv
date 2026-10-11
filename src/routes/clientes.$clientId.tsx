@@ -6,6 +6,7 @@ import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
 import { EditClientDialog } from "@/components/EditClientDialog";
+import { TIPO_CORES } from "@/lib/calendarSync";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -149,6 +150,19 @@ function ClientDetailPage() {
         .order("created_at");
       if (error) throw error;
       return data;
+    },
+  });
+
+    const { data: clientEvents } = useQuery({
+    queryKey: ["client-events", clientId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("eventos")
+        .select("id, tipo, titulo, data_inicio, data_fim, status, dia_inteiro")
+        .eq("cliente_id", clientId)
+        .order("data_inicio");
+      if (error) throw error;
+      return data ?? [];
     },
   });
 
@@ -392,6 +406,52 @@ function ClientDetailPage() {
             </Table>
           </div>
         ))}
+            </section>
+
+      <section className="mt-8">
+        <h2 className="text-xl font-semibold text-[#0F2340]">Prazos e reuniões</h2>
+        <div className="panel mt-3 overflow-hidden rounded-xl border border-[#E6D6C4] border-t-[3px] border-t-[#D4A782] bg-white shadow-panel">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Tipo</TableHead>
+                <TableHead>Evento</TableHead>
+                <TableHead>Data</TableHead>
+                <TableHead>Situação</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {(clientEvents ?? []).length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={4} className="py-8 text-center text-muted-foreground">
+                    Nenhum evento cadastrado para este cliente.
+                  </TableCell>
+                </TableRow>
+              )}
+              {(clientEvents ?? []).map((event) => {
+                const timed = !event.dia_inteiro && Boolean(event.data_fim);
+                const typeColor = TIPO_CORES[event.tipo as keyof typeof TIPO_CORES];
+                return (
+                  <TableRow key={event.id}>
+                    <TableCell>
+                      <Badge style={{ backgroundColor: typeColor?.hex, color: event.tipo === "protocolo" ? "#0F2340" : "white" }}>
+                        {event.tipo === "reuniao" ? "Reunião" : event.tipo === "audiencia" ? "Audiência" : event.tipo === "julgamento" ? "Julgamento" : event.tipo === "acompanhamento" ? "Acompanhamento" : event.tipo === "protocolo" ? "Protocolo" : event.tipo === "compromisso" ? "Compromisso" : "Prazo"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="font-medium">{event.titulo}</TableCell>
+                    <TableCell className="whitespace-nowrap text-sm">
+                      {formatDate(event.data_inicio)}
+                      {timed ? ` · ${new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Sao_Paulo", hour: "2-digit", minute: "2-digit" }).format(new Date(event.data_inicio))}–${new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Sao_Paulo", hour: "2-digit", minute: "2-digit" }).format(new Date(event.data_fim!))}` : null}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="secondary">{event.status === "cumprido" ? "Cumprido" : event.status === "cancelado" ? "Cancelado" : "Pendente"}</Badge>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
       </section>
     </AppShell>
   );
