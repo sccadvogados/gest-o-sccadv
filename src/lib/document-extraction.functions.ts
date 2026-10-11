@@ -44,10 +44,12 @@ export const extractClientDocument = createServerFn({ method: "POST" })
       throw new Error("A leitura automática ainda não está disponível. Preencha os dados manualmente.");
     }
 
-    const focus =
+        const focus =
       data.kind === "identificacao"
         ? "nome completo, nacionalidade, estado civil, profissão, RG, órgão expedidor/UF e CPF"
-        : "CEP, logradouro, número, complemento, bairro, cidade e UF";
+        : data.kind === "contrato_social"
+          ? "razão social, CNPJ, endereço da sede com CEP e representantes, com nome, nacionalidade, estado civil, profissão, CPF e qualidade (sócio ou representante legal)"
+          : "CEP, logradouro, número, complemento, bairro, cidade e UF";
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
