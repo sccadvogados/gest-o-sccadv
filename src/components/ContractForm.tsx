@@ -128,8 +128,8 @@ export function ContractForm({ clientId, personType, onSaved }: ContractFormProp
             toast.success(modality === "exito" ? "Contrato cadastrado." : "Contrato cadastrado e parcelas geradas.");
       onSaved(contractId);
     },
-    onError: (error) =>
-      toast.error(error instanceof Error ? error.message : "Erro ao salvar o contrato."),
+        onError: (error) =>
+      toast.error(error instanceof Error ? error.message : (error as { message?: string })?.message ?? "Erro ao salvar o contrato."),
   });
 
   return (
