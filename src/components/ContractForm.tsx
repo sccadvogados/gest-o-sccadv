@@ -30,9 +30,19 @@ type ContractFormProps = {
   clientId: string;
   personType: "PF" | "PJ";
   onSaved: (contractId: string) => void;
+  initialObject?: string;
+  initialGratuidade?: boolean;
+  hideObject?: boolean;
 };
 
-export function ContractForm({ clientId, personType, onSaved }: ContractFormProps) {
+export function ContractForm({
+  clientId,
+  personType,
+  onSaved,
+  initialObject,
+  initialGratuidade,
+  hideObject = false,
+}: ContractFormProps) {
   
   const [modality, setModality] = useState<ContractModality>("parcelado");
   
