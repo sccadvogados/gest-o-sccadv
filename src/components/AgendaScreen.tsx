@@ -245,6 +245,30 @@ function DateField({ value, onChange }: { value: string; onChange: (value: strin
   return <Input className="w-[160px] bg-white" type="date" value={value.slice(0, 10)} onChange={(event) => onChange(event.target.value)} />;
 }
 
+function MonthCalendar({ currentDate, onDateChange, onDayClick }: { currentDate: Date; onDateChange: (date: Date) => void; onDayClick: (date: string) => void }) {
+  const days = calendarDays("mes", currentDate);
+  const monthLabel = new Intl.DateTimeFormat("pt-BR", { month: "long", year: "numeric" }).format(currentDate);
+  const weekDays = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+  const goToMonth = (amount: number) => {
+    const next = new Date(currentDate.getFullYear(), currentDate.getMonth() + amount, 1);
+    onDateChange(next);
+  };
+
+  return <div className="panel mt-6 overflow-hidden">
+    <div className="flex flex-wrap items-center justify-between gap-3 border-b p-4">
+      <div className="flex items-center gap-2"><Button type="button" variant="outline" size="sm" onClick={() => goToMonth(-1)}>&lt;</Button><Button type="button" variant="outline" size="sm" onClick={() => goToMonth(1)}>&gt;</Button><Button type="button" variant="outline" size="sm" onClick={() => onDateChange(new Date())}>Hoje</Button></div>
+      <h2 className="text-lg font-semibold capitalize text-[#0F2340]">{monthLabel}</h2>
+      <div className="w-[156px]" />
+    </div>
+    <div className="grid grid-cols-7 border-b bg-muted/30">{weekDays.map((day) => <div key={day} className="p-3 text-center text-xs font-semibold text-muted-foreground">{day}</div>)}</div>
+    <div className="grid grid-cols-7">{days.map((day) => {
+      const inMonth = day.getMonth() === currentDate.getMonth();
+      const key = dateKey(day);
+      return <button key={key} type="button" onClick={() => onDayClick(key)} className={`min-h-28 border-b border-r p-2 text-left align-top transition-colors hover:bg-accent/40 ${inMonth ? "bg-card" : "bg-muted/20 text-muted-foreground"}`}><span className={`inline-flex size-7 items-center justify-center rounded-full text-sm ${key === localDateKey(new Date().toISOString()) ? "bg-[#0F2340] font-semibold text-white" : ""}`}>{day.getDate()}</span></button>;
+    })}</div>
+  </div>;
+}
+
 export function AgendaScreen() {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
@@ -432,7 +456,8 @@ export function AgendaScreen() {
           <div className="flex items-center gap-3">
             <div className="flex rounded-md border bg-card p-1">
               <Button size="sm" variant="secondary">Lista</Button>
-              {(["Mês", "Semana"] as const).map((label) => <Tooltip key={label}><TooltipTrigger asChild><span><Button size="sm" variant="ghost" disabled>{label}</Button></span></TooltipTrigger><TooltipContent>em breve</TooltipContent></Tooltip>)}
+                            <Button size="sm" variant={view === "mes" ? "secondary" : "ghost"} onClick={() => setView("mes")}>Mês</Button>
+              <Tooltip><TooltipTrigger asChild><span><Button size="sm" variant="ghost" disabled>Semana</Button></span></TooltipTrigger><TooltipContent>em breve</TooltipContent></Tooltip>
                         </div>
             <GoogleCalendarImportDialog onImported={() => queryClient.invalidateQueries({ queryKey: ["agenda-events"] })} />
             <Dialog open={open} onOpenChange={setOpen}><DialogTrigger asChild><Button><Plus className="size-4" /> Novo evento</Button></DialogTrigger>
@@ -466,7 +491,7 @@ export function AgendaScreen() {
 
         <div className="panel mt-6 overflow-hidden"><Table><TableHeader><TableRow><TableHead>Tipo</TableHead><TableHead>Evento</TableHead><TableHead>Data</TableHead><TableHead>Responsável</TableHead><TableHead>Situação</TableHead><TableHead className="text-right">Ação</TableHead></TableRow></TableHeader><TableBody>
           {isLoading ? <TableRow><TableCell colSpan={6} className="py-10 text-center text-muted-foreground">Carregando agenda…</TableCell></TableRow> : filteredEvents.length === 0 ? <TableRow><TableCell colSpan={6} className="py-16 text-center"><span className="mx-auto flex size-14 items-center justify-center rounded-full bg-[#F1E8DD] text-[#0F2340]"><CalendarDays className="size-7" /></span><p className="mt-4 font-semibold text-[#0F2340]">Nenhum compromisso por aqui</p><p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">Cadastre seu primeiro evento para acompanhar prazos e reuniões.</p><Button className="mt-5" variant="outline" onClick={() => openNewEvent()}><Plus className="size-4" />Cadastrar primeiro evento</Button></TableCell></TableRow> : filteredEvents.map((event) => <TableRow key={event.id}><TableCell><Badge style={{ backgroundColor: colors[event.tipo], color: typeTextColor(event.tipo) }}>{labels[event.tipo]}</Badge></TableCell><TableCell><button type="button" className="font-medium text-left hover:underline" onClick={() => openEditEvent(event)}>{event.titulo}</button><div className="text-xs text-muted-foreground">{clientNames.get(event.cliente_id ?? "") ?? "Sem cliente vinculado"}</div></TableCell><TableCell className="whitespace-nowrap text-sm">{formatDate(event.data_inicio)}<div className="text-xs text-muted-foreground">{new Intl.DateTimeFormat("pt-BR", { timeZone: APP_TIME_ZONE, hour: "2-digit", minute: "2-digit" }).format(new Date(event.data_inicio))}</div></TableCell><TableCell className="text-sm text-muted-foreground">{event.responsavel || "—"}</TableCell><TableCell>{isOverdue(event) ? <Badge variant="destructive">VENCIDO</Badge> : <Badge variant="secondary">{event.status === "cumprido" ? "Cumprido" : event.status === "cancelado" ? "Cancelado" : "Pendente"}</Badge>}</TableCell><TableCell className="text-right"><div className="flex justify-end gap-2">{event.status !== "cumprido" && event.status !== "cancelado" ? <Button size="sm" variant="outline" onClick={() => markDone.mutate(event.id)} disabled={markDone.isPending}><Check className="size-4" />Cumprido</Button> : <span className="text-xs text-muted-foreground">Concluído</span>}<Button size="sm" variant="outline" onClick={() => { if (window.confirm("Excluir este evento?")) deleteEvent.mutate(event.id); }} disabled={deleteEvent.isPending} aria-label="Excluir evento"><Trash2 className="size-4" /></Button></div></TableCell></TableRow>)}
-        </TableBody></Table></div>
+                </TableBody></Table></div> : null}
       </TooltipProvider>
     </AppShell>
   );
