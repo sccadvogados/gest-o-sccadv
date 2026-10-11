@@ -561,7 +561,29 @@ function ContractActions({
   });
 
   return (
-    <>
+        <>
+      <Dialog open={reviewOpen} onOpenChange={setReviewOpen}>
+        <DialogTrigger asChild>
+          <Button variant="ghost" size="icon" aria-label="Gerar documentos" title="Gerar documentos">
+            <FileText className="size-4" />
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Revisão e geração dos documentos</DialogTitle>
+          </DialogHeader>
+          {reviewOpen ? (
+            <ContractReview
+              contractId={contract.id}
+              personType={personType}
+              onFinish={() => {
+                setReviewOpen(false);
+                queryClient.invalidateQueries({ queryKey: ["client-documents", clientId] });
+              }}
+            />
+          ) : null}
+        </DialogContent>
+      </Dialog>
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
         <DialogTrigger asChild>
           <Button variant="ghost" size="icon" aria-label="Editar contrato">
