@@ -160,8 +160,8 @@ export function ContractForm({ clientId, personType, onSaved }: ContractFormProp
         </div>
 
         {modality !== "exito" ? <div className="space-y-2">
-          <Label htmlFor="total">{modality === "mensal" ? "Valor mensal (R$)" : "Valor total (R$)"}</Label>
-          <Input id="total" inputMode="decimal" value={totalValue} onChange={(e) => setTotalValue(e.target.value)} />
+                    <Label htmlFor="total">{modality === "mensal" ? "Valor mensal" : "Valor total"}</Label>
+          <CurrencyInput id="total" value={totalValue} onChange={setTotalValue} />
         </div> : null}
 
         {modality !== "exito" ? <div className="space-y-2">
