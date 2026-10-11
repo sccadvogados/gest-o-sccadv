@@ -513,7 +513,7 @@ function NewClientPage() {
                     }],
                   }))}
                 >
-                  + Adicionar representante
+                  + Adicionar Representante
                 </Button>
               </div>
               {form.representatives.map((representative, index) => (
