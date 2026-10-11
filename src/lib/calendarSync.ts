@@ -92,7 +92,7 @@ function description(event: CalendarEvent): string | undefined {
 function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
   const date = dateOnly(event.data_inicio);
 
-  if (event.tipo === "reunião") {
+    if (event.tipo === "reunião" || event.tipo === "audiência" || event.tipo === "julgamento") {
     if (!event.data_fim) throw new Error("A reunião precisa ter horário de término.");
     const meetingTitle = event.titulo.replace(/^\[REUNIÃO\]\s*/, "");
     return [{
