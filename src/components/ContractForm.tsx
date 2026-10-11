@@ -213,7 +213,7 @@ export function ContractForm({ clientId, personType, onSaved }: ContractFormProp
                 <p className="pb-2 text-sm font-medium">{row.number}</p>
                 <div className="space-y-1">
                   <Label htmlFor={`preview-amount-${row.number}`}>Valor</Label>
-                  <Input id={`preview-amount-${row.number}`} inputMode="decimal" value={String(row.amount)} onChange={(event) => updatePreview(index, "amount", event.target.value)} />
+                                    <CurrencyInput id={`preview-amount-${row.number}`} value={row.amount} onChange={(value) => updatePreview(index, "amount", value)} />
                 </div>
                 <div className="space-y-1">
                   <Label htmlFor={`preview-due-${row.number}`}>Vencimento</Label>
