@@ -40,6 +40,17 @@ type GoogleEventIds = {
 
 const GOOGLE_CALENDAR_URL = "https://connector-gateway.lovable.dev/google_calendar/calendar/v3/calendars";
 
+export const TIPO_CORES = {
+  prazo: { colorId: "7", hex: "#039BE5" },
+  protocolo: { colorId: "5", hex: "#F6BF26" },
+  reunião: { colorId: "9", hex: "#3F51B5" },
+  audiência: { colorId: "11", hex: "#D50000" },
+  julgamento: { colorId: "3", hex: "#8E24AA" },
+  acompanhamento: { colorId: "2", hex: "#33B679" },
+  compromisso: { colorId: "8", hex: "#616161" },
+} as const;
+
+
 function getGoogleConfig() {
   const lovableApiKey = process.env["LOVABLE_API_KEY"];
   const calendarApiKey = process.env["GOOGLE_CALENDAR_API_KEY"];
