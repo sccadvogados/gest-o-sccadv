@@ -26,7 +26,7 @@ export type GoogleImportPreviewRow = {
   selecionado: boolean;
 };
 
-const processPattern = /CNJ\s+(\d{7}-\d{2}\.\d{4}\.\d\.\d{2}\.\d{4})/i;
+const processPattern = /(\d{7}-\d{2}\.\d{4}\.\d\.\d{2}\.\d{4})/;
 
 function normalize(value: string): string {
   return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
@@ -38,7 +38,7 @@ function dateOf(event: GoogleCalendarItem): string {
 
 function parseEvent(event: GoogleCalendarItem, clients: Client[], existingIds: Set<string>): GoogleImportPreviewRow {
   const rawTitle = event.summary?.replace(/^\[SCCAdv\]\s*/, "") ?? "";
-  const protocol = /\[PROTOCOLO\]/i.test(rawTitle);
+    const protocol = /\[PROTOCOLO\]/i.test(rawTitle) || event.colorId === "7";
   const parts = rawTitle.split(" - ").map((part) => part.trim()).filter(Boolean);
   const processIndex = parts.findIndex((part) => processPattern.test(part));
   const process = processIndex >= 0 ? (parts[processIndex]?.match(processPattern)?.[1] ?? "") : "";
@@ -46,11 +46,11 @@ function parseEvent(event: GoogleCalendarItem, clients: Client[], existingIds: S
   const parties = partiesIndex >= 0 ? (parts[partiesIndex] ?? "").split(" x ").map((part) => part.trim()) : [];
   const responsibleIndex = parts.findIndex((part) => /^(Dr\.|Dra\.)\s+/i.test(part));
   const responsible = responsibleIndex >= 0 ? (parts[responsibleIndex] ?? "").replace(/^(Dr\.|Dra\.)\s+/i, "") : "";
-  const title = parts.filter((part, index) => index !== processIndex && index !== partiesIndex && index !== responsibleIndex && !/^\[PROTOCOLO\]$/i.test(part)).join(" - ");
+    const title = `${protocol ? "[PROTOCOLO] " : ""}${parts.filter((part, index) => index !== processIndex && index !== partiesIndex && index !== responsibleIndex && !/^\[PROTOCOLO\]$/i.test(part)).join(" - ")}`.trim();
   const clientName = parties[0] ?? "";
   const client = clients.find((item) => normalize(item.name) === normalize(clientName));
     const imported = existingIds.has(event.id);
-  const kind = protocol ? "prazo" : event.colorId === "5" ? "compromisso" : "prazo";
+    const kind = protocol ? "prazo" : "compromisso";
 
   return {
             googleId: event.id,
@@ -73,28 +73,10 @@ function parseEvent(event: GoogleCalendarItem, clients: Client[], existingIds: S
 
 export function buildGoogleImportPreview(events: GoogleCalendarItem[], clients: Client[], existing: ExistingEvent[]): GoogleImportPreviewRow[] {
     const existingIds = new Set(existing.map((event) => event.google_event_id).filter(Boolean) as string[]);
-  const rows = events.map((event) => parseEvent(event, clients, existingIds));
-  const grouped = new Map<string, GoogleImportPreviewRow>();
+    const rows = events.map((event) => parseEvent(event, clients, existingIds));
 
-  for (const row of rows) {
-    if (row.tipo === "prazo") {
-      const key = `${row.processo}|${row.titulo}`;
-      const current = grouped.get(key);
-      if (current) {
-                                current.prazo ||= row.prazo;
-        current.jaImportado ||= row.jaImportado;
-        current.aviso = [current.aviso, row.aviso].filter(Boolean).join("; ");
-        continue;
-      }
-      grouped.set(key, { ...row });
-    } else {
-      grouped.set(`compromisso|${row.googleId}`, { ...row });
-    }
-  }
-
-  return [...grouped.values()].map((row) => ({
+  return rows.map((row) => ({
     ...row,
-                aviso: row.aviso,
     selecionado: !row.aviso && !row.jaImportado,
   }));
 }
