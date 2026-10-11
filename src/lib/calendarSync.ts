@@ -14,7 +14,8 @@ type CalendarEvent = {
   parte_contraria?: string | null;
   responsavel?: string | null;
   cliente_nome?: string | null;
-  data_inicio: string;
+    data_inicio: string;
+  data_fim?: string | null;
   
   local_link?: string | null;
 };
@@ -23,9 +24,10 @@ type GoogleEvent = {
   id: string;
   summary: string;
   description?: string | undefined;
+  location?: string | undefined;
   colorId: string;
-  start: { date: string };
-    end: { date: string };
+  start: { date?: string; dateTime?: string; timeZone?: string };
+    end: { date?: string; dateTime?: string; timeZone?: string };
   reminders?: {
     useDefault: boolean;
     overrides: Array<{ method: "popup"; minutes: number }>;
@@ -89,6 +91,25 @@ function description(event: CalendarEvent): string | undefined {
 
 function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
   const date = dateOnly(event.data_inicio);
+
+  if (event.tipo === "reunião") {
+    if (!event.data_fim) throw new Error("A reunião precisa ter horário de término.");
+    const meetingTitle = event.titulo.replace(/^\[REUNIÃO\]\s*/, "");
+    return [{
+      id: "",
+      summary: compactParts(["[SCCAdv]", "[REUNIÃO]", meetingTitle, event.numero_processo, parties(event), responsible(event)]),
+      colorId: "",
+      start: { dateTime: event.data_inicio, timeZone: "America/Sao_Paulo" },
+      end: { dateTime: event.data_fim, timeZone: "America/Sao_Paulo" },
+      description: description(event),
+      location: event.local_link?.trim() || undefined,
+      reminders: {
+        useDefault: false,
+        overrides: [{ method: "popup", minutes: 60 }],
+      },
+    }];
+  }
+
   const common = {
     start: { date },
     end: { date: nextDate(date) },
@@ -198,8 +219,9 @@ async function ensureActive(supabase: SupabaseClient<Database>) {
 const calendarEventSchema = z.object({
   id: z.string().uuid(),
   tipo: z.string(),
-  titulo: z.string(),
+    titulo: z.string(),
   data_inicio: z.string(),
+  data_fim: z.string().nullable().optional(),
   descricao: z.string().nullable().optional(),
   numero_processo: z.string().nullable().optional(),
   parte_contraria: z.string().nullable().optional(),
@@ -211,7 +233,8 @@ const calendarEventSchema = z.object({
 
 async function syncCreatedEvent(supabase: SupabaseClient<Database>, data: z.infer<typeof calendarEventSchema>) {
   const event: CalendarEvent = {
-    id: data.id, tipo: data.tipo, titulo: data.titulo, data_inicio: data.data_inicio,
+        id: data.id, tipo: data.tipo, titulo: data.titulo, data_inicio: data.data_inicio,
+    data_fim: data.data_fim ?? null,
     descricao: data.descricao ?? null, numero_processo: data.numero_processo ?? null,
     parte_contraria: data.parte_contraria ?? null, responsavel: data.responsavel ?? null,
         cliente_nome: data.cliente_nome ?? null, local_link: data.local_link ?? null,
