@@ -75,7 +75,7 @@ export const extractClientDocument = createServerFn({ method: "POST" })
           {
             role: "system",
             content:
-              "Você extrai dados de documentos brasileiros para conferência humana. Não invente dados. Retorne somente JSON válido com estas chaves: name, nationality, marital_status, profession, rg_number, rg_issuer, cpf_cnpj, cep, street, number, complement, district, city, state. Use string vazia quando o dado não estiver legível ou não constar. Preserve nomes próprios e normalize UF em duas letras.",
+                            "Você extrai dados de documentos brasileiros para conferência humana. Não invente dados. Retorne somente JSON válido com estas chaves: name, nationality, marital_status, profession, rg_number, rg_issuer, cpf_cnpj, cep, street, number, complement, district, city, state, representatives. Cada representante deve conter name, nationality, marital_status, profession, cpf e quality, usando quality como sócio ou representante legal. Use string vazia quando o dado não estiver legível ou não constar. Preserve nomes próprios e normalize UF em duas letras.",
           },
           {
             role: "user",
