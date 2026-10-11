@@ -109,7 +109,7 @@ function description(event: CalendarEvent): string | undefined {
 function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
   const date = dateOnly(event.data_inicio);
 
-    if (event.tipo === "reunião" || event.tipo === "audiência" || event.tipo === "julgamento") {
+        if (event.tipo === "reuniao" || event.tipo === "audiencia" || event.tipo === "julgamento") {
     if (!event.data_fim) throw new Error("A reunião precisa ter horário de término.");
                 const marker = event.tipo === "reuniao" ? "[REUNIÃO]" : event.tipo === "audiencia" ? "[AUDIÊNCIA]" : "[JULGAMENTO]";
     const meetingTitle = event.titulo.replace(/^\[(?:REUNIÃO|AUDIÊNCIA|JULGAMENTO)\]\s*/, "");
