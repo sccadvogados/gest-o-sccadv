@@ -127,8 +127,10 @@ async function googleRequest(path: string, init?: RequestInit): Promise<unknown>
     },
   });
 
-  if (!response.ok) {
-    throw new Error("Não foi possível sincronizar o evento com o Google Agenda.");
+    if (!response.ok) {
+    const error = new Error("Não foi possível sincronizar o evento com o Google Agenda.");
+    Object.assign(error, { status: response.status });
+    throw error;
   }
   return response.status === 204 ? null : response.json();
 }
