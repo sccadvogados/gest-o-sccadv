@@ -157,6 +157,25 @@ async function removeGoogleEvent(id: string | null | undefined): Promise<void> {
   }
 }
 
+async function updateGoogleEvent(id: string, event: GoogleEvent): Promise<string> {
+  const { id: omittedId, colorId, ...rest } = event;
+  const payload = { ...rest, ...(colorId ? { colorId } : {}) };
+  if (!payload.description) delete payload.description;
+
+  try {
+    await googleRequest(`/events/${encodeURIComponent(id)}`, {
+      method: "PATCH",
+      body: JSON.stringify(payload),
+    });
+    return id;
+  } catch (error) {
+    const status = (error as { status?: number }).status;
+    if (status !== 404 && status !== 410) throw error;
+  }
+
+  return insertGoogleEvent(event);
+}
+
 async function ensureActive(supabase: SupabaseClient<Database>) {
   const { data, error } = await supabase.rpc("is_ativo");
   if (error || !data) throw new Error("Acesso não autorizado");
