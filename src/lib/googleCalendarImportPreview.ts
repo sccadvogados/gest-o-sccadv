@@ -38,7 +38,7 @@ function dateOf(event: GoogleCalendarItem): string {
 
 function parseEvent(event: GoogleCalendarItem, clients: Client[], existingIds: Set<string>): GoogleImportPreviewRow {
   const rawTitle = event.summary?.replace(/^\[SCCAdv\]\s*/, "") ?? "";
-  const protocol = /\[PROTOCOLO\]/i.test(rawTitle);
+    const protocol = /\[PROTOCOLO\]/i.test(rawTitle) || event.colorId === "7";
   const parts = rawTitle.split(" - ").map((part) => part.trim()).filter(Boolean);
   const processIndex = parts.findIndex((part) => processPattern.test(part));
   const process = processIndex >= 0 ? (parts[processIndex]?.match(processPattern)?.[1] ?? "") : "";
