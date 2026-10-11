@@ -52,10 +52,12 @@ function parseEvent(event: GoogleCalendarItem, clients: Client[], existingIds: S
     const imported = existingIds.has(event.id);
     const kind = protocol ? "prazo" : "compromisso";
 
-  return {
+    return {
             googleId: event.id,
     tipo: kind,
     titulo: title,
+    dataInicio: event.start?.dateTime ?? event.start?.date ?? "",
+    dataFim: event.end?.dateTime ?? event.end?.date ?? "",
     processo: process,
     cliente: clientName,
     clienteId: client?.id ?? null,
