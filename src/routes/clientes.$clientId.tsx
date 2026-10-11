@@ -625,14 +625,18 @@ function EditContractDialog({
 
   const update = useMutation({
     mutationFn: async () => {
-      const total = Number(totalValue.replace(",", "."));
+            const total = Number(totalValue.replace(",", "."));
       const installmentsCount = Math.max(1, Number(count));
       const fee = Number(successFee.replace(",", ".")) || 0;
-      if (!Number.isFinite(total) || total <= 0) throw new Error("Informe um valor total válido.");
-      if (!Number.isInteger(installmentsCount)) throw new Error("Informe um número inteiro de parcelas.");
-      if (!firstDue) throw new Error("Informe o primeiro vencimento.");
+      if (modality === "exito") {
+        if (fee <= 0) throw new Error("Informe um percentual de êxito válido.");
+      } else {
+        if (!Number.isFinite(total) || total <= 0) throw new Error("Informe um valor total válido.");
+        if (!Number.isInteger(installmentsCount)) throw new Error("Informe um número inteiro de parcelas.");
+        if (!firstDue) throw new Error("Informe o primeiro vencimento.");
+      }
 
-                  const contractUpdate = hasPaidInstallment
+                        const contractUpdate = hasPaidInstallment || modality === "exito"
         ? { description, category, modality, signature_date: signatureDate || null, payment_method: paymentMethod, success_fee_percent: fee, objeto: object || null, gratuidade }
         : {
             description,
@@ -651,7 +655,7 @@ function EditContractDialog({
       const { error } = await officeDatabase(supabase).from("contracts").update(contractUpdate).eq("id", contract.id);
       if (error) throw error;
 
-      if (hasPaidInstallment) return;
+            if (hasPaidInstallment || modality === "exito") return;
 
       const { error: deleteError } = await supabase.from("installments").delete().eq("contract_id", contract.id);
       if (deleteError) throw deleteError;
@@ -697,11 +701,13 @@ function EditContractDialog({
             <SelectContent>{CATEGORIES.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
           </Select>
         </div>
-        <div className="space-y-2"><Label htmlFor={`edit-contract-total-${contract.id}`}>Valor total (R$)</Label><Input id={`edit-contract-total-${contract.id}`} inputMode="decimal" value={totalValue} onChange={(e) => setTotalValue(e.target.value)} disabled={hasPaidInstallment} /></div>
-        <div className="space-y-2"><Label htmlFor={`edit-contract-count-${contract.id}`}>Número de parcelas</Label><Input id={`edit-contract-count-${contract.id}`} type="number" min={1} value={count} onChange={(e) => setCount(e.target.value)} disabled={hasPaidInstallment} /></div>
+                {modality !== "exito" ? <>
+          <div className="space-y-2"><Label htmlFor={`edit-contract-total-${contract.id}`}>Valor total (R$)</Label><Input id={`edit-contract-total-${contract.id}`} inputMode="decimal" value={totalValue} onChange={(e) => setTotalValue(e.target.value)} disabled={hasPaidInstallment} /></div>
+          <div className="space-y-2"><Label htmlFor={`edit-contract-count-${contract.id}`}>Número de parcelas</Label><Input id={`edit-contract-count-${contract.id}`} type="number" min={1} value={count} onChange={(e) => setCount(e.target.value)} disabled={hasPaidInstallment} /></div>
+        </> : null}
                 <div className="space-y-2"><Label>Modalidade</Label><Select value={modality} onValueChange={(value) => setModality(value as ContractModality)} disabled={hasPaidInstallment}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="parcelado">Pró-labore parcelado</SelectItem><SelectItem value="mensal">Pró-labore mensal</SelectItem><SelectItem value="exito">Somente êxito</SelectItem></SelectContent></Select></div>
         <div className="space-y-2"><Label htmlFor={`edit-contract-signature-${contract.id}`}>Data de assinatura</Label><Input id={`edit-contract-signature-${contract.id}`} type="date" value={signatureDate} onChange={(e) => setSignatureDate(e.target.value)} /></div>
-        <div className="space-y-2"><Label htmlFor={`edit-contract-due-${contract.id}`}>Primeiro vencimento</Label><Input id={`edit-contract-due-${contract.id}`} type="date" value={firstDue} onChange={(e) => setFirstDue(e.target.value)} disabled={hasPaidInstallment} /></div>
+                {modality !== "exito" ? <div className="space-y-2"><Label htmlFor={`edit-contract-due-${contract.id}`}>Primeiro vencimento</Label><Input id={`edit-contract-due-${contract.id}`} type="date" value={firstDue} onChange={(e) => setFirstDue(e.target.value)} disabled={hasPaidInstallment} /></div> : null}
         <div className="space-y-2"><Label>Forma de pagamento</Label><Select value={paymentMethod} onValueChange={setPaymentMethod}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{PAYMENT_METHODS.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent></Select></div>
                 <div className="space-y-2 sm:col-span-2">
           <Label htmlFor={`edit-contract-object-${contract.id}`}>Objeto do contrato</Label>
@@ -896,7 +902,7 @@ function NewContractDialog({ clientId, personType }: { clientId: string; personT
             </Select>
           </div>
 
-          <div className="space-y-2">
+                    {modality !== "exito" ? <div className="space-y-2">
                         <Label htmlFor="total">{modality === "mensal" ? "Valor mensal (R$)" : "Valor total (R$)"}</Label>
             <Input
               id="total"
@@ -915,17 +921,17 @@ function NewContractDialog({ clientId, personType }: { clientId: string; personT
               value={count}
               onChange={(e) => setCount(e.target.value)}
             />
-          </div>
+                    </div> : null}
 
-          <div className="space-y-2">
+          {modality !== "exito" ? <div className="space-y-2">
             <Label htmlFor="firstDue">Primeiro vencimento</Label>
             <Input
               id="firstDue"
               type="date"
               value={firstDue}
               onChange={(e) => setFirstDue(e.target.value)}
-            />
-          </div>
+                        />
+          </div> : null}
 
           <div className="space-y-2">
             <Label>Forma de pagamento</Label>

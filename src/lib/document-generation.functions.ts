@@ -70,7 +70,9 @@ function missingData(client: any, contract: any, representatives: any[], install
   }
 
   if (!required(contract.objeto)) missing.push("objeto do contrato");
-  if (!required(contract.modality) || !required(contract.first_due_date) || installments.length === 0) {
+    if (contract.modality === "exito") {
+    if (!(Number(contract.success_fee_percent) > 0)) missing.push("percentual de êxito");
+  } else if (!required(contract.modality) || !required(contract.first_due_date) || installments.length === 0) {
     missing.push("condições de pagamento");
   }
   return missing;
@@ -120,7 +122,7 @@ async function downloadTemplate(database: QueryClient, template: string): Promis
 async function renderTemplate(database: QueryClient, template: string, data: Record<string, unknown>): Promise<Uint8Array> {
   const arrayBuffer = await downloadTemplate(database, template);
   const zip = new PizZip(arrayBuffer);
-  const document = new Docxtemplater(zip, { paragraphLoop: true });
+    const document = new Docxtemplater(zip, { paragraphLoop: true, linebreaks: true, nullGetter: () => "" });
   document.render(data);
   return document.getZip().generate({ type: "uint8array" });
 }
