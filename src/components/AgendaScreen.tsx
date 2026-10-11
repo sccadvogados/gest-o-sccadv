@@ -557,8 +557,8 @@ export function AgendaScreen() {
                   <Field label="Descrição"><Textarea value={form.descricao} onChange={(event) => setForm((current) => ({ ...current, descricao: event.target.value }))} rows={3} /></Field>
                   <DialogFooter><Button type="submit" disabled={createEvent.isPending}>{createEvent.isPending ? "Salvando…" : "Salvar"}</Button></DialogFooter>
                 </form>
-              </DialogContent>
-            </Dialog>
+                            </DialogContent>
+            </EventFormDialog>
           </div>
         </div>
 
