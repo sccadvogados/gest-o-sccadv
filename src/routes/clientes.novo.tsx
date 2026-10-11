@@ -124,6 +124,10 @@ const EMPTY: Form = {
   notes: "",
 };
 
+function Pending({ value }: { value: string | null | undefined }) {
+  return !value?.trim() ? <span className="ml-0.5 text-destructive" aria-label="pendente">*</span> : null;
+}
+
 function NewClientPage() {
   const [form, setForm] = useState<Form>(EMPTY);
   const [files, setFiles] = useState<Record<string, File[]>>({});
@@ -552,8 +556,8 @@ function NewClientPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="name">
-                {form.person_type === "PJ" ? "Razão social" : "Nome completo"}
+                            <Label htmlFor="name">
+                {form.person_type === "PJ" ? "Razão social" : "Nome completo"} <Pending value={form.name} />
               </Label>
               <Input
                 id="name"
@@ -571,7 +575,7 @@ function NewClientPage() {
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="cpf_cnpj">CPF/CNPJ</Label>
+                            <Label htmlFor="cpf_cnpj">CPF/CNPJ <Pending value={form.cpf_cnpj} /></Label>
               <Input
                 id="cpf_cnpj"
                 value={form.cpf_cnpj}
@@ -580,7 +584,7 @@ function NewClientPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="nationality">Nacionalidade</Label>
+                            <Label htmlFor="nationality">Nacionalidade <Pending value={form.nationality} /></Label>
               <Input
                 id="nationality"
                 value={form.nationality}
@@ -591,7 +595,7 @@ function NewClientPage() {
             {form.person_type === "PF" && (
               <>
                 <div className="space-y-2">
-                  <Label>Estado civil</Label>
+                                    <Label>Estado civil <Pending value={form.marital_status} /></Label>
                   <Select
                     value={form.marital_status}
                     onValueChange={(v) => set("marital_status", v)}
@@ -610,7 +614,7 @@ function NewClientPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="profession">Profissão</Label>
+                                    <Label htmlFor="profession">Profissão <Pending value={form.profession} /></Label>
                   <Input
                     id="profession"
                     value={form.profession}
@@ -619,7 +623,7 @@ function NewClientPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="rg_number">RG</Label>
+                                    <Label htmlFor="rg_number">RG <Pending value={form.rg_number} /></Label>
                   <Input
                     id="rg_number"
                     value={form.rg_number}
@@ -628,7 +632,7 @@ function NewClientPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="rg_issuer">Órgão expedidor / UF</Label>
+                                    <Label htmlFor="rg_issuer">Órgão expedidor / UF <Pending value={form.rg_issuer} /></Label>
                   <Input
                     id="rg_issuer"
                     placeholder="SSP/SP"
