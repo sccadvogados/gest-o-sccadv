@@ -143,8 +143,8 @@ function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
     const process = event.numero_processo?.trim();
     const party = parties(event);
     const doctor = responsible(event);
-            const isProtocol = event.titulo.startsWith("[PROTOCOLO]");
-    const title = compactParts(["[SCCAdv]", isProtocol ? "[PROTOCOLO]" : null, event.titulo.replace(/^\[PROTOCOLO\]\s*/, ""), process, party, doctor]);
+            const isProtocol = event.tipo === "protocolo";
+    const title = compactParts(["[SCCAdv]", isProtocol ? "[PROTOCOLO]" : null, isProtocol ? event.titulo.replace(/^\[PROTOCOLO\]\s*/, "") : event.titulo, process, party, doctor]);
     const date = dateOnly(event.data_inicio);
     return [{
       id: "",
