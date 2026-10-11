@@ -546,6 +546,7 @@ function ContractActions({
         </DialogTrigger>
         <EditContractDialog
           clientId={clientId}
+          clientType={contract.client_type ?? "PF"}
           contract={contract}
           onSaved={() => setEditOpen(false)}
         />
