@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CalendarDays, Check, ChevronDown, Plus, Search, Trash2 } from "lucide-react";
+
+import { GoogleCalendarImportDialog } from "@/components/GoogleCalendarImportDialog";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
@@ -308,7 +310,8 @@ export function AgendaScreen() {
             <div className="flex rounded-md border bg-card p-1">
               <Button size="sm" variant="secondary">Lista</Button>
               {(["Mês", "Semana"] as const).map((label) => <Tooltip key={label}><TooltipTrigger asChild><span><Button size="sm" variant="ghost" disabled>{label}</Button></span></TooltipTrigger><TooltipContent>em breve</TooltipContent></Tooltip>)}
-            </div>
+                        </div>
+            <GoogleCalendarImportDialog onImported={() => queryClient.invalidateQueries({ queryKey: ["agenda-events"] })} />
             <Dialog open={open} onOpenChange={setOpen}><DialogTrigger asChild><Button><Plus className="size-4" /> Novo evento</Button></DialogTrigger>
               <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl"><DialogHeader><DialogTitle>{form.id ? "Editar evento" : "Novo evento"}</DialogTitle></DialogHeader>
                 <form className="grid gap-4" onSubmit={(event) => { event.preventDefault(); const valid = form.tipo === "prazo" ? form.titulo.trim() && form.data_inicio : form.titulo.trim() && form.data_inicio; if (!valid) { toast.error(form.tipo === "prazo" ? "Informe o título e o prazo." : "Informe o título e a data do evento."); return; } createEvent.mutate(); }}>
