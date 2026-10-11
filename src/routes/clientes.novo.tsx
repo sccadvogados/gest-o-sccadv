@@ -203,7 +203,8 @@ function NewClientPage() {
       complement: data.complement || current.complement,
       district: data.district || current.district,
       city: data.city || current.city,
-      state: data.state?.toUpperCase() || current.state,
+            state: data.state?.toUpperCase() || current.state,
+      ...(data.representatives.length > 0 ? { representatives: data.representatives } : {}),
     }));
   }
 
