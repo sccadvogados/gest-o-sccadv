@@ -88,7 +88,9 @@ const colors: Record<EventType, string> = {
   prazo: "#C48B5F",
   audiencia: "#8B2635",
   reuniao: "#0C2340",
-  compromisso: "#6B7280",
+    compromisso: "#6B7280",
+  julgamento: "#6B4E9B",
+  acompanhamento: "#5F7F6E",
 };
 
 const emptyForm = {
