@@ -146,9 +146,7 @@ export type Database = {
           created_at: string
           description: string | null
           first_due_date: string
-                    id: string
-          numero: number
-          ano: number
+          id: string
           installments_count: number
           modality: string
           payment_method: string | null
