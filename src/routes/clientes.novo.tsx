@@ -528,7 +528,7 @@ function NewClientPage() {
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="sócio">Sócio</SelectItem>
-                        <SelectItem value="representante legal">Representante legal</SelectItem>
+                        <SelectItem value="representante legal">Representante Legal</SelectItem>
                       </SelectContent>
                     </Select>
                     <Button type="button" variant="ghost" size="sm" onClick={() => setForm((current) => ({ ...current, representatives: current.representatives.filter((_, itemIndex) => itemIndex !== index) }))}>Remover</Button>
