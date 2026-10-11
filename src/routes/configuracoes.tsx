@@ -28,7 +28,16 @@ export const Route = createFileRoute("/configuracoes")({
 });
 
 function defaultDate() {
-  return new Date().toISOString().slice(0, 10);
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Sao_Paulo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date());
+  const values = Object.fromEntries(parts.filter((part) => part.type !== "literal").map((part) => [part.type, part.value]));
+  const date = new Date(Date.UTC(Number(values.year), Number(values.month) - 1, Number(values.day)));
+  date.setUTCDate(date.getUTCDate() - 30);
+  return date.toISOString().slice(0, 10);
 }
 
 function SettingsPage() {
@@ -123,7 +132,7 @@ function SettingsPage() {
           <p className="px-6 py-10 text-center text-sm text-muted-foreground">Escolha a data e mostre a prévia para carregar os eventos.</p>
         ) : (
           <Table>
-            <TableHeader><TableRow><TableHead>Selecionar</TableHead><TableHead>Tipo</TableHead><TableHead>Título</TableHead><TableHead>Processo</TableHead><TableHead>Cliente</TableHead><TableHead>Parte contrária</TableHead><TableHead>Responsável</TableHead><TableHead>Prazo</TableHead><TableHead>Aviso</TableHead></TableRow></TableHeader>
+            <TableHeader><TableRow><TableHead><Checkbox checked={rows.length > 0 && rows.filter((row) => !row.jaImportado).every((row) => row.selecionado)} disabled={rows.every((row) => row.jaImportado)} onCheckedChange={(checked) => setRows((current) => current.map((row) => row.jaImportado ? row : { ...row, selecionado: checked === true }))} /> Selecionar</TableHead><TableHead>Tipo</TableHead><TableHead>Título</TableHead><TableHead>Processo</TableHead><TableHead>Cliente</TableHead><TableHead>Parte contrária</TableHead><TableHead>Responsável</TableHead><TableHead>Prazo</TableHead><TableHead>Aviso</TableHead></TableRow></TableHeader>
             <TableBody>{rows.map((row) => <TableRow key={row.googleId}><TableCell><Checkbox checked={row.selecionado} disabled={row.jaImportado} onCheckedChange={(checked) => setRows((current) => current.map((item) => item.googleId === row.googleId ? { ...item, selecionado: checked === true } : item))} /></TableCell><TableCell>{row.tipo}</TableCell><TableCell>{row.titulo || "—"}</TableCell><TableCell>{row.processo || "—"}</TableCell><TableCell>{row.cliente || "—"}{row.cliente && !row.clienteId ? <div className="text-xs text-destructive">cliente não encontrado</div> : null}</TableCell><TableCell>{row.parteContraria || "—"}</TableCell><TableCell>{row.responsavel || "—"}</TableCell><TableCell>{row.prazo || "—"}</TableCell><TableCell className="text-destructive">{row.aviso || "—"}</TableCell></TableRow>)}</TableBody>
           </Table>
         )}
