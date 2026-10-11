@@ -87,10 +87,11 @@ function ClientsPage() {
           .some((field) => String(field).toLowerCase().includes(search));
     return matchesSearch && (!onlyIncomplete || isClientIncomplete(c));
   });
-    const totalActiveProcesses = (clients ?? []).reduce(
-    (total, client) => total + (processCounts?.[client.drive_folder_id ?? ""] ?? 0),
+      const totalActiveProcesses = (clients ?? []).reduce(
+    (total, client) => total + (contractCounts?.[client.id] ?? 0),
     0,
   );
+
 
   return (
     <AppShell>
