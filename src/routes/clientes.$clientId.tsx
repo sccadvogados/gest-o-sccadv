@@ -637,7 +637,7 @@ function EditContractDialog({
 
   const update = useMutation({
     mutationFn: async () => {
-            const total = Number(totalValue.replace(",", "."));
+                        const total = totalValue;
       const installmentsCount = Math.max(1, Number(count));
       const fee = Number(successFee.replace(",", ".")) || 0;
       if (modality === "exito") {
