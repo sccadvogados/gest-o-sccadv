@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CalendarDays, Check, ChevronDown, Plus, Search, Trash2 } from "lucide-react";
 
 import { GoogleCalendarImportDialog } from "@/components/GoogleCalendarImportDialog";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
@@ -163,6 +163,78 @@ function addOneHourToTime(value: string) {
   if (!Number.isFinite(hours) || !Number.isFinite(minutes)) return "";
   const totalMinutes = (hours * 60 + minutes + 60) % (24 * 60);
   return `${String(Math.floor(totalMinutes / 60)).padStart(2, "0")}:${String(totalMinutes % 60).padStart(2, "0")}`;
+}
+
+function timeToMinutes(value: string) {
+  const match = /^(\\d{1,2}):(\\d{2})$/.exec(value);
+  if (!match) return null;
+  const hours = Number(match[1]);
+  const minutes = Number(match[2]);
+  if (hours > 23 || minutes > 59) return null;
+  return hours * 60 + minutes;
+}
+
+function minutesToTime(value: number) {
+  const normalized = Math.max(0, Math.min(23 * 60 + 59, value));
+  return `${String(Math.floor(normalized / 60)).padStart(2, "0")}:${String(normalized % 60).padStart(2, "0")}`;
+}
+
+function formatDuration(minutes: number) {
+  const hours = Math.floor(minutes / 60);
+  const rest = minutes % 60;
+  if (!hours) return `${rest} min`;
+  if (!rest) return `${hours} h`;
+  return `${hours} h ${rest} min`;
+}
+
+function TimeRangeField({ start, end, onStartChange, onEndChange }: { start: string; end: string; onStartChange: (value: string) => void; onEndChange: (value: string) => void }) {
+  const [open, setOpen] = useState<"start" | "end" | null>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+  const selectedValue = open === "start" ? start : end;
+  const selectedMinutes = timeToMinutes(selectedValue);
+  const startMinutes = timeToMinutes(start);
+  const endMinutes = timeToMinutes(end);
+  const duration = startMinutes !== null && endMinutes !== null && endMinutes > startMinutes ? endMinutes - startMinutes : null;
+  const options = Array.from({ length: 96 }, (_, index) => index * 15)
+    .filter((minutes) => open !== "end" || startMinutes === null || minutes > startMinutes);
+
+  useEffect(() => {
+    if (!open || !listRef.current) return;
+    const target = selectedMinutes === null ? 0 : options.findIndex((minutes) => minutes >= selectedMinutes);
+    listRef.current.scrollTop = Math.max(0, target) * 36;
+  }, [open, selectedMinutes, options.length]);
+
+  const choose = (minutes: number) => {
+    const value = minutesToTime(minutes);
+    if (open === "start") onStartChange(value);
+    if (open === "end") onEndChange(value);
+    setOpen(null);
+  };
+
+  const input = (kind: "start" | "end", value: string, onChange: (value: string) => void) => (
+    <div className="relative min-w-0 flex-1">
+      <input
+        aria-label={kind === "start" ? "Hora de início" : "Hora de término"}
+        value={value}
+        onFocus={() => setOpen(kind)}
+        onChange={(event) => onChange(event.target.value)}
+        onBlur={(event) => {
+          if (!event.relatedTarget || !listRef.current?.contains(event.relatedTarget as Node)) setOpen(null);
+        }}
+        placeholder="00:00"
+        inputMode="numeric"
+        className={`h-10 w-full bg-transparent px-3 text-sm outline-none ${open === kind ? "border-b-2 border-[#0F2340]" : "border-b-2 border-transparent"}`}
+      />
+      {open === kind ? <div ref={listRef} className="absolute left-0 top-11 z-30 max-h-56 w-48 overflow-y-auto rounded-md border bg-popover p-1 shadow-lg">
+        {options.map((minutes) => {
+          const option = minutesToTime(minutes);
+          return <button key={option} type="button" className={`flex w-full items-center justify-between rounded px-3 py-2 text-left text-sm hover:bg-accent ${selectedMinutes === minutes ? "bg-accent font-semibold" : ""}`} onMouseDown={(event) => event.preventDefault()} onClick={() => choose(minutes)}><span>{option}</span>{kind === "end" && startMinutes !== null && minutes > startMinutes ? <span className="text-xs text-muted-foreground">({formatDuration(minutes - startMinutes)})</span> : null}</button>;
+        })}
+      </div> : null}
+    </div>
+  );
+
+  return <div className="relative flex items-center rounded-md bg-gray-100 px-1"><div className="flex min-w-0 flex-1 items-center">{input("start", start.slice(0, 5), onStartChange)}<span className="text-sm text-muted-foreground">–</span>{input("end", end.slice(11, 16) || end.slice(0, 5), onEndChange)}</div>{duration !== null ? <span className="pr-2 text-xs text-muted-foreground">{formatDuration(duration)}</span> : null}</div>;
 }
 
 export function AgendaScreen() {
@@ -361,7 +433,7 @@ export function AgendaScreen() {
                                     <div className="grid gap-4 sm:grid-cols-2"><Field label="Tipo"><Select value={form.tipo} onValueChange={(value: EventType) => setForm((current) => ({ ...current, tipo: value, contrato_id: "" }))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{Object.entries(labels).map(([value, label]) => <SelectItem key={value} value={value}>{label}</SelectItem>)}</SelectContent></Select></Field><Field label="Responsável"><Select value={form.responsavel ? (["Tiago Craveiro", "Raphael Corradi", "Alexandre Souza", "Lauro Trajano"].includes(form.responsavel) ? form.responsavel : "outra") : undefined} onValueChange={(value) => { setResponsibleOtherSelected(value === "outra"); setForm((current) => ({ ...current, responsavel: value === "outra" ? "" : value })); }}><SelectTrigger><SelectValue placeholder="-" /></SelectTrigger><SelectContent><SelectItem value="Tiago Craveiro">Tiago Craveiro</SelectItem><SelectItem value="Raphael Corradi">Raphael Corradi</SelectItem><SelectItem value="Alexandre Souza">Alexandre Souza</SelectItem><SelectItem value="Lauro Trajano">Lauro Trajano</SelectItem><SelectItem value="outra">Outro</SelectItem></SelectContent></Select>{responsibleOtherSelected ? <Input className="mt-2" placeholder="Nome da outra pessoa" value={form.responsavel} onChange={(event) => setForm((current) => ({ ...current, responsavel: event.target.value }))} /> : null}</Field></div>
                                     <Field label="Título"><Input value={form.titulo} onChange={(event) => setForm((current) => ({ ...current, titulo: event.target.value }))} /></Field>
                   <Field label="Situação"><Select value={form.status} onValueChange={(value: EventStatus) => setForm((current) => ({ ...current, status: value }))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="pendente">Pendente</SelectItem><SelectItem value="cumprido">Cumprido</SelectItem><SelectItem value="cancelado">Cancelado</SelectItem></SelectContent></Select></Field>
-                  {["prazo", "protocolo", "acompanhamento"].includes(form.tipo) ? <div className="grid gap-3"><Field label={form.tipo === "prazo" ? "Prazo" : "Data"}><Input type="date" value={form.data_inicio.slice(0, 10)} onChange={(event) => setForm((current) => ({ ...current, data_inicio: event.target.value }))} /></Field></div> : <div className="grid gap-4 sm:grid-cols-2">{["reuniao", "audiencia", "julgamento"].includes(form.tipo) ? <><Field label="Data"><Input type="date" value={form.data_inicio.slice(0, 10)} onChange={(event) => setForm((current) => ({ ...current, data_inicio: event.target.value ? `${event.target.value}T${current.data_inicio.slice(11, 16) || "09:00"}` : "", data_fim: event.target.value && current.data_fim.slice(11, 16) ? `${event.target.value}T${current.data_fim.slice(11, 16)}` : current.data_fim }))} /></Field><Field label="Hora de início"><Input type="time" value={form.data_inicio.slice(11, 16)} onChange={(event) => setForm((current) => { const date = current.data_inicio.slice(0, 10); const time = event.target.value; return { ...current, data_inicio: date && time ? `${date}T${time}` : current.data_inicio, data_fim: date && time ? `${date}T${addOneHourToTime(time)}` : current.data_fim }; })} /></Field><Field label="Hora de término"><Input type="time" value={form.data_fim.slice(11, 16)} onChange={(event) => setForm((current) => ({ ...current, data_fim: current.data_fim.slice(0, 10) && event.target.value ? `${current.data_fim.slice(0, 10)}T${event.target.value}` : current.data_fim }))} /></Field><Field label="Local ou link"><Input value={form.local_link} onChange={(event) => setForm((current) => ({ ...current, local_link: event.target.value }))} /></Field></> : <><Field label="Início"><Input type="datetime-local" value={form.data_inicio} onChange={(event) => setForm((current) => ({ ...current, data_inicio: event.target.value }))} /></Field><Field label="Fim"><Input type="datetime-local" value={form.data_fim} onChange={(event) => setForm((current) => ({ ...current, data_fim: event.target.value }))} /></Field><Field label="Local ou link"><Input value={form.local_link} onChange={(event) => setForm((current) => ({ ...current, local_link: event.target.value }))} /></Field></>}</div>}
+                  {["prazo", "protocolo", "acompanhamento"].includes(form.tipo) ? <div className="grid gap-3"><Field label={form.tipo === "prazo" ? "Prazo" : "Data"}><Input type="date" value={form.data_inicio.slice(0, 10)} onChange={(event) => setForm((current) => ({ ...current, data_inicio: event.target.value }))} /></Field></div> : <div className="grid gap-4 sm:grid-cols-2">{["reuniao", "audiencia", "julgamento"].includes(form.tipo) ? <><Field label="Data"><Input type="date" value={form.data_inicio.slice(0, 10)} onChange={(event) => setForm((current) => ({ ...current, data_inicio: event.target.value ? `${event.target.value}T${current.data_inicio.slice(11, 16) || "09:00"}` : "", data_fim: event.target.value && current.data_fim.slice(11, 16) ? `${event.target.value}T${current.data_fim.slice(11, 16)}` : current.data_fim }))} /></Field><TimeRangeField start={form.data_inicio.slice(11, 16)} end={form.data_fim.slice(11, 16)} onStartChange={(time) => setForm((current) => { const date = current.data_inicio.slice(0, 10); const previousStart = timeToMinutes(current.data_inicio.slice(11, 16)); const previousEnd = timeToMinutes(current.data_fim.slice(11, 16)); const duration = previousStart !== null && previousEnd !== null && previousEnd > previousStart ? previousEnd - previousStart : 60; const nextStart = timeToMinutes(time); const nextEnd = nextStart !== null ? minutesToTime(nextStart + duration) : current.data_fim.slice(11, 16); return { ...current, data_inicio: date && time ? `${date}T${time}` : current.data_inicio, data_fim: date && nextEnd ? `${date}T${nextEnd}` : current.data_fim }; })} onEndChange={(time) => setForm((current) => { const date = current.data_fim.slice(0, 10) || current.data_inicio.slice(0, 10); return { ...current, data_fim: date && time ? `${date}T${time}` : current.data_fim }; })} /><Field label="Local ou link"><Input value={form.local_link} onChange={(event) => setForm((current) => ({ ...current, local_link: event.target.value }))} /></Field></> : <><Field label="Início"><Input type="datetime-local" value={form.data_inicio} onChange={(event) => setForm((current) => ({ ...current, data_inicio: event.target.value }))} /></Field><Field label="Fim"><Input type="datetime-local" value={form.data_fim} onChange={(event) => setForm((current) => ({ ...current, data_fim: event.target.value }))} /></Field><Field label="Local ou link"><Input value={form.local_link} onChange={(event) => setForm((current) => ({ ...current, local_link: event.target.value }))} /></Field></>}</div>}
                                     <Field label="Cliente"><div className="relative"><Input placeholder="Buscar cliente…" value={clientSearch} onChange={(event) => { setClientSearch(event.target.value); setForm((current) => ({ ...current, cliente_id: "", contrato_id: "" })); }} />{clientSearch.trim() ? <div className="absolute z-10 mt-1 max-h-48 w-full overflow-y-auto rounded-md border bg-popover p-1 shadow-md">{clients.filter((client) => client.name.toLowerCase().includes(clientSearch.trim().toLowerCase())).map((client) => <button key={client.id} type="button" className="block w-full rounded-sm px-3 py-2 text-left text-sm hover:bg-accent" onClick={() => { setClientSearch(client.name); setForm((current) => ({ ...current, cliente_id: client.id, contrato_id: "" })); }}>{client.name}</button>)}<button type="button" className="block w-full rounded-sm px-3 py-2 text-left text-sm text-muted-foreground hover:bg-accent" onClick={() => { setClientSearch(""); setForm((current) => ({ ...current, cliente_id: "", contrato_id: "" })); }}>Sem cliente</button></div> : null}{selectedClient && selectedClient.name === clientSearch && <p className="mt-1 text-xs text-muted-foreground">Cliente selecionado</p>}</div></Field>
                   {form.cliente_id && <Field label="Contrato"><Select value={form.contrato_id || "none"} onValueChange={(value) => setForm((current) => ({ ...current, contrato_id: value === "none" ? "" : value }))}><SelectTrigger><SelectValue placeholder="Sem contrato" /></SelectTrigger><SelectContent><SelectItem value="none">Sem contrato</SelectItem>{contracts.map((contract) => <SelectItem key={contract.id} value={contract.id}>{contract.description || contract.category}</SelectItem>)}</SelectContent></Select></Field>}
                   <Field label="Descrição"><Textarea value={form.descricao} onChange={(event) => setForm((current) => ({ ...current, descricao: event.target.value }))} rows={3} /></Field>
