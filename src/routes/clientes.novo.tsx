@@ -289,7 +289,25 @@ function NewClientPage() {
         .insert((({ representatives: _representatives, ...clientForm }) => ({ ...clientForm, created_by: auth.user?.id ?? null }))(form))
         .select("id")
         .single();
-      if (error) throw error;
+            if (error) throw error;
+
+      if (form.person_type === "PJ" && form.representatives.length > 0) {
+        const { error: representativesError } = await supabase
+          .from("cliente_representantes")
+          .insert(
+            form.representatives.map((representative, ordem) => ({
+              cliente_id: client.id,
+              nome: representative.name,
+              nacionalidade: representative.nationality || null,
+              estado_civil: representative.marital_status || null,
+              profissao: representative.profession || null,
+              cpf: onlyDigits(representative.cpf) || null,
+              qualidade: representative.quality,
+              ordem,
+            })),
+          );
+        if (representativesError) throw representativesError;
+      }
 
       const uploads = Object.entries(files).flatMap(([kind, list]) =>
         list.map((file) => ({ kind, file })),
