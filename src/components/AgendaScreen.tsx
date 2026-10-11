@@ -175,6 +175,7 @@ export function AgendaScreen() {
   };
   const openEditEvent = (event: AgendaEvent) => {
         setForm({ ...emptyForm, ...event, protocolo: event.titulo.startsWith("[PROTOCOLO]"), descricao: event.descricao ?? "", cliente_id: event.cliente_id ?? "", contrato_id: event.contrato_id ?? "", data_inicio: saoPauloInput(event.data_inicio, event.tipo === "prazo" || event.tipo === "acompanhamento"), data_fim: saoPauloInput(event.data_fim, false),  parte_contraria: event.parte_contraria ?? "", local_link: event.local_link ?? "", responsavel: event.responsavel ?? "" });
+        setResponsibleOtherSelected(Boolean(event.responsavel && !["Tiago Craveiro", "Raphael Corradi", "Alexandre Souza", "Lauro Trajano"].includes(event.responsavel)));
     setClientSearch(clients.find((client) => client.id === event.cliente_id)?.name ?? "");
     setOpen(true);
   };
