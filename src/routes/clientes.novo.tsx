@@ -284,8 +284,8 @@ function NewClientPage() {
       }
       const { data: auth } = await supabase.auth.getUser();
       const { data: client, error } = await supabase
-        .from("clients")
-        .insert({ ...form, created_by: auth.user?.id ?? null })
+                .from("clients")
+        .insert((({ representatives: _representatives, ...clientForm }) => ({ ...clientForm, created_by: auth.user?.id ?? null }))(form))
         .select("id")
         .single();
       if (error) throw error;
