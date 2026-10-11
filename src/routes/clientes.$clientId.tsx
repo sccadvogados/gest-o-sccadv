@@ -734,8 +734,7 @@ type PreviewInstallment = {
 };
 
 function NewContractDialog({ clientId, personType }: { clientId: string; personType: "PF" | "PJ" }) {
-  const [open, setOpen] = useState(false);
-  const [description, setDescription] = useState("");
+    const [description, setDescription] = useState("");
   const [modality, setModality] = useState<ContractModality>("parcelado");
   const [signatureDate, setSignatureDate] = useState("");
   const [category, setCategory] = useState<string>(CATEGORIES[0]);
