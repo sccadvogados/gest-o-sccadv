@@ -97,7 +97,7 @@ function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
     const meetingTitle = event.titulo.replace(/^\[REUNIÃO\]\s*/, "");
     return [{
       id: "",
-      summary: compactParts(["[SCCAdv]", "[REUNIÃO]", meetingTitle, event.numero_processo, parties(event), responsible(event)]),
+            summary: compactParts(["[SCCAdv]", marker, meetingTitle, event.numero_processo, parties(event), responsible(event)]),
       colorId: "",
       start: { dateTime: event.data_inicio, timeZone: "America/Sao_Paulo" },
       end: { dateTime: event.data_fim, timeZone: "America/Sao_Paulo" },
