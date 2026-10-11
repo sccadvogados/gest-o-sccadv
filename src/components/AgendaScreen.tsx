@@ -497,7 +497,7 @@ export function AgendaScreen() {
       queryClient.invalidateQueries({ queryKey: ["agenda-events"] });
       toast.success("Evento enviado ao Google Agenda.");
     },
-    onError: () => toast.error("Não foi possível enviar ao Google Agenda."),
+        onError: () => toast.error("Ainda não foi possível enviar ao Google Agenda."),
   });
 
   const markDone = useMutation({
