@@ -26,8 +26,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { maskCep, maskCpfCnpj, maskPhone, onlyDigits } from "@/lib/format";
 
 type ClientForm = {
-  person_type: "PF" | "PJ";
+    person_type: "PF" | "PJ";
   name: string;
+  pj_descricao: string;
   nationality: string;
   marital_status: string;
   profession: string;
