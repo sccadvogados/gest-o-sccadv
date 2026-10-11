@@ -159,11 +159,13 @@ export type Database = {
       }
       contracts: {
         Row: {
-          category: string
+                    category: string
           client_id: string
           created_at: string
           description: string | null
           first_due_date: string
+          gratuidade: boolean
+          objeto: string | null
           id: string
           installments_count: number
           modality: string
