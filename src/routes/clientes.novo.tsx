@@ -322,7 +322,8 @@ function NewClientPage() {
       );
 
       for (const { kind, file } of uploads) {
-        const path = `${client.id}/${kind}/${Date.now()}-${file.name}`;
+                const extension = file.name.includes(".") ? file.name.split(".").pop()!.toLowerCase().replace(/[^a-z0-9]/g, "") : "bin";
+        const path = `${client.id}/${kind}/${Date.now()}-${crypto.randomUUID()}.${extension}`;
         const { error: upErr } = await supabase.storage
           .from("client-documents")
           .upload(path, file);
