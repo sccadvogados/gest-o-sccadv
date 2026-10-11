@@ -91,6 +91,25 @@ function description(event: CalendarEvent): string | undefined {
 
 function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
   const date = dateOnly(event.data_inicio);
+
+  if (event.tipo === "reunião") {
+    if (!event.data_fim) throw new Error("A reunião precisa ter horário de término.");
+    const meetingTitle = event.titulo.replace(/^\[REUNIÃO\]\s*/, "");
+    return [{
+      id: "",
+      summary: compactParts(["[SCCAdv]", "[REUNIÃO]", meetingTitle, event.numero_processo, parties(event), responsible(event)]),
+      colorId: "",
+      start: { dateTime: event.data_inicio, timeZone: "America/Sao_Paulo" },
+      end: { dateTime: event.data_fim, timeZone: "America/Sao_Paulo" },
+      description: description(event),
+      location: event.local_link?.trim() || undefined,
+      reminders: {
+        useDefault: false,
+        overrides: [{ method: "popup", minutes: 60 }],
+      },
+    }];
+  }
+
   const common = {
     start: { date },
     end: { date: nextDate(date) },
