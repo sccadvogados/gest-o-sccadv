@@ -91,7 +91,7 @@ export const CATEGORIES = [
   "(R) Honorários de Sucumbência",
 ] as const;
 
-const PAYMENT_METHODS = ["PIX", "Transferência", "Boleto", "Cartão", "Dinheiro"] as const;
+const PAYMENT_METHODS = ["Cartão", "PIX", "Boleto"] as const;
 
 const DOC_LABELS: Record<string, string> = {
   identificacao: "Documento de Identificação",
