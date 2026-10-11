@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { Checkbox } from "@/components/ui/checkbox";
+import { CurrencyInput } from "@/components/CurrencyInput";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -36,7 +37,7 @@ export function ContractForm({ clientId, personType, onSaved }: ContractFormProp
   const [modality, setModality] = useState<ContractModality>("parcelado");
   
   const [category, setCategory] = useState<string>(CATEGORIES[0]);
-  const [totalValue, setTotalValue] = useState("");
+    const [totalValue, setTotalValue] = useState(0);
   const [count, setCount] = useState("1");
   const [firstDue, setFirstDue] = useState(todayISO());
   const [paymentMethod, setPaymentMethod] = useState<string>(PAYMENT_METHODS[0]);
@@ -52,7 +53,7 @@ export function ContractForm({ clientId, personType, onSaved }: ContractFormProp
   }, [totalValue, count, firstDue, modality]);
 
   function refreshPreview() {
-    const value = Number(totalValue.replace(",", "."));
+        const value = totalValue;
     const installmentsCount = Number(count);
     if (!Number.isFinite(value) || value <= 0 || !Number.isInteger(installmentsCount) || installmentsCount < 1 || !firstDue || modality === "exito") {
       setPreview([]);
@@ -61,13 +62,13 @@ export function ContractForm({ clientId, personType, onSaved }: ContractFormProp
     setPreview(buildContractInstallments(value, installmentsCount, firstDue, modality));
   }
 
-  function updatePreview(index: number, field: "amount" | "due_date", value: string) {
-    setPreview((current) => current.map((row, rowIndex) => rowIndex === index ? { ...row, [field]: field === "amount" ? Number(value.replace(",", ".")) || 0 : value } : row));
+    function updatePreview(index: number, field: "amount" | "due_date", value: number | string) {
+    setPreview((current) => current.map((row, rowIndex) => rowIndex === index ? { ...row, [field]: field === "amount" ? value as number : value } : row));
   }
 
   const create = useMutation({
     mutationFn: async () => {
-      const value = Number(totalValue.replace(",", "."));
+            const value = totalValue;
       const installmentsCount = Math.max(1, Number(count));
       const fee = Number(successFee.replace(",", ".")) || 0;
             if (modality !== "exito" && (!Number.isFinite(value) || value <= 0)) throw new Error("Informe um valor válido.");
@@ -159,8 +160,8 @@ export function ContractForm({ clientId, personType, onSaved }: ContractFormProp
         </div>
 
         {modality !== "exito" ? <div className="space-y-2">
-          <Label htmlFor="total">{modality === "mensal" ? "Valor mensal (R$)" : "Valor total (R$)"}</Label>
-          <Input id="total" inputMode="decimal" value={totalValue} onChange={(e) => setTotalValue(e.target.value)} />
+                    <Label htmlFor="total">{modality === "mensal" ? "Valor mensal" : "Valor total"}</Label>
+          <CurrencyInput id="total" value={totalValue} onChange={setTotalValue} />
         </div> : null}
 
         {modality !== "exito" ? <div className="space-y-2">
@@ -212,7 +213,7 @@ export function ContractForm({ clientId, personType, onSaved }: ContractFormProp
                 <p className="pb-2 text-sm font-medium">{row.number}</p>
                 <div className="space-y-1">
                   <Label htmlFor={`preview-amount-${row.number}`}>Valor</Label>
-                  <Input id={`preview-amount-${row.number}`} inputMode="decimal" value={String(row.amount)} onChange={(event) => updatePreview(index, "amount", event.target.value)} />
+                                    <CurrencyInput id={`preview-amount-${row.number}`} value={row.amount} onChange={(value) => updatePreview(index, "amount", value)} />
                 </div>
                 <div className="space-y-1">
                   <Label htmlFor={`preview-due-${row.number}`}>Vencimento</Label>

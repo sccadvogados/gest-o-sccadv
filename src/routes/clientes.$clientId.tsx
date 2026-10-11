@@ -6,6 +6,7 @@ import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
 import { ContractForm } from "@/components/ContractForm";
+import { CurrencyInput } from "@/components/CurrencyInput";
 import { DeleteClientDialog } from "@/components/DeleteClientDialog";
 
 import { EditClientDialog } from "@/components/EditClientDialog";
@@ -623,7 +624,7 @@ function EditContractDialog({
   const hasPaidInstallment = (contract.installments ?? []).some((installment) => installment.status === "Pago");
   
   const [category, setCategory] = useState(contract.category);
-  const [totalValue, setTotalValue] = useState(String(contract.total_value));
+    const [totalValue, setTotalValue] = useState(contract.total_value);
   const [count, setCount] = useState(String(contract.installments_count));
     const [firstDue, setFirstDue] = useState(contract.first_due_date);
   const [modality, setModality] = useState<ContractModality>(contract.modality);
@@ -636,7 +637,7 @@ function EditContractDialog({
 
   const update = useMutation({
     mutationFn: async () => {
-            const total = Number(totalValue.replace(",", "."));
+                        const total = totalValue;
       const installmentsCount = Math.max(1, Number(count));
       const fee = Number(successFee.replace(",", ".")) || 0;
       if (modality === "exito") {
@@ -716,7 +717,7 @@ function EditContractDialog({
           </Select>
         </div>
                 {modality !== "exito" ? <>
-          <div className="space-y-2"><Label htmlFor={`edit-contract-total-${contract.id}`}>Valor total (R$)</Label><Input id={`edit-contract-total-${contract.id}`} inputMode="decimal" value={totalValue} onChange={(e) => setTotalValue(e.target.value)} disabled={hasPaidInstallment} /></div>
+                    <div className="space-y-2"><Label htmlFor={`edit-contract-total-${contract.id}`}>Valor total</Label><CurrencyInput id={`edit-contract-total-${contract.id}`} value={totalValue} onChange={setTotalValue} disabled={hasPaidInstallment} /></div>
           <div className="space-y-2"><Label htmlFor={`edit-contract-count-${contract.id}`}>Número de parcelas</Label><Input id={`edit-contract-count-${contract.id}`} type="number" min={1} value={count} onChange={(e) => setCount(e.target.value)} disabled={hasPaidInstallment} /></div>
         </> : null}
                 <div className="space-y-2"><Label>Modalidade</Label><Select value={modality} onValueChange={(value) => setModality(value as ContractModality)} disabled={hasPaidInstallment}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="parcelado">Pró-labore parcelado</SelectItem><SelectItem value="mensal">Pró-labore mensal</SelectItem><SelectItem value="exito">Somente êxito</SelectItem></SelectContent></Select></div>
