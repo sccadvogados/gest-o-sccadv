@@ -69,4 +69,136 @@ export type DocumentTemplateData = {
 
 const unidades = [
   "zero", "um", "dois", "três", "quatro", "cinco", "seis", "sete", "oito", "nove", "dez",
-  "onze", "doze", "treze", "quatorze", "quinze", "dezesseis", "dezessete
+    "onze", "doze", "treze", "quatorze", "quinze", "dezesseis", "dezessete", "dezoito", "dezenove",
+];
+
+const dezenas = ["", "", "vinte", "trinta", "quarenta", "cinquenta", "sessenta", "setenta", "oitenta", "noventa"];
+const centenas = ["", "cento", "duzentos", "trezentos", "quatrocentos", "quinhentos", "seiscentos", "setecentos", "oitocentos", "novecentos"];
+
+function numeroInteiroExtenso(value: number): string {
+  const n = Math.trunc(Math.abs(value));
+  if (n < 20) return unidades[n];
+  if (n < 100) return dezenas[Math.floor(n / 10)] + (n % 10 ? ` e ${unidades[n % 10]}` : "");
+  if (n < 1000) {
+    if (n === 100) return "cem";
+    return centenas[Math.floor(n / 100)] + (n % 100 ? ` e ${numeroInteiroExtenso(n % 100)}` : "");
+  }
+  if (n < 1_000_000) {
+    const milhares = Math.floor(n / 1000);
+    const resto = n % 1000;
+    return (milhares === 1 ? "mil" : `${numeroInteiroExtenso(milhares)} mil`) + (resto ? ` e ${numeroInteiroExtenso(resto)}` : "");
+  }
+  return String(n);
+}
+
+export function numeroPorExtenso(value: number): string {
+  return numeroInteiroExtenso(value);
+}
+
+export function valorPorExtenso(value: number): string {
+  const normalized = Math.round(Math.abs(value) * 100) / 100;
+  const reais = Math.floor(normalized);
+  const centavos = Math.round((normalized - reais) * 100);
+  const reaisText = `${numeroInteiroExtenso(reais)} ${reais === 1 ? "real" : "reais"}`;
+  if (!centavos) return reaisText;
+  return `${reaisText} e ${numeroInteiroExtenso(centavos)} centavos`;
+}
+
+function formatarValor(value: number): string {
+  return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
+function formatarData(value: string): string {
+  const [year, month, day] = value.slice(0, 10).split("-").map(Number);
+  return `${String(day).padStart(2, "0")}/${String(month).padStart(2, "0")}/${year}`;
+}
+
+function dataPorExtenso(date = new Date()): string {
+  const formatter = new Intl.DateTimeFormat("pt-BR", {
+    timeZone: "America/Sao_Paulo",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+  return formatter.format(date);
+}
+
+function enderecoCompleto(client: ClientForTemplate): string {
+  const rua = [client.street, client.number, client.complement].filter(Boolean).join(", ");
+  const local = [client.district, client.city && client.state ? `${client.city}/${client.state}` : client.city || client.state].filter(Boolean).join(", ");
+  return [rua, local, client.cep && `CEP ${client.cep}`].filter(Boolean).join(", ");
+}
+
+function qualificacao(representante: RepresentativeForTemplate): string {
+  return [representante.nome, representante.nacionalidade, representante.estado_civil, representante.profissao, representante.cpf && `inscrito(a) no CPF n. ${representante.cpf}`].filter(Boolean).join(", ");
+}
+
+function representantesTexto(representantes: RepresentativeForTemplate[]): string {
+  const ordered = [...representantes].sort((a, b) => (a.ordem ?? 0) - (b.ordem ?? 0));
+  if (ordered.length === 0) return "";
+  if (ordered.length === 1) return `sua representante legal, ${qualificacao(ordered[0])}`;
+  return `seus sócios ${ordered.map((representante) => qualificacao(representante)).join(", e ")}`;
+}
+
+function grupoParcelas(installments: InstallmentForTemplate[]): string {
+  const groups: Array<{ count: number; amount: number }> = [];
+  for (const installment of installments) {
+    const last = groups[groups.length - 1];
+    if (last && Math.abs(last.amount - installment.amount) < 0.005) last.count += 1;
+    else groups.push({ count: 1, amount: installment.amount });
+  }
+  return groups.map((group) => `${group.count} (${numeroPorExtenso(group.count)}) de ${formatarValor(group.amount)}`).join(" e ");
+}
+
+export function montarProlaboreTexto(contract: ContractForTemplate, installments: InstallmentForTemplate[]): string {
+  const parcelas = [...installments].sort((a, b) => (a.number ?? 0) - (b.number ?? 0));
+  if (!parcelas.length || !contract.modality || contract.modality === "exito") return "";
+  const total = parcelas.reduce((sum, installment) => sum + installment.amount, 0);
+  const firstDate = parcelas[0]?.due_date;
+  if (contract.modality === "mensal") {
+    const mensal = parcelas[0].amount;
+    return `${formatarValor(mensal)} (${valorPorExtenso(mensal)}) mensais, durante ${parcelas.length} (${numeroPorExtenso(parcelas.length)}) meses, totalizando ${formatarValor(total)} (${valorPorExtenso(total)}), com vencimento da primeira em ${formatarData(firstDate)}.`;
+  }
+  if (parcelas.length === 1) return `${formatarValor(total)} (${valorPorExtenso(total)}), a ser pago em parcela única, com vencimento em ${formatarData(firstDate)}.`;
+  const iguais = parcelas.every((installment) => Math.abs(installment.amount - parcelas[0].amount) < 0.005);
+  if (iguais) return `${formatarValor(total)} (${valorPorExtenso(total)}), a serem pagos em ${parcelas.length} (${numeroPorExtenso(parcelas.length)}) parcelas mensais de ${formatarValor(parcelas[0].amount)} (${valorPorExtenso(parcelas[0].amount)}), com vencimento da primeira em ${formatarData(firstDate)}.`;
+  return `${formatarValor(total)} (${valorPorExtenso(total)}), a serem pagos em ${parcelas.length} (${numeroPorExtenso(parcelas.length)}) parcelas mensais, sendo ${grupoParcelas(parcelas)}, com vencimento da primeira em ${formatarData(firstDate)}.`;
+}
+
+export function montarDadosModelos(client: ClientForTemplate, contract: ContractForTemplate, representatives: RepresentativeForTemplate[] = [], installments: InstallmentForTemplate[] = [], now = new Date()): DocumentTemplateData {
+  const pj = client.person_type.toUpperCase() === "PJ";
+  const prolabore = contract.modality !== "exito" && installments.some((installment) => installment.amount > 0);
+  const exito = Number(contract.success_fee_percent ?? 0) > 0;
+  const percentual = Number(contract.success_fee_percent ?? 0);
+  return {
+    pf: !pj,
+    pj,
+    outorgante_nome: client.name,
+    nacionalidade: client.nationality ?? "",
+    estado_civil: client.marital_status ?? "",
+    profissao: client.profession ?? "",
+    cpf: !pj ? client.cpf_cnpj ?? "" : "",
+    rg: !pj ? client.rg_number ?? "" : "",
+    rg_orgao: !pj ? client.rg_issuer ?? "" : "",
+    cnpj: pj ? client.cpf_cnpj ?? "" : "",
+    pj_descricao: pj ? client.pj_descricao ?? "" : "",
+    endereco_completo: enderecoCompleto(client),
+    representantes_texto: pj ? representantesTexto(representatives) : "",
+    representantes_assinatura: pj ? representatives.slice().sort((a, b) => (a.ordem ?? 0) - (b.ordem ?? 0)).map((representante) => representante.nome).join(" e ") : "",
+    assinatura_documento: `${pj ? "CNPJ" : "CPF"} n. ${client.cpf_cnpj ?? ""}`,
+    objeto: (contract.objeto ?? "").trim().replace(/[.]$/, ""),
+    tem_prolabore: prolabore,
+    prolabore_texto: prolabore ? montarProlaboreTexto(contract, installments) : "",
+    tem_exito: exito,
+    exito_percentual: Number.isInteger(percentual) ? String(percentual) : String(percentual).replace(".", ","),
+    exito_extenso: percentual % 1 === 0 ? numeroPorExtenso(percentual) : `${numeroPorExtenso(Math.floor(percentual))} e meio`,
+    data_extenso: dataPorExtenso(now),
+  };
+}
+
+export const __templateDataExamples = {
+  valor487_80: valorPorExtenso(487.8),
+  valor1000: valorPorExtenso(1000),
+  valor10000: valorPorExtenso(10000),
+  percentual12_5: numeroPorExtenso(12) + " e meio",
+};
