@@ -167,8 +167,8 @@ function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
 
   return [{
     id: "",
-    summary: compactParts(["[SCCAdv]", event.titulo, event.numero_processo, parties(event), responsible(event)]),
-    colorId: "",
+        summary: compactParts(["[SCCAdv]", event.titulo, event.numero_processo, parties(event), responsible(event)]),
+    colorId: TIPO_CORES[event.tipo as keyof typeof TIPO_CORES].colorId,
     ...common,
   }];
 }
