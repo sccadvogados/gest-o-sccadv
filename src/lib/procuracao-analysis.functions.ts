@@ -147,7 +147,7 @@ export const analisarObjetoProcuracao = createServerFn({ method: "POST" })
 
     const { data: contract, error: contractError } = await database
       .from("contracts")
-      .select("objeto, client_id")
+      .select("objeto, parte_contraria, client_id")
       .eq("id", data.contrato_id)
       .single();
     if (contractError || !contract) {
@@ -171,7 +171,8 @@ export const analisarObjetoProcuracao = createServerFn({ method: "POST" })
       return blockedAnalysisResult("Preencha o objeto do contrato.");
     }
 
-    const hasPartContraria = /\b(em face de|contra|réu|ré|parte contrária)\b/i.test(objeto);
+        const parteContraria = typeof contract.parte_contraria === "string" ? contract.parte_contraria.trim() : "";
+    const hasPartContraria = Boolean(parteContraria) || /\b(em face de|contra|réu|ré|parte contrária)\b/i.test(objeto);
     const hasAssunto = /\b(ação|processo|demanda|cobrança|indenização|execução|contrato|divórcio|inventário|benefício|aposentadoria|acidente|verbas?|rescisão|danos?)\b/i.test(objeto) ||
       /\b(sobre|relativo ao?|referente ao?|acerca do?)\b/i.test(objeto);
     if (!hasAssunto && !hasPartContraria) {
@@ -230,7 +231,7 @@ export const analisarObjetoProcuracao = createServerFn({ method: "POST" })
             role: "user",
             content: JSON.stringify({
               contrato_id: data.contrato_id,
-              objeto,
+                            objeto: parteContraria ? `${objeto}\nParte contrária: ${parteContraria}` : objeto,
               tipo_cliente: tipoCliente,
               uf_domicilio: ufDomicilio,
               tribunais_ativos: (tribunais ?? []) as Tribunal[],
