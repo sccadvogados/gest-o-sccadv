@@ -134,15 +134,7 @@ export function ContractForm({ clientId, personType, onSaved }: ContractFormProp
   return (
     <>
       <div className="grid gap-4 sm:grid-cols-2">
-        <div className="space-y-2 sm:col-span-2">
-          <Label htmlFor="description">Descrição</Label>
-          <Input
-            id="description"
-            placeholder="Ex.: Ação trabalhista — pró-labore"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </div>
+        
 
         <div className="space-y-2">
           <Label>Modalidade</Label>
