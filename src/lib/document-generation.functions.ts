@@ -120,7 +120,7 @@ async function downloadTemplate(database: QueryClient, template: string): Promis
 async function renderTemplate(database: QueryClient, template: string, data: Record<string, unknown>): Promise<Uint8Array> {
   const arrayBuffer = await downloadTemplate(database, template);
   const zip = new PizZip(arrayBuffer);
-  const document = new Docxtemplater(zip, { paragraphLoop: true });
+    const document = new Docxtemplater(zip, { paragraphLoop: true, linebreaks: true, nullGetter: () => "" });
   document.render(data);
   return document.getZip().generate({ type: "uint8array" });
 }
