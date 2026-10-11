@@ -72,8 +72,9 @@ export function GoogleCalendarImportDialog({ onImported }: { onImported: () => v
       const candidates = selected.filter((row) => !row.jaImportado);
       const { error } = await officeDatabase(supabase).from("eventos").insert(candidates.map((row) => ({
         cliente_id: row.clienteId,
-        data_inicio: row.prazo,
-        dia_inteiro: true,
+                data_inicio: row.tipo === "reunião" ? row.dataInicio : row.prazo,
+        data_fim: row.tipo === "reunião" ? row.dataFim : null,
+        dia_inteiro: row.tipo === "reunião" ? false : true,
         google_event_id: row.googleId,
         numero_processo: row.processo || null,
         parte_contraria: row.parteContraria || null,
