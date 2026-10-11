@@ -518,7 +518,8 @@ type ContractRow = {
   modality: ContractModality;
   signature_date: string | null;
   success_fee_percent: number;
-  objeto?: string | null;
+    objeto?: string | null;
+  parte_contraria?: string | null;
   gratuidade?: boolean;
   installments?: Array<{ status: string }>;
 };
