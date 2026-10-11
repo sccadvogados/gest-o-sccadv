@@ -43,7 +43,7 @@ export function ContractForm({ clientId, personType, onSaved }: ContractFormProp
   const [paymentMethod, setPaymentMethod] = useState<string>(PAYMENT_METHODS[0]);
   const [successFee, setSuccessFee] = useState("0");
     const [object, setObject] = useState("");
-  const [parteContraria, setParteContraria] = useState("");
+  
   const [gratuidade, setGratuidade] = useState(true);
   const [preview, setPreview] = useState<PreviewInstallment[]>([]);
   const queryClient = useQueryClient();
@@ -182,10 +182,7 @@ export function ContractForm({ clientId, personType, onSaved }: ContractFormProp
           </Select>
         </div>
 
-                <div className="space-y-2 sm:col-span-2">
-          <Label htmlFor="new-contract-counterparty">Parte contrária</Label>
-          <Input id="new-contract-counterparty" value={parteContraria} onChange={(e) => setParteContraria(e.target.value)} />
-        </div>
+                
 
         <div className="space-y-2 sm:col-span-2">
           <Label htmlFor="new-contract-object">Objeto do contrato</Label>
