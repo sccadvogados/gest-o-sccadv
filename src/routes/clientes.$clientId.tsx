@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
+import { ContractForm } from "@/components/ContractForm";
 import { EditClientDialog } from "@/components/EditClientDialog";
 import { TIPO_CORES } from "@/lib/calendarSync";
 import {
@@ -734,7 +735,7 @@ type PreviewInstallment = {
 
 function NewContractDialog({ clientId, personType }: { clientId: string; personType: "PF" | "PJ" }) {
   const [open, setOpen] = useState(false);
-  const [description, setDescription] = useState("");
+    const [description, setDescription] = useState("");
   const [modality, setModality] = useState<ContractModality>("parcelado");
   const [signatureDate, setSignatureDate] = useState("");
   const [category, setCategory] = useState<string>(CATEGORIES[0]);
@@ -847,10 +848,12 @@ function NewContractDialog({ clientId, personType }: { clientId: string; personT
           Novo contrato
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-lg">
+            <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Novo contrato</DialogTitle>
         </DialogHeader>
+
+        <ContractForm clientId={clientId} personType={personType} onSaved={() => setOpen(false)} />
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2 sm:col-span-2">
