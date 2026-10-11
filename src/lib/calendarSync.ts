@@ -15,8 +15,7 @@ type CalendarEvent = {
   responsavel?: string | null;
   cliente_nome?: string | null;
   data_inicio: string;
-  prazo_fatal?: string | null;
-  prazo_interno?: string | null;
+  
   local_link?: string | null;
 };
 
