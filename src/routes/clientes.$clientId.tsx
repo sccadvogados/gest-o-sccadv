@@ -643,7 +643,9 @@ function EditContractDialog({
             first_due_date: firstDue,
             payment_method: paymentMethod,
             success_fee_percent: fee,
-            recurring: modality === "mensal",
+                        recurring: modality === "mensal",
+            objeto: object || null,
+            gratuidade,
           };
       const { error } = await supabase.from("contracts").update(contractUpdate).eq("id", contract.id);
       if (error) throw error;
