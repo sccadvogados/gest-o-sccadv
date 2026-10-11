@@ -153,6 +153,19 @@ function ClientDetailPage() {
     },
   });
 
+    const { data: clientEvents } = useQuery({
+    queryKey: ["client-events", clientId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("eventos")
+        .select("id, tipo, titulo, data_inicio, data_fim, status, dia_inteiro")
+        .eq("cliente_id", clientId)
+        .order("data_inicio");
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
   const markPaid = useMutation({
     mutationFn: async (installmentId: string) => {
       const { error } = await supabase
