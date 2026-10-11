@@ -40,6 +40,17 @@ type GoogleEventIds = {
 
 const GOOGLE_CALENDAR_URL = "https://connector-gateway.lovable.dev/google_calendar/calendar/v3/calendars";
 
+export const TIPO_CORES = {
+  prazo: { colorId: "7", hex: "#039BE5" },
+  protocolo: { colorId: "5", hex: "#F6BF26" },
+  reunião: { colorId: "9", hex: "#3F51B5" },
+  audiência: { colorId: "11", hex: "#D50000" },
+  julgamento: { colorId: "3", hex: "#8E24AA" },
+  acompanhamento: { colorId: "2", hex: "#33B679" },
+  compromisso: { colorId: "8", hex: "#616161" },
+} as const;
+
+
 function getGoogleConfig() {
   const lovableApiKey = process.env["LOVABLE_API_KEY"];
   const calendarApiKey = process.env["GOOGLE_CALENDAR_API_KEY"];
@@ -99,7 +110,7 @@ function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
     return [{
       id: "",
             summary: compactParts(["[SCCAdv]", marker, meetingTitle, event.numero_processo, parties(event), responsible(event)]),
-      colorId: "",
+            colorId: TIPO_CORES[event.tipo as keyof typeof TIPO_CORES].colorId,
       start: { dateTime: event.data_inicio, timeZone: "America/Sao_Paulo" },
       end: { dateTime: event.data_fim, timeZone: "America/Sao_Paulo" },
       description: description(event),
@@ -131,8 +142,8 @@ function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
     const title = event.titulo.replace(/^\[(?:JULGAMENTO|ACOMPANHAMENTO)\]\s*/, "");
     return [{
       id: "",
-      summary: compactParts(["[SCCAdv]", marker, title, event.numero_processo, parties(event), responsible(event)]),
-      colorId: "",
+            summary: compactParts(["[SCCAdv]", marker, title, event.numero_processo, parties(event), responsible(event)]),
+      colorId: TIPO_CORES[event.tipo as keyof typeof TIPO_CORES].colorId,
       ...common,
     }];
   }
@@ -146,8 +157,8 @@ function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
     const date = dateOnly(event.data_inicio);
     return [{
       id: "",
-      summary: title,
-      colorId: event.tipo === "protocolo" ? "5" : "7",
+            summary: title,
+      colorId: TIPO_CORES[event.tipo as keyof typeof TIPO_CORES].colorId,
       start: { date },
       end: { date: nextDate(date) },
       description: common.description,
@@ -156,8 +167,8 @@ function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
 
   return [{
     id: "",
-    summary: compactParts(["[SCCAdv]", event.titulo, event.numero_processo, parties(event), responsible(event)]),
-    colorId: "",
+        summary: compactParts(["[SCCAdv]", event.titulo, event.numero_processo, parties(event), responsible(event)]),
+    colorId: TIPO_CORES[event.tipo as keyof typeof TIPO_CORES].colorId,
     ...common,
   }];
 }
