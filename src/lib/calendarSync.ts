@@ -174,8 +174,7 @@ async function syncCreatedEvent(supabase: SupabaseClient<Database>, data: z.infe
     id: data.id, tipo: data.tipo, titulo: data.titulo, data_inicio: data.data_inicio,
     descricao: data.descricao ?? null, numero_processo: data.numero_processo ?? null,
     parte_contraria: data.parte_contraria ?? null, responsavel: data.responsavel ?? null,
-    cliente_nome: data.cliente_nome ?? null, prazo_fatal: data.prazo_fatal ?? null,
-    prazo_interno: data.prazo_interno ?? null, local_link: data.local_link ?? null,
+        cliente_nome: data.cliente_nome ?? null, local_link: data.local_link ?? null,
   };
   const ids: GoogleEventIds = { comum: null };
   for (const googleEvent of buildGoogleEvents(event)) {
