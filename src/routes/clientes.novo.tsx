@@ -549,7 +549,7 @@ function NewClientPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="PF">Pessoa física</SelectItem>
+                  <SelectItem value="PF">Pessoa Física</SelectItem>
                   <SelectItem value="PJ">Pessoa jurídica</SelectItem>
                 </SelectContent>
               </Select>
