@@ -86,7 +86,8 @@ const labels: Record<EventType, string> = {
 };
 
 const colors: Record<EventType, string> = {
-  prazo: "#C48B5F",
+    prazo: "#C48B5F",
+  protocolo: "#E3B505",
   audiencia: "#8B2635",
   reuniao: "#0C2340",
     compromisso: "#6B7280",
