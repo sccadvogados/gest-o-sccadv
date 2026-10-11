@@ -818,7 +818,9 @@ function NewContractDialog({ clientId, personType }: { clientId: string; personT
       setTotalValue("");
       setCount("1");
       setFirstDue(todayISO());
-      setSuccessFee("0");
+            setSuccessFee("0");
+      setObject("");
+      setGratuidade(true);
       setPreview([]);
     },
     onError: (error) =>
