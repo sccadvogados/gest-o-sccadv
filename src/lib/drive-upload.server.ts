@@ -202,7 +202,7 @@ export async function uploadToDrive(
   const metadata = JSON.stringify({ name: fileName, parents: [folderId] });
   const form = new FormData();
   form.append("metadata", new Blob([metadata], { type: "application/json" }));
-  form.append("file", new Blob([bytes], { type: mimeType }), fileName);
+    form.append("file", new Blob([new Uint8Array(bytes)], { type: mimeType }), fileName);
 
   const result = await driveRequest("/upload/drive/v3/files?uploadType=multipart", {
     method: "POST",
@@ -212,5 +212,95 @@ export async function uploadToDrive(
   if (!result.id) {
     throw new Error("O Google Drive não retornou o ID do arquivo enviado.");
   }
-  return result.id;
+    return result.id;
 }
+
+const ATTACHMENT_KINDS = ["identificacao", "contrato_social", "residencia", "outros"];
+
+export type DriveExtraFile = {
+  documentId: string;
+  fileName: string;
+  mimeType: string;
+  bytes: Uint8Array;
+};
+
+export type DrivePackageResult =
+  | { ok: true; pasta_url: string }
+  | { ok: false; erro: string };
+
+function driveErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : (error as { message?: string })?.message ?? "Erro desconhecido.";
+}
+
+/**
+ * Envia para a pasta "2. Documentos Prévios" do contrato os anexos do cliente
+ * e os arquivos extras (documentos gerados). Não duplica arquivos com o mesmo nome.
+ * Nunca lança erro: devolve { ok: false, erro } e registra clients.drive_error.
+ */
+export async function sendContractPackageToDrive(
+  supabase: SupabaseClient<any>,
+  contractId: string,
+  extraFiles: DriveExtraFile[] = [],
+): Promise<DrivePackageResult> {
+  let clientId: string | undefined;
+  try {
+    const { data: contract, error: contractError } = await supabase
+      .from("contracts")
+      .select("id, client_id, numero, ano, drive_folder_id")
+      .eq("id", contractId)
+      .single();
+    if (contractError || !contract) throw contractError ?? new Error("Contrato não encontrado.");
+    clientId = contract.client_id as string;
+
+    const { data: client, error: clientError } = await supabase
+      .from("clients")
+      .select("id, name, drive_folder_id")
+      .eq("id", clientId)
+      .single();
+    if (clientError || !client) throw clientError ?? new Error("Cliente não encontrado.");
+
+    const { data: attachments, error: attachmentsError } = await supabase
+      .from("client_documents")
+      .select("id, file_name, file_path")
+      .eq("client_id", clientId)
+      .in("kind", ATTACHMENT_KINDS);
+    if (attachmentsError) throw attachmentsError;
+
+    const folderId = await ensureContractDocsFolder(
+      supabase as unknown as DriveClient,
+      client as Client,
+      contract as Contract,
+    );
+
+    for (const attachment of (attachments ?? []) as { id: string; file_name: string; file_path: string }[]) {
+      if (await fileExistsInFolder(folderId, attachment.file_name)) continue;
+      const { data: file, error: downloadError } = await supabase.storage
+        .from("client-documents")
+        .download(attachment.file_path);
+      if (downloadError || !file) throw downloadError ?? new Error(`Não foi possível ler ${attachment.file_name}.`);
+      const driveFileId = await uploadToDrive(
+        folderId,
+        attachment.file_name,
+        file.type || "application/octet-stream",
+        new Uint8Array(await file.arrayBuffer()),
+      );
+      await supabase.from("client_documents").update({ drive_file_id: driveFileId }).eq("id", attachment.id);
+    }
+
+    for (const extra of extraFiles) {
+      if (await fileExistsInFolder(folderId, extra.fileName)) continue;
+      const driveFileId = await uploadToDrive(folderId, extra.fileName, extra.mimeType, extra.bytes);
+      await supabase.from("client_documents").update({ drive_file_id: driveFileId }).eq("id", extra.documentId);
+    }
+
+    await supabase.from("clients").update({ drive_error: null }).eq("id", clientId);
+    return { ok: true, pasta_url: `https://drive.google.com/drive/folders/${folderId}` };
+  } catch (error) {
+    const erro = driveErrorMessage(error);
+    if (clientId) {
+      await supabase.from("clients").update({ drive_error: erro }).eq("id", clientId);
+    }
+    return { ok: false, erro };
+  }
+}
+
