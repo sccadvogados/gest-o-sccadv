@@ -449,9 +449,10 @@ function NewClientPage() {
                 />
                 <label
                   htmlFor={`file-${kind}`}
-                  className="flex h-10 w-full cursor-pointer items-center justify-center rounded-md border border-input bg-background px-3 text-sm font-medium text-[#0F2340] transition-colors hover:bg-secondary"
+                                    className="flex h-10 w-full cursor-pointer items-center justify-start gap-2 rounded-md border border-input bg-background px-3 text-sm font-normal text-muted-foreground transition-colors hover:bg-secondary"
                 >
-                  Clique aqui
+                  <Paperclip className="size-4 shrink-0" />
+                  Anexar documento…
                 </label>
                 {extracting[kind] ? (
                   <p className="flex items-center gap-2 text-xs text-muted-foreground"><LoaderCircle className="size-3.5 animate-spin" />Identificando dados…</p>
