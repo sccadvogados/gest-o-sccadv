@@ -699,10 +699,7 @@ function EditContractDialog({
             Há parcelas pagas; valor e parcelas não podem ser alterados.
           </p>
         ) : null}
-                <div className="space-y-2 sm:col-span-2">
-          <Label htmlFor={`edit-contract-description-${contract.id}`}>Descrição</Label>
-          <Input id={`edit-contract-description-${contract.id}`} value={description} onChange={(e) => setDescription(e.target.value)} />
-        </div>
+                
         <div className="space-y-2 sm:col-span-2">
           <Label>Categoria</Label>
           <Select value={category} onValueChange={setCategory}>
