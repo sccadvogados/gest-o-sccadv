@@ -578,7 +578,7 @@ function NewClientPage() {
 
                         {form.person_type === "PJ" && (
               <div className="space-y-2 sm:col-span-2">
-                <Label htmlFor="pj_descricao">Descrição da pessoa jurídica</Label>
+                                <Label htmlFor="pj_descricao">Descrição da pessoa jurídica <Pending value={form.pj_descricao} /></Label>
                 <Textarea id="pj_descricao" rows={3} value={form.pj_descricao} onChange={(e) => set("pj_descricao", e.target.value)} />
               </div>
             )}
