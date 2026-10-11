@@ -496,7 +496,7 @@ export function AgendaScreen() {
             <div className="flex rounded-md border bg-card p-1">
               <Button size="sm" variant={view === "lista" ? "secondary" : "ghost"} onClick={() => setView("lista")}>Lista</Button>
                             <Button size="sm" variant={view === "mes" ? "secondary" : "ghost"} onClick={() => setView("mes")}>Mês</Button>
-              <Tooltip><TooltipTrigger asChild><span><Button size="sm" variant="ghost" disabled>Semana</Button></span></TooltipTrigger><TooltipContent>em breve</TooltipContent></Tooltip>
+              <Button size="sm" variant={view === "semana" ? "secondary" : "ghost"} onClick={() => setView("semana")}>Semana</Button>
                         </div>
             <GoogleCalendarImportDialog onImported={() => queryClient.invalidateQueries({ queryKey: ["agenda-events"] })} />
             <Dialog open={open} onOpenChange={setOpen}><DialogTrigger asChild><Button><Plus className="size-4" /> Novo evento</Button></DialogTrigger>
