@@ -99,7 +99,7 @@ export function EditClientDialog({
     if (open) setForm(clientToForm(client));
   }, [client, open]);
 
-        const set = <Key extends keyof ClientForm,>(key: Key, value: ClientForm[Key]) =>
+          const set = <Key extends keyof ClientForm,>(key: Key, value: ClientForm[Key]) =>
     setForm((current) => ({ ...current, [key]: value }));
 
   async function lookupCep(value: string) {
