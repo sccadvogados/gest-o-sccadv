@@ -96,7 +96,7 @@ function applyAnalysisGuards(
   let poderes = result.poderes_especificos;
   for (const term of forbiddenPowerTerms) {
     if (poderes.toLocaleLowerCase("pt-BR").includes(term)) {
-      poderes = poderes.replace(new RegExp(term, "gi"), "").replace(/\\s{2,}/g, " ").trim();
+            poderes = "";
       const alerta = `O objeto menciona ${term}. Avalie se é necessário poder especial.`;
       if (!alertas.includes(alerta)) alertas.push(alerta);
     }
