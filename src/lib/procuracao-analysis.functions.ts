@@ -231,9 +231,11 @@ export const analisarObjetoProcuracao = createServerFn({ method: "POST" })
     }
 
 
-    try {
-      return resultSchema.parse(JSON.parse(content.replace(/^```json\\s*|\\s*```$/g, "")));
+        try {
+      const result = resultSchema.parse(JSON.parse(content.replace(/^```json\\s*|\\s*```$/g, "")));
+      return applyAnalysisGuards(result, objeto, (tribunais ?? []) as Tribunal[]);
     } catch {
-      throw new Error("A análise retornou um formato inválido.");
+      return blockedAnalysisResult("Não foi possível analisar o objeto. Tente novamente ou preencha manualmente.");
     }
+
   });
