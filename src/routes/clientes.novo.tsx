@@ -575,7 +575,7 @@ function NewClientPage() {
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="cpf_cnpj">CPF/CNPJ</Label>
+                            <Label htmlFor="cpf_cnpj">CPF/CNPJ <Pending value={form.cpf_cnpj} /></Label>
               <Input
                 id="cpf_cnpj"
                 value={form.cpf_cnpj}
