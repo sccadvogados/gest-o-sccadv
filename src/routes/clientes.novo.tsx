@@ -154,7 +154,9 @@ function NewClientPage() {
       };
     }
 
-    const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
+        const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
+    const { default: workerUrl } = await import("pdfjs-dist/legacy/build/pdf.worker.min.mjs?url");
+    pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
     const pdf = await pdfjs.getDocument({
       data: new Uint8Array(await file.arrayBuffer()),
     }).promise;
