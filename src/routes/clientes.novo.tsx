@@ -61,6 +61,15 @@ const ATTACHMENTS: { kind: string; label: string; multiple?: boolean }[] = [
   { kind: "outros", label: "Outros Documentos", multiple: true },
 ];
 
+type Representative = {
+  name: string;
+  nationality: string;
+  marital_status: string;
+  profession: string;
+  cpf: string;
+  quality: "sócio" | "representante legal";
+};
+
 type Form = {
     person_type: "PF" | "PJ";
   name: string;
