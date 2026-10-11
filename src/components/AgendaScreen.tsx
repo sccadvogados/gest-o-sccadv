@@ -127,8 +127,21 @@ function addBusinessDays(date: string, amount: number) {
   return result.toISOString().slice(0, 10);
 }
 
-function deadlineStart(prazo: string) {
-  return prazo ? `${prazo}T00:00:00-03:00` : "";
+function saoPauloInput(value: string | null | undefined, dateOnly = false) {
+  if (!value) return "";
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: APP_TIME_ZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    ...(dateOnly ? {} : { hour: "2-digit", minute: "2-digit", hourCycle: "h23" }),
+  }).formatToParts(new Date(value));
+  const values = Object.fromEntries(parts.filter((part) => part.type !== "literal").map((part) => [part.type, part.value]));
+  return dateOnly ? `${values.year}-${values.month}-${values.day}` : `${values.year}-${values.month}-${values.day}T${values.hour}:${values.minute}`;
+}
+
+function saoPauloValue(value: string, dateOnly = false) {
+  return value ? `${dateOnly ? value.slice(0, 10) : value}:00-03:00` : "";
 }
 
 export function AgendaScreen() {
