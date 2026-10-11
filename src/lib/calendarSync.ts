@@ -224,10 +224,20 @@ export const updateEvent = createServerFn({ method: "POST" })
   .inputValidator((input) => z.object({ id: z.string().uuid(), event: calendarEventSchema }).parse(input))
   .handler(async ({ context, data }) => {
     await ensureActive(context.supabase);
-        const { data: previous, error } = await context.supabase.from("eventos").select("google_event_id").eq("id", data.id).single();
+            const { data: previous, error } = await context.supabase.from("eventos").select("google_event_id").eq("id", data.id).single();
     if (error) throw error;
-        await removeGoogleEvent(previous.google_event_id);
-    return syncCreatedEvent(context.supabase, data.event);
+
+    const googleEvent = buildGoogleEvents(data.event)[0];
+    const googleId = previous.google_event_id
+      ? await updateGoogleEvent(previous.google_event_id, googleEvent)
+      : await insertGoogleEvent(googleEvent);
+
+    const { error: updateError } = await context.supabase
+      .from("eventos")
+      .update({ google_event_id: googleId })
+      .eq("id", data.id);
+    if (updateError) throw updateError;
+    return { comum: googleId };
   });
 
 export const deleteEvent = createServerFn({ method: "POST" })
