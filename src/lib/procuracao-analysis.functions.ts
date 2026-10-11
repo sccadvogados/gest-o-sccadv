@@ -108,6 +108,15 @@ function applyAnalysisGuards(
     }
   }
 
+      if (!result.destino.trim()) {
+    const tjDomicilio = tribunaisAtivos.find((tribunal) => tribunal.uf === ufDomicilio && tribunal.sigla.startsWith("TJ"));
+    if (tjDomicilio) {
+      result = { ...result, destino: tjDomicilio.nome_oficial };
+      const alerta = "Tribunal inferido pelo domicílio do cliente. Confirme.";
+      if (!alertas.includes(alerta)) alertas.push(alerta);
+    }
+  }
+
     const reconhecido = !result.destino || tribunaisAtivos
     .filter((tribunal) => result.destino.includes(tribunal.nome_oficial))
     .every((tribunal) => result.destino.includes(tribunal.nome_oficial));
