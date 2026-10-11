@@ -13,25 +13,7 @@ export type Database = {
     PostgrestVersion: "14.18"
   }
   public: {
-        Tables: {
-      feriados: {
-        Row: {
-          abrangencia: string
-          data: string
-          descricao: string
-        }
-        Insert: {
-          abrangencia: string
-          data: string
-          descricao: string
-        }
-        Update: {
-          abrangencia?: string
-          data?: string
-          descricao?: string
-        }
-        Relationships: []
-      }
+    Tables: {
       client_documents: {
         Row: {
           client_id: string
@@ -93,8 +75,7 @@ export type Database = {
           notes: string | null
           number: string | null
           person_type: string
-                    phone: string | null
-          pj_descricao: string
+          phone: string | null
           profession: string | null
           rg_issuer: string | null
           rg_number: string | null
@@ -158,60 +139,13 @@ export type Database = {
         }
         Relationships: []
       }
-            cliente_representantes: {
-        Row: {
-          id: string
-          cliente_id: string
-          nome: string
-          nacionalidade: string | null
-          estado_civil: string | null
-          profissao: string | null
-          cpf: string | null
-          qualidade: string
-          ordem: number
-        }
-        Insert: {
-          id?: string
-          cliente_id: string
-          nome: string
-          nacionalidade?: string | null
-          estado_civil?: string | null
-          profissao?: string | null
-          cpf?: string | null
-          qualidade: string
-          ordem?: number
-        }
-        Update: {
-          id?: string
-          cliente_id?: string
-          nome?: string
-          nacionalidade?: string | null
-          estado_civil?: string | null
-          profissao?: string | null
-          cpf?: string | null
-          qualidade?: string
-          ordem?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "cliente_representantes_cliente_id_fkey"
-            columns: ["cliente_id"]
-            isOneToOne: false
-            referencedRelation: "clients"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       contracts: {
-
         Row: {
-                    category: string
+          category: string
           client_id: string
           created_at: string
           description: string | null
           first_due_date: string
-          gratuidade: boolean
-          objeto: string | null
           id: string
           installments_count: number
           modality: string
@@ -223,13 +157,11 @@ export type Database = {
           updated_at: string
         }
         Insert: {
-                    category?: string
+          category?: string
           client_id: string
           created_at?: string
           description?: string | null
           first_due_date?: string
-          gratuidade?: boolean
-          objeto?: string | null
           id?: string
           installments_count?: number
           modality?: string
@@ -241,13 +173,11 @@ export type Database = {
           updated_at?: string
         }
         Update: {
-                    category?: string
+          category?: string
           client_id?: string
           created_at?: string
           description?: string | null
           first_due_date?: string
-          gratuidade?: boolean
-          objeto?: string | null
           id?: string
           installments_count?: number
           modality?: string
