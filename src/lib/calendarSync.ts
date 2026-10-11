@@ -90,8 +90,6 @@ function description(event: CalendarEvent): string | undefined {
 }
 
 function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
-  if (event.tipo === "protocolo") return [];
-
   const date = dateOnly(event.data_inicio);
 
     if (event.tipo === "reunião" || event.tipo === "audiência" || event.tipo === "julgamento") {
@@ -119,7 +117,7 @@ function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
         description: description(event),
     reminders: {
       useDefault: false,
-      overrides: event.tipo === "prazo"
+      overrides: event.tipo === "prazo" || event.tipo === "protocolo"
         ? [
             { method: "popup", minutes: 2340 },
             { method: "popup", minutes: 900 },
@@ -139,17 +137,17 @@ function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
     }];
   }
 
-  if (event.tipo === "prazo") {
+  if (event.tipo === "prazo" || event.tipo === "protocolo") {
     const process = event.numero_processo?.trim();
     const party = parties(event);
     const doctor = responsible(event);
-            const isProtocol = event.titulo.startsWith("[PROTOCOLO]");
-    const title = compactParts(["[SCCAdv]", isProtocol ? "[PROTOCOLO]" : null, event.titulo.replace(/^\[PROTOCOLO\]\s*/, ""), process, party, doctor]);
+            const isProtocol = event.tipo === "protocolo";
+    const title = compactParts(["[SCCAdv]", isProtocol ? "[PROTOCOLO]" : null, isProtocol ? event.titulo.replace(/^\[PROTOCOLO\]\s*/, "") : event.titulo, process, party, doctor]);
     const date = dateOnly(event.data_inicio);
     return [{
       id: "",
       summary: title,
-      colorId: isProtocol ? "5" : "7",
+      colorId: event.tipo === "protocolo" ? "5" : "7",
       start: { date },
       end: { date: nextDate(date) },
       description: common.description,
