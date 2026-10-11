@@ -373,7 +373,7 @@ export function AgendaScreen() {
   const { data: holidays = [] } = useQuery({
     queryKey: ["feriados"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("feriados").select("data");
+      const { data, error } = await officeDatabase(supabase).from("feriados").select("data");
       if (error) throw error;
       return (data ?? []).map((holiday) => holiday.data);
     },

@@ -31,7 +31,7 @@ type GoogleEvent = {
   reminders?: {
     useDefault: boolean;
     overrides: Array<{ method: "popup"; minutes: number }>;
-  };
+  } | undefined;
 };
 
 type GoogleEventIds = {

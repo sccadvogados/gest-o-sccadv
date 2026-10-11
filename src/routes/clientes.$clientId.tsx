@@ -49,6 +49,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
+import { officeDatabase } from "@/lib/office-database";
 import {
   buildContractInstallments,
   buildInstallments,
@@ -119,7 +120,7 @@ function ClientDetailPage() {
   const { data: client, isLoading } = useQuery({
     queryKey: ["client", clientId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await officeDatabase(supabase)
         .from("clients")
         .select("*")
         .eq("id", clientId)
@@ -516,8 +517,8 @@ type ContractRow = {
   modality: ContractModality;
   signature_date: string | null;
   success_fee_percent: number;
-  objeto: string | null;
-  gratuidade: boolean;
+  objeto?: string | null;
+  gratuidade?: boolean;
   installments?: Array<{ status: string }>;
 };
 

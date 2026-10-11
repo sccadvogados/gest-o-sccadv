@@ -77,7 +77,7 @@ const centenas = ["", "cento", "duzentos", "trezentos", "quatrocentos", "quinhen
 
 function numeroInteiroExtenso(value: number): string {
   const n = Math.trunc(Math.abs(value));
-  if (n < 20) return unidades[n];
+  if (n < 20) return unidades[n] ?? String(n);
   if (n < 100) return dezenas[Math.floor(n / 10)] + (n % 10 ? ` e ${unidades[n % 10]}` : "");
   if (n < 1000) {
     if (n === 100) return "cem";
@@ -136,7 +136,8 @@ function qualificacao(representante: RepresentativeForTemplate): string {
 function representantesTexto(representantes: RepresentativeForTemplate[]): string {
   const ordered = [...representantes].sort((a, b) => (a.ordem ?? 0) - (b.ordem ?? 0));
   if (ordered.length === 0) return "";
-  if (ordered.length === 1) return `sua representante legal, ${qualificacao(ordered[0])}`;
+  const first = ordered[0];
+  if (ordered.length === 1 && first) return `sua representante legal, ${qualificacao(first)}`;
   return `seus sócios ${ordered.map((representante) => qualificacao(representante)).join(", e ")}`;
 }
 
@@ -152,16 +153,17 @@ function grupoParcelas(installments: InstallmentForTemplate[]): string {
 
 export function montarProlaboreTexto(contract: ContractForTemplate, installments: InstallmentForTemplate[]): string {
   const parcelas = [...installments].sort((a, b) => (a.number ?? 0) - (b.number ?? 0));
-  if (!parcelas.length || !contract.modality || contract.modality === "exito") return "";
+  const first = parcelas[0];
+  if (!first || !contract.modality || contract.modality === "exito") return "";
   const total = parcelas.reduce((sum, installment) => sum + installment.amount, 0);
-  const firstDate = parcelas[0]?.due_date;
+  const firstDate = first.due_date;
   if (contract.modality === "mensal") {
-    const mensal = parcelas[0].amount;
+    const mensal = first.amount;
     return `${formatarValor(mensal)} (${valorPorExtenso(mensal)}) mensais, durante ${parcelas.length} (${numeroPorExtenso(parcelas.length)}) meses, totalizando ${formatarValor(total)} (${valorPorExtenso(total)}), com vencimento da primeira em ${formatarData(firstDate)}.`;
   }
   if (parcelas.length === 1) return `${formatarValor(total)} (${valorPorExtenso(total)}), a ser pago em parcela única, com vencimento em ${formatarData(firstDate)}.`;
-  const iguais = parcelas.every((installment) => Math.abs(installment.amount - parcelas[0].amount) < 0.005);
-  if (iguais) return `${formatarValor(total)} (${valorPorExtenso(total)}), a serem pagos em ${parcelas.length} (${numeroPorExtenso(parcelas.length)}) parcelas mensais de ${formatarValor(parcelas[0].amount)} (${valorPorExtenso(parcelas[0].amount)}), com vencimento da primeira em ${formatarData(firstDate)}.`;
+  const iguais = parcelas.every((installment) => Math.abs(installment.amount - first.amount) < 0.005);
+  if (iguais) return `${formatarValor(total)} (${valorPorExtenso(total)}), a serem pagos em ${parcelas.length} (${numeroPorExtenso(parcelas.length)}) parcelas mensais de ${formatarValor(first.amount)} (${valorPorExtenso(first.amount)}), com vencimento da primeira em ${formatarData(firstDate)}.`;
   return `${formatarValor(total)} (${valorPorExtenso(total)}), a serem pagos em ${parcelas.length} (${numeroPorExtenso(parcelas.length)}) parcelas mensais, sendo ${grupoParcelas(parcelas)}, com vencimento da primeira em ${formatarData(firstDate)}.`;
 }
 
