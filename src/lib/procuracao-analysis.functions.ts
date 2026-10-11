@@ -154,7 +154,18 @@ export const analisarObjetoProcuracao = createServerFn({ method: "POST" })
 
     const objeto = typeof contract.objeto === "string" ? contract.objeto.trim() : "";
     const tipoCliente = client.person_type === "PJ" ? "PJ" : "PF";
-    const ufDomicilio = typeof client.state === "string" ? client.state.toUpperCase() : "";
+        const ufDomicilio = typeof client.state === "string" ? client.state.toUpperCase() : "";
+
+    if (objeto.length < 30) {
+      return blockedAnalysisResult("Preencha o objeto do contrato.");
+    }
+
+    const hasPartContraria = /\b(em face de|contra|réu|ré|parte contrária)\b/i.test(objeto);
+    const hasAssunto = /\b(ação|processo|demanda|cobrança|indenização|execução|contrato|divórcio|inventário|benefício|aposentadoria|acidente|verbas?|rescisão|danos?)\b/i.test(objeto) ||
+      /\b(sobre|relativo ao?|referente ao?|acerca do?)\b/i.test(objeto);
+    if (!hasAssunto && !hasPartContraria) {
+      return blockedAnalysisResult("Informe o assunto e a parte contrária do objeto do contrato.");
+    }
 
     const [{ data: tribunais, error: tribunaisError }, { data: exemplos, error: exemplosError }] = await Promise.all([
       database
