@@ -13,8 +13,10 @@ type Client = { id: string; name: string };
 
 export type GoogleImportPreviewRow = {
       googleId: string;
-  tipo: "prazo" | "compromisso";
+    tipo: "prazo" | "compromisso" | "reunião";
   titulo: string;
+  dataInicio: string;
+  dataFim: string;
   processo: string;
   cliente: string;
   clienteId: string | null;
