@@ -557,7 +557,7 @@ function NewClientPage() {
 
             <div className="space-y-2">
                             <Label htmlFor="name">
-                {form.person_type === "PJ" ? "Razão social" : "Nome completo"} <Pending value={form.name} />
+                {form.person_type === "PJ" ? "Razão Social" : "Nome Completo"} <Pending value={form.name} />
               </Label>
               <Input
                 id="name"
