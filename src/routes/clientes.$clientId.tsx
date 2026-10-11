@@ -54,6 +54,7 @@ import {
 } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
 import { officeDatabase } from "@/lib/office-database";
+import { enviarAnexosParaDrive } from "@/lib/drive-upload.functions";
 import {
   buildContractInstallments,
   buildInstallments,
