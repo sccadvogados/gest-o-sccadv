@@ -176,8 +176,31 @@ export function EditClientDialog({
       if (form.cep && onlyDigits(form.cep).length !== 8) {
         throw new Error("Informe um CEP válido.");
       }
-      const { error } = await supabase.from("clients").update(form).eq("id", clientId);
+            const { error } = await supabase.from("clients").update(form).eq("id", clientId);
       if (error) throw error;
+
+      if (form.person_type === "PJ") {
+        const { error: deleteError } = await supabase
+          .from("cliente_representantes")
+          .delete()
+          .eq("cliente_id", clientId);
+        if (deleteError) throw deleteError;
+        if (representatives.length > 0) {
+          const { error: insertError } = await supabase.from("cliente_representantes").insert(
+            representatives.map((representative, ordem) => ({
+              cliente_id: clientId,
+              nome: representative.nome.trim(),
+              nacionalidade: representative.nacionalidade.trim() || null,
+              estado_civil: representative.estado_civil.trim() || null,
+              profissao: representative.profissao.trim() || null,
+              cpf: onlyDigits(representative.cpf) || null,
+              qualidade: representative.qualidade,
+              ordem,
+            })),
+          );
+          if (insertError) throw insertError;
+        }
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["client", clientId] });
