@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
+import { officeDatabase } from "@/lib/office-database";
 import { maskCep, maskCpfCnpj, maskPhone, onlyDigits } from "@/lib/format";
 
 type ClientForm = {
@@ -109,11 +110,11 @@ export function EditClientDialog({
     useEffect(() => {
     if (!open) return;
     setForm(clientToForm(client));
-    if (client.person_type !== "PJ") {
+    if (client["person_type"] !== "PJ") {
       setRepresentatives([]);
       return;
     }
-    void supabase
+    void officeDatabase(supabase)
       .from("cliente_representantes")
       .select("id, nome, nacionalidade, estado_civil, profissao, cpf, qualidade, ordem")
       .eq("cliente_id", clientId)
@@ -176,17 +177,17 @@ export function EditClientDialog({
       if (form.cep && onlyDigits(form.cep).length !== 8) {
         throw new Error("Informe um CEP válido.");
       }
-            const { error } = await supabase.from("clients").update(form).eq("id", clientId);
+            const { error } = await officeDatabase(supabase).from("clients").update(form).eq("id", clientId);
       if (error) throw error;
 
       if (form.person_type === "PJ") {
-        const { error: deleteError } = await supabase
+        const { error: deleteError } = await officeDatabase(supabase)
           .from("cliente_representantes")
           .delete()
           .eq("cliente_id", clientId);
         if (deleteError) throw deleteError;
         if (representatives.length > 0) {
-          const { error: insertError } = await supabase.from("cliente_representantes").insert(
+          const { error: insertError } = await officeDatabase(supabase).from("cliente_representantes").insert(
             representatives.map((representative, ordem) => ({
               cliente_id: clientId,
               nome: representative.nome.trim(),

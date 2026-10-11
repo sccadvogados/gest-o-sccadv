@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
+import { officeDatabase } from "@/lib/office-database";
 import {
   extractClientDocument,
   type ExtractedClientData,
@@ -284,7 +285,7 @@ function NewClientPage() {
         throw new Error("Anexe a identificação para ler os dados ou abra o preenchimento manual.");
       }
       const { data: auth } = await supabase.auth.getUser();
-      const { data: client, error } = await supabase
+      const { data: client, error } = await officeDatabase(supabase)
                 .from("clients")
         .insert((({ representatives: _representatives, ...clientForm }) => ({ ...clientForm, created_by: auth.user?.id ?? null }))(form))
         .select("id")
@@ -292,7 +293,7 @@ function NewClientPage() {
             if (error) throw error;
 
       if (form.person_type === "PJ" && form.representatives.length > 0) {
-        const { error: representativesError } = await supabase
+        const { error: representativesError } = await officeDatabase(supabase)
           .from("cliente_representantes")
           .insert(
             form.representatives.map((representative, ordem) => ({
