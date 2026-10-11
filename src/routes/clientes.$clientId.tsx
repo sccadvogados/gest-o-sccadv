@@ -258,7 +258,8 @@ function ClientDetailPage() {
         subtitle={`${client.person_type === "PJ" ? "Pessoa jurídica" : "Pessoa física"} · ${client.cpf_cnpj || "CPF/CNPJ não informado"}`}
         action={
           <div className="flex flex-wrap gap-2">
-            <EditClientDialog clientId={clientId} client={client} />
+                        <EditClientDialog clientId={clientId} client={client} />
+            <DeleteClientDialog clientId={clientId} clientName={client.name} />
             {client.drive_folder_url ? (
               <Button asChild variant="outline">
                 <a href={client.drive_folder_url} target="_blank" rel="noreferrer">
