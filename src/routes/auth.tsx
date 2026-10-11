@@ -40,7 +40,8 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [recovering, setRecovering] = useState(false);
+    const [recovering, setRecovering] = useState(false);
+  const [accessDeniedMessage, setAccessDeniedMessage] = useState<string | null>(null);
   const { user, loading } = useAuth();
   const navigate = useNavigate();
 
