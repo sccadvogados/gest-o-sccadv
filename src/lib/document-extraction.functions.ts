@@ -5,7 +5,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { officeDatabase } from "@/lib/office-database";
 
 const documentSchema = z.object({
-  kind: z.enum(["identificacao", "residencia"]),
+  kind: z.enum(["identificacao", "residencia", "contrato_social"]),
   fileName: z.string().min(1).max(240),
   mimeType: z.enum(["image/jpeg", "image/png", "image/webp", "application/pdf"]),
   base64: z.string().min(1).max(18_000_000),
