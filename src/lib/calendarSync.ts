@@ -219,8 +219,9 @@ async function ensureActive(supabase: SupabaseClient<Database>) {
 const calendarEventSchema = z.object({
   id: z.string().uuid(),
   tipo: z.string(),
-  titulo: z.string(),
+    titulo: z.string(),
   data_inicio: z.string(),
+  data_fim: z.string().nullable().optional(),
   descricao: z.string().nullable().optional(),
   numero_processo: z.string().nullable().optional(),
   parte_contraria: z.string().nullable().optional(),
