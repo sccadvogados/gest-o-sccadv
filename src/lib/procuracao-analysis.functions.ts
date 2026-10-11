@@ -147,7 +147,7 @@ export const analisarObjetoProcuracao = createServerFn({ method: "POST" })
 
     const { data: contract, error: contractError } = await database
       .from("contracts")
-      .select("objeto, client_id")
+      .select("objeto, parte_contraria, client_id")
       .eq("id", data.contrato_id)
       .single();
     if (contractError || !contract) {
