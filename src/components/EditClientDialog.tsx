@@ -184,6 +184,12 @@ export function EditClientDialog({
                 <Label htmlFor="edit-name">{form.person_type === "PJ" ? "Razão social" : "Nome completo"}</Label>
                 <Input id="edit-name" value={form.name} onChange={(event) => set("name", event.target.value)} />
               </div>
+                            {form.person_type === "PJ" && (
+                <div className="space-y-2 sm:col-span-2">
+                  <Label htmlFor="edit-pj-descricao">Descrição da pessoa jurídica</Label>
+                  <Textarea id="edit-pj-descricao" rows={3} value={form.pj_descricao} onChange={(event) => set("pj_descricao", event.target.value)} />
+                </div>
+              )}
               <div className="space-y-2">
                 <Label htmlFor="edit-cpf">CPF/CNPJ</Label>
                 <Input id="edit-cpf" value={form.cpf_cnpj} onChange={(event) => set("cpf_cnpj", maskCpfCnpj(event.target.value))} />
