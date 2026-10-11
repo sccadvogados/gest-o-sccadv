@@ -791,7 +791,9 @@ function NewContractDialog({ clientId, personType }: { clientId: string; personT
           first_due_date: firstDue,
           payment_method: paymentMethod,
           success_fee_percent: fee,
-          recurring: modality === "mensal",
+                    recurring: modality === "mensal",
+          objeto: object || null,
+          gratuidade: personType === "PF" ? gratuidade : false,
         })
         .select("id")
         .single();
