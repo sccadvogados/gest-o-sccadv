@@ -902,7 +902,7 @@ function NewContractDialog({ clientId, personType }: { clientId: string; personT
             </Select>
           </div>
 
-          <div className="space-y-2">
+                    {modality !== "exito" ? <div className="space-y-2">
                         <Label htmlFor="total">{modality === "mensal" ? "Valor mensal (R$)" : "Valor total (R$)"}</Label>
             <Input
               id="total"
