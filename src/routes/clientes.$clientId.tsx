@@ -1013,6 +1013,7 @@ function NewContractDialog({ clientId, personType }: { clientId: string; personT
             {create.isPending ? "Salvando…" : "Salvar e gerar parcelas"}
           </Button>
         </DialogFooter>
+        </>}
       </DialogContent>
     </Dialog>
   );
