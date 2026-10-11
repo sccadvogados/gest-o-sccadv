@@ -59,6 +59,70 @@ function commonWords(left: Set<string>, right: Set<string>): number {
   return total;
 }
 
+const forbiddenPowerTerms = [
+  "citação",
+  "levantar",
+  "levantamento",
+  "alvará",
+  "renunciar",
+  "renúncia",
+  "confessar",
+  "reconhecer a procedência",
+  "firmar compromisso",
+  "hipossuficiência",
+];
+
+const blockedAnalysisResult = (motivo_bloqueio: string) => ({
+  situacao: "bloqueado" as const,
+  poderes_especificos: "",
+  destino: "",
+  tribunais: [] as string[],
+  parte_contraria: "",
+  alertas: [],
+  motivo_bloqueio,
+});
+
+function applyAnalysisGuards(
+  result: z.infer<typeof resultSchema>,
+  objeto: string,
+  tribunaisAtivos: Tribunal[],
+) {
+  if (objeto.length < 30) {
+    return blockedAnalysisResult("Preencha o objeto do contrato.");
+  }
+
+  const alertas = [...result.alertas];
+  let poderes = result.poderes_especificos;
+  for (const term of forbiddenPowerTerms) {
+    if (poderes.toLocaleLowerCase("pt-BR").includes(term)) {
+      poderes = poderes.replace(new RegExp(term, "gi"), "").replace(/\\s{2,}/g, " ").trim();
+      const alerta = `O objeto menciona ${term}. Avalie se é necessário poder especial.`;
+      if (!alertas.includes(alerta)) alertas.push(alerta);
+    }
+  }
+
+  if (poderes.length > 300 || !poderes.startsWith(", especialmente para ")) {
+    if (!alertas.includes("Revise o trecho de poderes específicos.")) {
+      alertas.push("Revise o trecho de poderes específicos.");
+    }
+  }
+
+  const reconhecido = tribunaisAtivos.some((tribunal) =>
+    result.destino.includes(tribunal.nome_oficial),
+  );
+  if (result.destino && !reconhecido && !alertas.includes("Tribunal não reconhecido. Selecione na lista.")) {
+    alertas.push("Tribunal não reconhecido. Selecione na lista.");
+  }
+
+  return {
+    ...result,
+    poderes_especificos: poderes,
+    alertas,
+    situacao: alertas.length > 0 && result.situacao === "ok" ? "alerta" as const : result.situacao,
+  };
+}
+
+
 export const analisarObjetoProcuracao = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) => inputSchema.parse(input))
