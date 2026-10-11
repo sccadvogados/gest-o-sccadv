@@ -58,7 +58,17 @@ function isClientIncomplete(client: {
 function ClientsPage() {
   const [term, setTerm] = useState("");
   const [onlyIncomplete, setOnlyIncomplete] = useState(false);
-  const fetchProcessCounts = useServerFn(getActiveProcessCounts);
+    const { data: contractCounts, isLoading: contractCountsLoading } = useQuery({
+    queryKey: ["contract-counts"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("contracts").select("client_id");
+      if (error) throw error;
+      const counts: Record<string, number> = {};
+      for (const row of data ?? []) counts[row.client_id] = (counts[row.client_id] ?? 0) + 1;
+      return counts;
+    },
+  });
+
 
   const { data: clients, isLoading } = useQuery({
     queryKey: ["clients"],
