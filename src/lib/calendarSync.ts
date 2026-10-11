@@ -119,7 +119,7 @@ function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
         description: description(event),
     reminders: {
       useDefault: false,
-      overrides: event.tipo === "prazo"
+      overrides: event.tipo === "prazo" || event.tipo === "protocolo"
         ? [
             { method: "popup", minutes: 2340 },
             { method: "popup", minutes: 900 },
