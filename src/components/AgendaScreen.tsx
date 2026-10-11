@@ -472,6 +472,22 @@ export function AgendaScreen() {
     onError: () => toast.error("Não foi possível salvar o evento."),
   });
 
+    const retrySync = useMutation({
+    mutationFn: async (event: AgendaEvent) => {
+      await syncCreateEvent({
+        data: {
+          ...event,
+          cliente_nome: clients.find((client) => client.id === event.cliente_id)?.name ?? null,
+        },
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["agenda-events"] });
+      toast.success("Evento enviado ao Google Agenda.");
+    },
+    onError: () => toast.error("Não foi possível enviar ao Google Agenda."),
+  });
+
   const markDone = useMutation({
     mutationFn: async (id: string) => {
                         const { error } = await officeDatabase(supabase).from("eventos").update({ status: "cumprido" }).eq("id", id);
