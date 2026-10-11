@@ -70,10 +70,10 @@ export function ContractForm({ clientId, personType, onSaved }: ContractFormProp
       const value = Number(totalValue.replace(",", "."));
       const installmentsCount = Math.max(1, Number(count));
       const fee = Number(successFee.replace(",", ".")) || 0;
-      if (!Number.isFinite(value) || value <= 0) throw new Error("Informe um valor válido.");
-      if (!Number.isInteger(installmentsCount)) throw new Error("Informe um número inteiro de meses/parcelas.");
-      if (!firstDue) throw new Error("Informe o primeiro vencimento.");
-      if (modality === "exito" && (fee <= 0 || fee > 100)) throw new Error("Informe um percentual de êxito entre 0 e 100.");
+            if (modality !== "exito" && (!Number.isFinite(value) || value <= 0)) throw new Error("Informe um valor válido.");
+      if (modality !== "exito" && !Number.isInteger(installmentsCount)) throw new Error("Informe um número inteiro de meses/parcelas.");
+      if (modality !== "exito" && !firstDue) throw new Error("Informe o primeiro vencimento.");
+      if (modality === "exito" && (fee < 0 || fee > 100)) throw new Error("Informe um percentual de êxito entre 0 e 100.");
       if (modality !== "exito" && preview.length !== installmentsCount) throw new Error("Preencha as condições para gerar a prévia das parcelas.");
       if (modality !== "exito") {
         const expectedTotal = modality === "mensal" ? value * installmentsCount : value;
