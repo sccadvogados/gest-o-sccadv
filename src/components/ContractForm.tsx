@@ -18,7 +18,7 @@ const CATEGORIES = [
   "(R) Honorários de Sucumbência",
 ] as const;
 
-const PAYMENT_METHODS = ["PIX", "Transferência", "Boleto", "Cartão", "Dinheiro"] as const;
+const PAYMENT_METHODS = ["Cartão", "PIX", "Boleto"] as const;
 
 type PreviewInstallment = {
   number: number;

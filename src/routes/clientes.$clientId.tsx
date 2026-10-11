@@ -91,7 +91,7 @@ export const CATEGORIES = [
   "(R) Honorários de Sucumbência",
 ] as const;
 
-const PAYMENT_METHODS = ["PIX", "Transferência", "Boleto", "Cartão", "Dinheiro"] as const;
+const PAYMENT_METHODS = ["Cartão", "PIX", "Boleto"] as const;
 
 const DOC_LABELS: Record<string, string> = {
   identificacao: "Documento de Identificação",
@@ -629,7 +629,8 @@ function EditContractDialog({
     const [firstDue, setFirstDue] = useState(contract.first_due_date);
   const [modality, setModality] = useState<ContractModality>(contract.modality);
   
-  const [paymentMethod, setPaymentMethod] = useState(contract.payment_method ?? PAYMENT_METHODS[0]);
+    const [paymentMethod, setPaymentMethod] = useState(contract.payment_method ?? PAYMENT_METHODS[0]);
+  const paymentMethodOptions = PAYMENT_METHODS.includes(paymentMethod as (typeof PAYMENT_METHODS)[number]) ? PAYMENT_METHODS : [paymentMethod, ...PAYMENT_METHODS];
     const [successFee, setSuccessFee] = useState(String(contract.success_fee_percent));
     const [object, setObject] = useState(contract.objeto ?? "");
   const [parteContraria, setParteContraria] = useState(contract.parte_contraria ?? "");
@@ -724,7 +725,7 @@ function EditContractDialog({
                 <div className="space-y-2"><Label>Data de cadastro</Label><p className="text-sm text-muted-foreground">{`Data de cadastro: ${new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", year: "numeric" }).format(new Date(contract.created_at))}`}</p></div>
 
                 {modality !== "exito" ? <div className="space-y-2"><Label htmlFor={`edit-contract-due-${contract.id}`}>Primeiro vencimento</Label><Input id={`edit-contract-due-${contract.id}`} type="date" value={firstDue} onChange={(e) => setFirstDue(e.target.value)} disabled={hasPaidInstallment} /></div> : null}
-        <div className="space-y-2"><Label>Forma de pagamento</Label><Select value={paymentMethod} onValueChange={setPaymentMethod}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{PAYMENT_METHODS.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent></Select></div>
+        <div className="space-y-2"><Label>Forma de pagamento</Label><Select value={paymentMethod} onValueChange={setPaymentMethod}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{paymentMethodOptions.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent></Select></div>
                                 <div className="space-y-2 sm:col-span-2">
           <Label htmlFor={`edit-contract-counterparty-${contract.id}`}>Parte contrária</Label>
           <Input id={`edit-contract-counterparty-${contract.id}`} value={parteContraria} onChange={(e) => setParteContraria(e.target.value)} />
