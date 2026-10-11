@@ -650,7 +650,7 @@ function NewClientPage() {
 
           <div className="grid gap-5 sm:grid-cols-6">
             <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="cep">CEP</Label>
+                            <Label htmlFor="cep">CEP <Pending value={form.cep} /></Label>
               <Input
                 id="cep"
                 value={form.cep}
