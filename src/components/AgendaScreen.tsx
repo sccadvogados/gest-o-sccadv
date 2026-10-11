@@ -85,15 +85,23 @@ const labels: Record<EventType, string> = {
   acompanhamento: "Acompanhamento",
 };
 
-const colors: Record<EventType, string> = {
-    prazo: "#C48B5F",
-  protocolo: "#E3B505",
-  audiencia: "#8B2635",
-  reuniao: "#0C2340",
-    compromisso: "#6B7280",
-  julgamento: "#6B4E9B",
-  acompanhamento: "#5F7F6E",
+const typeColorKeys: Record<EventType, keyof typeof TIPO_CORES> = {
+  prazo: "prazo",
+  protocolo: "protocolo",
+  audiencia: "audiência",
+  reuniao: "reunião",
+  compromisso: "compromisso",
+  julgamento: "julgamento",
+  acompanhamento: "acompanhamento",
 };
+
+const colors: Record<EventType, string> = Object.fromEntries(
+  Object.entries(typeColorKeys).map(([type, colorKey]) => [type, TIPO_CORES[colorKey].hex]),
+) as Record<EventType, string>;
+
+function typeTextColor(type: EventType) {
+  return type === "protocolo" ? "#0F2340" : "white";
+}
 
 const emptyForm = {
   id: "",
