@@ -700,7 +700,7 @@ function NewClientPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="state">UF</Label>
+                            <Label htmlFor="state">UF <Pending value={form.state} /></Label>
               <Input
                 id="state"
                 maxLength={2}
