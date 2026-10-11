@@ -78,7 +78,7 @@ type AgendaEvent = {
 type Client = { id: string; name: string };
 
 function normalizeClientSearch(value: string) {
-  return value.normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").toLowerCase();
+  return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 }
 
 const labels: Record<EventType, string> = {
