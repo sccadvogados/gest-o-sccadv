@@ -245,6 +245,43 @@ function DateField({ value, onChange }: { value: string; onChange: (value: strin
   return <Input className="w-[160px] bg-white" type="date" value={value.slice(0, 10)} onChange={(event) => onChange(event.target.value)} />;
 }
 
+function WeekCalendar({ currentDate, onDateChange, onSlotClick, events, onEventClick }: { currentDate: Date; onDateChange: (date: Date) => void; onSlotClick: (dateTime: string) => void; events: AgendaEvent[]; onEventClick: (event: AgendaEvent) => void }) {
+  const days = calendarDays("semana", currentDate);
+  const weekLabel = `${new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "short" }).format(days[0])} – ${new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "short", year: "numeric" }).format(days[6])}`;
+  const weekDays = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+  const hours = Array.from({ length: 14 }, (_, index) => index + 7);
+  const todayKey = localDateKey(new Date().toISOString());
+  const timedTypes = ["reuniao", "audiencia", "julgamento"];
+  const isTimed = (event: AgendaEvent) => !event.dia_inteiro && (Boolean(event.data_fim) || timedTypes.includes(event.tipo));
+  const formatTime = (value: string) => new Intl.DateTimeFormat("pt-BR", { timeZone: APP_TIME_ZONE, hour: "2-digit", minute: "2-digit" }).format(new Date(value));
+  const goToWeek = (amount: number) => {
+    const next = new Date(currentDate);
+    next.setDate(next.getDate() + amount * 7);
+    onDateChange(next);
+  };
+
+  return <div className="panel mt-6 overflow-hidden">
+    <div className="flex flex-wrap items-center justify-between gap-3 border-b p-4">
+      <div className="flex items-center gap-2"><Button type="button" variant="outline" size="sm" onClick={() => goToWeek(-1)}>&lt;</Button><Button type="button" variant="outline" size="sm" onClick={() => goToWeek(1)}>&gt;</Button><Button type="button" variant="outline" size="sm" onClick={() => onDateChange(new Date())}>Hoje</Button></div>
+      <h2 className="text-lg font-semibold capitalize text-[#0F2340]">{weekLabel}</h2>
+      <div className="w-[156px]" />
+    </div>
+    <div className="grid min-w-[900px] grid-cols-7 border-b bg-muted/30">{days.map((day, index) => <div key={dateKey(day)} className="border-r p-3 text-center text-xs font-semibold text-muted-foreground"><span className="block">{weekDays[index]}</span><span className={`mx-auto mt-1 flex size-7 items-center justify-center rounded-full text-sm ${dateKey(day) === todayKey ? "bg-[#0F2340] text-white" : ""}`}>{day.getDate()}</span></div>)}</div>
+    <div className="max-h-[640px] overflow-auto"><div className="grid min-w-[900px] grid-cols-7">
+      {days.map((day) => {
+        const key = dateKey(day);
+        const dayEvents = events.filter((event) => localDateKey(event.data_inicio) === key);
+        const allDayEvents = dayEvents.filter((event) => !isTimed(event));
+        const timedEvents = dayEvents.filter(isTimed);
+        return <div key={key} className="relative border-r bg-card">
+          <div className="min-h-16 border-b p-1.5">{allDayEvents.map((event) => <button key={event.id} type="button" onClick={() => onEventClick(event)} className="mb-1 block w-full truncate rounded px-1.5 py-1 text-left text-[11px] font-medium" style={{ backgroundColor: colors[event.tipo], color: typeTextColor(event.tipo), opacity: event.status === "cumprido" || event.status === "cancelado" ? 0.5 : 1 }} title={event.titulo}>{event.titulo}</button>)}</div>
+          <div className="relative" style={{ height: `${hours.length * 56}px` }}>{hours.map((hour) => <button key={hour} type="button" aria-label={`Novo evento em ${key} às ${String(hour).padStart(2, "0")}:00`} onClick={() => onSlotClick(`${key}T${String(hour).padStart(2, "0")}:00`)} className="absolute inset-x-0 h-14 border-b text-left hover:bg-accent/40" style={{ top: `${(hour - 7) * 56}px` }} />)}{key === todayKey ? <div className="pointer-events-none absolute inset-x-0 z-10 border-t-2 border-red-500" style={{ top: `${Math.max(0, (new Date().getHours() + new Date().getMinutes() / 60 - 7) * 56)}px` }} /> : null}{timedEvents.map((event) => { const start = new Date(event.data_inicio); const end = event.data_fim ? new Date(event.data_fim) : new Date(start.getTime() + 60 * 60 * 1000); const startMinutes = start.getHours() * 60 + start.getMinutes(); const endMinutes = Math.max(startMinutes + 30, end.getHours() * 60 + end.getMinutes()); return <button key={event.id} type="button" onClick={() => onEventClick(event)} className="absolute z-20 overflow-hidden rounded px-2 py-1 text-left text-xs font-medium shadow-sm" style={{ top: `${Math.max(0, (startMinutes - 7 * 60) / 60 * 56)}px`, height: `${Math.max(28, (endMinutes - startMinutes) / 60 * 56)}px`, left: "4px", right: "4px", backgroundColor: colors[event.tipo], color: typeTextColor(event.tipo), opacity: event.status === "cumprido" || event.status === "cancelado" ? 0.5 : 1 }} title={event.titulo}>{formatTime(event.data_inicio)} {event.titulo}</button>; })}</div>
+        </div>;
+      })}
+    </div></div>
+  </div>;
+}
+
 function MonthCalendar({ currentDate, onDateChange, onDayClick, events, onEventClick }: { currentDate: Date; onDateChange: (date: Date) => void; onDayClick: (date: string) => void; events: AgendaEvent[]; onEventClick: (event: AgendaEvent) => void }) {
     const [expandedDay, setExpandedDay] = useState<string | null>(null);
   const days = calendarDays("mes", currentDate);
