@@ -34,7 +34,7 @@ type ContractFormProps = {
 export function ContractForm({ clientId, personType, onSaved }: ContractFormProps) {
   
   const [modality, setModality] = useState<ContractModality>("parcelado");
-  const [signatureDate, setSignatureDate] = useState("");
+  
   const [category, setCategory] = useState<string>(CATEGORIES[0]);
   const [totalValue, setTotalValue] = useState("");
   const [count, setCount] = useState("1");
@@ -148,10 +148,7 @@ export function ContractForm({ clientId, personType, onSaved }: ContractFormProp
           </Select>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="signatureDate">Data de assinatura (opcional)</Label>
-          <Input id="signatureDate" type="date" value={signatureDate} onChange={(e) => setSignatureDate(e.target.value)} />
-        </div>
+        
 
         <div className="space-y-2 sm:col-span-2">
           <Label>Categoria</Label>

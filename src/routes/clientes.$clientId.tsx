@@ -351,7 +351,9 @@ function ClientDetailPage() {
                     <div key={contract.id} className="panel mt-4 overflow-hidden rounded-xl border border-[#E6D6C4] border-t-[3px] border-t-[#D4A782] bg-white shadow-panel">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-5">
               <div>
-                                <p className="font-medium">Contrato {String(contract.numero).padStart(3, "0")}/{contract.ano}</p>
+                                                                <p className="font-medium">Contrato {String(contract.numero).padStart(3, "0")}/{contract.ano}</p>
+                <p className="text-xs text-muted-foreground">{`Cadastrado em ${new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", year: "numeric" }).format(new Date(contract.created_at))}`}</p>
+
                 <p className="text-sm text-muted-foreground">
                   {contract.category} · {formatCurrency(contract.total_value)} em{" "}
                   {contract.installments_count}x · êxito {contract.success_fee_percent}%
@@ -521,7 +523,8 @@ type ContractRow = {
   first_due_date: string;
   payment_method: string | null;
   modality: ContractModality;
-  signature_date: string | null;
+    created_at: string;
+
   success_fee_percent: number;
     objeto?: string | null;
   parte_contraria?: string | null;
@@ -624,7 +627,7 @@ function EditContractDialog({
   const [count, setCount] = useState(String(contract.installments_count));
     const [firstDue, setFirstDue] = useState(contract.first_due_date);
   const [modality, setModality] = useState<ContractModality>(contract.modality);
-  const [signatureDate, setSignatureDate] = useState(contract.signature_date ?? "");
+  
   const [paymentMethod, setPaymentMethod] = useState(contract.payment_method ?? PAYMENT_METHODS[0]);
     const [successFee, setSuccessFee] = useState(String(contract.success_fee_percent));
     const [object, setObject] = useState(contract.objeto ?? "");
@@ -645,16 +648,18 @@ function EditContractDialog({
       }
 
                               const contractUpdate = hasPaidInstallment
-                ? { category, modality, signature_date: signatureDate || null, payment_method: paymentMethod, success_fee_percent: fee, objeto: object || null, parte_contraria: parteContraria || null, gratuidade }
+                                ? { category, modality, payment_method: paymentMethod, success_fee_percent: fee, objeto: object || null, parte_contraria: parteContraria || null, gratuidade }
+
 
         : modality === "exito"
-                    ? { category, modality, signature_date: signatureDate || null, total_value: 0, installments_count: 1, payment_method: paymentMethod, success_fee_percent: fee, objeto: object || null, parte_contraria: parteContraria || null, gratuidade }
+                                        ? { category, modality, total_value: 0, installments_count: 1, payment_method: paymentMethod, success_fee_percent: fee, objeto: object || null, parte_contraria: parteContraria || null, gratuidade }
+
 
           : {
               category,
               modality,
-              signature_date: signatureDate || null,
-              total_value: total,
+                            total_value: total,
+
               installments_count: installmentsCount,
               first_due_date: firstDue,
               payment_method: paymentMethod,
@@ -715,7 +720,8 @@ function EditContractDialog({
           <div className="space-y-2"><Label htmlFor={`edit-contract-count-${contract.id}`}>Número de parcelas</Label><Input id={`edit-contract-count-${contract.id}`} type="number" min={1} value={count} onChange={(e) => setCount(e.target.value)} disabled={hasPaidInstallment} /></div>
         </> : null}
                 <div className="space-y-2"><Label>Modalidade</Label><Select value={modality} onValueChange={(value) => setModality(value as ContractModality)} disabled={hasPaidInstallment}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="parcelado">Pró-labore parcelado</SelectItem><SelectItem value="mensal">Pró-labore mensal</SelectItem><SelectItem value="exito">Somente êxito</SelectItem></SelectContent></Select></div>
-        <div className="space-y-2"><Label htmlFor={`edit-contract-signature-${contract.id}`}>Data de assinatura</Label><Input id={`edit-contract-signature-${contract.id}`} type="date" value={signatureDate} onChange={(e) => setSignatureDate(e.target.value)} /></div>
+                <div className="space-y-2"><Label>Data de cadastro</Label><p className="text-sm text-muted-foreground">{`Data de cadastro: ${new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", year: "numeric" }).format(new Date(contract.created_at))}`}</p></div>
+
                 {modality !== "exito" ? <div className="space-y-2"><Label htmlFor={`edit-contract-due-${contract.id}`}>Primeiro vencimento</Label><Input id={`edit-contract-due-${contract.id}`} type="date" value={firstDue} onChange={(e) => setFirstDue(e.target.value)} disabled={hasPaidInstallment} /></div> : null}
         <div className="space-y-2"><Label>Forma de pagamento</Label><Select value={paymentMethod} onValueChange={setPaymentMethod}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{PAYMENT_METHODS.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent></Select></div>
                                 <div className="space-y-2 sm:col-span-2">
