@@ -171,7 +171,8 @@ export const analisarObjetoProcuracao = createServerFn({ method: "POST" })
       return blockedAnalysisResult("Preencha o objeto do contrato.");
     }
 
-    const hasPartContraria = /\b(em face de|contra|réu|ré|parte contrária)\b/i.test(objeto);
+        const parteContraria = typeof contract.parte_contraria === "string" ? contract.parte_contraria.trim() : "";
+    const hasPartContraria = Boolean(parteContraria) || /\b(em face de|contra|réu|ré|parte contrária)\b/i.test(objeto);
     const hasAssunto = /\b(ação|processo|demanda|cobrança|indenização|execução|contrato|divórcio|inventário|benefício|aposentadoria|acidente|verbas?|rescisão|danos?)\b/i.test(objeto) ||
       /\b(sobre|relativo ao?|referente ao?|acerca do?)\b/i.test(objeto);
     if (!hasAssunto && !hasPartContraria) {
