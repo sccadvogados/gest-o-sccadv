@@ -202,9 +202,9 @@ function ClientsPage() {
                   {[client.city, client.state].filter(Boolean).join(" / ") || "—"}
                 </TableCell>
                 <TableCell className="text-sm font-medium tabular-nums">
-                  {processCountsLoading
+                                    {contractCountsLoading
                     ? "—"
-                    : processCounts?.[client.drive_folder_id ?? ""] ?? 0}
+                    : contractCounts?.[client.id] ?? 0}
                 </TableCell>
                 <TableCell className="text-sm text-muted-foreground">
                   {formatDate(client.created_at)}
