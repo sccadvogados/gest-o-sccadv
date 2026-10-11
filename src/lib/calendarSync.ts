@@ -278,7 +278,18 @@ export const updateEvent = createServerFn({ method: "POST" })
             const { data: previous, error } = await context.supabase.from("eventos").select("google_event_id").eq("id", data.id).single();
     if (error) throw error;
 
-    const googleEvent = buildGoogleEvents(data.event)[0];
+        const googleEvents = buildGoogleEvents(data.event);
+    if (googleEvents.length === 0) {
+      await removeGoogleEvent(previous.google_event_id);
+      const { error: clearError } = await context.supabase
+        .from("eventos")
+        .update({ google_event_id: null })
+        .eq("id", data.id);
+      if (clearError) throw clearError;
+      return { comum: null };
+    }
+
+    const googleEvent = googleEvents[0];
     const googleId = previous.google_event_id
       ? await updateGoogleEvent(previous.google_event_id, googleEvent)
       : await insertGoogleEvent(googleEvent);
