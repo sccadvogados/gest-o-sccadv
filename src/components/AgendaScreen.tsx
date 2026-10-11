@@ -70,7 +70,8 @@ type AgendaEvent = {
   local_link: string | null;
   contrato_id: string | null;
   responsavel: string | null;
-  status: EventStatus;
+    status: EventStatus;
+  dia_inteiro: boolean | null;
 };
 
 type Client = { id: string; name: string };
