@@ -416,6 +416,13 @@ function NewClientPage() {
               />
             </div>
 
+                        {form.person_type === "PJ" && (
+              <div className="space-y-2 sm:col-span-2">
+                <Label htmlFor="pj_descricao">Descrição da pessoa jurídica</Label>
+                <Textarea id="pj_descricao" rows={3} value={form.pj_descricao} onChange={(e) => set("pj_descricao", e.target.value)} />
+              </div>
+            )}
+
             <div className="space-y-2">
               <Label htmlFor="cpf_cnpj">CPF/CNPJ</Label>
               <Input
