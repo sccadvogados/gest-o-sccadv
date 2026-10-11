@@ -147,7 +147,12 @@ async function insertGoogleEvent(event: GoogleEvent): Promise<string> {
 
 async function removeGoogleEvent(id: string | null | undefined): Promise<void> {
   if (!id) return;
-  await googleRequest(`/events/${encodeURIComponent(id)}`, { method: "DELETE" });
+  try {
+    await googleRequest(`/events/${encodeURIComponent(id)}`, { method: "DELETE" });
+  } catch (error) {
+    const status = (error as { status?: number }).status;
+    if (status !== 404 && status !== 410) throw error;
+  }
 }
 
 async function ensureActive(supabase: SupabaseClient<Database>) {
