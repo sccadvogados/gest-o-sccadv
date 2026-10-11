@@ -638,22 +638,25 @@ function EditContractDialog({
         if (!firstDue) throw new Error("Informe o primeiro vencimento.");
       }
 
-                        const contractUpdate = hasPaidInstallment || modality === "exito"
-        ? { description, category, modality, signature_date: signatureDate || null, payment_method: paymentMethod, success_fee_percent: fee, objeto: object || null, gratuidade }
-        : {
-            description,
-            category,
-            modality,
-            signature_date: signatureDate || null,
-            total_value: total,
-            installments_count: installmentsCount,
-            first_due_date: firstDue,
-            payment_method: paymentMethod,
-            success_fee_percent: fee,
-                        recurring: modality === "mensal",
-            objeto: object || null,
-            gratuidade,
-          };
+                              const contractUpdate = hasPaidInstallment
+        ? { description, category, modality, signature_date: signatureDate || null, payment_method: paymentMethod, success_fee_percent: fee, objeto: object || null, parte_contraria: parteContraria || null, gratuidade }
+        : modality === "exito"
+          ? { description, category, modality, signature_date: signatureDate || null, total_value: 0, installments_count: 1, payment_method: paymentMethod, success_fee_percent: fee, objeto: object || null, parte_contraria: parteContraria || null, gratuidade }
+          : {
+              description,
+              category,
+              modality,
+              signature_date: signatureDate || null,
+              total_value: total,
+              installments_count: installmentsCount,
+              first_due_date: firstDue,
+              payment_method: paymentMethod,
+              success_fee_percent: fee,
+              recurring: modality === "mensal",
+              objeto: object || null,
+              parte_contraria: parteContraria || null,
+              gratuidade,
+            };
       const { error } = await officeDatabase(supabase).from("contracts").update(contractUpdate).eq("id", contract.id);
       if (error) throw error;
 
