@@ -94,7 +94,8 @@ function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
 
     if (event.tipo === "reunião" || event.tipo === "audiência" || event.tipo === "julgamento") {
     if (!event.data_fim) throw new Error("A reunião precisa ter horário de término.");
-    const meetingTitle = event.titulo.replace(/^\[REUNIÃO\]\s*/, "");
+        const marker = event.tipo === "reunião" ? "[REUNIÃO]" : event.tipo === "audiência" ? "[AUDIÊNCIA]" : "[JULGAMENTO]";
+    const meetingTitle = event.titulo.replace(/^\[(?:REUNIÃO|AUDIÊNCIA|JULGAMENTO)\]\s*/, "");
     return [{
       id: "",
             summary: compactParts(["[SCCAdv]", marker, meetingTitle, event.numero_processo, parties(event), responsible(event)]),
