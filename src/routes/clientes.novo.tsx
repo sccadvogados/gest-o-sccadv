@@ -700,8 +700,76 @@ function NewClientPage() {
         </div>}
             </form>}
 
-      {step === 2 && savedClientId && (
-        <section className="panel mt-8 rounded-xl border border-t-[3px] border-t-accent bg-card p-6 text-card-foreground shadow-panel">
+            {step === 2 && savedClientId && (
+        <section className="panel mt-8 space-y-6 rounded-xl border border-t-[3px] border-t-accent bg-card p-6 text-card-foreground">
+          <ObjectClauseField value={objeto} onChange={setObjeto} />
+          {form.person_type === "PF" && (
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" checked={gratuidade} onChange={(event) => setGratuidade(event.target.checked)} />
+              Pedir gratuidade de justiça
+            </label>
+          )}
+          <div className="flex items-center justify-between gap-3">
+            <Button type="button" onClick={() => {
+              if (!objeto.trim()) {
+                toast.error("Preencha o objeto do contrato para continuar.");
+                return;
+              }
+              setStep(3);
+            }}>
+              Continuar
+            </Button>
+            <button
+              type="button"
+              className="text-sm text-muted-foreground underline-offset-4 hover:underline"
+              onClick={() => navigate({ to: "/clientes/$clientId", params: { clientId: savedClientId } })}
+            >
+              Pular contrato
+            </button>
+          </div>
+        </section>
+      )}
+
+      {step === 3 && savedClientId && (
+        <section className="panel mt-8 rounded-xl border border-t-[3px] border-t-accent bg-card p-6 text-card-foreground">
+          <ContractForm
+            clientId={savedClientId}
+            personType={form.person_type}
+            hideObject
+            initialObject={objeto}
+            initialGratuidade={gratuidade}
+            onSaved={(contractId) => {
+              setSavedContractId(contractId);
+              setStep(4);
+              void sendAttachmentsToDrive({ data: { contrato_id: contractId } }).then((result) => {
+                if (!result.ok) {
+                  toast.warning(`Contrato salvo, mas não foi possível enviar os anexos ao Drive: ${result.erro}`);
+                }
+              }).catch((error) => {
+                toast.warning(`Contrato salvo, mas não foi possível enviar os anexos ao Drive: ${error instanceof Error ? error.message : "Erro desconhecido."}`);
+              });
+            }}
+          />
+          <Button type="button" variant="outline" className="mt-3" onClick={() => setStep(2)}>
+            Voltar
+          </Button>
+        </section>
+      )}
+
+      {step === 4 && savedClientId && savedContractId && (
+        <section className="mt-8 space-y-4">
+          <p>Revisão e geração dos documentos (em breve)</p>
+          <Button
+            type="button"
+            onClick={() => navigate({ to: "/clientes/$clientId", params: { clientId: savedClientId } })}
+          >
+            Ir para a ficha
+          </Button>
+        </section>
+      )}
+
+      {false && step === 2 && savedClientId && (
+        <section className="panel mt-8 rounded-xl border border-t-[3px] border-t-accent bg-card p-6 text-card-foreground">
           <ContractForm
             clientId={savedClientId}
             personType={form.person_type}
