@@ -72,7 +72,9 @@ export function AppShell({ children }: { children: ReactNode }) {
     <div className="min-h-screen bg-background">
             <header className="border-b border-[#ECE8E1] border-t-[3px] border-t-[#D4A782] bg-white text-[#0F2340]">
                 <div className="mx-auto flex max-w-[1240px] flex-wrap items-center justify-between gap-4 px-6 py-4">
-          <BrandMark />
+                    <Link to="/inicio" aria-label="Ir para o Início" className="rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <BrandMark />
+          </Link>
           <nav className="flex items-center gap-1">
                                                 {NAV.map(({ to, label, icon }) => {
               const NavItemIcon = icon;
