@@ -20,7 +20,7 @@ function defaultDate() {
     day: "2-digit",
   }).formatToParts(new Date());
   const values = Object.fromEntries(parts.filter((part) => part.type !== "literal").map((part) => [part.type, part.value]));
-  const date = new Date(Date.UTC(Number(values.year), Number(values.month) - 1, Number(values.day)));
+  const date = new Date(Date.UTC(Number(values["year"]), Number(values["month"]) - 1, Number(values["day"])));
   date.setUTCDate(date.getUTCDate() - 30);
   return date.toISOString().slice(0, 10);
 }

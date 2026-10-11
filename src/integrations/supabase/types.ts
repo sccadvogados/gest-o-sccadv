@@ -198,7 +198,7 @@ export type Database = {
           },
         ]
       }
-            eventos: {
+      eventos: {
         Row: {
           cliente_id: string | null
           contrato_id: string | null
@@ -214,6 +214,8 @@ export type Database = {
           numero_processo: string | null
           orgao_vara: string | null
           parte_contraria: string | null
+          prazo_fatal: string | null
+          prazo_interno: string | null
           responsavel: string | null
           status: string
           tipo: string
@@ -235,6 +237,8 @@ export type Database = {
           numero_processo?: string | null
           orgao_vara?: string | null
           parte_contraria?: string | null
+          prazo_fatal?: string | null
+          prazo_interno?: string | null
           responsavel?: string | null
           status?: string
           tipo: string
@@ -256,6 +260,8 @@ export type Database = {
           numero_processo?: string | null
           orgao_vara?: string | null
           parte_contraria?: string | null
+          prazo_fatal?: string | null
+          prazo_interno?: string | null
           responsavel?: string | null
           status?: string
           tipo?: string

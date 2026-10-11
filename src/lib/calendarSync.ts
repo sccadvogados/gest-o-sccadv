@@ -9,15 +9,15 @@ type CalendarEvent = {
   id: string;
   tipo: string;
   titulo: string;
-  descricao?: string | null;
-  numero_processo?: string | null;
-  parte_contraria?: string | null;
-  responsavel?: string | null;
-  cliente_nome?: string | null;
+  descricao?: string | null | undefined;
+  numero_processo?: string | null | undefined;
+  parte_contraria?: string | null | undefined;
+  responsavel?: string | null | undefined;
+  cliente_nome?: string | null | undefined;
     data_inicio: string;
-  data_fim?: string | null;
+  data_fim?: string | null | undefined;
   
-  local_link?: string | null;
+  local_link?: string | null | undefined;
 };
 
 type GoogleEvent = {
@@ -128,7 +128,7 @@ function buildGoogleEvents(event: CalendarEvent): GoogleEvent[] {
     }];
   }
 
-  const common = {
+  const common: Pick<GoogleEvent, "start" | "end" | "description" | "reminders"> = {
     start: { date },
     end: { date: nextDate(date) },
         description: description(event),
@@ -294,7 +294,8 @@ export const updateEvent = createServerFn({ method: "POST" })
     if (error) throw error;
 
         const googleEvents = buildGoogleEvents(data.event);
-    if (googleEvents.length === 0) {
+    const googleEvent = googleEvents[0];
+    if (!googleEvent) {
       await removeGoogleEvent(previous.google_event_id);
       const { error: clearError } = await context.supabase
         .from("eventos")
@@ -304,7 +305,6 @@ export const updateEvent = createServerFn({ method: "POST" })
       return { comum: null };
     }
 
-    const googleEvent = googleEvents[0];
     const googleId = previous.google_event_id
       ? await updateGoogleEvent(previous.google_event_id, googleEvent)
       : await insertGoogleEvent(googleEvent);
