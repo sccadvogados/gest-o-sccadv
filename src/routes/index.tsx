@@ -131,7 +131,7 @@ function ClientsPage() {
             <BriefcaseBusiness className="size-5 text-accent" />
           </div>
           <div>
-            <p className="text-xs text-muted-foreground">Processos ativos</p>
+            <p className="text-xs text-muted-foreground">Contratos ativos</p>
             <p className="text-xl font-semibold tabular-nums">
               {processCountsLoading ? "—" : totalActiveProcesses}
             </p>
@@ -147,7 +147,7 @@ function ClientsPage() {
               <TableHead>CPF/CNPJ</TableHead>
               <TableHead>Contato</TableHead>
               <TableHead>Cidade</TableHead>
-              <TableHead>Processos ativos</TableHead>
+              <TableHead>Contratos ativos</TableHead>
               <TableHead>Cadastro</TableHead>
               <TableHead className="text-right">Pasta</TableHead>
             </TableRow>
