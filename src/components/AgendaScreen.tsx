@@ -93,8 +93,8 @@ const labels: Record<EventType, string> = {
 const typeColorKeys: Record<EventType, keyof typeof TIPO_CORES> = {
   prazo: "prazo",
   protocolo: "protocolo",
-  audiencia: "audiência",
-  reuniao: "reunião",
+    audiencia: "audiencia",
+  reuniao: "reuniao",
   compromisso: "compromisso",
   julgamento: "julgamento",
   acompanhamento: "acompanhamento",
