@@ -158,7 +158,52 @@ export type Database = {
         }
         Relationships: []
       }
+            cliente_representantes: {
+        Row: {
+          id: string
+          cliente_id: string
+          nome: string
+          nacionalidade: string | null
+          estado_civil: string | null
+          profissao: string | null
+          cpf: string | null
+          qualidade: string
+          ordem: number
+        }
+        Insert: {
+          id?: string
+          cliente_id: string
+          nome: string
+          nacionalidade?: string | null
+          estado_civil?: string | null
+          profissao?: string | null
+          cpf?: string | null
+          qualidade: string
+          ordem?: number
+        }
+        Update: {
+          id?: string
+          cliente_id?: string
+          nome?: string
+          nacionalidade?: string | null
+          estado_civil?: string | null
+          profissao?: string | null
+          cpf?: string | null
+          qualidade?: string
+          ordem?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cliente_representantes_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contracts: {
+
         Row: {
                     category: string
           client_id: string
