@@ -25,7 +25,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { supabase } from "@/integrations/supabase/client";
 import { officeDatabase } from "@/lib/office-database";
 import { APP_TIME_ZONE, formatDate } from "@/lib/format";
-import { createEvent as syncCreateEvent, deleteEvent as syncDeleteEvent, updateEvent as syncUpdateEvent } from "@/lib/calendarSync";
+import { createEvent as syncCreateEvent, deleteEvent as syncDeleteEvent, TIPO_CORES, updateEvent as syncUpdateEvent } from "@/lib/calendarSync";
 
 type EventType = "prazo" | "protocolo" | "audiencia" | "reuniao" | "compromisso" | "julgamento" | "acompanhamento";
 type EventStatus = "pendente" | "cumprido" | "cancelado";
