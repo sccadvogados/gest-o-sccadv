@@ -361,7 +361,7 @@ function NewClientPage() {
         subtitle="Anexe a identificação e o comprovante de residência para preencher os dados automaticamente."
       />
 
-      <form
+            {step === 1 && <form
         className="mt-8 space-y-8"
         onSubmit={(event) => {
           event.preventDefault();
