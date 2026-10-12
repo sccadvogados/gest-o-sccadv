@@ -198,6 +198,8 @@ export type Database = {
       }
       contracts: {
         Row: {
+          captacao: string | null
+          captacao_percentual: number | null
           category: string
           client_id: string
           created_at: string
@@ -218,6 +220,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          captacao?: string | null
+          captacao_percentual?: number | null
           category?: string
           client_id: string
           created_at?: string
@@ -238,6 +242,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          captacao?: string | null
+          captacao_percentual?: number | null
           category?: string
           client_id?: string
           created_at?: string
