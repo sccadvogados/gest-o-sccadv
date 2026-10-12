@@ -823,7 +823,7 @@ function EditContractDialog({
             <SelectContent>{CATEGORIES.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
           </Select>
         </div>
-        {modality !== "exito" ? (
+                {!semParcelas ? (
           <>
             <div className="space-y-2">
               <Label htmlFor={`edit-contract-total-${contract.id}`}>{modality === "mensal" ? "Valor mensal" : "Valor total"}</Label>
