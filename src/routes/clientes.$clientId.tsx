@@ -767,11 +767,11 @@ function EditContractDialog({
       const { error } = await officeDatabase(supabase).from("contracts").update(contractUpdate).eq("id", contract.id);
       if (error) throw error;
 
-      if (hasPaidInstallment) return;
+            if (hasPaidInstallment) return;
 
       const { error: deleteError } = await supabase.from("installments").delete().eq("contract_id", contract.id);
       if (deleteError) throw deleteError;
-      if (modality === "exito") return;
+      if (semParcelas) return;
 
       const rows = buildContractInstallments(totalValue, installmentsCount, firstDue, modality).map((row) => ({
         ...row,
