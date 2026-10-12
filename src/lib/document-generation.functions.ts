@@ -111,8 +111,10 @@ function missingData(client: any, contract: any, representatives: any[], install
     for (const [label, value] of addressFields) if (!required(value)) missing.push(`endereço (${label})`);
   }
 
-  if (!required(contract.objeto)) missing.push("objeto do contrato");
-    if (contract.modality === "exito") {
+    if (!required(contract.objeto)) missing.push("objeto do contrato");
+    if (contract.modality === "probono") {
+    // Pro bono: sem honorários contratuais, nada a exigir das condições de pagamento.
+  } else if (contract.modality === "exito") {
     if (!(Number(contract.success_fee_percent) > 0)) missing.push("percentual de êxito");
   } else if (!required(contract.modality) || !required(contract.first_due_date) || installments.length === 0) {
     missing.push("condições de pagamento");
