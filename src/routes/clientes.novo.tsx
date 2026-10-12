@@ -662,7 +662,20 @@ function NewClientPage() {
                 value={form.name}
                 onChange={(e) => set("name", e.target.value)}
               />
-            </div>
+                        </div>
+
+            {form.person_type === "PF" && (
+              <div className="space-y-2">
+                <Label>Sexo <Pending value={form.sexo} /></Label>
+                <Select value={form.sexo} onValueChange={(value) => set("sexo", value as "M" | "F")}>
+                  <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="M">Masculino</SelectItem>
+                    <SelectItem value="F">Feminino</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
 
                         
 
