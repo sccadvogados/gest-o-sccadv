@@ -72,18 +72,20 @@ export function ContractForm({
   const [captacaoPercentual, setCaptacaoPercentual] = useState("");
   const temRepasse = captacao === "Indicação" || captacao === "Parceria";
   const [successFee, setSuccessFee] = useState("0");
-  const [object, setObject] = useState(initialObject ?? "");
+    const [object, setObject] = useState(initialObject ?? "");
   const [gratuidade, setGratuidade] = useState(initialGratuidade ?? personType === "PF");
   const [preview, setPreview] = useState<PreviewInstallment[]>([]);
   const queryClient = useQueryClient();
+  const proBono = modality === "probono";
+  const semParcelas = modality === "exito" || proBono;
 
   useEffect(() => {
-    if (!Number.isFinite(totalValue) || totalValue <= 0 || !Number.isInteger(Number(count)) || Number(count) < 1 || !firstDue || modality === "exito") {
+    if (!Number.isFinite(totalValue) || totalValue <= 0 || !Number.isInteger(Number(count)) || Number(count) < 1 || !firstDue || semParcelas) {
       setPreview([]);
       return;
     }
     setPreview(buildContractInstallments(totalValue, Number(count), firstDue, modality));
-  }, [totalValue, count, firstDue, modality]);
+  }, [totalValue, count, firstDue, modality, semParcelas]);
 
   function updatePreview(index: number, field: "amount" | "due_date", value: number | string) {
     setPreview((current) => current.map((row, rowIndex) => (rowIndex === index ? { ...row, [field]: value } : row)));
