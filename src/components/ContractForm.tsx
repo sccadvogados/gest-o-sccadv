@@ -223,7 +223,7 @@ export function ContractForm({
           </Select>
         </div>
 
-        {modality !== "exito" ? (
+                {!semParcelas ? (
           <>
             <div className="space-y-2">
                             <Label htmlFor="total">{modality === "mensal" ? "Valor Mensal" : "Valor Total"}</Label>
