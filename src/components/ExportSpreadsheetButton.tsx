@@ -79,13 +79,18 @@ export function ExportSpreadsheetButton() {
 
   async function exportar() {
     setBusy(true);
-    try {
+        try {
       const [clients, contracts, installments, events] = await Promise.all([
         fetchAll("clients", "*", "name"),
         fetchAll("contracts", "*, clients(name)", "created_at"),
         fetchAll("installments", "*, clients(name), contracts(numero, ano)", "due_date"),
         fetchAll("eventos", "*, clients(name)", "data_inicio"),
-      ]);
+      ]).then(([allClients, allContracts, allInstallments, allEvents]) => [
+        allClients.filter((client) => client["rascunho"] !== true),
+        allContracts.filter((contract) => contract["rascunho"] !== true),
+        allInstallments,
+        allEvents,
+      ] as const);
 
       const sheets: XlsxSheet[] = [
         {
