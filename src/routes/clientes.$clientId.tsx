@@ -732,10 +732,10 @@ function EditContractDialog({
   const temRepasse = captacao === "Indicação" || captacao === "Parceria";
   const cadastro = new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", year: "numeric" }).format(new Date(contract.created_at));
 
-  const update = useMutation({
+    const update = useMutation({
     mutationFn: async () => {
       const installmentsCount = Math.max(1, Number(count));
-      const fee = Number(successFee.replace(",", ".")) || 0;
+      const fee = proBono ? 0 : Number(successFee.replace(",", ".")) || 0;
       const objeto = object.trim().replace(/\.+$/, "").trim() || null;
             const gratuidadeToSave = personType === "PF" ? gratuidade : false;
       const repasse = Number(captacaoPercentual.replace(",", "."));
@@ -744,7 +744,7 @@ function EditContractDialog({
       }
       if (modality === "exito") {
         if (fee <= 0) throw new Error("Informe um percentual de êxito válido.");
-      } else if (!hasPaidInstallment) {
+      } else if (!proBono && !hasPaidInstallment) {
         if (!Number.isFinite(totalValue) || totalValue <= 0) throw new Error("Informe um valor total válido.");
         if (!Number.isInteger(Number(count)) || Number(count) < 1) throw new Error("Informe um número inteiro de parcelas.");
         if (!firstDue) throw new Error("Informe o primeiro vencimento.");
@@ -752,7 +752,7 @@ function EditContractDialog({
 
       const common = {
         category,
-        payment_method: paymentMethod,
+        payment_method: proBono ? null : paymentMethod,
         success_fee_percent: fee,
         objeto,
         gratuidade: gratuidadeToSave,
@@ -761,7 +761,7 @@ function EditContractDialog({
       };
       const contractUpdate = hasPaidInstallment
         ? common
-        : modality === "exito"
+        : semParcelas
           ? { ...common, modality, total_value: 0, installments_count: 1, recurring: false }
           : { ...common, modality, total_value: totalValue, installments_count: installmentsCount, first_due_date: firstDue, recurring: modality === "mensal" };
       const { error } = await officeDatabase(supabase).from("contracts").update(contractUpdate).eq("id", contract.id);
