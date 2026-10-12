@@ -73,8 +73,11 @@ export type DocumentTemplateData = {
   assinatura_documento: string;
   objeto: string;
   tem_prolabore: boolean;
-  prolabore_texto: string;
+    prolabore_texto: string;
   tem_exito: boolean;
+  tem_ambos: boolean;
+  numero_exito: string;
+  numero_prolabore: string;
   exito_percentual: string;
   exito_extenso: string;
   data_extenso: string;
