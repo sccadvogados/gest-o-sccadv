@@ -201,7 +201,7 @@ export function ContractForm({
         ) : null}
 
         <div className="space-y-2">
-          <Label>Forma de pagamento</Label>
+                    <Label>Forma de Pagamento</Label>
           <Select value={paymentMethod} onValueChange={setPaymentMethod}>
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>{PAYMENT_METHODS.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
