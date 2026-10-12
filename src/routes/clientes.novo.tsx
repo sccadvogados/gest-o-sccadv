@@ -126,6 +126,11 @@ const EMPTY: Form = {
   notes: "",
 };
 
+function primeiraMaiuscula(value: string | null | undefined): string {
+  const texto = (value ?? "").trim().toLocaleLowerCase("pt-BR");
+  return texto ? texto.charAt(0).toLocaleUpperCase("pt-BR") + texto.slice(1) : "";
+}
+
 function Pending({ value }: { value: string | null | undefined }) {
   return !value?.trim() ? <span className="ml-0.5 text-destructive" aria-label="pendente">*</span> : null;
 }
