@@ -137,7 +137,8 @@ export function ContractForm({
         objeto: objectToSave || null,
                 gratuidade: gratuidadeToSave,
                 captacao: captacao || null,
-        captacao_percentual: temRepasse ? repasse : null,
+                captacao_percentual: temRepasse ? repasse : null,
+        retencao_percentual: modality === "probono" ? null : retencaoNumero,
       };
 
       const parcelasRascunho = semParcelas ? [] : preview.map((row) => ({
