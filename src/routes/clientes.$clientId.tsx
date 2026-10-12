@@ -373,8 +373,11 @@ function ClientDetailPage() {
                     {`Arquivado${contract.arquivado_em ? ` em ${formatDate(contract.arquivado_em)}` : ""}`}
                   </Badge>
                                 ) : null}
-                {contract.modality !== "probono" ? (
+                                {contract.modality !== "probono" ? (
                   <Badge variant="secondary">{contract.payment_method || "Forma a definir"}</Badge>
+                ) : null}
+                {contract.retencao_percentual != null && contract.modality !== "probono" ? (
+                  <Badge variant="secondary">{`Retenção: ${String(contract.retencao_percentual).replace(".", ",")}%`}</Badge>
                 ) : null}
                 {contract.captacao ? (
                   <Badge variant="secondary">
