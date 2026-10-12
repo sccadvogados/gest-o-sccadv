@@ -244,6 +244,8 @@ export function montarProlaboreTexto(contract: ContractForTemplate, installments
 }
 
 export function montarDadosModelos(client: ClientForTemplate, contract: ContractForTemplate, representatives: RepresentativeForTemplate[] = [], installments: InstallmentForTemplate[] = [], now = new Date()): DocumentTemplateData {
+  client = limparTexto(client);
+  representatives = representatives.map((representante) => limparTexto(representante));
   const pj = client.person_type.toUpperCase() === "PJ";
   const prolabore = contract.modality !== "exito" && installments.some((installment) => installment.amount > 0);
   const exito = Number(contract.success_fee_percent ?? 0) > 0;
