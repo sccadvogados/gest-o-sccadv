@@ -148,7 +148,7 @@ export function ExportSpreadsheetButton() {
   return (
     <Button type="button" variant="outline" onClick={() => void exportar()} disabled={busy}>
       {busy ? <LoaderCircle className="size-4 animate-spin" /> : <FileSpreadsheet className="size-4" />}
-      Exportar planilha
+            Exportar Planilha
     </Button>
   );
 }
