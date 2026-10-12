@@ -74,9 +74,10 @@ function ClientsPage() {
   const { data: clients, isLoading } = useQuery({
     queryKey: ["clients"],
     queryFn: async () => {
-      const { data, error } = await supabase
+            const { data, error } = await officeDatabase(supabase)
         .from("clients")
         .select("id, name, person_type, cpf_cnpj, cep, street, email, phone, city, state, drive_folder_id, drive_folder_url, drive_error, created_at")
+        .eq("rascunho", false)
         .order("name");
       if (error) throw error;
       return data;
