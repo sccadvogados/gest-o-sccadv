@@ -273,12 +273,21 @@ export function ContractForm({
           </div>
         ) : null}
 
-        {!proBono ? (
-          <div className="space-y-2 sm:col-span-2">
+                {!proBono ? (
+          <div className="space-y-2">
             <Label htmlFor="successFee">% de êxito{modality === "exito" ? " (obrigatório)" : ""}</Label>
             <Input id="successFee" inputMode="decimal" value={successFee} onChange={(e) => setSuccessFee(e.target.value)} />
           </div>
         ) : null}
+
+        {!proBono ? (
+          <div className="space-y-2">
+            <Label htmlFor="retencao">% de Retenção do Escritório{!retencao.trim() ? <span className="ml-0.5 text-destructive">*</span> : null}</Label>
+            <Input id="retencao" inputMode="decimal" placeholder="Ex.: 20" value={retencao} onChange={(e) => setRetencao(e.target.value)} />
+            <p className="text-xs text-muted-foreground">Sobre pró-labore e êxito. Fica só no sistema.</p>
+          </div>
+        ) : null}
+
 
         {!hideObject ? (
           <div className="sm:col-span-2">
