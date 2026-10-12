@@ -384,10 +384,12 @@ function ClientDetailPage() {
                 <ContractActions
                   clientId={clientId}
                   personType={client.person_type as "PF" | "PJ"}
-                  contract={{ ...contract, modality: contract.modality as ContractModality }}
+                                    contract={{ ...contract, modality: contract.modality as ContractModality }}
                 />
               </div>
             </div>
+
+            {contract.modality !== "probono" ? <ContractPartners contract={contract} /> : null}
 
             <Table>
               <TableHeader>
