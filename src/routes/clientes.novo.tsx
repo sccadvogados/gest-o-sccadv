@@ -578,13 +578,13 @@ function NewClientPage() {
           </Alert>
         )}
 
-        {showForm && <section className="panel rounded-xl border border-t-[3px] border-t-accent bg-card p-6 text-card-foreground shadow-panel space-y-5">
+                {showForm && <section className="panel rounded-xl border border-t-[3px] border-t-accent bg-card p-6 text-card-foreground shadow-panel space-y-5">
                     <h2 className="text-base font-semibold text-[#0F2340]">Qualificação</h2>
 
                     {form.person_type === "PJ" && (
             <div className="space-y-4 rounded-lg border border-border p-4">
               <div className="flex items-center justify-between gap-3">
-                                <h3 className="text-sm font-semibold text-[#0F2340]">Representantes <Pending value={form.representatives.length > 0 && form.representatives.every((r) => r.name.trim() && r.nationality.trim() && r.marital_status.trim() && r.profession.trim() && r.cpf.trim()) ? "ok" : ""} /></h3>
+                                <h3 className="text-sm font-semibold text-[#0F2340]">Representantes <Pending value={form.representatives.length > 0 && form.representatives.every((r) => r.name.trim() && r.nationality.trim() && r.marital_status.trim() && r.profession.trim() && r.cpf.trim() && r.sexo) ? "ok" : ""} /></h3>
                 <Button
                   type="button"
                   variant="outline"
@@ -597,6 +597,7 @@ function NewClientPage() {
                       marital_status: "",
                       profession: "",
                       cpf: "",
+                      sexo: "",
                       quality: "representante legal",
                     }],
                   }))}
@@ -607,12 +608,20 @@ function NewClientPage() {
               {form.representatives.map((representative, index) => (
                 <div key={`${representative.name}-${index}`} className="grid gap-4 sm:grid-cols-2">
                   <Input aria-label={`Nome do representante ${index + 1}`} placeholder="Nome Completo" value={representative.name} onChange={(event) => setForm((current) => ({ ...current, representatives: current.representatives.map((item, itemIndex) => itemIndex === index ? { ...item, name: event.target.value } : item) }))} />
+                  <Select value={representative.sexo} onValueChange={(value) => setForm((current) => ({ ...current, representatives: current.representatives.map((item, itemIndex) => itemIndex === index ? { ...item, sexo: value as "M" | "F" } : item) }))}>
+                    <SelectTrigger aria-label={`Sexo do representante ${index + 1}`}><SelectValue placeholder="Sexo" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="M">Masculino</SelectItem>
+                      <SelectItem value="F">Feminino</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <Input aria-label={`Nacionalidade do representante ${index + 1}`} placeholder="Nacionalidade" value={representative.nationality} onChange={(event) => setForm((current) => ({ ...current, representatives: current.representatives.map((item, itemIndex) => itemIndex === index ? { ...item, nationality: event.target.value } : item) }))} />
                   <Input aria-label={`Estado civil do representante ${index + 1}`} placeholder="Estado Civil" value={representative.marital_status} onChange={(event) => setForm((current) => ({ ...current, representatives: current.representatives.map((item, itemIndex) => itemIndex === index ? { ...item, marital_status: event.target.value } : item) }))} />
                   <Input aria-label={`Profissão do representante ${index + 1}`} placeholder="Profissão" value={representative.profession} onChange={(event) => setForm((current) => ({ ...current, representatives: current.representatives.map((item, itemIndex) => itemIndex === index ? { ...item, profession: event.target.value } : item) }))} />
                   <Input aria-label={`CPF do representante ${index + 1}`} placeholder="CPF" value={representative.cpf} onChange={(event) => setForm((current) => ({ ...current, representatives: current.representatives.map((item, itemIndex) => itemIndex === index ? { ...item, cpf: maskCpfCnpj(event.target.value) } : item) }))} />
                   <div className="flex gap-2">
                     <Select value={representative.quality} onValueChange={(value) => setForm((current) => ({ ...current, representatives: current.representatives.map((item, itemIndex) => itemIndex === index ? { ...item, quality: value as Representative["quality"] } : item) }))}>
+
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="sócio">Sócio</SelectItem>
