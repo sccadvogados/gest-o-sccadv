@@ -111,8 +111,8 @@ export function ExportSpreadsheetButton() {
           widths: [12, 40, 22, 26, 16, 10, 14, 18, 20, 11, 10, 70, 11, 30, 14],
           rows: contracts.map((contract) => [
             numeroContrato(contract), contract["clients"]?.["name"], MODALIDADES[contract["modality"]] ?? contract["modality"], contract["category"],
-            { money: Number(contract["total_value"]) || 0 }, contract["modality"] === "exito" ? "" : contract["installments_count"],
-            contract["modality"] === "exito" ? "" : formatDate(contract["first_due_date"]), contract["payment_method"], contract["captacao"], Number(contract["captacao_percentual"]) || "",
+                        { money: Number(contract["total_value"]) || 0 }, ["exito", "probono"].includes(contract["modality"]) ? "" : contract["installments_count"],
+            ["exito", "probono"].includes(contract["modality"]) ? "" : formatDate(contract["first_due_date"]), contract["payment_method"], contract["captacao"], Number(contract["captacao_percentual"]) || "",
             Number(contract["success_fee_percent"]) || "", contract["objeto"], contract["gratuidade"] ? "Sim" : "Não",
             contract["parte_contraria"], formatDate(contract["created_at"]),
           ]),
