@@ -679,7 +679,11 @@ function EditContractDialog({
       const installmentsCount = Math.max(1, Number(count));
       const fee = Number(successFee.replace(",", ".")) || 0;
       const objeto = object.trim().replace(/\.+$/, "").trim() || null;
-      const gratuidadeToSave = personType === "PF" ? gratuidade : false;
+            const gratuidadeToSave = personType === "PF" ? gratuidade : false;
+      const repasse = Number(captacaoPercentual.replace(",", "."));
+      if (temRepasse && (!Number.isFinite(repasse) || repasse <= 0 || repasse > 100)) {
+        throw new Error("Informe o percentual de repasse entre 0 e 100.");
+      }
       if (modality === "exito") {
         if (fee <= 0) throw new Error("Informe um percentual de êxito válido.");
       } else if (!hasPaidInstallment) {
@@ -688,7 +692,15 @@ function EditContractDialog({
         if (!firstDue) throw new Error("Informe o primeiro vencimento.");
       }
 
-      const common = { category, payment_method: paymentMethod, success_fee_percent: fee, objeto, gratuidade: gratuidadeToSave };
+      const common = {
+        category,
+        payment_method: paymentMethod,
+        success_fee_percent: fee,
+        objeto,
+        gratuidade: gratuidadeToSave,
+        captacao: captacao || null,
+        captacao_percentual: temRepasse ? repasse : null,
+      };
       const contractUpdate = hasPaidInstallment
         ? common
         : modality === "exito"
