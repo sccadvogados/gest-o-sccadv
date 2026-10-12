@@ -77,15 +77,18 @@ export function DeleteClientDialog({
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
-        <AlertDialogHeader>
+                <AlertDialogHeader>
                     <AlertDialogTitle>Excluir Cliente?</AlertDialogTitle>
 
           <AlertDialogDescription>
-            Esta ação apaga {clientName} e todos os seus contratos, parcelas, documentos e representantes. Os eventos da Agenda serão mantidos sem cliente vinculado. Não é possível desfazer.
+            Esta ação apaga {clientName} de vez: contratos, parcelas, documentos, representantes e eventos da Agenda.
+            As pastas do cliente no Google Drive vão para a lixeira (podem ser recuperadas por 30 dias).
+            Se o trabalho apenas terminou, use "Arquivar Contrato" em vez de excluir. Não é possível desfazer.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
+
           <AlertDialogAction
             onClick={(event) => {
               event.preventDefault();
