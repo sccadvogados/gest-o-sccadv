@@ -168,9 +168,9 @@ export function ContractForm({
           <Select value={modality} onValueChange={(value) => setModality(value as ContractModality)}>
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="parcelado">Pró-labore parcelado</SelectItem>
-              <SelectItem value="mensal">Pró-labore mensal</SelectItem>
-              <SelectItem value="exito">Somente êxito</SelectItem>
+                            <SelectItem value="parcelado">Pró-labore Parcelado</SelectItem>
+              <SelectItem value="mensal">Pró-labore Mensal</SelectItem>
+              <SelectItem value="exito">Somente Êxito</SelectItem>
             </SelectContent>
           </Select>
         </div>
