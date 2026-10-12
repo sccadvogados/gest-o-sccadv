@@ -748,9 +748,13 @@ function EditContractDialog({
       const fee = proBono ? 0 : Number(successFee.replace(",", ".")) || 0;
       const objeto = object.trim().replace(/\.+$/, "").trim() || null;
             const gratuidadeToSave = personType === "PF" ? gratuidade : false;
-      const repasse = Number(captacaoPercentual.replace(",", "."));
+            const repasse = Number(captacaoPercentual.replace(",", "."));
       if (temRepasse && (!Number.isFinite(repasse) || repasse <= 0 || repasse > 100)) {
         throw new Error("Informe o percentual de repasse entre 0 e 100.");
+      }
+      const retencaoNumero = Number(retencao.replace(",", "."));
+      if (!proBono && (!retencao.trim() || !Number.isFinite(retencaoNumero) || retencaoNumero < 0 || retencaoNumero > 100)) {
+        throw new Error("Informe a retenção do escritório entre 0 e 100%.");
       }
       if (modality === "exito") {
         if (fee <= 0) throw new Error("Informe um percentual de êxito válido.");
