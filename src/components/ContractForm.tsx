@@ -87,7 +87,11 @@ export function ContractForm({
   }
 
   const save = useMutation({
-    mutationFn: async () => {
+        mutationFn: async () => {
+      if (!captacao) throw new Error("Informe a forma de captação.");
+      const repasse = Number(captacaoPercentual.replace(",", "."));
+      if (temRepasse && (!Number.isFinite(repasse) || repasse <= 0 || repasse > 100)) throw new Error("Informe o percentual de repasse entre 0 e 100.");
+
       const installmentsCount = Math.max(1, Number(count));
       const fee = Number(successFee.replace(",", ".")) || 0;
       const objectToSave = cleanObject(hideObject ? initialObject ?? "" : object);
