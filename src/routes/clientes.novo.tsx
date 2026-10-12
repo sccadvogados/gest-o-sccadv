@@ -891,7 +891,7 @@ function NewClientPage() {
               <button
                 type="button"
                 className="text-sm text-muted-foreground underline-offset-4 hover:underline"
-                onClick={() => navigate({ to: "/clientes/$clientId", params: { clientId: savedClientId } })}
+                                onClick={() => void concluirSemContrato()}
               >
                                 Pular Contrato
 
