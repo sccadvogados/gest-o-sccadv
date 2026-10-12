@@ -56,6 +56,7 @@ import {
 } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
 import { officeDatabase } from "@/lib/office-database";
+import { arquivarContrato } from "@/lib/arquivo.functions";
 import {
   buildContractInstallments,
   buildInstallments,
