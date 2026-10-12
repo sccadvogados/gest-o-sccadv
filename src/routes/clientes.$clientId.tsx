@@ -808,10 +808,11 @@ function EditContractDialog({
           <Label>Modalidade</Label>
           <Select value={modality} onValueChange={(value) => setModality(value as ContractModality)} disabled={hasPaidInstallment}>
             <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
+                        <SelectContent>
                             <SelectItem value="parcelado">Pró-labore Parcelado</SelectItem>
                             <SelectItem value="mensal">Pró-labore Mensal</SelectItem>
                             <SelectItem value="exito">Somente Êxito</SelectItem>
+              <SelectItem value="probono">Pro Bono</SelectItem>
             </SelectContent>
           </Select>
         </div>
