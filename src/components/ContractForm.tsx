@@ -219,10 +219,19 @@ export function ContractForm({
           </div>
         ) : null}
         {!hideObject && personType === "PF" ? (
-          <label className="flex items-center gap-2 text-sm sm:col-span-2">
-            <Checkbox checked={gratuidade} onCheckedChange={(checked) => setGratuidade(checked === true)} />
-            Pedir gratuidade de justiça
-          </label>
+                    <div className="space-y-2 text-sm sm:col-span-2">
+            <p className="font-medium">Pedir Gratuidade de Justiça?</p>
+            <div className="flex items-center gap-6">
+              <label className="flex items-center gap-2">
+                <Checkbox checked={gratuidade} onCheckedChange={(checked) => { if (checked === true) setGratuidade(true); }} />
+                Sim
+              </label>
+              <label className="flex items-center gap-2">
+                <Checkbox checked={!gratuidade} onCheckedChange={(checked) => { if (checked === true) setGratuidade(false); }} />
+                Não
+              </label>
+            </div>
+          </div>
         ) : null}
       </div>
 
