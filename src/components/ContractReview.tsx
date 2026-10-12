@@ -40,6 +40,10 @@ const MODALIDADES: Record<string, string> = {
   exito: "Somente Êxito",
 };
 
+function juntarLista(itens: string[]) {
+  return itens.length <= 1 ? itens.join("") : `${itens.slice(0, -1).join(", ")} e ${itens[itens.length - 1]}`;
+}
+
 function errorMessage(error: unknown, fallback: string) {
   return error instanceof Error ? error.message : (error as { message?: string })?.message ?? fallback;
 }
