@@ -849,8 +849,18 @@ function NewClientPage() {
                     <Button type="submit" className="bg-[#0F2340] text-white hover:bg-[#0F2340]/90" disabled={save.isPending}>
                         {save.isPending ? "Salvando…" : "Continuar"}
           </Button>
-          <Button asChild type="button" variant="outline">
-            <Link to="/">Cancelar</Link>
+                    <Button asChild type="button" variant="outline">
+            <Link
+              to="/"
+              onClick={(event) => {
+                if (!savedClientId) return;
+                event.preventDefault();
+                if (!window.confirm("Descartar este cadastro? Os dados preenchidos e os anexos serão apagados.")) return;
+                void descartarCadastro().catch(() => toast.error("Não foi possível descartar o cadastro."));
+              }}
+            >
+              Cancelar
+            </Link>
           </Button>
         </div>}
             </form>}
