@@ -313,7 +313,7 @@ export const gerarPacoteDocumentos = createServerFn({ method: "POST" })
     for (const document of documentsToGenerate) {
       const fileName = versionedName(baseFileName(date, document.number, client.name, data.parte_contraria), existingNames);
       const filePath = `${contract.client_id}/gerados/${data.contrato_id}-${document.kind}-${Date.now()}.docx`;
-      const content = await renderTemplate(database, document.template, dataWithApprovedReview);
+            const content = await renderTemplate(database, document.template, dataWithApprovedReview, document.kind !== "contrato");
       const { error: uploadError } = await database.storage.from("client-documents").upload(filePath, new Blob([new Uint8Array(content)], { type: DOCX_MIME }), { upsert: false, contentType: DOCX_MIME });
       if (uploadError) throw new Error(`Não foi possível salvar ${fileName}.`);
 
