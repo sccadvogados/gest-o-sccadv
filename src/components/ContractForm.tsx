@@ -206,13 +206,29 @@ export function ContractForm({
           </>
         ) : null}
 
-        <div className="space-y-2">
+                <div className="space-y-2">
                     <Label>Forma de Pagamento</Label>
           <Select value={paymentMethod} onValueChange={setPaymentMethod}>
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>{PAYMENT_METHODS.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
           </Select>
         </div>
+
+        <div className="space-y-2">
+          <Label>Forma de Captação{!captacao ? <span className="ml-0.5 text-destructive">*</span> : null}</Label>
+          <Select value={captacao} onValueChange={setCaptacao}>
+            <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+            <SelectContent>{CAPTACAO.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
+          </Select>
+        </div>
+
+        {temRepasse ? (
+          <div className="space-y-2">
+            <Label htmlFor="captacaoPercentual">% de Repasse da {captacao}{!captacaoPercentual ? <span className="ml-0.5 text-destructive">*</span> : null}</Label>
+            <Input id="captacaoPercentual" inputMode="decimal" placeholder="Ex.: 10" value={captacaoPercentual} onChange={(e) => setCaptacaoPercentual(e.target.value)} />
+            <p className="text-xs text-muted-foreground">Percentual dos honorários destinado a quem indicou ou ao parceiro.</p>
+          </div>
+        ) : null}
 
         <div className="space-y-2 sm:col-span-2">
           <Label htmlFor="successFee">% de êxito{modality === "exito" ? " (obrigatório)" : ""}</Label>
