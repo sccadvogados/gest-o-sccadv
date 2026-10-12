@@ -230,13 +230,13 @@ export function EditClientDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
                 <Button variant="outline" className={triggerClassName}>
-          <PencilLine className="size-4" />
+                    <PencilLine className="size-4" />
           {triggerLabel}
         </Button>
       </DialogTrigger>
             <DialogContent className="max-h-[90vh] overflow-y-auto rounded-xl border-[#E6D6C4] border-t-[3px] border-t-[#D4A782] bg-[#F6F4EF] shadow-panel sm:max-w-3xl">
         <DialogHeader>
-                    <DialogTitle>Editar Dados do Cliente</DialogTitle>
+          <DialogTitle>Editar Dados do Cliente</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
@@ -244,22 +244,34 @@ export function EditClientDialog({
                         <h3 className="text-sm font-semibold uppercase tracking-wide text-[#0F2340]">Qualificação</h3>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label>Tipo de pessoa</Label>
+                <Label>Tipo de Pessoa</Label>
                 <Select value={form.person_type} onValueChange={(value) => set("person_type", value as "PF" | "PJ")}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                                        <SelectItem value="PF">Pessoa Física</SelectItem>
-                                        <SelectItem value="PJ">Pessoa Jurídica</SelectItem>
+                    <SelectItem value="PF">Pessoa Física</SelectItem>
+                    <SelectItem value="PJ">Pessoa Jurídica</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="edit-name">{form.person_type === "PJ" ? "Razão social" : "Nome completo"}</Label>
+                <Label htmlFor="edit-name">{form.person_type === "PJ" ? "Razão Social" : "Nome Completo"}</Label>
                 <Input id="edit-name" value={form.name} onChange={(event) => set("name", event.target.value)} />
               </div>
+              {form.person_type === "PF" && (
+                <div className="space-y-2">
+                  <Label>Sexo</Label>
+                  <Select value={form.sexo} onValueChange={(value) => set("sexo", value as "M" | "F")}>
+                    <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="M">Masculino</SelectItem>
+                      <SelectItem value="F">Feminino</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
                             {form.person_type === "PJ" && (
                 <div className="space-y-2 sm:col-span-2">
-                  <Label htmlFor="edit-pj-descricao">Descrição da pessoa jurídica</Label>
+                  <Label htmlFor="edit-pj-descricao">Descrição da Pessoa Jurídica</Label>
                   <Textarea id="edit-pj-descricao" rows={3} value={form.pj_descricao} onChange={(event) => set("pj_descricao", event.target.value)} />
                 </div>
               )}
