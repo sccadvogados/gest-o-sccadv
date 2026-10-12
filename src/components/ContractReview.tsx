@@ -237,7 +237,7 @@ export function ContractReview({ contractId, personType, onBack, onEditObject, o
       <section className="space-y-2 text-sm">
         <h3 className="text-base font-semibold text-[#0F2340]">Resumo</h3>
         <p><span className="text-muted-foreground">Cliente:</span> {contract?.clients?.name ?? "…"}</p>
-        <p><span className="text-muted-foreground">Contrato:</span> {numeroContrato ?? (numeroPrevisto ? `${numeroPrevisto} (previsto)` : "…")}</p>
+                <p><span className="text-muted-foreground">Contrato:</span> {numeroContrato ?? numeroPrevisto ?? "…"}</p>
         <p><span className="text-muted-foreground">Remuneração:</span> {remuneracao}</p>
         <p style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
           <span className="font-sans text-muted-foreground">Objeto:</span> O objeto do presente contrato é a prestação de serviços advocatícios relativos {contract?.objeto ?? "…"}.
