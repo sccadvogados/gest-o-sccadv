@@ -180,13 +180,16 @@ export function EditClientDialog({
     mutationFn: async () => {
       if (!form.name.trim()) throw new Error("Informe o nome completo ou a razão social.");
       const documentDigits = onlyDigits(form.cpf_cnpj);
-      if (documentDigits && documentDigits.length !== 11 && documentDigits.length !== 14) {
+            if (documentDigits && documentDigits.length !== 11 && documentDigits.length !== 14) {
         throw new Error("Informe um CPF ou CNPJ válido.");
       }
       if (form.cep && onlyDigits(form.cep).length !== 8) {
         throw new Error("Informe um CEP válido.");
       }
-            const { error } = await officeDatabase(supabase).from("clients").update(form).eq("id", clientId);
+      const { error } = await officeDatabase(supabase)
+        .from("clients")
+        .update({ ...form, sexo: form.person_type === "PF" && form.sexo ? form.sexo : null })
+        .eq("id", clientId);
       if (error) throw error;
 
       if (form.person_type === "PJ") {
