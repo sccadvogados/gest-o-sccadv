@@ -876,12 +876,18 @@ function EditContractDialog({
               value={captacaoPercentual}
               onChange={(e) => setCaptacaoPercentual(e.target.value)}
             />
-          </div>
+                    </div>
         ) : null}
                 {!proBono ? (
-          <div className="space-y-2 sm:col-span-2">
+          <div className="space-y-2">
             <Label htmlFor={`edit-contract-fee-${contract.id}`}>% de êxito{modality === "exito" ? " (obrigatório)" : ""}</Label>
             <Input id={`edit-contract-fee-${contract.id}`} inputMode="decimal" value={successFee} onChange={(e) => setSuccessFee(e.target.value)} />
+          </div>
+        ) : null}
+        {!proBono ? (
+          <div className="space-y-2">
+            <Label htmlFor={`edit-contract-retencao-${contract.id}`}>% de Retenção do Escritório{!retencao.trim() ? <span className="ml-0.5 text-destructive">*</span> : null}</Label>
+            <Input id={`edit-contract-retencao-${contract.id}`} inputMode="decimal" placeholder="Ex.: 20" value={retencao} onChange={(e) => setRetencao(e.target.value)} />
           </div>
         ) : null}
         <div className="sm:col-span-2">
