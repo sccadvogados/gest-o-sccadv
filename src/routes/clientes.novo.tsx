@@ -386,7 +386,8 @@ function NewClientPage() {
             form.representatives.map((representative, ordem) => ({
               cliente_id: currentClientId,
               nome: representative.name,
-              nacionalidade: representative.nationality || null,
+                            nacionalidade: representative.nationality.replace(/\s+/g, " ").trim() || null,
+
                             estado_civil: representative.marital_status.replace(/\s+/g, " ").trim() || null,
 
               profissao: representative.profession || null,
