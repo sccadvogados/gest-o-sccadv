@@ -141,9 +141,10 @@ function HomePage() {
   const { data: clients = [], isLoading: loadingClients } = useQuery({
     queryKey: ["inicio-clientes"],
     queryFn: async () => {
-      const { data, error } = await supabase
+            const { data, error } = await officeDatabase(supabase)
         .from("clients")
         .select("id, name, cpf_cnpj, cep, street, email, phone")
+        .eq("rascunho", false)
         .order("name", { ascending: true });
       if (error) throw error;
       return (data ?? []) as ClientRow[];
