@@ -243,6 +243,14 @@ export function montarProlaboreTexto(contract: ContractForTemplate, installments
   return `${formatarValor(total)} (${valorPorExtenso(total)}), a serem pagos em ${parcelas.length} (${numeroPorExtenso(parcelas.length)}) parcelas mensais, sendo ${grupoParcelas(parcelas)}, com vencimento da primeira em ${formatarData(firstDate)}.`;
 }
 
+function limparTexto<T extends Record<string, unknown>>(dados: T): T {
+  const limpo: Record<string, unknown> = {};
+  for (const [chave, valor] of Object.entries(dados)) {
+    limpo[chave] = typeof valor === "string" ? valor.replace(/\s+/g, " ").trim() : valor;
+  }
+  return limpo as T;
+}
+
 export function montarDadosModelos(client: ClientForTemplate, contract: ContractForTemplate, representatives: RepresentativeForTemplate[] = [], installments: InstallmentForTemplate[] = [], now = new Date()): DocumentTemplateData {
   client = limparTexto(client);
   representatives = representatives.map((representante) => limparTexto(representante));
