@@ -266,7 +266,7 @@ function ClientDetailPage() {
               <Button asChild variant="outline">
                 <a href={client.drive_folder_url} target="_blank" rel="noreferrer">
                   <FolderOpen className="size-4" />
-                  Abrir pasta no Drive
+                                    Abrir Pasta no Drive
                 </a>
               </Button>
             ) : null}
