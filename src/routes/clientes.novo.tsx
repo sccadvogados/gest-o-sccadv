@@ -587,14 +587,16 @@ function NewClientPage() {
               />
             </div>
 
-            <div className="space-y-2">
+                        {form.person_type === "PF" && (
+              <div className="space-y-2">
                             <Label htmlFor="nationality">Nacionalidade <Pending value={form.nationality} /></Label>
               <Input
                 id="nationality"
                 value={form.nationality}
                 onChange={(e) => set("nationality", e.target.value)}
               />
-            </div>
+              </div>
+            )}
 
             {form.person_type === "PF" && (
               <>
