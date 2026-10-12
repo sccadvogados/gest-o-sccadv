@@ -17,6 +17,7 @@ export type Database = {
       client_documents: {
         Row: {
           client_id: string
+          contract_id: string | null
           created_at: string
           drive_file_id: string | null
           drive_file_url: string | null
@@ -27,6 +28,7 @@ export type Database = {
         }
         Insert: {
           client_id: string
+          contract_id?: string | null
           created_at?: string
           drive_file_id?: string | null
           drive_file_url?: string | null
@@ -37,6 +39,7 @@ export type Database = {
         }
         Update: {
           client_id?: string
+          contract_id?: string | null
           created_at?: string
           drive_file_id?: string | null
           drive_file_url?: string | null
@@ -49,6 +52,57 @@ export type Database = {
           {
             foreignKeyName: "client_documents_client_id_fkey"
             columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_documents_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cliente_representantes: {
+        Row: {
+          cliente_id: string
+          cpf: string | null
+          estado_civil: string | null
+          id: string
+          nacionalidade: string | null
+          nome: string
+          ordem: number
+          profissao: string | null
+          qualidade: string
+        }
+        Insert: {
+          cliente_id: string
+          cpf?: string | null
+          estado_civil?: string | null
+          id?: string
+          nacionalidade?: string | null
+          nome: string
+          ordem?: number
+          profissao?: string | null
+          qualidade: string
+        }
+        Update: {
+          cliente_id?: string
+          cpf?: string | null
+          estado_civil?: string | null
+          id?: string
+          nacionalidade?: string | null
+          nome?: string
+          ordem?: number
+          profissao?: string | null
+          qualidade?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cliente_representantes_cliente_id_fkey"
+            columns: ["cliente_id"]
             isOneToOne: false
             referencedRelation: "clients"
             referencedColumns: ["id"]
@@ -76,6 +130,7 @@ export type Database = {
           number: string | null
           person_type: string
           phone: string | null
+          pj_descricao: string
           profession: string | null
           rg_issuer: string | null
           rg_number: string | null
@@ -103,6 +158,7 @@ export type Database = {
           number?: string | null
           person_type?: string
           phone?: string | null
+          pj_descricao?: string
           profession?: string | null
           rg_issuer?: string | null
           rg_number?: string | null
@@ -130,6 +186,7 @@ export type Database = {
           number?: string | null
           person_type?: string
           phone?: string | null
+          pj_descricao?: string
           profession?: string | null
           rg_issuer?: string | null
           rg_number?: string | null
@@ -141,14 +198,22 @@ export type Database = {
       }
       contracts: {
         Row: {
+          ano: number | null
+          captacao: string | null
+          captacao_percentual: number | null
           category: string
           client_id: string
           created_at: string
           description: string | null
+          drive_folder_id: string | null
           first_due_date: string
+          gratuidade: boolean
           id: string
           installments_count: number
           modality: string
+          numero: number | null
+          objeto: string | null
+          parte_contraria: string | null
           payment_method: string | null
           recurring: boolean
           signature_date: string | null
@@ -157,14 +222,22 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          ano?: number | null
+          captacao?: string | null
+          captacao_percentual?: number | null
           category?: string
           client_id: string
           created_at?: string
           description?: string | null
+          drive_folder_id?: string | null
           first_due_date?: string
+          gratuidade?: boolean
           id?: string
           installments_count?: number
           modality?: string
+          numero?: number | null
+          objeto?: string | null
+          parte_contraria?: string | null
           payment_method?: string | null
           recurring?: boolean
           signature_date?: string | null
@@ -173,14 +246,22 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          ano?: number | null
+          captacao?: string | null
+          captacao_percentual?: number | null
           category?: string
           client_id?: string
           created_at?: string
           description?: string | null
+          drive_folder_id?: string | null
           first_due_date?: string
+          gratuidade?: boolean
           id?: string
           installments_count?: number
           modality?: string
+          numero?: number | null
+          objeto?: string | null
+          parte_contraria?: string | null
           payment_method?: string | null
           recurring?: boolean
           signature_date?: string | null
@@ -285,6 +366,24 @@ export type Database = {
           },
         ]
       }
+      feriados: {
+        Row: {
+          abrangencia: string
+          data: string
+          descricao: string
+        }
+        Insert: {
+          abrangencia: string
+          data: string
+          descricao: string
+        }
+        Update: {
+          abrangencia?: string
+          data?: string
+          descricao?: string
+        }
+        Relationships: []
+      }
       installments: {
         Row: {
           amount: number
@@ -369,6 +468,51 @@ export type Database = {
         }
         Relationships: []
       }
+      procuracao_exemplos: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          created_by: string | null
+          destino: string | null
+          id: string
+          objeto: string
+          observacao: string | null
+          origem: string
+          poderes_especificos: string | null
+          situacao: string
+          tipo_cliente: string
+          uf_domicilio: string | null
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          created_by?: string | null
+          destino?: string | null
+          id?: string
+          objeto: string
+          observacao?: string | null
+          origem: string
+          poderes_especificos?: string | null
+          situacao: string
+          tipo_cliente: string
+          uf_domicilio?: string | null
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          created_by?: string | null
+          destino?: string | null
+          id?: string
+          objeto?: string
+          observacao?: string | null
+          origem?: string
+          poderes_especificos?: string | null
+          situacao?: string
+          tipo_cliente?: string
+          uf_domicilio?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -393,6 +537,33 @@ export type Database = {
         }
         Relationships: []
       }
+      tribunais: {
+        Row: {
+          ativo: boolean
+          id: string
+          nome_oficial: string
+          segmento_cnj: string
+          sigla: string
+          uf: string | null
+        }
+        Insert: {
+          ativo?: boolean
+          id?: string
+          nome_oficial: string
+          segmento_cnj: string
+          sigla: string
+          uf?: string | null
+        }
+        Update: {
+          ativo?: boolean
+          id?: string
+          nome_oficial?: string
+          segmento_cnj?: string
+          sigla?: string
+          uf?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -400,6 +571,7 @@ export type Database = {
     Functions: {
       is_admin: { Args: never; Returns: boolean }
       is_ativo: { Args: never; Returns: boolean }
+      proximo_numero_contrato: { Args: never; Returns: string }
     }
     Enums: {
       [_ in never]: never

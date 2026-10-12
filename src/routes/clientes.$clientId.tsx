@@ -353,7 +353,7 @@ function ClientDetailPage() {
                     <div key={contract.id} className="panel mt-4 overflow-hidden rounded-xl border border-[#E6D6C4] border-t-[3px] border-t-[#D4A782] bg-white shadow-panel">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-5">
               <div>
-                                                                <p className="font-medium">Contrato {String(contract.numero).padStart(3, "0")}/{contract.ano}</p>
+                                                                <p className="font-medium">{contract.numero != null && contract.ano != null ? `Contrato ${String(contract.numero).padStart(3, "0")}/${contract.ano}` : "Contrato"}</p>
                 <p className="text-xs text-muted-foreground">{`Cadastrado em ${new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", year: "numeric" }).format(new Date(contract.created_at))}`}</p>
 
                 <p className="text-sm text-muted-foreground">
@@ -522,8 +522,8 @@ export function SituationBadge({
 type ContractRow = {
     id: string;
   description: string | null;
-  numero: number;
-  ano: number;
+  numero: number | null;
+  ano: number | null;
   category: string;
   total_value: number;
   installments_count: number;
@@ -737,7 +737,7 @@ function EditContractDialog({
   return (
     <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
       <DialogHeader>
-        <DialogTitle>Editar contrato {String(contract.numero).padStart(3, "0")}/{contract.ano}</DialogTitle>
+        <DialogTitle>{contract.numero != null && contract.ano != null ? `Editar contrato ${String(contract.numero).padStart(3, "0")}/${contract.ano}` : "Editar contrato"}</DialogTitle>
       </DialogHeader>
       <div className="grid gap-4 sm:grid-cols-2">
         {hasPaidInstallment ? (

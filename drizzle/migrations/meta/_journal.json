@@ -8,6 +8,97 @@
       "when": 1791671166466,
       "tag": "0000_eventos_parte_contraria",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791813314946,
+      "tag": "0001_create_feriados",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791813327275,
+      "tag": "0002_contract_object_gratuity",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1791813344032,
+      "tag": "0003_pj_client_data",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791813362473,
+      "tag": "0004_modelos_storage_policies",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791813375724,
+      "tag": "0005_tribunais",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1791813390146,
+      "tag": "0006_procuracao_exemplos",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1791813400641,
+      "tag": "0007_cliente_representantes",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1791813411585,
+      "tag": "0008_cliente_representantes_policies_ativos",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1791813420410,
+      "tag": "0009_document_generation",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1791813434216,
+      "tag": "0010_contract_parte_contraria",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1791813444800,
+      "tag": "0011_drive_ids",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1791813455456,
+      "tag": "0012_contract_captacao",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1791813476879,
+      "tag": "0013_contract_numero_ano",
+      "breakpoints": true
     }
   ]
 }

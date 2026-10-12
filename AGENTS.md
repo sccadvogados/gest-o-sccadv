@@ -16,5 +16,6 @@
 - Keep the public authentication page limited to email/password sign-in and recovery; account provisioning is managed outside the public UI to protect office access.
 - Validate sign-in with Auth's getUser AND require public.is_ativo() = true; only active profiles in public.perfis can access data.
 - Keep migration-backed schema extensions in a shared typed adapter when generated Cloud types omit those objects; preserve runtime permissions and never modify generated clients.
-- Keep compatibility declarations for pending client and holiday schema in the shared office adapter; they do not provision database objects, so verify hosted schema before claiming those workflows work.
+- Let the database assign contract numbering (numero/ano via trigger and proximo_numero_contrato RPC) because the UI displays NNN/AAAA before and after finalization; treat the columns as nullable in TS since drafts may be unnumbered.
+- Apply migration files under supabase/migrations/ to the hosted database byte-for-byte before relying on their tables or columns, because local files alone do not provision the schema.
 - Validate Calendar server-function inputs with shared schemas and reuse internal synchronization helpers, because typed RPC handlers must not call another RPC handler as an internal helper.

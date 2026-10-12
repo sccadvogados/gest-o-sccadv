@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AgendaRouteImport } from './routes/agenda'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as FinanceiroRouteImport } from './routes/financeiro'
+import { Route as InicioRouteImport } from './routes/inicio'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ClientesClientIdRouteImport } from './routes/clientes.$clientId'
 import { Route as ClientesNovoRouteImport } from './routes/clientes.novo'
@@ -37,6 +38,11 @@ const FinanceiroRoute = FinanceiroRouteImport.update({
   path: '/financeiro',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InicioRoute = InicioRouteImport.update({
+  id: '/inicio',
+  path: '/inicio',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
@@ -58,6 +64,7 @@ export interface FileRoutesByFullPath {
   '/agenda': typeof AgendaRoute
   '/auth': typeof AuthRoute
   '/financeiro': typeof FinanceiroRoute
+  '/inicio': typeof InicioRoute
   '/reset-password': typeof ResetPasswordRoute
   '/clientes/$clientId': typeof ClientesClientIdRoute
   '/clientes/novo': typeof ClientesNovoRoute
@@ -67,6 +74,7 @@ export interface FileRoutesByTo {
   '/agenda': typeof AgendaRoute
   '/auth': typeof AuthRoute
   '/financeiro': typeof FinanceiroRoute
+  '/inicio': typeof InicioRoute
   '/reset-password': typeof ResetPasswordRoute
   '/clientes/$clientId': typeof ClientesClientIdRoute
   '/clientes/novo': typeof ClientesNovoRoute
@@ -77,6 +85,7 @@ export interface FileRoutesById {
   '/agenda': typeof AgendaRoute
   '/auth': typeof AuthRoute
   '/financeiro': typeof FinanceiroRoute
+  '/inicio': typeof InicioRoute
   '/reset-password': typeof ResetPasswordRoute
   '/clientes/$clientId': typeof ClientesClientIdRoute
   '/clientes/novo': typeof ClientesNovoRoute
@@ -88,6 +97,7 @@ export interface FileRouteTypes {
     | '/agenda'
     | '/auth'
     | '/financeiro'
+    | '/inicio'
     | '/reset-password'
     | '/clientes/$clientId'
     | '/clientes/novo'
@@ -97,6 +107,7 @@ export interface FileRouteTypes {
     | '/agenda'
     | '/auth'
     | '/financeiro'
+    | '/inicio'
     | '/reset-password'
     | '/clientes/$clientId'
     | '/clientes/novo'
@@ -106,6 +117,7 @@ export interface FileRouteTypes {
     | '/agenda'
     | '/auth'
     | '/financeiro'
+    | '/inicio'
     | '/reset-password'
     | '/clientes/$clientId'
     | '/clientes/novo'
@@ -116,6 +128,7 @@ export interface RootRouteChildren {
   AgendaRoute: typeof AgendaRoute
   AuthRoute: typeof AuthRoute
   FinanceiroRoute: typeof FinanceiroRoute
+  InicioRoute: typeof InicioRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   ClientesClientIdRoute: typeof ClientesClientIdRoute
   ClientesNovoRoute: typeof ClientesNovoRoute
@@ -151,6 +164,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FinanceiroRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/inicio': {
+      id: '/inicio'
+      path: '/inicio'
+      fullPath: '/inicio'
+      preLoaderRoute: typeof InicioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reset-password': {
       id: '/reset-password'
       path: '/reset-password'
@@ -180,6 +200,7 @@ const rootRouteChildren: RootRouteChildren = {
   AgendaRoute: AgendaRoute,
   AuthRoute: AuthRoute,
   FinanceiroRoute: FinanceiroRoute,
+  InicioRoute: InicioRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   ClientesClientIdRoute: ClientesClientIdRoute,
   ClientesNovoRoute: ClientesNovoRoute,
