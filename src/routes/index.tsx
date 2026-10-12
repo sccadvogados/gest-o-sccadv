@@ -82,11 +82,7 @@ function ClientsPage() {
     },
   });
 
-  const { data: processCounts, isLoading: processCountsLoading } = useQuery({
-    queryKey: ["drive-active-process-counts"],
-    queryFn: () => fetchProcessCounts(),
-    staleTime: 5 * 60 * 1000,
-  });
+  
 
     const search = term.trim().toLowerCase();
   const filtered = (clients ?? []).filter((c) => {
