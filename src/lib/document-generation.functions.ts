@@ -95,9 +95,11 @@ function missingData(client: any, contract: any, representatives: any[], install
       if (!required(representative.estado_civil)) missing.push(`${prefix}: estado civil`);
       if (!required(representative.profissao)) missing.push(`${prefix}: profissão`);
       if (!required(representative.cpf)) missing.push(`${prefix}: CPF`);
+      if (!required(representative.sexo)) missing.push(`${prefix}: sexo`);
     });
   } else {
     const personalFields = [
+      ["sexo", client.sexo],
       ["nacionalidade", client.nationality],
       ["estado civil", client.marital_status],
       ["profissão", client.profession],
@@ -191,7 +193,7 @@ export const gerarPacoteDocumentos = createServerFn({ method: "POST" })
     const [{ data: client, error: clientError }, { data: installments, error: installmentsError }, { data: representatives, error: representativesError }] = await Promise.all([
       database.from("clients").select("*").eq("id", contract.client_id).single(),
       database.from("installments").select("amount, due_date, number").eq("contract_id", data.contrato_id).order("number", { ascending: true }),
-      database.from("cliente_representantes").select("nome, nacionalidade, estado_civil, profissao, cpf, qualidade, ordem").eq("cliente_id", contract.client_id).order("ordem", { ascending: true }),
+      database.from("cliente_representantes").select("nome, nacionalidade, estado_civil, profissao, cpf, qualidade, ordem, sexo").eq("cliente_id", contract.client_id).order("ordem", { ascending: true }),
     ]);
     if (clientError || !client) throw new Error("Não foi possível localizar o cliente do contrato.");
     if (installmentsError || representativesError) throw new Error("Não foi possível carregar os dados do contrato.");
@@ -270,4 +272,5 @@ export const gerarPacoteDocumentos = createServerFn({ method: "POST" })
 
     return { gerados: generated, faltantes: [] as string[], drive };
   });
+
 
