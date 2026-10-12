@@ -323,7 +323,7 @@ export function ContractReview({ contractId, personType, onBack, onEditObject, o
               <LoaderCircle className="size-4 animate-spin" />
               Gerando…
             </>
-          ) : "Aprovar e gerar documentos"}
+          ) : "Finalizar"}
         </Button>
       </div>
     </div>
