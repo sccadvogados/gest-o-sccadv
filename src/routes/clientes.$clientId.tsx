@@ -849,7 +849,7 @@ function EditContractDialog({
           </div>
         ) : null}
                 <div className="space-y-2">
-          <Label>Forma de Captação (Opcional)</Label>
+                    <Label>Forma de Captação</Label>
           <Select value={captacao} onValueChange={(value) => setCaptacao(value === "nenhuma" ? "" : value)}>
             <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
             <SelectContent><SelectItem value="nenhuma">Nenhuma</SelectItem>{CAPTACAO.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
