@@ -299,8 +299,17 @@ function NewClientPage() {
 
   const save = useMutation({
     mutationFn: async () => {
-      if (!form.name.trim()) {
+            if (!form.name.trim()) {
         throw new Error("Anexe a identificação para ler os dados ou abra o preenchimento manual.");
+      }
+      const obrigatorios: [string, string][] = [["Complemento", form.complement]];
+      if (form.person_type === "PJ") obrigatorios.push(["Descrição da Pessoa Jurídica", form.pj_descricao]);
+      const faltando = obrigatorios.find(([, value]) => !value.trim());
+      if (faltando) throw new Error(`Preencha o campo obrigatório: ${faltando[0]}.`);
+      if (form.person_type === "PJ") {
+        if (form.representatives.length === 0) throw new Error("Adicione ao menos um representante.");
+        const incompleto = form.representatives.findIndex((r) => !r.name.trim() || !r.nationality.trim() || !r.marital_status.trim() || !r.profession.trim() || !r.cpf.trim());
+        if (incompleto >= 0) throw new Error(`Preencha todos os dados do representante ${incompleto + 1}.`);
       }
       const { representatives: _representatives, ...clientForm } = form;
       let clientId = savedClientId;
@@ -496,7 +505,7 @@ function NewClientPage() {
                     {form.person_type === "PJ" && (
             <div className="space-y-4 rounded-lg border border-border p-4">
               <div className="flex items-center justify-between gap-3">
-                <h3 className="text-sm font-semibold text-[#0F2340]">Representantes</h3>
+                                <h3 className="text-sm font-semibold text-[#0F2340]">Representantes <Pending value={form.representatives.length > 0 && form.representatives.every((r) => r.name.trim() && r.nationality.trim() && r.marital_status.trim() && r.profession.trim() && r.cpf.trim()) ? "ok" : ""} /></h3>
                 <Button
                   type="button"
                   variant="outline"
@@ -569,7 +578,7 @@ function NewClientPage() {
 
                         {form.person_type === "PJ" && (
               <div className="space-y-2 sm:col-span-2">
-                <Label htmlFor="pj_descricao">Descrição da pessoa jurídica</Label>
+                                <Label htmlFor="pj_descricao">Descrição da pessoa jurídica <Pending value={form.pj_descricao} /></Label>
                 <Textarea id="pj_descricao" rows={3} value={form.pj_descricao} onChange={(e) => set("pj_descricao", e.target.value)} />
               </div>
             )}
@@ -676,7 +685,7 @@ function NewClientPage() {
               />
             </div>
             <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="complement">Complemento</Label>
+                            <Label htmlFor="complement">Complemento <Pending value={form.complement} /></Label>
               <Input
                 id="complement"
                 value={form.complement}
