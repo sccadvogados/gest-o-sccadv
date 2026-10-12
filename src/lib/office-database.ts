@@ -16,6 +16,7 @@ type RepresentativeRow = {
   cpf: string | null;
   qualidade: string;
   ordem: number;
+  sexo: string | null;
 };
 type RepresentativeInsert = Pick<RepresentativeRow, "cliente_id" | "nome"> &
   Partial<Omit<RepresentativeRow, "cliente_id" | "nome">>;
@@ -29,9 +30,9 @@ type OfficeDatabase = Omit<Database, "public"> & {
         Update: ContractTable["Update"] & { objeto?: string | null; gratuidade?: boolean };
       };
       clients: Omit<ClientTable, "Row" | "Insert" | "Update"> & {
-        Row: ClientTable["Row"] & { pj_descricao?: string | null };
-        Insert: ClientTable["Insert"] & { pj_descricao?: string | null };
-        Update: ClientTable["Update"] & { pj_descricao?: string | null };
+        Row: ClientTable["Row"] & { pj_descricao?: string | null; sexo?: string | null };
+        Insert: ClientTable["Insert"] & { pj_descricao?: string | null; sexo?: string | null };
+        Update: ClientTable["Update"] & { pj_descricao?: string | null; sexo?: string | null };
       };
       cliente_representantes: {
         Row: RepresentativeRow;
