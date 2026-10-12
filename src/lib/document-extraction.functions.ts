@@ -20,9 +20,11 @@ const extractedSchema = z.object({
       marital_status: z.string().default(""),
       profession: z.string().default(""),
       cpf: z.string().default(""),
+      sexo: z.string().default(""),
       quality: z.enum(["sócio", "representante legal"]).default("representante legal"),
     }),
   ).default([]),
+  sexo: z.string().default(""),
   nationality: z.string().default(""),
   marital_status: z.string().default(""),
   profession: z.string().default(""),
@@ -56,9 +58,9 @@ export const extractClientDocument = createServerFn({ method: "POST" })
 
         const focus =
       data.kind === "identificacao"
-        ? "nome completo, nacionalidade, estado civil, profissão, RG, órgão expedidor/UF e CPF"
+        ? "nome completo, sexo, nacionalidade, estado civil, profissão, RG, órgão expedidor/UF e CPF"
         : data.kind === "contrato_social"
-          ? "razão social, CNPJ, endereço da sede com CEP e representantes, com nome, nacionalidade, estado civil, profissão, CPF e qualidade (sócio ou representante legal)"
+          ? "razão social, CNPJ, endereço da sede com CEP e representantes, com nome, sexo, nacionalidade, estado civil, profissão, CPF e qualidade (sócio ou representante legal)"
           : "CEP, logradouro, número, complemento, bairro, cidade e UF";
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -75,7 +77,7 @@ export const extractClientDocument = createServerFn({ method: "POST" })
           {
             role: "system",
             content:
-                            "Você extrai dados de documentos brasileiros para conferência humana. Não invente dados. Retorne somente JSON válido com estas chaves: name, nationality, marital_status, profession, rg_number, rg_issuer, cpf_cnpj, cep, street, number, complement, district, city, state, representatives. Cada representante deve conter name, nationality, marital_status, profession, cpf e quality, usando quality como sócio ou representante legal. Use string vazia quando o dado não estiver legível ou não constar. Preserve nomes próprios e normalize UF em duas letras.",
+                            "Você extrai dados de documentos brasileiros para conferência humana. Não invente dados. Retorne somente JSON válido com estas chaves: name, sexo, nationality, marital_status, profession, rg_number, rg_issuer, cpf_cnpj, cep, street, number, complement, district, city, state, representatives. Cada representante deve conter name, sexo, nationality, marital_status, profession, cpf e quality, usando quality como sócio ou representante legal. Em sexo use \"M\" ou \"F\": copie do campo Sexo do documento quando existir; se não existir, deduza pelo primeiro nome somente quando for claramente masculino ou feminino; em caso de dúvida, use string vazia. Use string vazia quando o dado não estiver legível ou não constar. Preserve nomes próprios e normalize UF em duas letras.",
           },
           {
             role: "user",
