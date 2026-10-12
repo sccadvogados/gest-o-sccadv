@@ -177,7 +177,7 @@ export function ContractForm({
         contractId = contract.id;
       }
 
-      const rows = modality === "exito" ? [] : preview.map((row) => ({
+            const rows = semParcelas ? [] : preview.map((row) => ({
         ...row,
         contract_id: contractId,
         client_id: clientId,
