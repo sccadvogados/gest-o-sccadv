@@ -193,7 +193,7 @@ export function ContractForm({
     onSuccess: (contractId) => {
       queryClient.invalidateQueries({ queryKey: ["contracts", clientId] });
       queryClient.invalidateQueries({ queryKey: ["installments"] });
-      if (!rascunho) toast.success(modality === "exito" ? "Contrato salvo." : "Contrato salvo e parcelas geradas.");
+            if (!rascunho) toast.success(semParcelas ? "Contrato salvo." : "Contrato salvo e parcelas geradas.");
       onSaved(contractId);
     },
     onError: (error) => toast.error(errorMessage(error, "Erro ao salvar o contrato.")),
