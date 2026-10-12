@@ -1,6 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { AlertTriangle, CheckCircle2, Download, FolderOpen, LoaderCircle, PencilLine, RefreshCw } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Download, FolderOpen, LoaderCircle, PencilLine, RefreshCw, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -20,6 +20,8 @@ type ContractReviewProps = {
   onBack?: (() => void) | undefined;
   onEditObject?: (() => void) | undefined;
   onFinish: () => void;
+  /** Descarta o rascunho (Novo Cliente). Quando ausente, o botão "Descartar" não aparece. */
+  onDiscard?: (() => Promise<void> | void) | undefined;
 };
 
 type Analysis = {
@@ -48,7 +50,7 @@ function errorMessage(error: unknown, fallback: string) {
   return error instanceof Error ? error.message : (error as { message?: string })?.message ?? fallback;
 }
 
-export function ContractReview({ contractId, personType, onBack, onEditObject, onFinish }: ContractReviewProps) {
+export function ContractReview({ contractId, personType, onBack, onEditObject, onFinish, onDiscard }: ContractReviewProps) {
   const analyze = useServerFn(analisarObjetoProcuracao);
   const generate = useServerFn(gerarPacoteDocumentos);
 
@@ -61,6 +63,8 @@ export function ContractReview({ contractId, personType, onBack, onEditObject, o
   const [generated, setGenerated] = useState<Generated[] | null>(null);
   const [drive, setDrive] = useState<DriveResult>(null);
   const [editing, setEditing] = useState(false);
+  const [discarding, setDiscarding] = useState(false);
+  const queryClient = useQueryClient();
 
   const { data: contract } = useQuery({
     queryKey: ["contract-review", contractId],
@@ -72,8 +76,8 @@ export function ContractReview({ contractId, personType, onBack, onEditObject, o
         .single();
       if (error) throw error;
       return data as unknown as {
-        numero: number;
-        ano: number;
+        numero: number | null;
+        ano: number | null;
         modality: string;
         total_value: number;
         installments_count: number;
@@ -84,6 +88,33 @@ export function ContractReview({ contractId, personType, onBack, onEditObject, o
       };
     },
   });
+
+  const { data: numeroPrevisto } = useQuery({
+    queryKey: ["proximo-numero-contrato"],
+    enabled: Boolean(contract) && contract?.numero == null,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("proximo_numero_contrato" as never);
+      if (error) return null;
+      return typeof data === "string" ? data : null;
+    },
+  });
+
+  const numeroContrato = contract?.numero != null && contract.ano != null
+    ? `${String(contract.numero).padStart(3, "0")}/${contract.ano}`
+    : null;
+
+  async function discard() {
+    if (!onDiscard) return;
+    if (!window.confirm("Descartar este cadastro? Os dados preenchidos e os anexos serão apagados.")) return;
+    setDiscarding(true);
+    try {
+      await onDiscard();
+    } catch (error) {
+      toast.error(errorMessage(error, "Não foi possível descartar o cadastro."));
+    } finally {
+      setDiscarding(false);
+    }
+  }
 
   async function runAnalysis() {
     setAnalyzing(true);
@@ -127,7 +158,12 @@ export function ContractReview({ contractId, personType, onBack, onEditObject, o
       }
       setGenerated(result.gerados);
       setDrive(result.drive as DriveResult);
-      toast.success("Documentos gerados.");
+      await queryClient.invalidateQueries({ queryKey: ["contract-review", contractId] });
+      void queryClient.invalidateQueries({ queryKey: ["clients"] });
+      void queryClient.invalidateQueries({ queryKey: ["contracts"] });
+      void queryClient.invalidateQueries({ queryKey: ["installments"] });
+      void queryClient.invalidateQueries({ queryKey: ["proximo-numero-contrato"] });
+      toast.success("Cadastro finalizado e documentos gerados.");
     } catch (error) {
       toast.error(errorMessage(error, "Não foi possível gerar os documentos."));
     } finally {
@@ -161,8 +197,8 @@ export function ContractReview({ contractId, personType, onBack, onEditObject, o
       <div className="space-y-5">
         <Alert>
           <CheckCircle2 className="size-4" />
-          <AlertTitle>Documentos gerados</AlertTitle>
-          <AlertDescription>Os arquivos foram salvos na ficha do cliente.</AlertDescription>
+          <AlertTitle>{numeroContrato ? `Contrato ${numeroContrato} finalizado` : "Cadastro finalizado"}</AlertTitle>
+          <AlertDescription>Os documentos foram gerados e salvos na ficha do cliente.</AlertDescription>
         </Alert>
         <ul className="space-y-2">
           {generated.map((file) => (
@@ -190,7 +226,7 @@ export function ContractReview({ contractId, personType, onBack, onEditObject, o
           </Alert>
         ) : null}
         <div className="flex justify-end">
-          <Button type="button" onClick={onFinish}>Ir para a ficha</Button>
+          <Button type="button" onClick={onFinish}>Ir para a Ficha</Button>
         </div>
       </div>
     );
@@ -201,7 +237,7 @@ export function ContractReview({ contractId, personType, onBack, onEditObject, o
       <section className="space-y-2 text-sm">
         <h3 className="text-base font-semibold text-[#0F2340]">Resumo</h3>
         <p><span className="text-muted-foreground">Cliente:</span> {contract?.clients?.name ?? "…"}</p>
-        <p><span className="text-muted-foreground">Contrato:</span> {contract ? `${String(contract.numero).padStart(3, "0")}/${contract.ano}` : "…"}</p>
+        <p><span className="text-muted-foreground">Contrato:</span> {numeroContrato ?? (numeroPrevisto ? `${numeroPrevisto} (previsto)` : "…")}</p>
         <p><span className="text-muted-foreground">Remuneração:</span> {remuneracao}</p>
         <p style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
           <span className="font-sans text-muted-foreground">Objeto:</span> O objeto do presente contrato é a prestação de serviços advocatícios relativos {contract?.objeto ?? "…"}.
@@ -312,7 +348,15 @@ export function ContractReview({ contractId, personType, onBack, onEditObject, o
       ) : null}
 
       <div className="flex flex-wrap justify-between gap-3">
-        {onBack ? <Button type="button" variant="outline" onClick={onBack}>Voltar</Button> : <span />}
+        <div className="flex flex-wrap gap-3">
+          {onBack ? <Button type="button" variant="outline" onClick={onBack}>Voltar</Button> : null}
+          {onDiscard ? (
+            <Button type="button" variant="ghost" className="text-destructive hover:text-destructive" onClick={() => void discard()} disabled={discarding || generating}>
+              <Trash2 className="size-4" />
+              {discarding ? "Descartando…" : "Descartar"}
+            </Button>
+          ) : null}
+        </div>
         <Button
           type="button"
           onClick={() => void approve()}
@@ -329,6 +373,7 @@ export function ContractReview({ contractId, personType, onBack, onEditObject, o
     </div>
   );
 }
+
 
 
 
