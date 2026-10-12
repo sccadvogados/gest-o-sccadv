@@ -389,7 +389,8 @@ function NewClientPage() {
           .insert(
             form.representatives.map((representative, ordem) => ({
               cliente_id: currentClientId,
-              nome: representative.name,
+                            nome: representative.name.replace(/\s+/g, " ").trim(),
+
                             nacionalidade: representative.nationality.replace(/\s+/g, " ").trim() || null,
 
                             estado_civil: representative.marital_status.replace(/\s+/g, " ").trim() || null,
