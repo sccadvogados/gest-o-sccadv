@@ -80,7 +80,8 @@ export function DeleteClientDialog({
       <AlertDialogTrigger asChild>
         <Button variant="outline" className="text-destructive">
           <Trash2 className="size-4" />
-          Excluir cliente
+                    Excluir Cliente
+
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
