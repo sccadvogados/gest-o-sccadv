@@ -303,7 +303,7 @@ function NewClientPage() {
         throw new Error("Anexe a identificação para ler os dados ou abra o preenchimento manual.");
       }
       const obrigatorios: [string, string][] = [["Complemento", form.complement]];
-      if (form.person_type === "PJ") obrigatorios.push(["Descrição da Pessoa Jurídica", form.pj_descricao]);
+      
       const faltando = obrigatorios.find(([, value]) => !value.trim());
       if (faltando) throw new Error(`Preencha o campo obrigatório: ${faltando[0]}.`);
       if (form.person_type === "PJ") {
