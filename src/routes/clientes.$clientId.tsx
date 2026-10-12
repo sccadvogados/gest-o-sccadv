@@ -891,7 +891,7 @@ function EditContractDialog({
         {!proBono ? (
           <div className="space-y-2">
             <Label htmlFor={`edit-contract-retencao-${contract.id}`}>% de Retenção do Escritório{!retencao.trim() ? <span className="ml-0.5 text-destructive">*</span> : null}</Label>
-            <Input id={`edit-contract-retencao-${contract.id}`} inputMode="decimal" placeholder="Ex.: 20" value={retencao} onChange={(e) => setRetencao(e.target.value)} />
+                        <PercentInput id={`edit-contract-retencao-${contract.id}`} placeholder="Ex.: 20" value={retencao} onChange={(e) => setRetencao(e.target.value)} />
           </div>
         ) : null}
         <div className="sm:col-span-2">
