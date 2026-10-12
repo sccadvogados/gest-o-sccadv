@@ -867,10 +867,12 @@ function EditContractDialog({
             />
           </div>
         ) : null}
-        <div className="space-y-2 sm:col-span-2">
-          <Label htmlFor={`edit-contract-fee-${contract.id}`}>% de êxito{modality === "exito" ? " (obrigatório)" : ""}</Label>
-          <Input id={`edit-contract-fee-${contract.id}`} inputMode="decimal" value={successFee} onChange={(e) => setSuccessFee(e.target.value)} />
-        </div>
+                {!proBono ? (
+          <div className="space-y-2 sm:col-span-2">
+            <Label htmlFor={`edit-contract-fee-${contract.id}`}>% de êxito{modality === "exito" ? " (obrigatório)" : ""}</Label>
+            <Input id={`edit-contract-fee-${contract.id}`} inputMode="decimal" value={successFee} onChange={(e) => setSuccessFee(e.target.value)} />
+          </div>
+        ) : null}
         <div className="sm:col-span-2">
           <ObjectClauseField value={object} onChange={setObject} />
         </div>
