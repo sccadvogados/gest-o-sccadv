@@ -15,6 +15,7 @@ export type ClientForTemplate = {
   cep?: string | null;
   person_type: string;
   pj_descricao?: string | null;
+  sexo?: string | null;
 };
 
 export type RepresentativeForTemplate = {
@@ -25,6 +26,7 @@ export type RepresentativeForTemplate = {
   cpf?: string | null;
   qualidade?: string | null;
   ordem?: number | null;
+  sexo?: string | null;
 };
 
 export type ContractForTemplate = {
@@ -46,6 +48,17 @@ export type DocumentTemplateData = {
   pf: boolean;
   pj: boolean;
   outorgante_nome: string;
+  nome: string;
+  inscrito: string;
+  domiciliado: string;
+  portador: string;
+  denominado: string;
+  art_o: string;
+  Art_o: string;
+  art_do: string;
+  ART_DO: string;
+  art_ao: string;
+  art_pelo: string;
   nacionalidade: string;
   estado_civil: string;
   profissao: string;
@@ -127,6 +140,46 @@ function dataPorExtenso(date = new Date()): string {
   return formatter.format(date);
 }
 
+
+type Genero = "M" | "F" | null;
+
+function generoDe(sexo: string | null | undefined): Genero {
+  const valor = (sexo ?? "").trim().toUpperCase();
+  if (valor.startsWith("F")) return "F";
+  if (valor.startsWith("M")) return "M";
+  return null;
+}
+
+/** Escolhe a forma masculina ou feminina; sem sexo informado, usa a forma neutra "x(a)". */
+function flexao(genero: Genero, masculino: string, feminino: string, neutro: string): string {
+  if (genero === "F") return feminino;
+  if (genero === "M") return masculino;
+  return neutro;
+}
+
+function minusculas(valor: string | null | undefined): string {
+  return (valor ?? "").trim().toLocaleLowerCase("pt-BR");
+}
+
+function maiusculas(valor: string | null | undefined): string {
+  return (valor ?? "").trim().toLocaleUpperCase("pt-BR");
+}
+
+const PALAVRAS_COM_GENERO = /^(brasileir|solteir|casad|divorciad|separad|viúv|viuv|estrangeir)(o\(a\)|o|a)$/;
+
+/** Nacionalidade e estado civil: minúsculas e concordância com o sexo (ex.: "Casado(a)" -> "casada"). */
+function termoComGenero(valor: string | null | undefined, genero: Genero): string {
+  const texto = minusculas(valor);
+  return texto
+    .split(" ")
+    .map((palavra) => {
+      const match = palavra.match(PALAVRAS_COM_GENERO);
+      if (!match) return palavra;
+      return `${match[1]}${flexao(genero, "o", "a", "o(a)")}`;
+    })
+    .join(" ");
+}
+
 function enderecoCompleto(client: ClientForTemplate): string {
   const rua = [client.street, client.number, client.complement].filter(Boolean).join(", ");
   const local = [client.district, client.city && client.state ? `${client.city}/${client.state}` : client.city || client.state].filter(Boolean).join(", ");
@@ -134,7 +187,14 @@ function enderecoCompleto(client: ClientForTemplate): string {
 }
 
 function qualificacao(representante: RepresentativeForTemplate): string {
-  return [representante.nome, representante.nacionalidade, representante.estado_civil, representante.profissao, representante.cpf && `inscrito(a) no CPF n. ${representante.cpf}`].filter(Boolean).join(", ");
+  const genero = generoDe(representante.sexo);
+  return [
+    maiusculas(representante.nome),
+    termoComGenero(representante.nacionalidade, genero),
+    termoComGenero(representante.estado_civil, genero),
+    minusculas(representante.profissao),
+    representante.cpf && `${flexao(genero, "inscrito", "inscrita", "inscrito(a)")} no CPF n. ${representante.cpf}`,
+  ].filter(Boolean).join(", ");
 }
 
 function representantesTexto(representantes: RepresentativeForTemplate[]): string {
@@ -142,7 +202,16 @@ function representantesTexto(representantes: RepresentativeForTemplate[]): strin
   if (ordered.length === 0) return "";
   const tipos = ordered.map((representante) => /sóci|soci/i.test(representante.qualidade ?? "") ? "sócio" : "representante legal");
   const tipo = tipos.every((item) => item === "sócio") ? "sócio" : tipos.every((item) => item === "representante legal") ? "representante legal" : "representante";
-  const prefixo = ordered.length === 1 ? `seu ${tipo}` : `seus ${tipo === "sócio" ? "sócios" : tipo === "representante legal" ? "representantes legais" : "representantes"}`;
+  const todasMulheres = ordered.every((representante) => generoDe(representante.sexo) === "F");
+  let prefixo: string;
+  if (ordered.length === 1) {
+    const genero = generoDe(ordered[0]?.sexo);
+    const nome = tipo === "sócio" ? flexao(genero, "sócio", "sócia", "sócio(a)") : tipo;
+    prefixo = `${flexao(genero, "seu", "sua", "seu(sua)")} ${nome}`;
+  } else {
+    const plural = tipo === "sócio" ? (todasMulheres ? "sócias" : "sócios") : tipo === "representante legal" ? "representantes legais" : "representantes";
+    prefixo = `${todasMulheres ? "suas" : "seus"} ${plural}`;
+  }
   const qualificacoes = ordered.map((representante) => qualificacao(representante));
   const lista = qualificacoes.length === 1 ? qualificacoes[0] : `${qualificacoes.slice(0, -1).join("; ")} e ${qualificacoes.at(-1)}`;
     return `${prefixo}, ${lista}`;
@@ -179,13 +248,26 @@ export function montarDadosModelos(client: ClientForTemplate, contract: Contract
   const prolabore = contract.modality !== "exito" && installments.some((installment) => installment.amount > 0);
   const exito = Number(contract.success_fee_percent ?? 0) > 0;
   const percentual = Number(contract.success_fee_percent ?? 0);
+  // Pessoa jurídica: sempre no feminino ("a CONTRATANTE", "inscrita", "denominada").
+  const genero: Genero = pj ? "F" : generoDe(client.sexo);
   return {
     pf: !pj,
     pj,
-    outorgante_nome: client.name,
-    nacionalidade: client.nationality ?? "",
-    estado_civil: client.marital_status ?? "",
-    profissao: client.profession ?? "",
+    outorgante_nome: maiusculas(client.name),
+    nome: maiusculas(client.name),
+    inscrito: flexao(genero, "inscrito", "inscrita", "inscrito(a)"),
+    domiciliado: flexao(genero, "domiciliado", "domiciliada", "domiciliado(a)"),
+    portador: flexao(genero, "portador", "portadora", "portador(a)"),
+    denominado: flexao(genero, "denominado", "denominada", "denominado(a)"),
+    art_o: flexao(genero, "o", "a", "o(a)"),
+    Art_o: flexao(genero, "O", "A", "O(A)"),
+    art_do: flexao(genero, "do", "da", "do(a)"),
+    ART_DO: flexao(genero, "DO", "DA", "DO(A)"),
+    art_ao: flexao(genero, "ao", "à", "ao(à)"),
+    art_pelo: flexao(genero, "pelo", "pela", "pelo(a)"),
+    nacionalidade: termoComGenero(client.nationality, genero),
+    estado_civil: termoComGenero(client.marital_status, genero),
+    profissao: minusculas(client.profession),
     cpf: !pj ? client.cpf_cnpj ?? "" : "",
     rg: !pj ? client.rg_number ?? "" : "",
     rg_orgao: !pj ? client.rg_issuer ?? "" : "",
@@ -193,7 +275,7 @@ export function montarDadosModelos(client: ClientForTemplate, contract: Contract
     pj_descricao: pj ? client.pj_descricao ?? "" : "",
     endereco_completo: enderecoCompleto(client),
     representantes_texto: pj ? representantesTexto(representatives) : "",
-    representantes_assinatura: pj ? representatives.slice().sort((a, b) => (a.ordem ?? 0) - (b.ordem ?? 0)).map((representante) => representante.nome).join(" e ") : "",
+    representantes_assinatura: pj ? representatives.slice().sort((a, b) => (a.ordem ?? 0) - (b.ordem ?? 0)).map((representante) => maiusculas(representante.nome)).join(" e ") : "",
     assinatura_documento: `${pj ? "CNPJ" : "CPF"} n. ${client.cpf_cnpj ?? ""}`,
     objeto: (contract.objeto ?? "").trim().replace(/[.]$/, ""),
     tem_prolabore: prolabore,
