@@ -32,7 +32,8 @@ export function DeleteClientDialog({
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
+    const navigate = useNavigate();
+  const excluir = useServerFn(excluirClienteCompleto);
 
   useEffect(() => {
     let active = true;
