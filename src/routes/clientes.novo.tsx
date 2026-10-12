@@ -75,12 +75,14 @@ type Representative = {
   marital_status: string;
   profession: string;
   cpf: string;
+  sexo: "" | "M" | "F";
   quality: "sócio" | "representante legal";
 };
 
 type Form = {
     person_type: "PF" | "PJ";
   name: string;
+  sexo: "" | "M" | "F";
     pj_descricao: string;
   representatives: Representative[];
   nationality: string;
