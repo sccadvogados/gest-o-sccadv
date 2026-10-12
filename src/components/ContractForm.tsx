@@ -129,7 +129,7 @@ export function ContractForm({
         recurring: modality === "mensal",
         objeto: objectToSave || null,
                 gratuidade: gratuidadeToSave,
-        captacao,
+                captacao: captacao || null,
         captacao_percentual: temRepasse ? repasse : null,
       };
 
