@@ -387,7 +387,8 @@ function NewClientPage() {
               cliente_id: currentClientId,
               nome: representative.name,
               nacionalidade: representative.nationality || null,
-              estado_civil: representative.marital_status || null,
+                            estado_civil: representative.marital_status.replace(/\s+/g, " ").trim() || null,
+
               profissao: representative.profession || null,
                             cpf: onlyDigits(representative.cpf) || null,
               sexo: representative.sexo || null,
