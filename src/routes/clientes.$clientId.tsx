@@ -712,10 +712,12 @@ function EditContractDialog({
   const queryClient = useQueryClient();
   const hasPaidInstallment = (contract.installments ?? []).some((installment) => installment.status === "Pago");
   const [category, setCategory] = useState(contract.category);
-  const [totalValue, setTotalValue] = useState(Number(contract.total_value) || 0);
+    const [totalValue, setTotalValue] = useState(Number(contract.total_value) || 0);
   const [count, setCount] = useState(String(contract.installments_count));
   const [firstDue, setFirstDue] = useState(contract.first_due_date);
   const [modality, setModality] = useState<ContractModality>(contract.modality);
+  const proBono = modality === "probono";
+  const semParcelas = modality === "exito" || proBono;
   const [paymentMethod, setPaymentMethod] = useState(contract.payment_method ?? PAYMENT_METHODS[0]);
   const paymentMethodOptions: string[] = PAYMENT_METHODS.includes(paymentMethod as (typeof PAYMENT_METHODS)[number])
     ? [...PAYMENT_METHODS]
