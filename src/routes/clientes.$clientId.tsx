@@ -839,13 +839,15 @@ function EditContractDialog({
             </div>
           </>
         ) : null}
-        <div className="space-y-2">
-          <Label>Forma de pagamento</Label>
-          <Select value={paymentMethod} onValueChange={setPaymentMethod}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>{paymentMethodOptions.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
-          </Select>
-                </div>
+                {!proBono ? (
+          <div className="space-y-2">
+            <Label>Forma de pagamento</Label>
+            <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>{paymentMethodOptions.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+        ) : null}
                 <div className="space-y-2">
           <Label>Forma de Captação (Opcional)</Label>
           <Select value={captacao} onValueChange={(value) => setCaptacao(value === "nenhuma" ? "" : value)}>
