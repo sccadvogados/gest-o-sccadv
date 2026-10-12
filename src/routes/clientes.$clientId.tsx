@@ -257,7 +257,7 @@ function ClientDetailPage() {
             <PageHeader
         className="mt-4"
         title={client.name}
-        subtitle={`${client.person_type === "PJ" ? "Pessoa jurídica" : "Pessoa física"} · ${client.cpf_cnpj || "CPF/CNPJ não informado"}`}
+        subtitle={`${client.person_type === "PJ" ? "Pessoa Jurídica" : "Pessoa Física"} · ${client.cpf_cnpj || "CPF/CNPJ não informado"}`}
         action={
           <div className="flex flex-wrap gap-2">
                         <EditClientDialog clientId={clientId} client={client} />
