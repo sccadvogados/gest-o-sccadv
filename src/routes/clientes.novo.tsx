@@ -595,7 +595,8 @@ function NewClientPage() {
                 value={form.nationality}
                 onChange={(e) => set("nationality", e.target.value)}
               />
-            </div>
+              </div>
+            )}
 
             {form.person_type === "PF" && (
               <>
