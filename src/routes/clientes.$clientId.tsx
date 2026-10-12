@@ -351,8 +351,8 @@ function ClientDetailPage() {
           </p>
         )}
 
-        {(contracts ?? []).map((contract) => (
-                    <div key={contract.id} className="panel mt-4 overflow-hidden rounded-xl border border-[#E6D6C4] border-t-[3px] border-t-[#D4A782] bg-white shadow-panel">
+                {(contracts ?? []).map((contract) => (
+                    <div key={contract.id} className={`panel mt-4 overflow-hidden rounded-xl border border-[#E6D6C4] border-t-[3px] border-t-[#D4A782] bg-white shadow-panel${contract.situacao === "arquivado" ? " opacity-70" : ""}`}>
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-5">
               <div>
                                                                 <p className="font-medium">{contract.numero != null && contract.ano != null ? `Contrato ${String(contract.numero).padStart(3, "0")}/${contract.ano}` : "Contrato"}</p>
