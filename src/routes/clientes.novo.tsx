@@ -223,7 +223,8 @@ function NewClientPage() {
   function mergeExtracted(data: ExtractedClientData) {
     setForm((current) => ({
       ...current,
-      name: data.name || current.name,
+            name: data.name || current.name,
+      sexo: normalizeSexo(data.sexo) || current.sexo,
             nationality: primeiraMaiuscula(data.nationality) || current.nationality,
       marital_status: data.marital_status || current.marital_status,
       profession: data.profession || current.profession,
