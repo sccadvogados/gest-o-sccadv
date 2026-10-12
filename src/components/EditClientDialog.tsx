@@ -188,7 +188,7 @@ export function EditClientDialog({
       }
       const { error } = await officeDatabase(supabase)
         .from("clients")
-        .update({ ...form, sexo: form.person_type === "PF" && form.sexo ? form.sexo : null })
+        .update({ ...formLimpo, sexo: formLimpo.person_type === "PF" && formLimpo.sexo ? formLimpo.sexo : null })
         .eq("id", clientId);
       if (error) throw error;
 
