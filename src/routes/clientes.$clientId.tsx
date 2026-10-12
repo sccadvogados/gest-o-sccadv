@@ -362,7 +362,12 @@ function ClientDetailPage() {
                 </p>
               </div>
                             <div className="flex items-center gap-2">
-                <Badge variant="secondary">{contract.payment_method || "Forma a definir"}</Badge>
+                                <Badge variant="secondary">{contract.payment_method || "Forma a definir"}</Badge>
+                <Badge variant="secondary">
+                  {contract.captacao
+                    ? `Captação: ${contract.captacao}${contract.captacao_percentual ? ` – ${String(contract.captacao_percentual).replace(".", ",")}%` : ""}`
+                    : "Captação a definir"}
+                </Badge>
                 <ContractActions
                   clientId={clientId}
                   personType={client.person_type as "PF" | "PJ"}
