@@ -124,8 +124,13 @@ const EMPTY: Form = {
   state: "",
   email: "",
   phone: "",
-  notes: "",
+    notes: "",
 };
+
+function normalizeSexo(value: string | null | undefined): "" | "M" | "F" {
+  const upper = (value ?? "").trim().toUpperCase();
+  return upper.startsWith("F") ? "F" : upper.startsWith("M") ? "M" : "";
+}
 
 function primeiraMaiuscula(value: string | null | undefined): string {
   const texto = (value ?? "").trim().toLocaleLowerCase("pt-BR");
