@@ -115,6 +115,16 @@ export function numeroPorExtenso(value: number): string {
   return numeroInteiroExtenso(value);
 }
 
+/** Para substantivos femininos (ex.: "parcelas"): duas, uma, duzentas… */
+export function numeroPorExtensoFeminino(value: number): string {
+  return numeroInteiroExtenso(value)
+    .replace(/\bum\b/g, "uma")
+    .replace(/\bdois\b/g, "duas")
+    .replace(/entos\b/g, "entas");
+}
+
+
+
 export function valorPorExtenso(value: number): string {
   const normalized = Math.round(Math.abs(value) * 100) / 100;
   const reais = Math.floor(normalized);
