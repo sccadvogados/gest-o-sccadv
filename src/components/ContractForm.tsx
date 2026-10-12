@@ -190,7 +190,7 @@ export function ContractForm({
               <CurrencyInput id="total" value={totalValue} onChange={setTotalValue} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="count">Número de parcelas</Label>
+                            <Label htmlFor="count">Número de Parcelas</Label>
               <Input id="count" type="number" min={1} value={count} onChange={(e) => setCount(e.target.value)} />
             </div>
             <div className="space-y-2">
