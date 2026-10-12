@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ExternalLink, FileDown, Plus, Trash2 } from "lucide-react";
+import { ExternalLink, FileDown, Pencil, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -53,6 +53,7 @@ export function ContractPartners({
   const gerarSubstabelecimentoFn = useServerFn(gerarSubstabelecimento);
   const [baixando, setBaixando] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
+  const [editando, setEditando] = useState<ContratoParceiro | null>(null);
   const [nome, setNome] = useState("");
   const [oabNumero, setOabNumero] = useState("");
   const [oabUf, setOabUf] = useState("DF");
@@ -90,12 +91,17 @@ export function ContractPartners({
   const valorDisponivel = Math.max(0, Math.round((totalContrato - valorParceiros) * 100) / 100);
   const exitoDisponivel = Math.max(0, Math.round((exitoContrato - exitoParceiros) * 100) / 100);
 
-  function abrir() {
-    setNome("");
-    setOabNumero("");
-    setOabUf("DF");
-    setValor(valorDisponivel);
-    setExito("");
+  // Na edição, o limite inclui o que este parceiro já tem.
+  const valorMaximo = Math.round((valorDisponivel + Number(editando?.valor ?? 0)) * 100) / 100;
+  const exitoMaximo = Math.round((exitoDisponivel + Number(editando?.exito_percentual ?? 0)) * 100) / 100;
+
+  function abrir(item?: ContratoParceiro) {
+    setEditando(item ?? null);
+    setNome(item?.parceiros?.nome ?? "");
+    setOabNumero(item?.parceiros?.oab_numero ?? "");
+    setOabUf(item?.parceiros?.oab_uf ?? "DF");
+    setValor(item ? Number(item.valor) || 0 : valorDisponivel);
+    setExito(item ? percentual(Number(item.exito_percentual) || 0) : "0");
     setOpen(true);
   }
 
@@ -133,13 +139,12 @@ export function ContractPartners({
       const exitoNumero = Number(exito.replace(",", ".")) || 0;
       if (!nomeLimpo) throw new Error("Informe o nome do advogado.");
       if (!numero) throw new Error("Informe o número da OAB.");
-      if (valor < 0 || valor > valorDisponivel + 0.005) {
-        throw new Error(`O valor da parceria não pode passar de ${formatCurrency(valorDisponivel)}.`);
+      if (valor < 0 || valor > valorMaximo + 0.005) {
+        throw new Error(`O valor da parceria não pode passar de ${formatCurrency(valorMaximo)}.`);
       }
-      if (exitoNumero < 0 || exitoNumero > exitoDisponivel + 0.005) {
-        throw new Error(`O êxito da parceria não pode passar de ${percentual(exitoDisponivel)}%.`);
+      if (exitoNumero < 0 || exitoNumero > exitoMaximo + 0.005) {
+        throw new Error(`O êxito da parceria não pode passar de ${percentual(exitoMaximo)}%.`);
       }
-      if (valor <= 0 && exitoNumero <= 0) throw new Error("Informe o valor ou o % do êxito da parceria.");
 
       const { data: parceiro, error: parceiroError } = await db
         .from("parceiros")
@@ -147,6 +152,18 @@ export function ContractPartners({
         .select("id")
         .single();
       if (parceiroError) throw parceiroError;
+
+      if (editando) {
+        const { error: updateError } = await db
+          .from("contrato_parceiros")
+          .update({ parceiro_id: parceiro.id, valor, exito_percentual: exitoNumero })
+          .eq("id", editando.id);
+        if (updateError) {
+          if (String(updateError.code) === "23505") throw new Error("Este parceiro já está neste contrato.");
+          throw updateError;
+        }
+        return null;
+      }
 
       const { data: vinculo, error } = await db
         .from("contrato_parceiros")
@@ -167,9 +184,9 @@ export function ContractPartners({
     onSuccess: (vinculoId) => {
       queryClient.invalidateQueries({ queryKey: ["contract-partners", contract.id] });
       queryClient.invalidateQueries({ queryKey: ["parceiros"] });
-      toast.success("Parceiro adicionado.");
+      toast.success(vinculoId ? "Parceiro adicionado." : "Parceiro atualizado.");
       setOpen(false);
-      void baixarSubstabelecimento(vinculoId);
+      if (vinculoId) void baixarSubstabelecimento(vinculoId);
     },
     onError: (error) => toast.error(error instanceof Error ? error.message : "Não foi possível adicionar o parceiro."),
   });
@@ -192,7 +209,7 @@ export function ContractPartners({
     <div className="border-b border-border px-5 py-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-sm font-medium text-[#0F2340]">Parceiros</p>
-        <Button type="button" variant="outline" size="sm" onClick={abrir}>
+        <Button type="button" variant="outline" size="sm" onClick={() => abrir()}>
           <Plus className="size-4" />
           Adicionar Parceiro
         </Button>
@@ -208,11 +225,18 @@ export function ContractPartners({
               </span>
               <span className="flex items-center gap-3">
                 <span className="tabular-nums">
-                  {[
-                    Number(item.valor) > 0 ? formatCurrency(Number(item.valor)) : "",
-                    Number(item.exito_percentual) > 0 ? `${percentual(Number(item.exito_percentual))}% do êxito` : "",
-                  ].filter(Boolean).join(" + ")}
+                  {`${formatCurrency(Number(item.valor) || 0)} + ${percentual(Number(item.exito_percentual) || 0)}% do êxito`}
                 </span>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  aria-label="Editar Parceiro"
+                  title="Editar Parceiro"
+                  onClick={() => abrir(item)}
+                >
+                  <Pencil className="size-4" />
+                </Button>
                 <Button
                   type="button"
                   variant="ghost"
@@ -247,26 +271,9 @@ export function ContractPartners({
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>Adicionar Parceiro</DialogTitle>
+            <DialogTitle>{editando ? "Editar Parceiro" : "Adicionar Parceiro"}</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 sm:grid-cols-[1fr_auto]">
-            <div className="space-y-2">
-              <Label htmlFor={`parceiro-oab-${contract.id}`}>Número da OAB</Label>
-              <Input
-                id={`parceiro-oab-${contract.id}`}
-                inputMode="numeric"
-                value={oabNumero}
-                onChange={(e) => setOabNumero(e.target.value)}
-                onBlur={() => buscarPorOab(oabNumero, oabUf)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>UF</Label>
-              <Select value={oabUf} onValueChange={(uf) => { setOabUf(uf); buscarPorOab(oabNumero, uf); }}>
-                <SelectTrigger className="w-24"><SelectValue /></SelectTrigger>
-                <SelectContent>{UFS.map((uf) => <SelectItem key={uf} value={uf}>{uf}</SelectItem>)}</SelectContent>
-              </Select>
-            </div>
             <div className="space-y-2 sm:col-span-2">
               <Label htmlFor={`parceiro-nome-${contract.id}`}>Nome do Advogado</Label>
               <Input
@@ -279,6 +286,16 @@ export function ContractPartners({
               <datalist id={`parceiros-lista-${contract.id}`}>
                 {(cadastrados ?? []).map((p) => <option key={p.id} value={p.nome}>{`OAB/${p.oab_uf} ${p.oab_numero}`}</option>)}
               </datalist>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor={`parceiro-oab-${contract.id}`}>Número da OAB</Label>
+              <Input
+                id={`parceiro-oab-${contract.id}`}
+                inputMode="numeric"
+                value={oabNumero}
+                onChange={(e) => setOabNumero(e.target.value)}
+                onBlur={() => buscarPorOab(oabNumero, oabUf)}
+              />
               <a
                 href="https://cna.oab.org.br/"
                 target="_blank"
@@ -290,28 +307,35 @@ export function ContractPartners({
               </a>
             </div>
             <div className="space-y-2">
+              <Label>UF</Label>
+              <Select value={oabUf} onValueChange={(uf) => { setOabUf(uf); buscarPorOab(oabNumero, uf); }}>
+                <SelectTrigger className="w-24"><SelectValue /></SelectTrigger>
+                <SelectContent>{UFS.map((uf) => <SelectItem key={uf} value={uf}>{uf}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
               <Label htmlFor={`parceiro-valor-${contract.id}`}>Valor da Parceria</Label>
-              <CurrencyInput id={`parceiro-valor-${contract.id}`} value={valor} onChange={(v) => setValor(Math.min(v, valorDisponivel))} />
-              <p className="text-xs text-muted-foreground">{`Máximo: ${formatCurrency(valorDisponivel)}`}</p>
+              <CurrencyInput id={`parceiro-valor-${contract.id}`} value={valor} onChange={(v) => setValor(Math.min(v, valorMaximo))} />
+              <p className="text-xs text-muted-foreground">{`Máximo: ${formatCurrency(valorMaximo)}`}</p>
             </div>
             <div className="space-y-2">
               <Label htmlFor={`parceiro-exito-${contract.id}`}>% do Êxito da Parceria</Label>
               <Input
                 id={`parceiro-exito-${contract.id}`}
                 inputMode="decimal"
-                placeholder="Ex.: 10"
+                placeholder="0"
                 value={exito}
                 onChange={(e) => setExito(e.target.value)}
-                disabled={exitoDisponivel <= 0}
+                disabled={exitoMaximo <= 0}
                 className="w-28"
               />
-              <p className="text-xs text-muted-foreground">{`Máximo: ${percentual(exitoDisponivel)}%`}</p>
+              <p className="text-xs text-muted-foreground">{`Máximo: ${percentual(exitoMaximo)}%`}</p>
             </div>
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
             <Button type="button" onClick={() => salvar.mutate()} disabled={salvar.isPending}>
-              {salvar.isPending ? "Salvando…" : "Adicionar e Gerar Substabelecimento"}
+              {salvar.isPending ? "Salvando…" : editando ? "Salvar Alterações" : "Adicionar e Gerar Substabelecimento"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -319,3 +343,4 @@ export function ContractPartners({
     </div>
   );
 }
+
