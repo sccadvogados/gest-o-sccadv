@@ -317,15 +317,15 @@ export function EditClientDialog({
 
                     {form.person_type === "PJ" && (
             <section className="space-y-4">
-              <div className="flex items-center justify-between gap-3">
+                            <div className="flex items-center justify-between gap-3">
                 <h3 className="text-sm font-semibold uppercase tracking-wide text-[#0F2340]">Representantes</h3>
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
-                  onClick={() => setRepresentatives((current) => [...current, { nome: "", nacionalidade: "", estado_civil: "", profissao: "", cpf: "", qualidade: "representante legal" }])}
+                  onClick={() => setRepresentatives((current) => [...current, { nome: "", nacionalidade: "", estado_civil: "", profissao: "", cpf: "", sexo: "", qualidade: "representante legal" }])}
                 >
-                  + Adicionar representante
+                  + Adicionar Representante
                 </Button>
               </div>
               {representatives.map((representative, index) => (
@@ -335,12 +335,13 @@ export function EditClientDialog({
                     <Button type="button" variant="ghost" size="sm" onClick={() => setRepresentatives((current) => current.filter((_, itemIndex) => itemIndex !== index))}>Remover</Button>
                   </div>
                   <div className="grid gap-4 sm:grid-cols-2">
-                    <div className="space-y-2 sm:col-span-2"><Label>Nome</Label><Input value={representative.nome} onChange={(event) => setRepresentatives((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, nome: event.target.value } : item))} /></div>
+                    <div className="space-y-2"><Label>Nome</Label><Input value={representative.nome} onChange={(event) => setRepresentatives((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, nome: event.target.value } : item))} /></div>
+                    <div className="space-y-2"><Label>Sexo</Label><Select value={representative.sexo} onValueChange={(value) => setRepresentatives((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, sexo: value as "M" | "F" } : item))}><SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger><SelectContent><SelectItem value="M">Masculino</SelectItem><SelectItem value="F">Feminino</SelectItem></SelectContent></Select></div>
                     <div className="space-y-2"><Label>Nacionalidade</Label><Input value={representative.nacionalidade} onChange={(event) => setRepresentatives((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, nacionalidade: event.target.value } : item))} /></div>
-                    <div className="space-y-2"><Label>Estado civil</Label><Input value={representative.estado_civil} onChange={(event) => setRepresentatives((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, estado_civil: event.target.value } : item))} /></div>
+                    <div className="space-y-2"><Label>Estado Civil</Label><Input value={representative.estado_civil} onChange={(event) => setRepresentatives((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, estado_civil: event.target.value } : item))} /></div>
                     <div className="space-y-2"><Label>Profissão</Label><Input value={representative.profissao} onChange={(event) => setRepresentatives((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, profissao: event.target.value } : item))} /></div>
                     <div className="space-y-2"><Label>CPF</Label><Input value={representative.cpf} onChange={(event) => setRepresentatives((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, cpf: maskCpfCnpj(event.target.value) } : item))} /></div>
-                    <div className="space-y-2"><Label>Qualidade</Label><Select value={representative.qualidade} onValueChange={(value) => setRepresentatives((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, qualidade: value as RepresentativeForm["qualidade"] } : item))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="representante legal">Representante legal</SelectItem><SelectItem value="sócio">Sócio</SelectItem></SelectContent></Select></div>
+                    <div className="space-y-2"><Label>Qualidade</Label><Select value={representative.qualidade} onValueChange={(value) => setRepresentatives((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, qualidade: value as RepresentativeForm["qualidade"] } : item))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="representante legal">Representante Legal</SelectItem><SelectItem value="sócio">Sócio</SelectItem></SelectContent></Select></div>
                   </div>
                 </div>
               ))}
@@ -352,7 +353,7 @@ export function EditClientDialog({
 
         <DialogFooter>
           <Button onClick={() => update.mutate()} disabled={update.isPending}>
-            {update.isPending ? "Salvando…" : "Salvar alterações"}
+            {update.isPending ? "Salvando…" : "Salvar Alterações"}
           </Button>
         </DialogFooter>
       </DialogContent>
