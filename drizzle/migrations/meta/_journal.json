@@ -57,6 +57,13 @@
       "when": 1791813400641,
       "tag": "0007_cliente_representantes",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1791813411585,
+      "tag": "0008_cliente_representantes_policies_ativos",
+      "breakpoints": true
     }
   ]
 }
