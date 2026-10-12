@@ -20,6 +20,7 @@ const CATEGORIES = [
 ] as const;
 
 const PAYMENT_METHODS = ["Cartão", "PIX", "Boleto"] as const;
+const CAPTACAO = ["Tráfego Pago", "Indicação", "Parceria", "Prospecção Ativa", "Cliente Recorrente"] as const;
 
 type PreviewInstallment = {
   number: number;
@@ -63,7 +64,10 @@ export function ContractForm({
   const [totalValue, setTotalValue] = useState(0);
   const [count, setCount] = useState("1");
   const [firstDue, setFirstDue] = useState(todayISO());
-  const [paymentMethod, setPaymentMethod] = useState<string>(PAYMENT_METHODS[0]);
+    const [paymentMethod, setPaymentMethod] = useState<string>(PAYMENT_METHODS[0]);
+  const [captacao, setCaptacao] = useState<string>("");
+  const [captacaoPercentual, setCaptacaoPercentual] = useState("");
+  const temRepasse = captacao === "Indicação" || captacao === "Parceria";
   const [successFee, setSuccessFee] = useState("0");
   const [object, setObject] = useState(initialObject ?? "");
   const [gratuidade, setGratuidade] = useState(initialGratuidade ?? personType === "PF");
@@ -83,7 +87,11 @@ export function ContractForm({
   }
 
   const save = useMutation({
-    mutationFn: async () => {
+        mutationFn: async () => {
+      if (!captacao) throw new Error("Informe a forma de captação.");
+      const repasse = Number(captacaoPercentual.replace(",", "."));
+      if (temRepasse && (!Number.isFinite(repasse) || repasse <= 0 || repasse > 100)) throw new Error("Informe o percentual de repasse entre 0 e 100.");
+
       const installmentsCount = Math.max(1, Number(count));
       const fee = Number(successFee.replace(",", ".")) || 0;
       const objectToSave = cleanObject(hideObject ? initialObject ?? "" : object);
@@ -118,7 +126,9 @@ export function ContractForm({
         success_fee_percent: fee,
         recurring: modality === "mensal",
         objeto: objectToSave || null,
-        gratuidade: gratuidadeToSave,
+                gratuidade: gratuidadeToSave,
+        captacao,
+        captacao_percentual: temRepasse ? repasse : null,
       };
 
       let contractId: string;
@@ -200,13 +210,29 @@ export function ContractForm({
           </>
         ) : null}
 
-        <div className="space-y-2">
+                <div className="space-y-2">
                     <Label>Forma de Pagamento</Label>
           <Select value={paymentMethod} onValueChange={setPaymentMethod}>
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>{PAYMENT_METHODS.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
           </Select>
         </div>
+
+        <div className="space-y-2">
+          <Label>Forma de Captação{!captacao ? <span className="ml-0.5 text-destructive">*</span> : null}</Label>
+          <Select value={captacao} onValueChange={setCaptacao}>
+            <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+            <SelectContent>{CAPTACAO.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
+          </Select>
+        </div>
+
+        {temRepasse ? (
+          <div className="space-y-2">
+            <Label htmlFor="captacaoPercentual">% de Repasse da {captacao}{!captacaoPercentual ? <span className="ml-0.5 text-destructive">*</span> : null}</Label>
+            <Input id="captacaoPercentual" inputMode="decimal" placeholder="Ex.: 10" value={captacaoPercentual} onChange={(e) => setCaptacaoPercentual(e.target.value)} />
+            <p className="text-xs text-muted-foreground">Percentual dos honorários destinado a quem indicou ou ao parceiro.</p>
+          </div>
+        ) : null}
 
         <div className="space-y-2 sm:col-span-2">
           <Label htmlFor="successFee">% de êxito{modality === "exito" ? " (obrigatório)" : ""}</Label>
