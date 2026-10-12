@@ -17,6 +17,7 @@ export type Database = {
       client_documents: {
         Row: {
           client_id: string
+          contract_id: string | null
           created_at: string
           drive_file_id: string | null
           drive_file_url: string | null
@@ -27,6 +28,7 @@ export type Database = {
         }
         Insert: {
           client_id: string
+          contract_id?: string | null
           created_at?: string
           drive_file_id?: string | null
           drive_file_url?: string | null
@@ -37,6 +39,7 @@ export type Database = {
         }
         Update: {
           client_id?: string
+          contract_id?: string | null
           created_at?: string
           drive_file_id?: string | null
           drive_file_url?: string | null
@@ -51,6 +54,13 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_documents_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
             referencedColumns: ["id"]
           },
         ]
