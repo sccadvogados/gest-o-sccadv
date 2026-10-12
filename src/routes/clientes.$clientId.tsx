@@ -532,12 +532,16 @@ type ContractRow = {
   modality: ContractModality;
     created_at: string;
 
-  success_fee_percent: number;
+    success_fee_percent: number;
     objeto?: string | null;
   parte_contraria?: string | null;
   gratuidade?: boolean;
+  captacao?: string | null;
+  captacao_percentual?: number | null;
   installments?: Array<{ status: string }>;
 };
+
+const CAPTACAO = ["Tráfego Pago", "Indicação", "Parceria", "Prospecção Ativa", "Cliente Recorrente"] as const;
 
 function ContractActions({
   clientId,
