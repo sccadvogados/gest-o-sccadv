@@ -231,7 +231,7 @@ function AgendaPage() {
         <Select value={typeFilter} onValueChange={(value: "todos" | EventType) => setTypeFilter(value)}>
           <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="todos">Todos os tipos</SelectItem>
+            <SelectItem value="todos">Todos os Tipos</SelectItem>
             {Object.entries(typeLabels).map(([value, label]) => <SelectItem key={value} value={value}>{label}</SelectItem>)}
           </SelectContent>
         </Select>
