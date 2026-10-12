@@ -893,7 +893,7 @@ function EditContractDialog({
         ) : null}
       </div>
       <DialogFooter>
-        <Button onClick={() => update.mutate()} disabled={update.isPending}>{update.isPending ? "Salvando…" : "Salvar alterações"}</Button>
+        <Button onClick={() => update.mutate()} disabled={update.isPending}>{update.isPending ? "Salvando…" : "Salvar Alterações"}</Button>
       </DialogFooter>
     </DialogContent>
   );
