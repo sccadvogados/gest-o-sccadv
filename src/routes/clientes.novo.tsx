@@ -355,7 +355,11 @@ function NewClientPage() {
         if (incompleto >= 0) throw new Error(`Preencha todos os dados do representante ${incompleto + 1}.`);
       }
             const { representatives: _representatives, ...formWithoutRepresentatives } = form;
-      const clientForm = { ...formWithoutRepresentatives, sexo: form.person_type === "PF" && form.sexo ? form.sexo : null };
+            const clientForm = { ...formWithoutRepresentatives, sexo: form.person_type === "PF" && form.sexo ? form.sexo : null };
+      for (const [chave, valor] of Object.entries(clientForm)) {
+        if (typeof valor === "string") (clientForm as Record<string, unknown>)[chave] = valor.replace(/\s+/g, " ").trim();
+      }
+
       let clientId = savedClientId;
 
       if (clientId) {
