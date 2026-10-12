@@ -554,8 +554,9 @@ type ContractRow = {
     objeto?: string | null;
   parte_contraria?: string | null;
   gratuidade?: boolean;
-    captacao?: string | null;
+      captacao?: string | null;
   captacao_percentual?: number | null;
+  retencao_percentual?: number | null;
   situacao?: string;
   installments?: Array<{ status: string }>;
 };
