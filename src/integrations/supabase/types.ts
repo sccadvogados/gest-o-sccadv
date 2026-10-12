@@ -420,6 +420,33 @@ export type Database = {
         }
         Relationships: []
       }
+      tribunais: {
+        Row: {
+          ativo: boolean
+          id: string
+          nome_oficial: string
+          segmento_cnj: string
+          sigla: string
+          uf: string | null
+        }
+        Insert: {
+          ativo?: boolean
+          id?: string
+          nome_oficial: string
+          segmento_cnj: string
+          sigla: string
+          uf?: string | null
+        }
+        Update: {
+          ativo?: boolean
+          id?: string
+          nome_oficial?: string
+          segmento_cnj?: string
+          sigla?: string
+          uf?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
