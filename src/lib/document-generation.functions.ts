@@ -211,7 +211,7 @@ async function renderTemplate(database: QueryClient, template: string, data: Rec
     const cleaned = xml.replace(/<w:p(?=[ >])(?:(?!<\/w:p>)[\s\S])*?<\/w:p>/g, (paragraph) =>
       paragraph.includes("<w:numPr>") && !/<w:t(?: [^>]*)?>[^<]*\S[^<]*<\/w:t>/.test(paragraph) ? "" : paragraph,
     );
-    renderedZip.file("word/document.xml", cleaned);
+        renderedZip.file("word/document.xml", umaPagina ? ajustarUmaPagina(cleaned) : cleaned);
   }
   return renderedZip.generate({ type: "uint8array" });
 }
