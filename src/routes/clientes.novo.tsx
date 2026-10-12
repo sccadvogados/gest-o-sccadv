@@ -126,6 +126,11 @@ const EMPTY: Form = {
   notes: "",
 };
 
+function primeiraMaiuscula(value: string | null | undefined): string {
+  const texto = (value ?? "").trim().toLocaleLowerCase("pt-BR");
+  return texto ? texto.charAt(0).toLocaleUpperCase("pt-BR") + texto.slice(1) : "";
+}
+
 function Pending({ value }: { value: string | null | undefined }) {
   return !value?.trim() ? <span className="ml-0.5 text-destructive" aria-label="pendente">*</span> : null;
 }
@@ -213,7 +218,7 @@ function NewClientPage() {
     setForm((current) => ({
       ...current,
       name: data.name || current.name,
-      nationality: data.nationality || current.nationality,
+            nationality: primeiraMaiuscula(data.nationality) || current.nationality,
       marital_status: data.marital_status || current.marital_status,
       profession: data.profession || current.profession,
       rg_number: data.rg_number || current.rg_number,
@@ -226,7 +231,14 @@ function NewClientPage() {
       district: data.district || current.district,
       city: data.city || current.city,
             state: data.state?.toUpperCase() || current.state,
-      ...(data.representatives.length > 0 ? { representatives: data.representatives } : {}),
+            ...(data.representatives.length > 0
+        ? {
+            representatives: data.representatives.map((representative) => ({
+              ...representative,
+              nationality: primeiraMaiuscula(representative.nationality),
+            })),
+          }
+        : {}),
     }));
   }
 
