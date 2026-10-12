@@ -837,12 +837,12 @@ function EditContractDialog({
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>{paymentMethodOptions.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
           </Select>
-        </div>
+                </div>
                 <div className="space-y-2">
-          <Label>Forma de Captação</Label>
-          <Select value={captacao} onValueChange={setCaptacao}>
+          <Label>Forma de Captação (Opcional)</Label>
+          <Select value={captacao} onValueChange={(value) => setCaptacao(value === "nenhuma" ? "" : value)}>
             <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
-            <SelectContent>{CAPTACAO.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
+            <SelectContent><SelectItem value="nenhuma">Nenhuma</SelectItem>{CAPTACAO.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
           </Select>
         </div>
         {temRepasse ? (
