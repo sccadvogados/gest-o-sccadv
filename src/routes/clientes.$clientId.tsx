@@ -884,8 +884,8 @@ function EditContractDialog({
         ) : null}
                 {!proBono ? (
           <div className="space-y-2">
-            <Label htmlFor={`edit-contract-fee-${contract.id}`}>% de êxito{modality === "exito" ? " (obrigatório)" : ""}</Label>
-            <Input id={`edit-contract-fee-${contract.id}`} inputMode="decimal" value={successFee} onChange={(e) => setSuccessFee(e.target.value)} />
+                        <Label htmlFor={`edit-contract-fee-${contract.id}`}>% de êxito{modality === "exito" ? " (obrigatório)" : ""}</Label>
+            <PercentInput id={`edit-contract-fee-${contract.id}`} value={successFee} onChange={(e) => setSuccessFee(e.target.value)} />
           </div>
         ) : null}
         {!proBono ? (
