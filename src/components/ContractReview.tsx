@@ -220,7 +220,7 @@ export function ContractReview({ contractId, personType, onBack, onEditObject, o
           </Button>
         ) : drive && !drive.ok ? (
           <Alert variant="destructive">
-            <AlertTriangle className="size-4" />
+                        <AlertTriangle className="size-4" />
             <AlertTitle>Não foi possível enviar ao Drive</AlertTitle>
             <AlertDescription>{drive.erro} Os documentos continuam salvos no sistema.</AlertDescription>
           </Alert>
