@@ -765,9 +765,10 @@ function EditContractDialog({
         payment_method: proBono ? null : paymentMethod,
         success_fee_percent: fee,
         objeto,
-        gratuidade: gratuidadeToSave,
+                gratuidade: gratuidadeToSave,
         captacao: captacao || null,
         captacao_percentual: temRepasse ? repasse : null,
+        retencao_percentual: proBono ? null : retencaoNumero,
       };
       const contractUpdate = hasPaidInstallment
         ? common
