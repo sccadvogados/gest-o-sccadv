@@ -3,6 +3,7 @@ import { createMiddleware } from '@tanstack/react-start'
 import { getRequest } from '@tanstack/react-start/server'
 import { createClient } from '@supabase/supabase-js'
 import type { Database } from './types'
+import { SCC_SUPABASE_URL, SCC_SUPABASE_PUBLISHABLE_KEY } from './scc-config'
 
 
 
