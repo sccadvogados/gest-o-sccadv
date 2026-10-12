@@ -171,7 +171,8 @@ export function ContractReview({ contractId, personType, onBack, onEditObject, o
           <Button asChild variant="outline">
             <a href={drive.pasta_url} target="_blank" rel="noreferrer">
               <FolderOpen className="size-4" />
-              Abrir pasta no Drive
+                            Abrir Pasta no Drive
+
             </a>
           </Button>
         ) : drive && !drive.ok ? (
