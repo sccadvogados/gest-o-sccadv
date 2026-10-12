@@ -263,7 +263,7 @@ export const gerarPacoteDocumentos = createServerFn({ method: "POST" })
 
     // Finalizar: só agora o contrato recebe número, as parcelas são criadas e o cliente deixa de ser rascunho.
     if (emRascunho) {
-      if (contract.modality !== "exito" && parcelasRascunho.length > 0) {
+            if (contract.modality !== "exito" && contract.modality !== "probono" && parcelasRascunho.length > 0) {
         const { error: parcelasError } = await database.from("installments").insert(
           parcelasRascunho.map((parcela) => ({
             contract_id: data.contrato_id,
