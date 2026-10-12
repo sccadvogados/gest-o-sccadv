@@ -359,5 +359,3 @@ export async function sendContractPackageToDrive(
     return { ok: false, erro };
   }
 }
-
-
