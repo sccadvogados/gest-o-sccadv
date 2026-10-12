@@ -209,7 +209,8 @@ export function ContractForm({
             <SelectContent>
                             <SelectItem value="parcelado">Pró-labore Parcelado</SelectItem>
               <SelectItem value="mensal">Pró-labore Mensal</SelectItem>
-              <SelectItem value="exito">Somente Êxito</SelectItem>
+                            <SelectItem value="exito">Somente Êxito</SelectItem>
+              <SelectItem value="probono">Pro Bono</SelectItem>
             </SelectContent>
           </Select>
         </div>
