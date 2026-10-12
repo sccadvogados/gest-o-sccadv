@@ -235,9 +235,9 @@ function grupoParcelas(installments: InstallmentForTemplate[]): string {
   for (const installment of installments) {
     const last = groups[groups.length - 1];
     if (last && Math.abs(last.amount - installment.amount) < 0.005) last.count += 1;
-    else groups.push({ count: 1, amount: installment.amount });
+        else groups.push({ count: 1, amount: installment.amount });
   }
-  return groups.map((group) => `${group.count} (${numeroPorExtenso(group.count)}) de ${formatarValor(group.amount)}`).join(" e ");
+  return groups.map((group) => `${group.count} (${numeroPorExtensoFeminino(group.count)}) de ${formatarValor(group.amount)}`).join(" e ");
 }
 
 export function montarProlaboreTexto(contract: ContractForTemplate, installments: InstallmentForTemplate[]): string {
