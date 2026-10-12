@@ -50,6 +50,13 @@
       "when": 1791813390146,
       "tag": "0006_procuracao_exemplos",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1791813400641,
+      "tag": "0007_cliente_representantes",
+      "breakpoints": true
     }
   ]
 }

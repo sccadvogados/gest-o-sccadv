@@ -55,6 +55,50 @@ export type Database = {
           },
         ]
       }
+      cliente_representantes: {
+        Row: {
+          cliente_id: string
+          cpf: string | null
+          estado_civil: string | null
+          id: string
+          nacionalidade: string | null
+          nome: string
+          ordem: number
+          profissao: string | null
+          qualidade: string
+        }
+        Insert: {
+          cliente_id: string
+          cpf?: string | null
+          estado_civil?: string | null
+          id?: string
+          nacionalidade?: string | null
+          nome: string
+          ordem?: number
+          profissao?: string | null
+          qualidade: string
+        }
+        Update: {
+          cliente_id?: string
+          cpf?: string | null
+          estado_civil?: string | null
+          id?: string
+          nacionalidade?: string | null
+          nome?: string
+          ordem?: number
+          profissao?: string | null
+          qualidade?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cliente_representantes_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clients: {
         Row: {
           cep: string | null
