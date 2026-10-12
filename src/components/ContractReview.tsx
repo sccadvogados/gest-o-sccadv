@@ -40,6 +40,10 @@ const MODALIDADES: Record<string, string> = {
   exito: "Somente Êxito",
 };
 
+function juntarLista(itens: string[]) {
+  return itens.length <= 1 ? itens.join("") : `${itens.slice(0, -1).join(", ")} e ${itens[itens.length - 1]}`;
+}
+
 function errorMessage(error: unknown, fallback: string) {
   return error instanceof Error ? error.message : (error as { message?: string })?.message ?? fallback;
 }
@@ -202,8 +206,8 @@ export function ContractReview({ contractId, personType, onBack, onEditObject, o
         <p style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
           <span className="font-sans text-muted-foreground">Objeto:</span> O objeto do presente contrato é a prestação de serviços advocatícios relativos {contract?.objeto ?? "…"}.
         </p>
-        {personType === "PF" ? <p><span className="text-muted-foreground">Gratuidade de justiça:</span> {gratuidade ? "Sim" : "Não"}</p> : null}
-        <p><span className="text-muted-foreground">Documentos que serão gerados:</span> {documentos.join(", ")}</p>
+        {personType === "PF" ? <p><span className="text-muted-foreground">Gratuidade de Justiça?</span> {gratuidade ? "Sim" : "Não"}</p> : null}
+        <p><span className="text-muted-foreground">Documentos Gerados:</span> {juntarLista(documentos)}</p>
       </section>
 
       <section className="space-y-4">
@@ -212,7 +216,7 @@ export function ContractReview({ contractId, personType, onBack, onEditObject, o
           {!analyzing ? (
             <Button type="button" variant="ghost" size="sm" onClick={() => void runAnalysis()}>
               <RefreshCw className="size-4" />
-              Analisar novamente
+                            Analisar Novamente
             </Button>
           ) : null}
         </div>
@@ -291,7 +295,7 @@ export function ContractReview({ contractId, personType, onBack, onEditObject, o
             )}
           </>
         ) : (
-          <p className="text-sm text-muted-foreground">A análise não foi concluída. Clique em "Analisar novamente".</p>
+          <p className="text-sm text-muted-foreground">A análise não foi concluída. Clique em "Analisar Novamente".</p>
         )}
       </section>
 
