@@ -268,8 +268,8 @@ export function ContractForm({
 
         {temRepasse ? (
           <div className="space-y-2">
-            <Label htmlFor="captacaoPercentual">% de Repasse da {captacao}{!captacaoPercentual ? <span className="ml-0.5 text-destructive">*</span> : null}</Label>
-            <Input id="captacaoPercentual" inputMode="decimal" placeholder="Ex.: 10" value={captacaoPercentual} onChange={(e) => setCaptacaoPercentual(e.target.value)} />
+                        <Label htmlFor="captacaoPercentual">% de Repasse da {captacao}{!captacaoPercentual ? <span className="ml-0.5 text-destructive">*</span> : null}</Label>
+            <PercentInput id="captacaoPercentual" placeholder="Ex.: 10" value={captacaoPercentual} onChange={(e) => setCaptacaoPercentual(e.target.value)} />
                         <p className="text-xs text-muted-foreground">Percentual dos honorários destinado a quem indicou ou ao parceiro.</p>
           </div>
         ) : null}
