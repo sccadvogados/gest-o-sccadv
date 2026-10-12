@@ -70,10 +70,12 @@ export type DocumentTemplateData = {
   endereco_completo: string;
   representantes_texto: string;
   representantes_assinatura: string;
-  assinatura_documento: string;
+    assinatura_documento: string;
   objeto: string;
+  tem_probono: boolean;
+  tem_cobranca: boolean;
   tem_prolabore: boolean;
-    prolabore_texto: string;
+  prolabore_texto: string;
   tem_exito: boolean;
   tem_ambos: boolean;
   numero_exito: string;
