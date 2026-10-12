@@ -198,6 +198,7 @@ export type Database = {
       }
       contracts: {
         Row: {
+          ano: number | null
           captacao: string | null
           captacao_percentual: number | null
           category: string
@@ -210,6 +211,7 @@ export type Database = {
           id: string
           installments_count: number
           modality: string
+          numero: number | null
           objeto: string | null
           parte_contraria: string | null
           payment_method: string | null
@@ -220,6 +222,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          ano?: number | null
           captacao?: string | null
           captacao_percentual?: number | null
           category?: string
@@ -232,6 +235,7 @@ export type Database = {
           id?: string
           installments_count?: number
           modality?: string
+          numero?: number | null
           objeto?: string | null
           parte_contraria?: string | null
           payment_method?: string | null
@@ -242,6 +246,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          ano?: number | null
           captacao?: string | null
           captacao_percentual?: number | null
           category?: string
@@ -254,6 +259,7 @@ export type Database = {
           id?: string
           installments_count?: number
           modality?: string
+          numero?: number | null
           objeto?: string | null
           parte_contraria?: string | null
           payment_method?: string | null
@@ -565,6 +571,7 @@ export type Database = {
     Functions: {
       is_admin: { Args: never; Returns: boolean }
       is_ativo: { Args: never; Returns: boolean }
+      proximo_numero_contrato: { Args: never; Returns: string }
     }
     Enums: {
       [_ in never]: never
