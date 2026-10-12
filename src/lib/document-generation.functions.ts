@@ -160,7 +160,45 @@ async function downloadTemplate(database: QueryClient, template: string): Promis
   return await data.arrayBuffer();
 }
 
-async function renderTemplate(database: QueryClient, template: string, data: Record<string, unknown>): Promise<Uint8Array> {
+/**
+ * Procuração e declaração precisam caber em 1 página. Conforme o tamanho do texto principal,
+ * reduz o espaçamento entre linhas e, se preciso, a fonte desse parágrafo (níveis calibrados no modelo).
+ */
+function ajustarUmaPagina(xml: string): string {
+  const paragrafos = xml.match(/<w:p(?=[ >])(?:(?!<\/w:p>)[\s\S])*?<\/w:p>/g) ?? [];
+  let principal = "";
+  let tamanho = 0;
+  for (const paragrafo of paragrafos) {
+    const texto = paragrafo.replace(/<[^>]+>/g, "");
+    if (texto.length > tamanho) {
+      tamanho = texto.length;
+      principal = paragrafo;
+    }
+  }
+  if (!principal) return xml;
+  const nivel =
+    tamanho <= 1350 ? null
+      : tamanho <= 1700 ? { linha: 300, fonte: null }
+        : tamanho <= 1900 ? { linha: 276, fonte: null }
+          : tamanho <= 2250 ? { linha: 276, fonte: 22 }
+            : tamanho <= 2650 ? { linha: 240, fonte: 22 }
+              : { linha: 240, fonte: 20 };
+  if (!nivel) return xml;
+  let ajustado = principal.replace(/<w:spacing [^>]*\/>/g, "");
+  const espacamento = `<w:spacing w:line="${nivel.linha}" w:lineRule="auto"/>`;
+  ajustado = ajustado.includes("<w:pPr>")
+    ? ajustado.replace("<w:pPr>", `<w:pPr>${espacamento}`)
+    : ajustado.replace(/^(<w:p(?=[ >])[^>]*>)/, `$1<w:pPr>${espacamento}</w:pPr>`);
+  if (nivel.fonte) {
+    ajustado = ajustado
+      .replace(/<w:sz w:val="\d+"\/>/g, "")
+      .replace(/<w:szCs w:val="\d+"\/>/g, "")
+      .replace(/<w:rPr>/g, `<w:rPr><w:sz w:val="${nivel.fonte}"/><w:szCs w:val="${nivel.fonte}"/>`);
+  }
+  return xml.replace(principal, ajustado);
+}
+
+async function renderTemplate(database: QueryClient, template: string, data: Record<string, unknown>, umaPagina = false): Promise<Uint8Array> {
   const arrayBuffer = await downloadTemplate(database, template);
   const zip = new PizZip(arrayBuffer);
         const document = new Docxtemplater(zip, { paragraphLoop: true, linebreaks: true, nullGetter: () => "" });
