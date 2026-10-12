@@ -163,9 +163,19 @@ async function downloadTemplate(database: QueryClient, template: string): Promis
 async function renderTemplate(database: QueryClient, template: string, data: Record<string, unknown>): Promise<Uint8Array> {
   const arrayBuffer = await downloadTemplate(database, template);
   const zip = new PizZip(arrayBuffer);
-    const document = new Docxtemplater(zip, { paragraphLoop: true, linebreaks: true, nullGetter: () => "" });
+        const document = new Docxtemplater(zip, { paragraphLoop: true, linebreaks: true, nullGetter: () => "" });
   document.render(data);
-  return document.getZip().generate({ type: "uint8array" });
+  const renderedZip = document.getZip();
+  const xml = renderedZip.file("word/document.xml")?.asText();
+  if (xml) {
+    // Remove parágrafos numerados que ficaram vazios (ex.: item de êxito quando não há êxito),
+    // para não sobrar "(ii)" ou marcador sem texto.
+    const cleaned = xml.replace(/<w:p(?=[ >])(?:(?!<\/w:p>)[\s\S])*?<\/w:p>/g, (paragraph) =>
+      paragraph.includes("<w:numPr>") && !/<w:t(?: [^>]*)?>[^<]*\S[^<]*<\/w:t>/.test(paragraph) ? "" : paragraph,
+    );
+    renderedZip.file("word/document.xml", cleaned);
+  }
+  return renderedZip.generate({ type: "uint8array" });
 }
 
 export const gerarPacoteDocumentos = createServerFn({ method: "POST" })
