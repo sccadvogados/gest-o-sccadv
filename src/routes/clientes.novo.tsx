@@ -368,7 +368,7 @@ function NewClientPage() {
         const { data: auth } = await supabase.auth.getUser();
         const { data: client, error } = await officeDatabase(supabase)
           .from("clients")
-          .insert({ ...clientForm, created_by: auth.user?.id ?? null })
+                    .insert({ ...clientForm, rascunho: true, created_by: auth.user?.id ?? null })
           .select("id")
           .single();
         if (error) throw error;
