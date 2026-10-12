@@ -246,7 +246,7 @@ export function ContractReview({ contractId, personType, onBack, onEditObject, o
                 <AlertTriangle className="size-4" />
                 <AlertTitle>Análise automática indisponível</AlertTitle>
                 <AlertDescription>
-                  {analysis.motivo_bloqueio} Você pode preencher os campos manualmente e aprovar.
+                  {analysis.motivo_bloqueio} Você pode preencher os campos manualmente e finalizar.
                 </AlertDescription>
               </Alert>
             ) : null}
