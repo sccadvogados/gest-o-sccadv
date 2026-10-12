@@ -138,7 +138,8 @@ export function EditClientDialog({
           nacionalidade: representative.nacionalidade ?? "",
           estado_civil: representative.estado_civil ?? "",
           profissao: representative.profissao ?? "",
-          cpf: representative.cpf ?? "",
+                    cpf: representative.cpf ?? "",
+          sexo: normalizeSexo(representative.sexo),
           qualidade: representative.qualidade as RepresentativeForm["qualidade"],
         })));
       });
