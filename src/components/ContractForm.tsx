@@ -296,7 +296,7 @@ export function ContractForm({
         ) : null}
       </div>
 
-      {modality !== "exito" && preview.length > 0 ? (
+            {!semParcelas && preview.length > 0 ? (
         <div className="mt-4 space-y-3 rounded-md border border-border p-4">
           <div>
             <h3 className="text-sm font-medium">Prévia das Parcelas</h3>
