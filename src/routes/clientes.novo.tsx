@@ -338,6 +338,7 @@ function NewClientPage() {
         ["Telefone", form.phone],
         ...(form.person_type === "PF"
           ? ([
+                            ["Sexo", form.sexo],
               ["Nacionalidade", form.nationality],
               ["Estado Civil", form.marital_status],
               ["Profissão", form.profession],
