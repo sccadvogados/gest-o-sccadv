@@ -29,6 +29,7 @@ import { maskCep, maskCpfCnpj, maskPhone, onlyDigits } from "@/lib/format";
 type ClientForm = {
     person_type: "PF" | "PJ";
   name: string;
+  sexo: "" | "M" | "F";
   pj_descricao: string;
   nationality: string;
   marital_status: string;
