@@ -96,15 +96,15 @@ export function ContractForm({
             const repasse = Number(captacaoPercentual.replace(",", "."));
       if (temRepasse && (!Number.isFinite(repasse) || repasse <= 0 || repasse > 100)) throw new Error("Informe o percentual de repasse entre 0 e 100.");
 
-      const installmentsCount = Math.max(1, Number(count));
-      const fee = Number(successFee.replace(",", ".")) || 0;
+            const installmentsCount = Math.max(1, Number(count));
+      const fee = proBono ? 0 : Number(successFee.replace(",", ".")) || 0;
       const objectToSave = cleanObject(hideObject ? initialObject ?? "" : object);
       const gratuidadeToSave = personType === "PF" ? (hideObject ? initialGratuidade ?? true : gratuidade) : false;
 
       if (fee < 0 || fee > 100) throw new Error("Informe um percentual de êxito entre 0 e 100.");
       if (modality === "exito") {
         if (fee <= 0) throw new Error("Informe o percentual de êxito.");
-      } else {
+      } else if (!proBono) {
         if (!Number.isFinite(totalValue) || totalValue <= 0) throw new Error("Informe um valor válido.");
         if (!Number.isInteger(Number(count)) || Number(count) < 1) throw new Error("Informe um número inteiro de meses/parcelas.");
         if (!firstDue) throw new Error("Informe o primeiro vencimento.");
