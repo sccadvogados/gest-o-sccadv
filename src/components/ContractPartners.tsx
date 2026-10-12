@@ -321,10 +321,9 @@ export function ContractPartners({
               <p className="text-xs text-muted-foreground">{`Máximo: ${formatCurrency(valorMaximo)}`}</p>
             </div>
             <div className="space-y-2">
-              <Label htmlFor={`parceiro-exito-${contract.id}`}>% do Êxito da Parceria</Label>
-              <Input
+                            <Label htmlFor={`parceiro-exito-${contract.id}`}>% do Êxito da Parceria</Label>
+              <PercentInput
                 id={`parceiro-exito-${contract.id}`}
-                inputMode="decimal"
                 placeholder="0"
                 value={exito}
                 onChange={(e) => setExito(e.target.value)}
