@@ -302,10 +302,30 @@ function NewClientPage() {
             if (!form.name.trim()) {
         throw new Error("Anexe a identificação para ler os dados ou abra o preenchimento manual.");
       }
-      const obrigatorios: [string, string][] = [["Complemento", form.complement]];
-      
-      const faltando = obrigatorios.find(([, value]) => !value.trim());
-      if (faltando) throw new Error(`Preencha o campo obrigatório: ${faltando[0]}.`);
+            const obrigatorios: [string, string | null | undefined][] = [
+        [form.person_type === "PJ" ? "Razão Social" : "Nome Completo", form.name],
+        ["CPF/CNPJ", form.cpf_cnpj],
+        ["CEP", form.cep],
+        ["Logradouro", form.street],
+        ["Número", form.number],
+        ["Complemento", form.complement],
+        ["Bairro", form.district],
+        ["Cidade", form.city],
+        ["UF", form.state],
+        ["E-mail", form.email],
+        ["Telefone", form.phone],
+        ...(form.person_type === "PF"
+          ? ([
+              ["Nacionalidade", form.nationality],
+              ["Estado Civil", form.marital_status],
+              ["Profissão", form.profession],
+              ["RG", form.rg_number],
+              ["Órgão Expedidor / UF", form.rg_issuer],
+            ] as [string, string | null | undefined][])
+          : []),
+      ];
+      const faltando = obrigatorios.filter(([, valor]) => !String(valor ?? "").trim()).map(([rotulo]) => rotulo);
+      if (faltando.length > 0) throw new Error(`Preencha os campos obrigatórios: ${faltando.join(", ")}.`);
       if (form.person_type === "PJ") {
         if (form.representatives.length === 0) throw new Error("Adicione ao menos um representante.");
         const incompleto = form.representatives.findIndex((r) => !r.name.trim() || !r.nationality.trim() || !r.marital_status.trim() || !r.profession.trim() || !r.cpf.trim());
