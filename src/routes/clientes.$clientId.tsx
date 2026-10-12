@@ -666,7 +666,12 @@ function EditContractDialog({
     : [paymentMethod, ...PAYMENT_METHODS];
   const [successFee, setSuccessFee] = useState(String(contract.success_fee_percent));
   const [object, setObject] = useState(contract.objeto ?? "");
-  const [gratuidade, setGratuidade] = useState(contract.gratuidade ?? false);
+    const [gratuidade, setGratuidade] = useState(contract.gratuidade ?? false);
+  const [captacao, setCaptacao] = useState<string>(contract.captacao ?? "");
+  const [captacaoPercentual, setCaptacaoPercentual] = useState(
+    contract.captacao_percentual != null ? String(contract.captacao_percentual).replace(".", ",") : "",
+  );
+  const temRepasse = captacao === "Indicação" || captacao === "Parceria";
   const cadastro = new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", year: "numeric" }).format(new Date(contract.created_at));
 
   const update = useMutation({
