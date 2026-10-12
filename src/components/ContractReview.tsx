@@ -35,9 +35,9 @@ type Generated = { kind: string; file_name: string; file_path: string };
 type DriveResult = { ok: true; pasta_url: string } | { ok: false; erro: string } | null;
 
 const MODALIDADES: Record<string, string> = {
-  parcelado: "Pró-labore parcelado",
-  mensal: "Pró-labore mensal",
-  exito: "Somente êxito",
+    parcelado: "Pró-labore Parcelado",
+    mensal: "Pró-labore Mensal",
+    exito: "Somente Êxito",
 };
 
 function errorMessage(error: unknown, fallback: string) {

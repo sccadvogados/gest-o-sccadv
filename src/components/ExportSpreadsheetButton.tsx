@@ -11,9 +11,9 @@ import { buildXlsx, downloadBlob, type XlsxSheet } from "@/lib/xlsx-export";
 type AnyRow = Record<string, any>;
 
 const MODALIDADES: Record<string, string> = {
-  parcelado: "Pró-labore parcelado",
-  mensal: "Pró-labore mensal",
-  exito: "Somente êxito",
+    parcelado: "Pró-labore Parcelado",
+    mensal: "Pró-labore Mensal",
+    exito: "Somente Êxito",
 };
 
 const TIPOS: Record<string, string> = {
