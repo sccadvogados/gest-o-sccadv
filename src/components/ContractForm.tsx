@@ -94,7 +94,11 @@ export function ContractForm({
 
   const save = useMutation({
         mutationFn: async () => {
-            const repasse = Number(captacaoPercentual.replace(",", "."));
+                        const repasse = Number(captacaoPercentual.replace(",", "."));
+      const retencaoNumero = Number(retencao.replace(",", "."));
+      if (modality !== "probono" && (!retencao.trim() || !Number.isFinite(retencaoNumero) || retencaoNumero < 0 || retencaoNumero > 100)) {
+        throw new Error("Informe a retenção do escritório entre 0 e 100%.");
+      }
       if (temRepasse && (!Number.isFinite(repasse) || repasse <= 0 || repasse > 100)) throw new Error("Informe o percentual de repasse entre 0 e 100.");
 
             const installmentsCount = Math.max(1, Number(count));
