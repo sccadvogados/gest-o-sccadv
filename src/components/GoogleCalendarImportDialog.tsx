@@ -49,7 +49,7 @@ export function GoogleCalendarImportDialog({ onImported }: { onImported: () => v
     setLoading(true);
     try {
       const [{ data: clients, error: clientsError }, { data: existing, error: existingError }, googleEvents] = await Promise.all([
-        supabase.from("clients").select("id, name").order("name"),
+                officeDatabase(supabase).from("clients").select("id, name").eq("rascunho", false).order("name"),
         supabase.from("eventos").select("google_event_id"),
         fetchGoogleEvents({ data: { from } }),
       ]);
