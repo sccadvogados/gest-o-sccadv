@@ -941,7 +941,8 @@ function NewClientPage() {
             personType={form.person_type}
             onBack={() => setStep(3)}
             onEditObject={() => setStep(2)}
-            onFinish={() => navigate({ to: "/clientes/$clientId", params: { clientId: savedClientId } })}
+                        onFinish={() => navigate({ to: "/clientes/$clientId", params: { clientId: savedClientId } })}
+            onDiscard={descartarCadastro}
           />
         </section>
       ) : null}
