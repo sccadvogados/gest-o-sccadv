@@ -85,7 +85,8 @@ export function DeleteClientDialog({
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Excluir cliente?</AlertDialogTitle>
+                    <AlertDialogTitle>Excluir Cliente?</AlertDialogTitle>
+
           <AlertDialogDescription>
             Esta ação apaga {clientName} e todos os seus contratos, parcelas, documentos e representantes. Os eventos da Agenda serão mantidos sem cliente vinculado. Não é possível desfazer.
           </AlertDialogDescription>
