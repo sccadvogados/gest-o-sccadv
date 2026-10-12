@@ -57,3 +57,5 @@ type OfficeDatabase = Omit<Database, "public"> & {
 
 export function officeDatabase(client: SupabaseClient<Database>) {
   return client as unknown as SupabaseClient<OfficeDatabase>;
+}
+
