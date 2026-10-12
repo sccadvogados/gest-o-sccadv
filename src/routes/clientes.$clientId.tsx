@@ -560,10 +560,24 @@ function ContractActions({
   personType: "PF" | "PJ";
   contract: ContractRow;
 }) {
-  const queryClient = useQueryClient();
+    const queryClient = useQueryClient();
         const [editOpen, setEditOpen] = useState(false);
   const [reviewOpen, setReviewOpen] = useState(false);
   const hasPaidInstallment = (contract.installments ?? []).some((installment) => installment.status === "Pago");
+  const arquivado = contract.situacao === "arquivado";
+  const arquivarFn = useServerFn(arquivarContrato);
+  const arquivar = useMutation({
+    mutationFn: () => arquivarFn({ data: { contrato_id: contract.id, reativar: arquivado } }),
+    onSuccess: (result) => {
+      queryClient.invalidateQueries({ queryKey: ["contracts", clientId] });
+      queryClient.invalidateQueries({ queryKey: ["client", clientId] });
+      queryClient.invalidateQueries({ queryKey: ["contract-counts"] });
+      queryClient.invalidateQueries({ queryKey: ["clients"] });
+      toast.success(result.situacao === "arquivado" ? "Contrato arquivado." : "Contrato reativado.");
+      if (result.drive_erro) toast.warning(result.drive_erro);
+    },
+    onError: (error) => toast.error(error instanceof Error ? error.message : "Não foi possível alterar o contrato."),
+  });
 
   const remove = useMutation({
     mutationFn: async () => {
