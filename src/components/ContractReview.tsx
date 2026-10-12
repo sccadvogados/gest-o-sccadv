@@ -252,7 +252,7 @@ export function ContractReview({ contractId, personType, onBack, onEditObject, o
             ) : null}
             {analysis.alertas.length > 0 ? (
               <div className="rounded-md border border-[#E8B9A5] bg-[#FFF4EF] px-4 py-3 text-sm text-[#7A3F2D]">
-                <p className="font-medium">Confira antes de aprovar:</p>
+                <p className="font-medium">Confira antes de finalizar:</p>
                 <ul className="mt-1 list-disc pl-5">
                   {analysis.alertas.map((alerta) => <li key={alerta}>{alerta}</li>)}
                 </ul>
