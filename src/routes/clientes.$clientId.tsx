@@ -736,7 +736,10 @@ function EditContractDialog({
   const [captacaoPercentual, setCaptacaoPercentual] = useState(
     contract.captacao_percentual != null ? String(contract.captacao_percentual).replace(".", ",") : "",
   );
-  const temRepasse = captacao === "Indicação" || captacao === "Parceria";
+    const temRepasse = captacao === "Indicação" || captacao === "Parceria";
+  const [retencao, setRetencao] = useState(
+    contract.retencao_percentual != null ? String(contract.retencao_percentual).replace(".", ",") : "",
+  );
   const cadastro = new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", year: "numeric" }).format(new Date(contract.created_at));
 
     const update = useMutation({
