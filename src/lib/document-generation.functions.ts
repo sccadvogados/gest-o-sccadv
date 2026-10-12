@@ -198,16 +198,52 @@ export const gerarPacoteDocumentos = createServerFn({ method: "POST" })
     if (clientError || !client) throw new Error("Não foi possível localizar o cliente do contrato.");
     if (installmentsError || representativesError) throw new Error("Não foi possível carregar os dados do contrato.");
 
+    // Contrato em rascunho (Novo Cliente): as parcelas ainda estão guardadas no próprio contrato.
+    const emRascunho = contract.rascunho === true;
+    const parcelasRascunho: Array<{ number: number; amount: number; due_date: string; payment_method?: string | null; category?: string | null }> =
+      Array.isArray(contract.parcelas_rascunho) ? contract.parcelas_rascunho : [];
+    const parcelasContrato = emRascunho
+      ? parcelasRascunho.map((parcela) => ({ number: Number(parcela.number), amount: Number(parcela.amount), due_date: String(parcela.due_date) }))
+      : installments ?? [];
+
     const isPj = String(client.person_type).toUpperCase() === "PJ";
     const documentsToGenerate = documents.filter((document) => document.kind !== "declaracao_hipossuficiencia" || (!isPj && contract.gratuidade === true));
-    const missing = missingData(client, contract, representatives ?? [], installments ?? []);
+    const missing = missingData(client, contract, representatives ?? [], parcelasContrato);
     if (missing.length > 0) return { gerados: [] as Array<{ kind: string; file_name: string; file_path: string }>, faltantes: [...new Set(missing)], drive: null };
+
+    // Finalizar: só agora o contrato recebe número, as parcelas são criadas e o cliente deixa de ser rascunho.
+    if (emRascunho) {
+      if (contract.modality !== "exito" && parcelasRascunho.length > 0) {
+        const { error: parcelasError } = await database.from("installments").insert(
+          parcelasRascunho.map((parcela) => ({
+            contract_id: data.contrato_id,
+            client_id: contract.client_id,
+            number: Number(parcela.number),
+            amount: Number(parcela.amount),
+            due_date: String(parcela.due_date),
+            payment_method: parcela.payment_method ?? contract.payment_method ?? null,
+            category: parcela.category ?? contract.category,
+          })),
+        );
+        if (parcelasError) throw new Error("Não foi possível criar as parcelas do contrato.");
+      }
+      const { error: finalizarContratoError } = await database
+        .from("contracts")
+        .update({ rascunho: false, parcelas_rascunho: null })
+        .eq("id", data.contrato_id);
+      if (finalizarContratoError) throw new Error("Não foi possível numerar o contrato.");
+      const { error: finalizarClienteError } = await database
+        .from("clients")
+        .update({ rascunho: false })
+        .eq("id", contract.client_id);
+      if (finalizarClienteError) throw new Error("Não foi possível concluir o cadastro do cliente.");
+    }
 
     const templateData = montarDadosModelos(
       client,
       contract,
       representatives ?? [],
-      installments ?? [],
+      parcelasContrato,
     );
     const dataWithApprovedReview = {
       ...templateData,
@@ -272,5 +308,6 @@ export const gerarPacoteDocumentos = createServerFn({ method: "POST" })
 
     return { gerados: generated, faltantes: [] as string[], drive };
   });
+
 
 
