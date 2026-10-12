@@ -246,13 +246,13 @@ export function ContractReview({ contractId, personType, onBack, onEditObject, o
                 <AlertTriangle className="size-4" />
                 <AlertTitle>Análise automática indisponível</AlertTitle>
                 <AlertDescription>
-                  {analysis.motivo_bloqueio} Você pode preencher os campos manualmente e aprovar.
+                  {analysis.motivo_bloqueio} Você pode preencher os campos manualmente e finalizar.
                 </AlertDescription>
               </Alert>
             ) : null}
             {analysis.alertas.length > 0 ? (
               <div className="rounded-md border border-[#E8B9A5] bg-[#FFF4EF] px-4 py-3 text-sm text-[#7A3F2D]">
-                <p className="font-medium">Confira antes de aprovar:</p>
+                <p className="font-medium">Confira antes de finalizar:</p>
                 <ul className="mt-1 list-disc pl-5">
                   {analysis.alertas.map((alerta) => <li key={alerta}>{alerta}</li>)}
                 </ul>
@@ -323,7 +323,7 @@ export function ContractReview({ contractId, personType, onBack, onEditObject, o
               <LoaderCircle className="size-4 animate-spin" />
               Gerando…
             </>
-          ) : "Aprovar e gerar documentos"}
+          ) : "Finalizar"}
         </Button>
       </div>
     </div>
