@@ -685,7 +685,7 @@ function NewClientPage() {
               />
             </div>
             <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="complement">Complemento</Label>
+                            <Label htmlFor="complement">Complemento <Pending value={form.complement} /></Label>
               <Input
                 id="complement"
                 value={form.complement}
