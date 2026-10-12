@@ -295,7 +295,7 @@ export function ContractReview({ contractId, personType, onBack, onEditObject, o
             )}
           </>
         ) : (
-          <p className="text-sm text-muted-foreground">A análise não foi concluída. Clique em "Analisar novamente".</p>
+          <p className="text-sm text-muted-foreground">A análise não foi concluída. Clique em "Analisar Novamente".</p>
         )}
       </section>
 
