@@ -216,7 +216,7 @@ export function ContractReview({ contractId, personType, onBack, onEditObject, o
           {!analyzing ? (
             <Button type="button" variant="ghost" size="sm" onClick={() => void runAnalysis()}>
               <RefreshCw className="size-4" />
-              Analisar novamente
+                            Analisar Novamente
             </Button>
           ) : null}
         </div>
