@@ -250,10 +250,10 @@ export function montarProlaboreTexto(contract: ContractForTemplate, installments
     const mensal = first.amount;
     return `${formatarValor(mensal)} (${valorPorExtenso(mensal)}) mensais, durante ${parcelas.length} (${numeroPorExtenso(parcelas.length)}) meses, totalizando ${formatarValor(total)} (${valorPorExtenso(total)}), com vencimento da primeira em ${formatarData(firstDate)}.`;
   }
-  if (parcelas.length === 1) return `${formatarValor(total)} (${valorPorExtenso(total)}), a ser pago em parcela única, com vencimento em ${formatarData(firstDate)}.`;
+    if (parcelas.length === 1) return `${formatarValor(total)} (${valorPorExtenso(total)}), a ser pago em parcela única, com vencimento em ${formatarData(firstDate)}.`;
   const iguais = parcelas.every((installment) => Math.abs(installment.amount - first.amount) < 0.005);
-  if (iguais) return `${formatarValor(total)} (${valorPorExtenso(total)}), a serem pagos em ${parcelas.length} (${numeroPorExtenso(parcelas.length)}) parcelas mensais de ${formatarValor(first.amount)} (${valorPorExtenso(first.amount)}), com vencimento da primeira em ${formatarData(firstDate)}.`;
-  return `${formatarValor(total)} (${valorPorExtenso(total)}), a serem pagos em ${parcelas.length} (${numeroPorExtenso(parcelas.length)}) parcelas mensais, sendo ${grupoParcelas(parcelas)}, com vencimento da primeira em ${formatarData(firstDate)}.`;
+  if (iguais) return `${formatarValor(total)} (${valorPorExtenso(total)}), a serem pagos em ${parcelas.length} (${numeroPorExtensoFeminino(parcelas.length)}) parcelas mensais de ${formatarValor(first.amount)} (${valorPorExtenso(first.amount)}), com vencimento da primeira em ${formatarData(firstDate)}.`;
+  return `${formatarValor(total)} (${valorPorExtenso(total)}), a serem pagos em ${parcelas.length} (${numeroPorExtensoFeminino(parcelas.length)}) parcelas mensais, sendo ${grupoParcelas(parcelas)}, com vencimento da primeira em ${formatarData(firstDate)}.`;
 }
 
 function limparTexto<T extends Record<string, unknown>>(dados: T): T {
