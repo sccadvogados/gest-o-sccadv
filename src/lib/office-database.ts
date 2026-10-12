@@ -26,7 +26,7 @@ type OfficeDatabase = Omit<Database, "public"> & {
     Tables: Omit<Database["public"]["Tables"], "eventos" | "clients" | "contracts"> & {
       contracts: Omit<ContractTable, "Row" | "Insert" | "Update"> & {
         Row: ContractTable["Row"] & { objeto?: string | null; gratuidade?: boolean; captacao?: string | null; captacao_percentual?: number | null; rascunho?: boolean; parcelas_rascunho?: unknown };
-        Insert: ContractTable["Insert"] & { objeto?: string | null; gratuidade?: boolean; captacao?: string | null; captacao_percentual?: number | null; rascunho?: boolean; parcelas_rascunho?: unknown };
+                Insert: ContractTable["Insert"] & { objeto?: string | null; gratuidade?: boolean; captacao?: string | null; captacao_percentual?: number | null; rascunho?: boolean; parcelas_rascunho?: unknown; situacao?: string; arquivado_em?: string | null };
         Update: ContractTable["Update"] & { objeto?: string | null; gratuidade?: boolean; captacao?: string | null; captacao_percentual?: number | null; rascunho?: boolean; parcelas_rascunho?: unknown };
       };
       clients: Omit<ClientTable, "Row" | "Insert" | "Update"> & {
