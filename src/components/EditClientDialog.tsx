@@ -186,6 +186,9 @@ export function EditClientDialog({
       if (form.cep && onlyDigits(form.cep).length !== 8) {
         throw new Error("Informe um CEP válido.");
       }
+            const formLimpo = Object.fromEntries(
+        Object.entries(form).map(([chave, valor]) => [chave, typeof valor === "string" ? valor.replace(/\s+/g, " ").trim() : valor]),
+      ) as typeof form;
       const { error } = await officeDatabase(supabase)
         .from("clients")
         .update({ ...formLimpo, sexo: formLimpo.person_type === "PF" && formLimpo.sexo ? formLimpo.sexo : null })
