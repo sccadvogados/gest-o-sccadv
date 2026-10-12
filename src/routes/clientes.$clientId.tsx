@@ -425,7 +425,7 @@ function ClientDetailPage() {
             </section>
 
       <section className="mt-8">
-        <h2 className="text-xl font-semibold text-[#0F2340]">Prazos e reuniões</h2>
+        <h2 className="text-xl font-semibold text-[#0F2340]">Prazos e Reuniões</h2>
         <div className="panel mt-3 overflow-hidden rounded-xl border border-[#E6D6C4] border-t-[3px] border-t-[#D4A782] bg-white shadow-panel">
           <Table>
             <TableHeader>
