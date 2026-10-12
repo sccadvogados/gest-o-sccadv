@@ -100,8 +100,8 @@ function clientToForm(client: Record<string, unknown>): ClientForm {
 
 export function EditClientDialog({
   clientId,
-  client,
-    triggerLabel = "Editar Dados",
+    client,
+  triggerLabel = "Editar Dados",
   triggerClassName,
 }: {
   clientId: string;
