@@ -99,7 +99,7 @@ function AgendaPage() {
   const { data: clients } = useQuery({
     queryKey: ["agenda-clients"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("clients").select("id, name").order("name");
+            const { data, error } = await officeDatabase(supabase).from("clients").select("id, name").eq("rascunho", false).order("name");
       if (error) throw error;
       return data;
     },
