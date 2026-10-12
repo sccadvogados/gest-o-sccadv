@@ -355,7 +355,11 @@ function NewClientPage() {
         if (incompleto >= 0) throw new Error(`Preencha todos os dados do representante ${incompleto + 1}.`);
       }
             const { representatives: _representatives, ...formWithoutRepresentatives } = form;
-      const clientForm = { ...formWithoutRepresentatives, sexo: form.person_type === "PF" && form.sexo ? form.sexo : null };
+            const clientForm = { ...formWithoutRepresentatives, sexo: form.person_type === "PF" && form.sexo ? form.sexo : null };
+      for (const [chave, valor] of Object.entries(clientForm)) {
+        if (typeof valor === "string") (clientForm as Record<string, unknown>)[chave] = valor.replace(/\s+/g, " ").trim();
+      }
+
       let clientId = savedClientId;
 
       if (clientId) {
@@ -385,10 +389,14 @@ function NewClientPage() {
           .insert(
             form.representatives.map((representative, ordem) => ({
               cliente_id: currentClientId,
-              nome: representative.name,
-              nacionalidade: representative.nationality || null,
-              estado_civil: representative.marital_status || null,
-              profissao: representative.profession || null,
+                            nome: representative.name.replace(/\s+/g, " ").trim(),
+
+                            nacionalidade: representative.nationality.replace(/\s+/g, " ").trim() || null,
+
+                            estado_civil: representative.marital_status.replace(/\s+/g, " ").trim() || null,
+
+                            profissao: representative.profession.replace(/\s+/g, " ").trim() || null,
+
                             cpf: onlyDigits(representative.cpf) || null,
               sexo: representative.sexo || null,
               qualidade: representative.quality,
