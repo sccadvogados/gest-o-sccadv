@@ -47,25 +47,12 @@ export function DeleteClientDialog({
 
   if (isAdmin !== true) return null;
 
+  
   async function deleteClient() {
     setIsDeleting(true);
     try {
-      try {
-        const { data: documents } = await supabase
-          .from("client_documents")
-          .select("file_path")
-          .eq("client_id", clientId);
-        const filePaths = (documents ?? []).map((document) => document.file_path);
-        if (filePaths.length > 0) {
-          await supabase.storage.from("client-documents").remove(filePaths);
-        }
-      } catch {
-        // Continue even if document cleanup fails.
-      }
-
-      const { error } = await supabase.from("clients").delete().eq("id", clientId);
-      if (error) throw error;
-
+      const result = await excluir({ data: { cliente_id: clientId } });
+      if (result.drive_erro) toast.warning(result.drive_erro);
       toast.success("Cliente excluído.");
       await queryClient.invalidateQueries({ queryKey: ["clients"] });
       await navigate({ to: "/" });
