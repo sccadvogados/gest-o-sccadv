@@ -285,6 +285,24 @@ export type Database = {
           },
         ]
       }
+      feriados: {
+        Row: {
+          abrangencia: string
+          data: string
+          descricao: string
+        }
+        Insert: {
+          abrangencia: string
+          data: string
+          descricao: string
+        }
+        Update: {
+          abrangencia?: string
+          data?: string
+          descricao?: string
+        }
+        Relationships: []
+      }
       installments: {
         Row: {
           amount: number
