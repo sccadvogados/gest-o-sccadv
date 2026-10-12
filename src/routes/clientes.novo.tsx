@@ -218,7 +218,7 @@ function NewClientPage() {
     setForm((current) => ({
       ...current,
       name: data.name || current.name,
-      nationality: data.nationality || current.nationality,
+            nationality: primeiraMaiuscula(data.nationality) || current.nationality,
       marital_status: data.marital_status || current.marital_status,
       profession: data.profession || current.profession,
       rg_number: data.rg_number || current.rg_number,
