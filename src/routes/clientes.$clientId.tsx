@@ -358,9 +358,12 @@ function ClientDetailPage() {
                                                                 <p className="font-medium">{contract.numero != null && contract.ano != null ? `Contrato ${String(contract.numero).padStart(3, "0")}/${contract.ano}` : "Contrato"}</p>
                 <p className="text-xs text-muted-foreground">{`Cadastrado em ${new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", year: "numeric" }).format(new Date(contract.created_at))}`}</p>
 
-                <p className="text-sm text-muted-foreground">
-                  {contract.category} · {formatCurrency(contract.total_value)} em{" "}
-                  {contract.installments_count}x · êxito {contract.success_fee_percent}%
+                                <p className="text-sm text-muted-foreground">
+                  {contract.modality === "probono"
+                    ? "Pro Bono"
+                    : contract.modality === "exito"
+                      ? `Somente Êxito · ${contract.success_fee_percent}%`
+                      : `${contract.category} · ${formatCurrency(contract.total_value)} em ${contract.installments_count}x · êxito ${contract.success_fee_percent}%`}
                 </p>
               </div>
                                                         <div className="flex items-center gap-2">
@@ -369,7 +372,9 @@ function ClientDetailPage() {
                     {`Arquivado${contract.arquivado_em ? ` em ${formatDate(contract.arquivado_em)}` : ""}`}
                   </Badge>
                                 ) : null}
-                <Badge variant="secondary">{contract.payment_method || "Forma a definir"}</Badge>
+                {contract.modality !== "probono" ? (
+                  <Badge variant="secondary">{contract.payment_method || "Forma a definir"}</Badge>
+                ) : null}
                 {contract.captacao ? (
                   <Badge variant="secondary">
                     {`Captação: ${contract.captacao}${contract.captacao_percentual ? ` – ${String(contract.captacao_percentual).replace(".", ",")}%` : ""}`}
