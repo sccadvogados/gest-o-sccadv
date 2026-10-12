@@ -13,7 +13,7 @@ type AnyRow = Record<string, any>;
 const MODALIDADES: Record<string, string> = {
     parcelado: "Pró-labore Parcelado",
     mensal: "Pró-labore Mensal",
-  exito: "Somente êxito",
+    exito: "Somente Êxito",
 };
 
 const TIPOS: Record<string, string> = {
