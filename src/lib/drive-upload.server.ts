@@ -249,6 +249,110 @@ export async function fileExistsInFolder(
   return (result.files?.length ?? 0) > 0;
 }
 
+async function getFolderParents(folderId: string): Promise<string[]> {
+  const result = (await driveRequest(
+    `/drive/v3/files/${encodeURIComponent(folderId)}?fields=parents`,
+  )) as DriveResponse & { parents?: string[] };
+  return result.parents ?? [];
+}
+
+async function moveFolder(folderId: string, addParent: string, removeParent: string): Promise<void> {
+  const params = new URLSearchParams({ addParents: addParent, removeParents: removeParent });
+  await driveRequest(`/drive/v3/files/${encodeURIComponent(folderId)}?${params}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({}),
+  });
+}
+
+/** Manda um arquivo ou pasta do Drive para a lixeira. */
+export async function trashDriveItem(itemId: string): Promise<void> {
+  await driveRequest(`/drive/v3/files/${encodeURIComponent(itemId)}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ trashed: true }),
+  });
+}
+
+/** Procura, dentro da pasta do cliente, a pasta do contrato "NNN-AAAA" (ou variações com sufixo). */
+export async function findContractFolder(
+  clientFolderId: string,
+  numero: number,
+  ano: number,
+): Promise<string | null> {
+  const prefix = `${String(numero).padStart(3, "0")}-${ano}`;
+  const children = await listChildFolders(clientFolderId);
+  const match = children.find((folder) => {
+    if (!folder.name) return false;
+    const name = normalizeName(folder.name);
+    return name === prefix || name.startsWith(`${prefix}_`) || name.startsWith(`${prefix}-`);
+  });
+  return match?.id ?? null;
+}
+
+/**
+ * Devolve a pasta do contrato do Arquivo Morto para dentro da pasta do cliente
+ * no Arquivo Digital (recriando a pasta do cliente, se necessário).
+ */
+export async function restoreContractFolder(
+  database: DriveClient,
+  client: Client,
+  contractFolderId: string,
+): Promise<void> {
+  let clientFolderId = client.drive_folder_id ?? null;
+  let created = false;
+  if (!clientFolderId) {
+    clientFolderId = await findOrCreateFolder(ARQUIVO_DIGITAL_FOLDER_ID, formatClientFolderName(client.name));
+    created = true;
+  }
+
+  const currentParents = await getFolderParents(contractFolderId);
+  const removeParent = currentParents[0];
+  if (removeParent && removeParent !== clientFolderId) {
+    await moveFolder(contractFolderId, clientFolderId, removeParent);
+  } else if (!removeParent) {
+    await moveFolder(contractFolderId, clientFolderId, clientFolderId);
+  }
+
+  if (created) {
+    const driveDatabase = database as unknown as DriveDatabase;
+    await driveDatabase
+      .from("clients")
+      .update({
+        drive_folder_id: clientFolderId,
+        drive_folder_url: `https://drive.google.com/drive/folders/${clientFolderId}`,
+      })
+      .eq("id", client.id);
+  }
+}
+
+/**
+ * Move a pasta do contrato para o Arquivo Morto. Se a pasta do cliente no
+ * Arquivo Digital ficar vazia, ela também vai para a lixeira.
+ */
+export async function archiveContractFolder(
+  _clientName: string,
+  clientFolderId: string | null,
+  contractFolderId: string,
+): Promise<{ clientFolderRemoved: boolean }> {
+  const currentParents = await getFolderParents(contractFolderId);
+  const removeParent = currentParents[0] ?? clientFolderId;
+  if (!removeParent) throw new Error("Não foi possível identificar a pasta atual do contrato no Drive.");
+
+  await moveFolder(contractFolderId, ARQUIVO_MORTO_FOLDER_ID, removeParent);
+
+  // Se a pasta de origem era a pasta do cliente e ficou vazia, envia para a lixeira.
+  if (clientFolderId && removeParent === clientFolderId) {
+    const remaining = await listChildFolders(clientFolderId);
+    if (remaining.length === 0) {
+      await trashDriveItem(clientFolderId);
+      return { clientFolderRemoved: true };
+    }
+  }
+
+  return { clientFolderRemoved: false };
+}
+
 export async function uploadToDrive(
   folderId: string,
   fileName: string,
