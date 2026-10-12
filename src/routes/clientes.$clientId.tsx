@@ -363,8 +363,13 @@ function ClientDetailPage() {
                   {contract.installments_count}x · êxito {contract.success_fee_percent}%
                 </p>
               </div>
-                            <div className="flex items-center gap-2">
-                                <Badge variant="secondary">{contract.payment_method || "Forma a definir"}</Badge>
+                                                        <div className="flex items-center gap-2">
+                {contract.situacao === "arquivado" ? (
+                  <Badge className="border-transparent bg-[#5B6472] text-white hover:bg-[#5B6472]">
+                    {`Arquivado${contract.arquivado_em ? ` em ${formatDate(contract.arquivado_em)}` : ""}`}
+                  </Badge>
+                ) : null}
+                <Badge variant="secondary">{contract.payment_method || "Forma a definir"}</Badge>
                 <Badge variant="secondary">
                   {contract.captacao
                     ? `Captação: ${contract.captacao}${contract.captacao_percentual ? ` – ${String(contract.captacao_percentual).replace(".", ",")}%` : ""}`
