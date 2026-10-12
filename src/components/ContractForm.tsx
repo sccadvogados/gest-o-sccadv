@@ -20,6 +20,7 @@ const CATEGORIES = [
 ] as const;
 
 const PAYMENT_METHODS = ["Cartão", "PIX", "Boleto"] as const;
+const CAPTACAO = ["Tráfego Pago", "Indicação", "Parceria", "Prospecção Ativa", "Cliente Recorrente"] as const;
 
 type PreviewInstallment = {
   number: number;
