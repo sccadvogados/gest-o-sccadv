@@ -168,9 +168,9 @@ export function ContractForm({
           <Select value={modality} onValueChange={(value) => setModality(value as ContractModality)}>
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="parcelado">Pró-labore parcelado</SelectItem>
-              <SelectItem value="mensal">Pró-labore mensal</SelectItem>
-              <SelectItem value="exito">Somente êxito</SelectItem>
+                            <SelectItem value="parcelado">Pró-labore Parcelado</SelectItem>
+              <SelectItem value="mensal">Pró-labore Mensal</SelectItem>
+              <SelectItem value="exito">Somente Êxito</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -186,22 +186,22 @@ export function ContractForm({
         {modality !== "exito" ? (
           <>
             <div className="space-y-2">
-              <Label htmlFor="total">{modality === "mensal" ? "Valor mensal" : "Valor total"}</Label>
+                            <Label htmlFor="total">{modality === "mensal" ? "Valor Mensal" : "Valor Total"}</Label>
               <CurrencyInput id="total" value={totalValue} onChange={setTotalValue} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="count">Número de parcelas</Label>
+                            <Label htmlFor="count">Número de Parcelas</Label>
               <Input id="count" type="number" min={1} value={count} onChange={(e) => setCount(e.target.value)} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="firstDue">Primeiro vencimento</Label>
+                            <Label htmlFor="firstDue">Primeiro Vencimento</Label>
               <Input id="firstDue" type="date" value={firstDue} onChange={(e) => setFirstDue(e.target.value)} />
             </div>
           </>
         ) : null}
 
         <div className="space-y-2">
-          <Label>Forma de pagamento</Label>
+                    <Label>Forma de Pagamento</Label>
           <Select value={paymentMethod} onValueChange={setPaymentMethod}>
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>{PAYMENT_METHODS.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
