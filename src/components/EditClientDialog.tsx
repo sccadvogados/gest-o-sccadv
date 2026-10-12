@@ -124,7 +124,7 @@ export function EditClientDialog({
     }
     void officeDatabase(supabase)
       .from("cliente_representantes")
-      .select("id, nome, nacionalidade, estado_civil, profissao, cpf, qualidade, ordem")
+            .select("id, nome, nacionalidade, estado_civil, profissao, cpf, qualidade, ordem, sexo")
       .eq("cliente_id", clientId)
       .order("ordem")
       .then(({ data, error }) => {
