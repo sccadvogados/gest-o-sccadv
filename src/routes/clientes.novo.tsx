@@ -587,7 +587,8 @@ function NewClientPage() {
               />
             </div>
 
-            <div className="space-y-2">
+                        {form.person_type === "PF" && (
+              <div className="space-y-2">
                             <Label htmlFor="nationality">Nacionalidade <Pending value={form.nationality} /></Label>
               <Input
                 id="nationality"
