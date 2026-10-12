@@ -34,7 +34,7 @@ export function ObjectClauseField({ value, onChange }: ObjectClauseFieldProps) {
 
   return (
     <div className="space-y-2 sm:col-span-2">
-      <Label htmlFor="contract-object">Objeto do contrato</Label>
+            <Label htmlFor="contract-object">Objeto do Contrato</Label>
       <Textarea
         ref={objectRef}
         id="contract-object"
