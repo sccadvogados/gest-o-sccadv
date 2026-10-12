@@ -188,7 +188,9 @@ export function ContractReview({ contractId, personType, onBack, onEditObject, o
   const artigoOutorgante = personType === "PJ" || sexoCliente === "F" ? "da" : sexoCliente === "M" ? "do" : "do(a)";
   const documentos = ["Procuração", ...(gratuidade ? ["Declaração de Hipossuficiência"] : []), "Contrato"];
   const remuneracao = contract
-    ? contract.modality === "exito"
+        ? contract.modality === "probono"
+      ? MODALIDADES["probono"]
+      : contract.modality === "exito"
       ? `${MODALIDADES["exito"]} – ${String(contract.success_fee_percent).replace(".", ",")}%`
       : `${MODALIDADES[contract.modality] ?? contract.modality} – ${formatCurrency(contract.total_value)} em ${contract.installments_count}x${Number(contract.success_fee_percent) > 0 ? ` + ${String(contract.success_fee_percent).replace(".", ",")}% de êxito` : ""}`
     : "";
