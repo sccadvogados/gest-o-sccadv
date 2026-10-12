@@ -55,7 +55,8 @@ type RepresentativeForm = {
   nacionalidade: string;
   estado_civil: string;
   profissao: string;
-  cpf: string;
+    cpf: string;
+  sexo: "" | "M" | "F";
   qualidade: "representante legal" | "sócio";
 };
 
@@ -67,10 +68,16 @@ const MARITAL = [
   "União estável",
 ];
 
+function normalizeSexo(value: unknown): "" | "M" | "F" {
+  const upper = String(value ?? "").trim().toUpperCase();
+  return upper.startsWith("F") ? "F" : upper.startsWith("M") ? "M" : "";
+}
+
 function clientToForm(client: Record<string, unknown>): ClientForm {
   return {
     person_type: client["person_type"] === "PJ" ? "PJ" : "PF",
         name: String(client["name"] ?? ""),
+    sexo: normalizeSexo(client["sexo"]),
     pj_descricao: String(client["pj_descricao"] ?? "pessoa jurídica de direito privado"),
     nationality: String(client["nationality"] ?? ""),
     marital_status: String(client["marital_status"] ?? ""),
