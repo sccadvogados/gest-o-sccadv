@@ -270,8 +270,9 @@ export function montarDadosModelos(client: ClientForTemplate, contract: Contract
   client = limparTexto(client);
   representatives = representatives.map((representante) => limparTexto(representante));
   const pj = client.person_type.toUpperCase() === "PJ";
-  const prolabore = contract.modality !== "exito" && installments.some((installment) => installment.amount > 0);
-  const exito = Number(contract.success_fee_percent ?? 0) > 0;
+    const probono = contract.modality === "probono";
+  const prolabore = !probono && contract.modality !== "exito" && installments.some((installment) => installment.amount > 0);
+  const exito = !probono && Number(contract.success_fee_percent ?? 0) > 0;
   const percentual = Number(contract.success_fee_percent ?? 0);
   // Pessoa jurídica: sempre no feminino ("a CONTRATANTE", "inscrita", "denominada").
   const genero: Genero = pj ? "F" : generoDe(client.sexo);
