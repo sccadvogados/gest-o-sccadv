@@ -61,8 +61,12 @@ function ClientsPage() {
   const [onlyIncomplete, setOnlyIncomplete] = useState(false);
     const { data: contractCounts, isLoading: contractCountsLoading } = useQuery({
     queryKey: ["contract-counts"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("contracts").select("client_id");
+        queryFn: async () => {
+      const { data, error } = await officeDatabase(supabase)
+        .from("contracts")
+        .select("client_id")
+        .eq("situacao", "ativo")
+        .eq("rascunho", false);
       if (error) throw error;
       const counts: Record<string, number> = {};
       for (const row of data ?? []) counts[row.client_id] = (counts[row.client_id] ?? 0) + 1;
