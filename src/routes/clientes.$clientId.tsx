@@ -726,7 +726,7 @@ function EditContractDialog({
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="parcelado">Pró-labore parcelado</SelectItem>
-              <SelectItem value="mensal">Pró-labore mensal</SelectItem>
+                            <SelectItem value="mensal">Pró-labore Mensal</SelectItem>
                             <SelectItem value="exito">Somente Êxito</SelectItem>
             </SelectContent>
           </Select>
