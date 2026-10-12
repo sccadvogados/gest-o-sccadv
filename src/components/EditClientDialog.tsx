@@ -236,7 +236,7 @@ export function EditClientDialog({
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="PF">Pessoa física</SelectItem>
-                    <SelectItem value="PJ">Pessoa jurídica</SelectItem>
+                                        <SelectItem value="PJ">Pessoa Jurídica</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
