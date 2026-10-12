@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { AlertTriangle, CheckCircle2, Download, FolderOpen, LoaderCircle, RefreshCw } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Download, FolderOpen, LoaderCircle, PencilLine, RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -35,9 +35,9 @@ type Generated = { kind: string; file_name: string; file_path: string };
 type DriveResult = { ok: true; pasta_url: string } | { ok: false; erro: string } | null;
 
 const MODALIDADES: Record<string, string> = {
-    parcelado: "Pró-labore Parcelado",
-    mensal: "Pró-labore Mensal",
-    exito: "Somente Êxito",
+  parcelado: "Pró-labore Parcelado",
+  mensal: "Pró-labore Mensal",
+  exito: "Somente Êxito",
 };
 
 function errorMessage(error: unknown, fallback: string) {
@@ -56,13 +56,14 @@ export function ContractReview({ contractId, personType, onBack, onEditObject, o
   const [missing, setMissing] = useState<string[]>([]);
   const [generated, setGenerated] = useState<Generated[] | null>(null);
   const [drive, setDrive] = useState<DriveResult>(null);
+  const [editing, setEditing] = useState(false);
 
   const { data: contract } = useQuery({
     queryKey: ["contract-review", contractId],
     queryFn: async () => {
       const { data, error } = await officeDatabase(supabase)
         .from("contracts")
-        .select("numero, ano, modality, total_value, installments_count, success_fee_percent, objeto, gratuidade, clients(name)")
+        .select("numero, ano, modality, total_value, installments_count, success_fee_percent, objeto, gratuidade, clients(name, sexo)")
         .eq("id", contractId)
         .single();
       if (error) throw error;
@@ -75,7 +76,7 @@ export function ContractReview({ contractId, personType, onBack, onEditObject, o
         success_fee_percent: number;
         objeto: string | null;
         gratuidade: boolean | null;
-        clients: { name: string } | null;
+        clients: { name: string; sexo?: string | null } | null;
       };
     },
   });
@@ -88,6 +89,7 @@ export function ContractReview({ contractId, personType, onBack, onEditObject, o
       setAnalysis(result);
       setPoderes(result.poderes_especificos);
       setDestino(result.destino);
+      setEditing(result.situacao !== "ok" || !result.destino.trim());
     } catch (error) {
       toast.error(errorMessage(error, "Não foi possível analisar o objeto."));
     } finally {
@@ -141,6 +143,8 @@ export function ContractReview({ contractId, personType, onBack, onEditObject, o
   }
 
   const gratuidade = personType === "PF" && contract?.gratuidade === true;
+  const sexoCliente = (contract?.clients?.sexo ?? "").toUpperCase();
+  const artigoOutorgante = personType === "PJ" || sexoCliente === "F" ? "da" : sexoCliente === "M" ? "do" : "do(a)";
   const documentos = ["Procuração", ...(gratuidade ? ["Declaração de Hipossuficiência"] : []), "Contrato"];
   const remuneracao = contract
     ? contract.modality === "exito"
@@ -171,8 +175,7 @@ export function ContractReview({ contractId, personType, onBack, onEditObject, o
           <Button asChild variant="outline">
             <a href={drive.pasta_url} target="_blank" rel="noreferrer">
               <FolderOpen className="size-4" />
-                            Abrir Pasta no Drive
-
+              Abrir Pasta no Drive
             </a>
           </Button>
         ) : drive && !drive.ok ? (
@@ -239,7 +242,7 @@ export function ContractReview({ contractId, personType, onBack, onEditObject, o
                 <AlertTriangle className="size-4" />
                 <AlertTitle>Análise automática indisponível</AlertTitle>
                 <AlertDescription>
-                  {analysis.motivo_bloqueio} Você pode preencher os campos abaixo manualmente e aprovar.
+                  {analysis.motivo_bloqueio} Você pode preencher os campos manualmente e aprovar.
                 </AlertDescription>
               </Alert>
             ) : null}
@@ -251,18 +254,41 @@ export function ContractReview({ contractId, personType, onBack, onEditObject, o
                 </ul>
               </div>
             ) : null}
-            <div className="space-y-2">
-              <Label htmlFor="review-poderes">Poderes específicos</Label>
-              <Textarea id="review-poderes" rows={3} value={poderes} onChange={(event) => setPoderes(event.target.value)} />
-              <p className="text-xs text-muted-foreground">Comece com ", especialmente para". Poderes especiais (receber citação, levantar valores, renunciar, confessar) não são aceitos.</p>
+            <div
+              className="rounded-md border border-[#E6E1D8] bg-white px-5 py-4 text-[15px] leading-relaxed text-[#1F2937] shadow-sm"
+              style={{ fontFamily: 'Georgia, "Times New Roman", serif', textAlign: "justify" }}
+            >
+              […] substabelecer no todo ou em parte, com ou sem reservas, dar e receber quitação, louvar-se em assistente técnico,
+              concordar ou discordar de laudos, cálculos e avaliações, desistir
+              <span className="font-semibold text-[#9A5B3C]">{poderes}</span> e tudo mais que se fizer necessário para representar os
+              interesses {artigoOutorgante} outorgante perante{" "}
+              <span className="font-semibold text-[#9A5B3C]">{destino || "…"}</span>, mas em hipótese alguma receber citação.
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="review-destino">Perante (tribunal)</Label>
-              <Textarea id="review-destino" rows={2} value={destino} onChange={(event) => setDestino(event.target.value)} />
-            </div>
-            <p className="rounded-md bg-muted/40 px-3 py-2 text-sm" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-              …desistir{poderes} e tudo mais que se fizer necessário para representar os interesses do outorgante perante {destino || "…"}, mas em hipótese alguma receber citação.
-            </p>
+            {!editing ? (
+              <div className="flex justify-end">
+                <Button type="button" variant="outline" size="sm" onClick={() => setEditing(true)}>
+                  <PencilLine className="size-4" />
+                  Editar
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-4 rounded-md border border-border p-4">
+                <div className="space-y-2">
+                  <Label htmlFor="review-poderes">Poderes Específicos</Label>
+                  <Textarea id="review-poderes" rows={3} value={poderes} onChange={(event) => setPoderes(event.target.value)} />
+                  <p className="text-xs text-muted-foreground">Comece com ", especialmente para". Poderes especiais (receber citação, levantar valores, renunciar, confessar) não são aceitos.</p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="review-destino">Perante (Tribunal)</Label>
+                  <Textarea id="review-destino" rows={2} value={destino} onChange={(event) => setDestino(event.target.value)} />
+                </div>
+                {analysis.situacao === "ok" && destino.trim() ? (
+                  <div className="flex justify-end">
+                    <Button type="button" variant="ghost" size="sm" onClick={() => setEditing(false)}>Concluir edição</Button>
+                  </div>
+                ) : null}
+              </div>
+            )}
           </>
         ) : (
           <p className="text-sm text-muted-foreground">A análise não foi concluída. Clique em "Analisar novamente".</p>
@@ -299,5 +325,6 @@ export function ContractReview({ contractId, personType, onBack, onEditObject, o
     </div>
   );
 }
+
 
 
