@@ -235,7 +235,7 @@ export function EditClientDialog({
                 <Select value={form.person_type} onValueChange={(value) => set("person_type", value as "PF" | "PJ")}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="PF">Pessoa física</SelectItem>
+                                        <SelectItem value="PF">Pessoa Física</SelectItem>
                                         <SelectItem value="PJ">Pessoa Jurídica</SelectItem>
                   </SelectContent>
                 </Select>
