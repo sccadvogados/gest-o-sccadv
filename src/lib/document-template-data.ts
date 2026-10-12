@@ -302,8 +302,11 @@ export function montarDadosModelos(client: ClientForTemplate, contract: Contract
     assinatura_documento: `${pj ? "CNPJ" : "CPF"} n. ${client.cpf_cnpj ?? ""}`,
     objeto: (contract.objeto ?? "").trim().replace(/[.]$/, ""),
     tem_prolabore: prolabore,
-    prolabore_texto: prolabore ? montarProlaboreTexto(contract, installments) : "",
+        prolabore_texto: prolabore ? montarProlaboreTexto(contract, installments) : "",
     tem_exito: exito,
+    tem_ambos: prolabore && exito,
+    numero_exito: prolabore && exito ? "(i) " : "",
+    numero_prolabore: prolabore && exito ? "(ii) " : "",
     exito_percentual: Number.isInteger(percentual) ? String(percentual) : String(percentual).replace(".", ","),
         exito_extenso: percentual % 1 === 0
       ? numeroPorExtenso(percentual)
