@@ -68,11 +68,12 @@ export function ContractForm({
   const [count, setCount] = useState("1");
   const [firstDue, setFirstDue] = useState(todayISO());
     const [paymentMethod, setPaymentMethod] = useState<string>(PAYMENT_METHODS[0]);
-  const [captacao, setCaptacao] = useState<string>("");
+    const [captacao, setCaptacao] = useState<string>("");
   const [captacaoPercentual, setCaptacaoPercentual] = useState("");
   const temRepasse = captacao === "Indicação" || captacao === "Parceria";
+  const [retencao, setRetencao] = useState("");
   const [successFee, setSuccessFee] = useState("0");
-    const [object, setObject] = useState(initialObject ?? "");
+  const [object, setObject] = useState(initialObject ?? "");
   const [gratuidade, setGratuidade] = useState(initialGratuidade ?? personType === "PF");
   const [preview, setPreview] = useState<PreviewInstallment[]>([]);
   const queryClient = useQueryClient();
