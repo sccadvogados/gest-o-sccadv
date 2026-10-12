@@ -725,7 +725,7 @@ function EditContractDialog({
           <Select value={modality} onValueChange={(value) => setModality(value as ContractModality)} disabled={hasPaidInstallment}>
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="parcelado">Pró-labore parcelado</SelectItem>
+                            <SelectItem value="parcelado">Pró-labore Parcelado</SelectItem>
                             <SelectItem value="mensal">Pró-labore Mensal</SelectItem>
                             <SelectItem value="exito">Somente Êxito</SelectItem>
             </SelectContent>
