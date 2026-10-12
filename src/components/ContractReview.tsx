@@ -207,7 +207,7 @@ export function ContractReview({ contractId, personType, onBack, onEditObject, o
           <span className="font-sans text-muted-foreground">Objeto:</span> O objeto do presente contrato é a prestação de serviços advocatícios relativos {contract?.objeto ?? "…"}.
         </p>
         {personType === "PF" ? <p><span className="text-muted-foreground">Gratuidade de Justiça?</span> {gratuidade ? "Sim" : "Não"}</p> : null}
-        <p><span className="text-muted-foreground">Documentos que serão gerados:</span> {documentos.join(", ")}</p>
+        <p><span className="text-muted-foreground">Documentos Gerados:</span> {juntarLista(documentos)}</p>
       </section>
 
       <section className="space-y-4">
