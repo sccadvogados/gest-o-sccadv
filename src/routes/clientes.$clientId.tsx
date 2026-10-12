@@ -247,7 +247,7 @@ function ClientDetailPage() {
             <EditClientDialog
               clientId={clientId}
               client={client}
-              triggerLabel="Editar dados"
+              triggerLabel="Editar Dados"
               triggerClassName="h-auto border-0 bg-transparent p-0 text-[#7A3F2D] underline hover:bg-transparent"
             />
           </span>
@@ -257,7 +257,7 @@ function ClientDetailPage() {
             <PageHeader
         className="mt-4"
         title={client.name}
-        subtitle={`${client.person_type === "PJ" ? "Pessoa jurídica" : "Pessoa física"} · ${client.cpf_cnpj || "CPF/CNPJ não informado"}`}
+        subtitle={`${client.person_type === "PJ" ? "Pessoa Jurídica" : "Pessoa Física"} · ${client.cpf_cnpj || "CPF/CNPJ não informado"}`}
         action={
           <div className="flex flex-wrap gap-2">
                         <EditClientDialog clientId={clientId} client={client} />
@@ -266,7 +266,7 @@ function ClientDetailPage() {
               <Button asChild variant="outline">
                 <a href={client.drive_folder_url} target="_blank" rel="noreferrer">
                   <FolderOpen className="size-4" />
-                  Abrir pasta no Drive
+                                    Abrir Pasta no Drive
                 </a>
               </Button>
             ) : null}
@@ -339,7 +339,7 @@ function ClientDetailPage() {
 
       <section className="mt-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
-                    <h2 className="text-xl font-semibold text-[#0F2340]">Contratos e condições de pagamento</h2>
+                    <h2 className="text-xl font-semibold text-[#0F2340]">Contratos e Condições de Pagamento</h2>
           <NewContractDialog clientId={clientId} personType={client.person_type as "PF" | "PJ"} />
         </div>
 

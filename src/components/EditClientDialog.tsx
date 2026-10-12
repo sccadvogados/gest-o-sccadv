@@ -93,7 +93,7 @@ function clientToForm(client: Record<string, unknown>): ClientForm {
 export function EditClientDialog({
   clientId,
   client,
-  triggerLabel = "Editar dados",
+    triggerLabel = "Editar Dados",
   triggerClassName,
 }: {
   clientId: string;
@@ -223,7 +223,7 @@ export function EditClientDialog({
       </DialogTrigger>
             <DialogContent className="max-h-[90vh] overflow-y-auto rounded-xl border-[#E6D6C4] border-t-[3px] border-t-[#D4A782] bg-[#F6F4EF] shadow-panel sm:max-w-3xl">
         <DialogHeader>
-          <DialogTitle>Editar dados do cliente</DialogTitle>
+                    <DialogTitle>Editar Dados do Cliente</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
@@ -235,8 +235,8 @@ export function EditClientDialog({
                 <Select value={form.person_type} onValueChange={(value) => set("person_type", value as "PF" | "PJ")}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="PF">Pessoa física</SelectItem>
-                    <SelectItem value="PJ">Pessoa jurídica</SelectItem>
+                                        <SelectItem value="PF">Pessoa Física</SelectItem>
+                                        <SelectItem value="PJ">Pessoa Jurídica</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
