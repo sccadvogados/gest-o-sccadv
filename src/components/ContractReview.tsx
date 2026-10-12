@@ -37,7 +37,7 @@ type DriveResult = { ok: true; pasta_url: string } | { ok: false; erro: string }
 const MODALIDADES: Record<string, string> = {
     parcelado: "Pró-labore Parcelado",
     mensal: "Pró-labore Mensal",
-  exito: "Somente êxito",
+    exito: "Somente Êxito",
 };
 
 function errorMessage(error: unknown, fallback: string) {
