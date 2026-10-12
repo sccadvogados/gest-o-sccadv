@@ -242,7 +242,8 @@ function NewClientPage() {
         ? {
             representatives: data.representatives.map((representative) => ({
               ...representative,
-              nationality: primeiraMaiuscula(representative.nationality),
+                            nationality: primeiraMaiuscula(representative.nationality),
+              sexo: normalizeSexo(representative.sexo),
             })),
           }
         : {}),
