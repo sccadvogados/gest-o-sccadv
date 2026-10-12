@@ -351,7 +351,7 @@ function NewClientPage() {
       if (faltando.length > 0) throw new Error(`Preencha os campos obrigatórios: ${faltando.join(", ")}.`);
       if (form.person_type === "PJ") {
         if (form.representatives.length === 0) throw new Error("Adicione ao menos um representante.");
-        const incompleto = form.representatives.findIndex((r) => !r.name.trim() || !r.nationality.trim() || !r.marital_status.trim() || !r.profession.trim() || !r.cpf.trim());
+                const incompleto = form.representatives.findIndex((r) => !r.name.trim() || !r.nationality.trim() || !r.marital_status.trim() || !r.profession.trim() || !r.cpf.trim() || !r.sexo);
         if (incompleto >= 0) throw new Error(`Preencha todos os dados do representante ${incompleto + 1}.`);
       }
       const { representatives: _representatives, ...clientForm } = form;
