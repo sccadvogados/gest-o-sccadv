@@ -354,7 +354,8 @@ function NewClientPage() {
                 const incompleto = form.representatives.findIndex((r) => !r.name.trim() || !r.nationality.trim() || !r.marital_status.trim() || !r.profession.trim() || !r.cpf.trim() || !r.sexo);
         if (incompleto >= 0) throw new Error(`Preencha todos os dados do representante ${incompleto + 1}.`);
       }
-      const { representatives: _representatives, ...clientForm } = form;
+            const { representatives: _representatives, ...formWithoutRepresentatives } = form;
+      const clientForm = { ...formWithoutRepresentatives, sexo: form.person_type === "PF" && form.sexo ? form.sexo : null };
       let clientId = savedClientId;
 
       if (clientId) {
