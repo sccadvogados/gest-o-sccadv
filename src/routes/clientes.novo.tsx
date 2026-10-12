@@ -394,7 +394,8 @@ function NewClientPage() {
 
                             estado_civil: representative.marital_status.replace(/\s+/g, " ").trim() || null,
 
-              profissao: representative.profession || null,
+                            profissao: representative.profession.replace(/\s+/g, " ").trim() || null,
+
                             cpf: onlyDigits(representative.cpf) || null,
               sexo: representative.sexo || null,
               qualidade: representative.quality,
