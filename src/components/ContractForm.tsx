@@ -236,21 +236,24 @@ export function ContractForm({
             <div className="space-y-2">
                             <Label htmlFor="firstDue">Primeiro Vencimento</Label>
               <Input id="firstDue" type="date" value={firstDue} onChange={(e) => setFirstDue(e.target.value)} />
-            </div>
+                        </div>
           </>
         ) : null}
 
-                <div className="space-y-2">
-                    <Label>Forma de Pagamento</Label>
-          <Select value={paymentMethod} onValueChange={setPaymentMethod}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>{PAYMENT_METHODS.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
-          </Select>
-        </div>
+        {!proBono ? (
+          <div className="space-y-2">
+            <Label>Forma de Pagamento</Label>
+            <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>{PAYMENT_METHODS.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+        ) : null}
 
                 <div className="space-y-2">
           <Label>Forma de Captação (Opcional)</Label>
           <Select value={captacao} onValueChange={(value) => setCaptacao(value === "nenhuma" ? "" : value)}>
+
             <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
             <SelectContent><SelectItem value="nenhuma">Nenhuma</SelectItem>{CAPTACAO.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
           </Select>
