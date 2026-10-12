@@ -231,7 +231,14 @@ function NewClientPage() {
       district: data.district || current.district,
       city: data.city || current.city,
             state: data.state?.toUpperCase() || current.state,
-      ...(data.representatives.length > 0 ? { representatives: data.representatives } : {}),
+            ...(data.representatives.length > 0
+        ? {
+            representatives: data.representatives.map((representative) => ({
+              ...representative,
+              nationality: primeiraMaiuscula(representative.nationality),
+            })),
+          }
+        : {}),
     }));
   }
 
