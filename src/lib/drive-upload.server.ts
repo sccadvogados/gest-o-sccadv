@@ -3,6 +3,8 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 
 export const ARQUIVO_DIGITAL_FOLDER_ID = "1xZRk96MYLqP3A0ecizJNIM-Bhd_6SEfK";
+/** Meu Drive › Arquivo Morto: contratos encerrados (arquivados). */
+export const ARQUIVO_MORTO_FOLDER_ID = "19EwUGI6PI8O46D453Mqd934stS-pMpe6";
 
 const DRIVE_API_BASE = "https://connector-gateway.lovable.dev/google_drive";
 
