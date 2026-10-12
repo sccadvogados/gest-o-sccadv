@@ -787,6 +787,25 @@ function EditContractDialog({
             <SelectContent>{paymentMethodOptions.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
           </Select>
         </div>
+                <div className="space-y-2">
+          <Label>Forma de Captação</Label>
+          <Select value={captacao} onValueChange={setCaptacao}>
+            <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+            <SelectContent>{CAPTACAO.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
+          </Select>
+        </div>
+        {temRepasse ? (
+          <div className="space-y-2">
+            <Label htmlFor={`edit-contract-repasse-${contract.id}`}>% de Repasse da {captacao}</Label>
+            <Input
+              id={`edit-contract-repasse-${contract.id}`}
+              inputMode="decimal"
+              placeholder="Ex.: 10"
+              value={captacaoPercentual}
+              onChange={(e) => setCaptacaoPercentual(e.target.value)}
+            />
+          </div>
+        ) : null}
         <div className="space-y-2 sm:col-span-2">
           <Label htmlFor={`edit-contract-fee-${contract.id}`}>% de êxito{modality === "exito" ? " (obrigatório)" : ""}</Label>
           <Input id={`edit-contract-fee-${contract.id}`} inputMode="decimal" value={successFee} onChange={(e) => setSuccessFee(e.target.value)} />
