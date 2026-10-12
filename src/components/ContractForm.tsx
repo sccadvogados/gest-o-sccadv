@@ -186,7 +186,7 @@ export function ContractForm({
         {modality !== "exito" ? (
           <>
             <div className="space-y-2">
-              <Label htmlFor="total">{modality === "mensal" ? "Valor mensal" : "Valor total"}</Label>
+                            <Label htmlFor="total">{modality === "mensal" ? "Valor Mensal" : "Valor Total"}</Label>
               <CurrencyInput id="total" value={totalValue} onChange={setTotalValue} />
             </div>
             <div className="space-y-2">
