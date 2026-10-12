@@ -606,7 +606,7 @@ function NewClientPage() {
                 </Button>
               </div>
               {form.representatives.map((representative, index) => (
-                <div key={`${representative.name}-${index}`} className="grid gap-4 sm:grid-cols-2">
+                <div key={index} className="grid gap-4 sm:grid-cols-2">
                   <Input aria-label={`Nome do representante ${index + 1}`} placeholder="Nome Completo" value={representative.name} onChange={(event) => setForm((current) => ({ ...current, representatives: current.representatives.map((item, itemIndex) => itemIndex === index ? { ...item, name: event.target.value } : item) }))} />
                   <Select value={representative.sexo} onValueChange={(value) => setForm((current) => ({ ...current, representatives: current.representatives.map((item, itemIndex) => itemIndex === index ? { ...item, sexo: value as "M" | "F" } : item) }))}>
                     <SelectTrigger aria-label={`Sexo do representante ${index + 1}`}><SelectValue placeholder="Sexo" /></SelectTrigger>
