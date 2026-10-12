@@ -202,6 +202,7 @@ export type Database = {
           client_id: string
           created_at: string
           description: string | null
+          drive_folder_id: string | null
           first_due_date: string
           gratuidade: boolean
           id: string
@@ -221,6 +222,7 @@ export type Database = {
           client_id: string
           created_at?: string
           description?: string | null
+          drive_folder_id?: string | null
           first_due_date?: string
           gratuidade?: boolean
           id?: string
@@ -240,6 +242,7 @@ export type Database = {
           client_id?: string
           created_at?: string
           description?: string | null
+          drive_folder_id?: string | null
           first_due_date?: string
           gratuidade?: boolean
           id?: string
