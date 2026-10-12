@@ -646,7 +646,7 @@ function NewClientPage() {
         </section>}
 
         {showForm && <section className="panel rounded-xl border border-t-[3px] border-t-accent bg-card p-6 text-card-foreground shadow-panel space-y-5">
-          <h2 className="text-base font-semibold text-[#0F2340]">Endereço e contato</h2>
+          <h2 className="text-base font-semibold text-[#0F2340]">Endereço e Contato</h2>
 
           <div className="grid gap-5 sm:grid-cols-6">
             <div className="space-y-2 sm:col-span-2">
