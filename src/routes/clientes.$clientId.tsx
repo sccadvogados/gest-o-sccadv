@@ -625,14 +625,43 @@ function ContractActions({
         <EditContractDialog
           clientId={clientId}
                     personType={personType}
-          contract={contract}
+                    contract={contract}
           onSaved={() => setEditOpen(false)}
         />
       </Dialog>
       <AlertDialog>
         <AlertDialogTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label={arquivado ? "Reativar Contrato" : "Arquivar Contrato"}
+            title={arquivado ? "Reativar Contrato" : "Arquivar Contrato"}
+          >
+            {arquivado ? <ArchiveRestore className="size-4" /> : <Archive className="size-4" />}
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{arquivado ? "Reativar este contrato?" : "Arquivar este contrato?"}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {arquivado
+                ? "O contrato volta a contar como ativo e a pasta dele retorna do Arquivo Morto para a pasta do cliente no Arquivo Digital."
+                : "Use quando o trabalho estiver encerrado. O contrato deixa de contar como ativo e a pasta dele no Drive vai para o Arquivo Morto, dentro da pasta do cliente. Nada é apagado: parcelas, documentos e histórico continuam no sistema."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={() => arquivar.mutate()} disabled={arquivar.isPending}>
+              {arquivar.isPending ? "Aguarde…" : arquivado ? "Reativar Contrato" : "Arquivar Contrato"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
                     <Button
             variant="ghost"
+
             size="icon"
             aria-label="Excluir contrato"
             onClick={(event) => {
