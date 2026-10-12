@@ -276,10 +276,12 @@ export function EditClientDialog({
                 <Label htmlFor="edit-cpf">CPF/CNPJ</Label>
                 <Input id="edit-cpf" value={form.cpf_cnpj} onChange={(event) => set("cpf_cnpj", maskCpfCnpj(event.target.value))} />
               </div>
-              <div className="space-y-2">
-                                <Label htmlFor="edit-nationality">Nacionalidade</Label>
-                <Input id="edit-nationality" value={form.nationality} onChange={(event) => set("nationality", event.target.value)} />
-              </div>
+                            {form.person_type === "PF" && (
+                <div className="space-y-2">
+                  <Label htmlFor="edit-nationality">Nacionalidade</Label>
+                  <Input id="edit-nationality" value={form.nationality} onChange={(event) => set("nationality", event.target.value)} />
+                </div>
+              )}
               {form.person_type === "PF" && (
                 <>
                   <div className="space-y-2">
