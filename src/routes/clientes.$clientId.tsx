@@ -368,13 +368,13 @@ function ClientDetailPage() {
                   <Badge className="border-transparent bg-[#5B6472] text-white hover:bg-[#5B6472]">
                     {`Arquivado${contract.arquivado_em ? ` em ${formatDate(contract.arquivado_em)}` : ""}`}
                   </Badge>
-                ) : null}
+                                ) : null}
                 <Badge variant="secondary">{contract.payment_method || "Forma a definir"}</Badge>
-                <Badge variant="secondary">
-                  {contract.captacao
-                    ? `Captação: ${contract.captacao}${contract.captacao_percentual ? ` – ${String(contract.captacao_percentual).replace(".", ",")}%` : ""}`
-                    : "Captação a definir"}
-                </Badge>
+                {contract.captacao ? (
+                  <Badge variant="secondary">
+                    {`Captação: ${contract.captacao}${contract.captacao_percentual ? ` – ${String(contract.captacao_percentual).replace(".", ",")}%` : ""}`}
+                  </Badge>
+                ) : null}
                 <ContractActions
                   clientId={clientId}
                   personType={client.person_type as "PF" | "PJ"}
