@@ -146,9 +146,11 @@ export type Database = {
           created_at: string
           description: string | null
           first_due_date: string
+          gratuidade: boolean
           id: string
           installments_count: number
           modality: string
+          objeto: string | null
           payment_method: string | null
           recurring: boolean
           signature_date: string | null
@@ -162,9 +164,11 @@ export type Database = {
           created_at?: string
           description?: string | null
           first_due_date?: string
+          gratuidade?: boolean
           id?: string
           installments_count?: number
           modality?: string
+          objeto?: string | null
           payment_method?: string | null
           recurring?: boolean
           signature_date?: string | null
@@ -178,9 +182,11 @@ export type Database = {
           created_at?: string
           description?: string | null
           first_due_date?: string
+          gratuidade?: boolean
           id?: string
           installments_count?: number
           modality?: string
+          objeto?: string | null
           payment_method?: string | null
           recurring?: boolean
           signature_date?: string | null

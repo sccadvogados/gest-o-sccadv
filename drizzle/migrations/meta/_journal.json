@@ -15,6 +15,13 @@
       "when": 1791813314946,
       "tag": "0001_create_feriados",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791813327275,
+      "tag": "0002_contract_object_gratuity",
+      "breakpoints": true
     }
   ]
 }
