@@ -38,6 +38,8 @@ type ContractFormProps = {
   existingContractId?: string | undefined;
   submitLabel?: string | undefined;
   onBack?: (() => void) | undefined;
+  /** No assistente de Novo Cliente: o contrato fica como rascunho (sem número e sem parcelas) até "Finalizar". */
+  rascunho?: boolean | undefined;
 };
 
 function cleanObject(value: string) {
@@ -58,6 +60,7 @@ export function ContractForm({
   existingContractId,
   submitLabel,
   onBack,
+  rascunho = false,
 }: ContractFormProps) {
   const [modality, setModality] = useState<ContractModality>("parcelado");
   const [category, setCategory] = useState<string>(CATEGORIES[0]);
@@ -131,7 +134,32 @@ export function ContractForm({
         captacao_percentual: temRepasse ? repasse : null,
       };
 
+      const parcelasRascunho = modality === "exito" ? [] : preview.map((row) => ({
+        number: row.number,
+        amount: row.amount,
+        due_date: row.due_date,
+        payment_method: paymentMethod,
+        category,
+      }));
+
       let contractId: string;
+      if (rascunho) {
+        // Rascunho: guarda as parcelas no próprio contrato; elas só viram parcelas reais ao finalizar.
+        const draftValues = { ...values, rascunho: true, parcelas_rascunho: parcelasRascunho };
+        if (existingContractId) {
+          const { error } = await officeDatabase(supabase).from("contracts").update(draftValues).eq("id", existingContractId);
+          if (error) throw error;
+          return existingContractId;
+        }
+        const { data: contract, error } = await officeDatabase(supabase)
+          .from("contracts")
+          .insert({ client_id: clientId, ...draftValues })
+          .select("id")
+          .single();
+        if (error) throw error;
+        return contract.id;
+      }
+
       if (existingContractId) {
         const { error } = await officeDatabase(supabase).from("contracts").update(values).eq("id", existingContractId);
         if (error) throw error;
@@ -164,7 +192,7 @@ export function ContractForm({
     onSuccess: (contractId) => {
       queryClient.invalidateQueries({ queryKey: ["contracts", clientId] });
       queryClient.invalidateQueries({ queryKey: ["installments"] });
-      toast.success(modality === "exito" ? "Contrato salvo." : "Contrato salvo e parcelas geradas.");
+      if (!rascunho) toast.success(modality === "exito" ? "Contrato salvo." : "Contrato salvo e parcelas geradas.");
       onSaved(contractId);
     },
     onError: (error) => toast.error(errorMessage(error, "Erro ao salvar o contrato.")),
@@ -264,7 +292,7 @@ export function ContractForm({
       {modality !== "exito" && preview.length > 0 ? (
         <div className="mt-4 space-y-3 rounded-md border border-border p-4">
           <div>
-            <h3 className="text-sm font-medium">Prévia das parcelas</h3>
+            <h3 className="text-sm font-medium">Prévia das Parcelas</h3>
             <p className="text-xs text-muted-foreground">Confira e ajuste os valores e vencimentos antes de salvar.</p>
           </div>
           <div className="space-y-3">
@@ -297,3 +325,4 @@ export function ContractForm({
     </>
   );
 }
+
