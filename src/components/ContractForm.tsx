@@ -119,14 +119,14 @@ export function ContractForm({
         }
       }
 
-      const total = modality === "mensal" ? totalValue * installmentsCount : totalValue;
+            const total = modality === "mensal" ? totalValue * installmentsCount : totalValue;
       const values = {
         modality,
         category,
-        total_value: modality === "exito" ? 0 : total,
-        installments_count: modality === "exito" ? 1 : installmentsCount,
-        ...(modality !== "exito" ? { first_due_date: firstDue } : {}),
-        payment_method: paymentMethod,
+        total_value: semParcelas ? 0 : total,
+        installments_count: semParcelas ? 1 : installmentsCount,
+        ...(!semParcelas ? { first_due_date: firstDue } : {}),
+        payment_method: proBono ? null : paymentMethod,
         success_fee_percent: fee,
         recurring: modality === "mensal",
         objeto: objectToSave || null,
@@ -135,7 +135,7 @@ export function ContractForm({
         captacao_percentual: temRepasse ? repasse : null,
       };
 
-      const parcelasRascunho = modality === "exito" ? [] : preview.map((row) => ({
+      const parcelasRascunho = semParcelas ? [] : preview.map((row) => ({
         number: row.number,
         amount: row.amount,
         due_date: row.due_date,
