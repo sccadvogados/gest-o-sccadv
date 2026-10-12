@@ -874,9 +874,8 @@ function EditContractDialog({
         {temRepasse ? (
           <div className="space-y-2">
             <Label htmlFor={`edit-contract-repasse-${contract.id}`}>% de Repasse da {captacao}</Label>
-            <Input
+                        <PercentInput
               id={`edit-contract-repasse-${contract.id}`}
-              inputMode="decimal"
               placeholder="Ex.: 10"
               value={captacaoPercentual}
               onChange={(e) => setCaptacaoPercentual(e.target.value)}
