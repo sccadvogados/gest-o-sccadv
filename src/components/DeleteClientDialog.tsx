@@ -12,15 +12,19 @@ import {
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
-  AlertDialogHeader,
+    AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useServerFn } from "@tanstack/react-start";
+
 import { supabase } from "@/integrations/supabase/client";
+import { excluirClienteCompleto } from "@/lib/arquivo.functions";
 
 export function DeleteClientDialog({
   clientId,
   clientName,
+
 }: {
   clientId: string;
   clientName: string;
