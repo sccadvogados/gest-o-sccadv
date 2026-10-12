@@ -142,7 +142,7 @@ function sanitizeFilePart(value: string): string {
 function baseFileName(date: string, number: string, clientName: string, opposingParty: string): string {
   const safeClient = sanitizeFilePart(clientFileName(clientName));
   const safeParty = sanitizeFilePart(opposingParty);
-  return `${date} - ${number} - ${safeClient}${safeParty ? ` - ${safeParty}` : ""}.docx`;
+    return `${date} - ${number} - ${safeClient}${safeParty ? ` x ${safeParty}` : ""}.docx`;
 }
 
 function versionedName(name: string, existingNames: Set<string>): string {
