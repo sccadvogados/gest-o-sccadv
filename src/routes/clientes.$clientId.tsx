@@ -247,7 +247,7 @@ function ClientDetailPage() {
             <EditClientDialog
               clientId={clientId}
               client={client}
-              triggerLabel="Editar dados"
+              triggerLabel="Editar Dados"
               triggerClassName="h-auto border-0 bg-transparent p-0 text-[#7A3F2D] underline hover:bg-transparent"
             />
           </span>
