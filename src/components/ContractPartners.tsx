@@ -225,7 +225,8 @@ export function ContractPartners({
               </span>
               <span className="flex items-center gap-3">
                 <span className="tabular-nums">
-                  {`${formatCurrency(Number(item.valor) || 0)} + ${percentual(Number(item.exito_percentual) || 0)}% do êxito`}
+                                    {`${formatCurrency(Number(item.valor) || 0)}${Number(item.exito_percentual) > 0 ? ` + ${percentual(Number(item.exito_percentual))}% do êxito` : ""}`}
+
                 </span>
                 <Button
                   type="button"
