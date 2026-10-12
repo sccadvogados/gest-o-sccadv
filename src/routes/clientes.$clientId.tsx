@@ -908,13 +908,13 @@ function NewContractDialog({ clientId, personType }: { clientId: string; personT
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button>
-          <Plus className="size-4" />
-          Novo contrato
+                    <Plus className="size-4" />
+          Novo Contrato
         </Button>
       </DialogTrigger>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Novo contrato</DialogTitle>
+          <DialogTitle>Novo Contrato</DialogTitle>
         </DialogHeader>
         <ContractForm clientId={clientId} personType={personType} onSaved={() => setOpen(false)} />
       </DialogContent>
