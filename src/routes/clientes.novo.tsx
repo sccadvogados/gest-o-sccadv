@@ -428,13 +428,49 @@ function NewClientPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["clients"] });
-      toast.success(savedClientId ? "Qualificação atualizada." : "Cliente cadastrado com sucesso.");
+            toast.success("Qualificação salva.");
       setStep(2);
     },
     onError: (error) => {
       toast.error(error instanceof Error ? error.message : (error as { message?: string })?.message ?? "Erro ao salvar o cliente.");
     },
   });
+
+  /** Apaga o rascunho (cliente novo, contrato, anexos e representantes) quando o cliente desiste. */
+  async function descartarCadastro() {
+    if (savedContractId) {
+      const { error } = await officeDatabase(supabase).from("contracts").delete().eq("id", savedContractId).eq("rascunho", true);
+      if (error) throw error;
+    }
+    if (savedClientId) {
+      const { data: docs, error: docsError } = await supabase.from("client_documents").select("id, file_path").eq("client_id", savedClientId);
+      if (docsError) throw docsError;
+      if (docs && docs.length > 0) {
+        await supabase.storage.from("client-documents").remove(docs.map((doc) => doc.file_path));
+        const { error: removeError } = await supabase.from("client_documents").delete().in("id", docs.map((doc) => doc.id));
+        if (removeError) throw removeError;
+      }
+      const { error: representativesError } = await officeDatabase(supabase).from("cliente_representantes").delete().eq("cliente_id", savedClientId);
+      if (representativesError) throw representativesError;
+      const { error: clientError } = await officeDatabase(supabase).from("clients").delete().eq("id", savedClientId).eq("rascunho", true);
+      if (clientError) throw clientError;
+    }
+    void queryClient.invalidateQueries({ queryKey: ["clients"] });
+    toast.success("Cadastro descartado.");
+    await navigate({ to: "/" });
+  }
+
+  /** "Pular Contrato": o cliente é cadastrado de vez, sem contrato. */
+  async function concluirSemContrato() {
+    if (!savedClientId) return;
+    const { error } = await officeDatabase(supabase).from("clients").update({ rascunho: false }).eq("id", savedClientId);
+    if (error) {
+      toast.error("Não foi possível concluir o cadastro.");
+      return;
+    }
+    void queryClient.invalidateQueries({ queryKey: ["clients"] });
+    await navigate({ to: "/clientes/$clientId", params: { clientId: savedClientId } });
+  }
 
   const STEPS = ["Qualificação", "Objeto", "Pagamento", "Revisão"] as const;
 
