@@ -122,7 +122,9 @@ export function ContractForm({
         success_fee_percent: fee,
         recurring: modality === "mensal",
         objeto: objectToSave || null,
-        gratuidade: gratuidadeToSave,
+                gratuidade: gratuidadeToSave,
+        captacao,
+        captacao_percentual: temRepasse ? repasse : null,
       };
 
       let contractId: string;
