@@ -303,7 +303,7 @@ function NewClientPage() {
         throw new Error("Anexe a identificação para ler os dados ou abra o preenchimento manual.");
       }
       const obrigatorios: [string, string][] = [["Complemento", form.complement]];
-      if (form.person_type === "PJ") obrigatorios.push(["Descrição da Pessoa Jurídica", form.pj_descricao]);
+      
       const faltando = obrigatorios.find(([, value]) => !value.trim());
       if (faltando) throw new Error(`Preencha o campo obrigatório: ${faltando[0]}.`);
       if (form.person_type === "PJ") {
@@ -576,12 +576,7 @@ function NewClientPage() {
               />
             </div>
 
-                        {form.person_type === "PJ" && (
-              <div className="space-y-2 sm:col-span-2">
-                                <Label htmlFor="pj_descricao">Descrição da pessoa jurídica <Pending value={form.pj_descricao} /></Label>
-                <Textarea id="pj_descricao" rows={3} value={form.pj_descricao} onChange={(e) => set("pj_descricao", e.target.value)} />
-              </div>
-            )}
+                        
 
             <div className="space-y-2">
                             <Label htmlFor="cpf_cnpj">CPF/CNPJ <Pending value={form.cpf_cnpj} /></Label>
