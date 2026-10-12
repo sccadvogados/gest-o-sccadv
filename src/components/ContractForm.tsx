@@ -194,7 +194,7 @@ export function ContractForm({
               <Input id="count" type="number" min={1} value={count} onChange={(e) => setCount(e.target.value)} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="firstDue">Primeiro vencimento</Label>
+                            <Label htmlFor="firstDue">Primeiro Vencimento</Label>
               <Input id="firstDue" type="date" value={firstDue} onChange={(e) => setFirstDue(e.target.value)} />
             </div>
           </>
