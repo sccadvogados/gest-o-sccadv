@@ -727,7 +727,7 @@ function EditContractDialog({
             <SelectContent>
               <SelectItem value="parcelado">Pró-labore parcelado</SelectItem>
               <SelectItem value="mensal">Pró-labore mensal</SelectItem>
-              <SelectItem value="exito">Somente êxito</SelectItem>
+                            <SelectItem value="exito">Somente Êxito</SelectItem>
             </SelectContent>
           </Select>
         </div>
