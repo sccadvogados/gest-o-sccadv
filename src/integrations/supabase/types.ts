@@ -76,6 +76,7 @@ export type Database = {
           number: string | null
           person_type: string
           phone: string | null
+          pj_descricao: string
           profession: string | null
           rg_issuer: string | null
           rg_number: string | null
@@ -103,6 +104,7 @@ export type Database = {
           number?: string | null
           person_type?: string
           phone?: string | null
+          pj_descricao?: string
           profession?: string | null
           rg_issuer?: string | null
           rg_number?: string | null
@@ -130,6 +132,7 @@ export type Database = {
           number?: string | null
           person_type?: string
           phone?: string | null
+          pj_descricao?: string
           profession?: string | null
           rg_issuer?: string | null
           rg_number?: string | null
