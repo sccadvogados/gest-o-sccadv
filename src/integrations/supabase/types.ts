@@ -208,6 +208,7 @@ export type Database = {
           installments_count: number
           modality: string
           objeto: string | null
+          parte_contraria: string | null
           payment_method: string | null
           recurring: boolean
           signature_date: string | null
@@ -226,6 +227,7 @@ export type Database = {
           installments_count?: number
           modality?: string
           objeto?: string | null
+          parte_contraria?: string | null
           payment_method?: string | null
           recurring?: boolean
           signature_date?: string | null
@@ -244,6 +246,7 @@ export type Database = {
           installments_count?: number
           modality?: string
           objeto?: string | null
+          parte_contraria?: string | null
           payment_method?: string | null
           recurring?: boolean
           signature_date?: string | null
