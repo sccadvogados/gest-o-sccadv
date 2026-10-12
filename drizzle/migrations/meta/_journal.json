@@ -43,6 +43,13 @@
       "when": 1791813375724,
       "tag": "0005_tribunais",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1791813390146,
+      "tag": "0006_procuracao_exemplos",
+      "breakpoints": true
     }
   ]
 }

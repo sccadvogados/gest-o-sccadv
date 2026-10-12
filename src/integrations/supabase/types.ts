@@ -396,6 +396,51 @@ export type Database = {
         }
         Relationships: []
       }
+      procuracao_exemplos: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          created_by: string | null
+          destino: string | null
+          id: string
+          objeto: string
+          observacao: string | null
+          origem: string
+          poderes_especificos: string | null
+          situacao: string
+          tipo_cliente: string
+          uf_domicilio: string | null
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          created_by?: string | null
+          destino?: string | null
+          id?: string
+          objeto: string
+          observacao?: string | null
+          origem: string
+          poderes_especificos?: string | null
+          situacao: string
+          tipo_cliente: string
+          uf_domicilio?: string | null
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          created_by?: string | null
+          destino?: string | null
+          id?: string
+          objeto?: string
+          observacao?: string | null
+          origem?: string
+          poderes_especificos?: string | null
+          situacao?: string
+          tipo_cliente?: string
+          uf_domicilio?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
