@@ -280,13 +280,13 @@ export function EditClientDialog({
                 <Input id="edit-cpf" value={form.cpf_cnpj} onChange={(event) => set("cpf_cnpj", maskCpfCnpj(event.target.value))} />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="edit-nationality">Nacionalidade</Label>
+                                <Label htmlFor="edit-nationality">Nacionalidade</Label>
                 <Input id="edit-nationality" value={form.nationality} onChange={(event) => set("nationality", event.target.value)} />
               </div>
               {form.person_type === "PF" && (
                 <>
                   <div className="space-y-2">
-                    <Label>Estado civil</Label>
+                    <Label>Estado Civil</Label>
                     <Select value={form.marital_status} onValueChange={(value) => set("marital_status", value)}>
                       <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
                       <SelectContent>{MARITAL.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
@@ -294,7 +294,7 @@ export function EditClientDialog({
                   </div>
                   <div className="space-y-2"><Label htmlFor="edit-profession">Profissão</Label><Input id="edit-profession" value={form.profession} onChange={(event) => set("profession", event.target.value)} /></div>
                   <div className="space-y-2"><Label htmlFor="edit-rg">RG</Label><Input id="edit-rg" value={form.rg_number} onChange={(event) => set("rg_number", event.target.value)} /></div>
-                  <div className="space-y-2"><Label htmlFor="edit-rg-issuer">Órgão expedidor / UF</Label><Input id="edit-rg-issuer" value={form.rg_issuer} onChange={(event) => set("rg_issuer", event.target.value)} /></div>
+                  <div className="space-y-2"><Label htmlFor="edit-rg-issuer">Órgão Expedidor / UF</Label><Input id="edit-rg-issuer" value={form.rg_issuer} onChange={(event) => set("rg_issuer", event.target.value)} /></div>
                 </>
               )}
             </div>
