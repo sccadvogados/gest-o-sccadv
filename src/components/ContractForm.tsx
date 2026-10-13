@@ -98,10 +98,12 @@ export function ContractForm({
         mutationFn: async () => {
                         const repasse = Number(captacaoPercentual.replace(",", "."));
       const retencaoNumero = Number(retencao.replace(",", "."));
-      if (modality !== "probono" && (!retencao.trim() || !Number.isFinite(retencaoNumero) || retencaoNumero < 0 || retencaoNumero > 100)) {
+            if (modality !== "probono" && (!retencao.trim() || !Number.isFinite(retencaoNumero) || retencaoNumero < 0 || retencaoNumero > 100)) {
         throw new Error("Informe a retenção do escritório entre 0 e 100%.");
       }
+      if (modality !== "probono" && socios.length === 0) throw new Error("Marque ao menos um sócio envolvido.");
       if (temRepasse && (!Number.isFinite(repasse) || repasse <= 0 || repasse > 100)) throw new Error("Informe o percentual de repasse entre 0 e 100.");
+
 
             const installmentsCount = Math.max(1, Number(count));
       const fee = proBono ? 0 : Number(successFee.replace(",", ".")) || 0;
