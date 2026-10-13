@@ -767,8 +767,9 @@ function EditContractDialog({
       }
       const retencaoNumero = Number(retencao.replace(",", "."));
       if (!proBono && (!retencao.trim() || !Number.isFinite(retencaoNumero) || retencaoNumero < 0 || retencaoNumero > 100)) {
-        throw new Error("Informe a retenção do escritório entre 0 e 100%.");
+                throw new Error("Informe a retenção do escritório entre 0 e 100%.");
       }
+      if (!proBono && socios.length === 0) throw new Error("Marque ao menos um sócio envolvido.");
       if (modality === "exito") {
         if (fee <= 0) throw new Error("Informe um percentual de êxito válido.");
       } else if (!proBono && !hasPaidInstallment) {
