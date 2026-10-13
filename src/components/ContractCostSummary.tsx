@@ -82,19 +82,26 @@ export function ContractCostSummary({
   );
   const progresso = prolabore > 0 ? Math.min(100, (recebido / prolabore) * 100) : 0;
 
-  const linhas: Array<{ rotulo: string; valor: string; exito: string; destaque?: boolean }> = [
-    { rotulo: "Valor do Contrato", valor: formatCurrency(prolabore), exito: pct(exito) },
+    // Dica ao passar o mouse no % do êxito: os % da coluna são do proveito econômico.
+  const dosHonorarios = (pontos: number) => (exito > 0 ? pct((pontos / exito) * 100) : "0%");
+  const linhas: Array<{ rotulo: string; valor: string; exito: string; dica?: string; destaque?: boolean }> = [
+    {
+      rotulo: "Valor do Contrato",
+      valor: formatCurrency(prolabore),
+      exito: pct(exito),
+      dica: `Honorários de êxito: ${pct(exito)} do proveito econômico obtido pelo cliente.`,
+    },
   ];
   if (retencaoPct > 0) {
-    linhas.push({ rotulo: `(–) Retenção do Escritório (${pct(retencaoPct)})`, valor: formatCurrency(retencaoValor), exito: pct(retencaoExito) });
+    linhas.push({ rotulo: `(–) Retenção do Escritório (${pct(retencaoPct)})`, valor: formatCurrency(retencaoValor), exito: pct(retencaoExito), dica: `Retenção de ${pct(retencaoPct)} sobre os honorários de êxito: ${pct(retencaoPct)} × ${pct(exito)} = ${pct(retencaoExito)} do proveito econômico.` });
   }
   if (captacaoPct > 0) {
-    linhas.push({ rotulo: `(–) ${contract.captacao ?? "Captação"} (${pct(captacaoPct)})`, valor: formatCurrency(captacaoValor), exito: "—" });
+    linhas.push({ rotulo: `(–) ${contract.captacao ?? "Captação"} (${pct(captacaoPct)})`, valor: formatCurrency(captacaoValor), exito: "—", dica: `A ${(contract.captacao ?? "captação").toLowerCase()} incide só sobre o pró-labore; não desconta do êxito.` });
   }
   if ((parceiros ?? []).length > 0) {
-    linhas.push({ rotulo: "(–) Parceiros", valor: formatCurrency(parceirosValor), exito: pct(parceirosExito) });
+    linhas.push({ rotulo: "(–) Parceiros", valor: formatCurrency(parceirosValor), exito: pct(parceirosExito), dica: `Parceiros: ${pct(parceirosExito)} do proveito econômico, o que equivale a ${dosHonorarios(parceirosExito)} dos honorários de êxito.` });
   }
-  linhas.push({ rotulo: "= Saldo do Contrato", valor: formatCurrency(saldoValor), exito: pct(saldoExito), destaque: true });
+  linhas.push({ rotulo: "= Saldo do Contrato", valor: formatCurrency(saldoValor), exito: pct(saldoExito), dica: `Saldo: ${pct(saldoExito)} do proveito econômico, o que equivale a ${dosHonorarios(saldoExito)} dos honorários de êxito.`, destaque: true });
 
   const resumo = `${temProlabore ? formatCurrency(saldoValor) : ""}${temProlabore && temExito ? " + " : ""}${temExito ? `${pct(saldoExito)} do êxito` : ""}`;
 
