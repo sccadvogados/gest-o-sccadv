@@ -394,9 +394,12 @@ function ClientDetailPage() {
               </div>
             </div>
 
+            
             {contract.modality !== "probono" ? <ContractPartners contract={contract} /> : null}
+            <ContractCostSummary contract={contract} />
 
             <Table>
+
               <TableHeader>
                 <TableRow>
                   <TableHead>Parcela</TableHead>
