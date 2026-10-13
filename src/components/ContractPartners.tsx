@@ -264,9 +264,7 @@ export function ContractPartners({
               </span>
             </div>
           ))}
-          <p className="pt-1 text-xs text-muted-foreground">
-            {`Líquido do Escritório: ${formatCurrency(totalContrato - valorParceiros)}${exitoContrato > 0 ? ` + ${percentual(Math.round((exitoContrato - exitoParceiros) * 100) / 100)}% de êxito` : ""}`}
-          </p>
+          
         </div>
       ) : null}
 
