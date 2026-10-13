@@ -294,6 +294,8 @@ export function ContractForm({
         ) : null}
 
 
+                {!proBono ? <SociosField value={socios} onChange={setSocios} /> : null}
+
         {!hideObject ? (
           <div className="sm:col-span-2">
             <ObjectClauseField value={object} onChange={setObject} />
