@@ -137,8 +137,14 @@ export function ContractCostSummary({
               {linhas.map((linha) => (
                 <tr key={linha.rotulo} className={linha.destaque ? "border-t border-border font-semibold text-[#0F2340]" : ""}>
                   <td className="py-1">{linha.rotulo}</td>
-                  {temProlabore ? <td className={`py-1 text-right tabular-nums${saldoValor < 0 && linha.destaque ? " text-destructive" : ""}`}>{linha.valor}</td> : null}
-                  {temExito ? <td className={`py-1 text-right tabular-nums${saldoExito < 0 && linha.destaque ? " text-destructive" : ""}`}>{linha.exito}</td> : null}
+                                    {temProlabore ? <td className={`py-1 text-right tabular-nums${saldoValor < 0 && linha.destaque ? " text-destructive" : ""}`}>{linha.valor}</td> : null}
+                  {temExito ? (
+                    <td className={`py-1 text-right tabular-nums${saldoExito < 0 && linha.destaque ? " text-destructive" : ""}`}>
+                      <span title={linha.dica} className={linha.dica ? "cursor-help underline decoration-dotted decoration-muted-foreground/60 underline-offset-4" : undefined}>
+                        {linha.exito}
+                      </span>
+                    </td>
+                  ) : null}
                 </tr>
               ))}
             </tbody>
