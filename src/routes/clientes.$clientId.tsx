@@ -377,7 +377,12 @@ function ClientDetailPage() {
                   </Badge>
                                 ) : null}
                                 {contract.modality !== "probono" ? (
-                  <Badge variant="secondary">{contract.payment_method || "Forma a definir"}</Badge>
+                                    <Badge variant="secondary">{contract.payment_method || "Forma a definir"}</Badge>
+                ) : null}
+                {contract.socios?.length && contract.modality !== "probono" ? (
+                  <Badge variant="secondary" title={SOCIOS.filter((s) => contract.socios?.includes(s.sigla)).map((s) => s.nome).join(", ")}>
+                    {`Sócios: ${contract.socios.join(" · ")}`}
+                  </Badge>
                 ) : null}
                 {contract.retencao_percentual != null && contract.modality !== "probono" ? (
                   <Badge variant="secondary">{`Retenção: ${String(contract.retencao_percentual).replace(".", ",")}%`}</Badge>
