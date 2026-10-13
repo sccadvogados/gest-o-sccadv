@@ -141,8 +141,9 @@ export function ContractForm({
         objeto: objectToSave || null,
                 gratuidade: gratuidadeToSave,
                 captacao: captacao || null,
-                captacao_percentual: temRepasse ? repasse : null,
+                        captacao_percentual: temRepasse ? repasse : null,
         retencao_percentual: modality === "probono" ? null : retencaoNumero,
+        socios: modality === "probono" ? null : socios,
       };
 
       const parcelasRascunho = semParcelas ? [] : preview.map((row) => ({
