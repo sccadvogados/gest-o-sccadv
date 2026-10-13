@@ -104,6 +104,18 @@ export function ContractCostSummary({
   }
   linhas.push({ rotulo: "= Saldo do Contrato", valor: formatCurrency(saldoValor), exito: pct(saldoExito), dica: `Saldo: ${pct(saldoExito)} do proveito econômico, o que equivale a ${dosHonorarios(saldoExito)} dos honorários de êxito.`, destaque: true });
 
+    // Divisão igual entre os sócios envolvidos no contrato.
+  const socios = contract.socios ?? [];
+  if (socios.length > 0) {
+    const n = socios.length;
+    linhas.push({
+      rotulo: `÷ Por Sócio (${socios.join(", ")})`,
+      valor: formatCurrency(arredondar(saldoValor / n)),
+      exito: pct(saldoExito / n),
+      dica: `Saldo de ${pct(saldoExito)} do proveito dividido igualmente entre ${n} sócio${n > 1 ? "s" : ""}.`,
+    });
+  }
+
   const resumo = `${temProlabore ? formatCurrency(saldoValor) : ""}${temProlabore && temExito ? " + " : ""}${temExito ? `${pct(saldoExito)} do êxito` : ""}`;
 
   return (
