@@ -908,6 +908,7 @@ function EditContractDialog({
                         <PercentInput id={`edit-contract-retencao-${contract.id}`} placeholder="Ex.: 20" value={retencao} onChange={(e) => setRetencao(e.target.value)} />
           </div>
         ) : null}
+                {!proBono ? <SociosField value={socios} onChange={setSocios} /> : null}
         <div className="sm:col-span-2">
           <ObjectClauseField value={object} onChange={setObject} />
         </div>
