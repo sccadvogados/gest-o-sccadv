@@ -106,14 +106,14 @@ export function ExportSpreadsheetButton() {
           ]),
         },
                 {
-          name: "Contratos",
-          header: ["Contrato", "Cliente", "Modalidade", "Categoria", "Valor total", "Parcelas", "1º vencimento", "Forma de pagamento", "Captação", "% Repasse", "% êxito", "% Retenção", "Objeto (relativos …)", "Gratuidade", "Parte contrária", "Cadastrado em"],
-          widths: [12, 40, 22, 26, 16, 10, 14, 18, 20, 11, 10, 11, 70, 11, 30, 14],
+                    name: "Contratos",
+          header: ["Contrato", "Cliente", "Modalidade", "Categoria", "Valor total", "Parcelas", "1º vencimento", "Forma de pagamento", "Captação", "% Repasse", "% êxito", "% Retenção", "Sócios", "Objeto (relativos …)", "Gratuidade", "Parte contrária", "Cadastrado em"],
+          widths: [12, 40, 22, 26, 16, 10, 14, 18, 20, 11, 10, 11, 16, 70, 11, 30, 14],
           rows: contracts.map((contract) => [
             numeroContrato(contract), contract["clients"]?.["name"], MODALIDADES[contract["modality"]] ?? contract["modality"], contract["category"],
                         { money: Number(contract["total_value"]) || 0 }, ["exito", "probono"].includes(contract["modality"]) ? "" : contract["installments_count"],
             ["exito", "probono"].includes(contract["modality"]) ? "" : formatDate(contract["first_due_date"]), contract["payment_method"], contract["captacao"], Number(contract["captacao_percentual"]) || "",
-            Number(contract["success_fee_percent"]) || "", contract["retencao_percentual"] ?? "", contract["objeto"], contract["gratuidade"] ? "Sim" : "Não",
+            Number(contract["success_fee_percent"]) || "", contract["retencao_percentual"] ?? "", (contract["socios"] ?? []).join(", "), contract["objeto"], contract["gratuidade"] ? "Sim" : "Não",
             contract["parte_contraria"], formatDate(contract["created_at"]),
           ]),
         },
