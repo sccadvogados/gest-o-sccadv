@@ -24,7 +24,7 @@ export function SociosField({ value, onChange }: { value: string[]; onChange: (v
         {SOCIOS.map((socio) => (
           <label key={socio.sigla} className="flex items-center gap-2">
             <Checkbox checked={value.includes(socio.sigla)} onCheckedChange={(checked) => alternar(socio.sigla, checked === true)} />
-            {socio.nome} <span className="text-muted-foreground">({socio.sigla})</span>
+                        {socio.nome}
           </label>
         ))}
       </div>
