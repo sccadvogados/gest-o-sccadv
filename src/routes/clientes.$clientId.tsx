@@ -785,8 +785,9 @@ function EditContractDialog({
         objeto,
                 gratuidade: gratuidadeToSave,
         captacao: captacao || null,
-        captacao_percentual: temRepasse ? repasse : null,
+                captacao_percentual: temRepasse ? repasse : null,
         retencao_percentual: proBono ? null : retencaoNumero,
+        socios: proBono ? null : socios,
       };
       const contractUpdate = hasPaidInstallment
         ? common
