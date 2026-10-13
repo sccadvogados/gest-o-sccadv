@@ -31,8 +31,9 @@ export function ContractCostSummary({
     total_value: number;
     success_fee_percent: number;
     captacao?: string | null;
-    captacao_percentual?: number | null;
+        captacao_percentual?: number | null;
     retencao_percentual?: number | null;
+    socios?: string[] | null;
     installments?: Array<{ amount: number; status: string; due_date: string }>;
   };
 }) {
