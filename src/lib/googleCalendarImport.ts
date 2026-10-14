@@ -58,7 +58,8 @@ export const listGoogleCalendarEvents = createServerFn({ method: "GET" })
       const result = await response.json() as { items?: GoogleCalendarItem[]; nextPageToken?: string };
       events.push(...(result.items ?? []));
       pageToken = result.nextPageToken;
-    } while (pageToken);
+        } while (pageToken);
 
-    return events.filter((event) => event.summary?.startsWith("[SCCAdv]"));
+    // Aceita [SCCAdv], [SCCadv], [SCCADV] etc.
+    return events.filter((event) => /^\s*\[SCCAdv\]/i.test(event.summary ?? ""));
   });
