@@ -126,7 +126,7 @@ function FinancePage() {
     <AppShell>
             <PageHeader
         title="Financeiro"
-        subtitle="Parcelas de todos os contratos, com baixa de recebimento e previsão de caixa."
+                subtitle="Parcelas dos contratos e Livro-Caixa do escritório (a partir de 01/01/2026)."
       />
       <img
         src="/imagens/imagem-f47c521f.png"
