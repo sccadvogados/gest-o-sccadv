@@ -121,7 +121,9 @@ function FinancePage() {
       total,
     };
   });
-  const forecastMax = Math.max(...forecast.map((f) => f.total), 1);
+    const forecastMax = Math.max(...forecast.map((f) => f.total), 1);
+  const valorCurto = (value: number) =>
+    value >= 1000 ? `R$ ${(value / 1000).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} mil` : `R$ ${value.toLocaleString("pt-BR")}`;
 
   return (
     <AppShell>
