@@ -114,7 +114,7 @@ export function GoogleCalendarImportDialog({ onImported }: { onImported: () => v
           </Button>
           {rows.length > 0 ? (
             <Button onClick={() => void importSelected()} disabled={importing || rows.every((row) => !row.selecionado)}>
-              {importing ? "Importando…" : "Importar selecionados"}
+              {importing ? "Importando…" : "Importar Selecionados"}
             </Button>
           ) : null}
         </div>
