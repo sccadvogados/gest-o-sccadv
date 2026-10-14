@@ -75,14 +75,30 @@ function parseEvent(event: GoogleCalendarItem, clients: Client[], existingIds: S
   const process = processIndex >= 0 ? (parts[processIndex]?.match(processPattern)?.[1] ?? "") : "";
   const partiesIndex = parts.findIndex((part) => part.includes(" x "));
   const parties = partiesIndex >= 0 ? (parts[partiesIndex] ?? "").split(" x ").map((part) => part.trim()) : [];
-  const responsibleIndex = parts.findIndex((part) => /^(Dr\.|Dra\.)\s+/i.test(part));
+    const responsibleIndex = parts.findIndex((part) => /^(Dr\.|Dra\.)\s+/i.test(part));
   const responsible = responsibleIndex >= 0 ? (parts[responsibleIndex] ?? "").replace(/^(Dr\.|Dra\.)\s+/i, "") : "";
-                                                                const marker = judgment ? "[JULGAMENTO]" : followUp ? "[ACOMPANHAMENTO]" : hearing ? "[AUDIÊNCIA]" : meeting ? "[REUNIÃO]" : "";
-        const title = `${marker ? `${marker} ` : ""}${parts.filter((part, index) => index !== processIndex && index !== partiesIndex && index !== responsibleIndex && !/^\[PROTOCOLO\]$/i.test(part)).join(" - ")}`.trim();
-  const clientName = parties[0] ?? "";
-  const client = clients.find((item) => normalize(item.name) === normalize(clientName));
+  // Cliente: primeiro nome antes do " x "; sem " x ", procura em qualquer trecho do título (ex.: "Petição Inicial - Kelly Alves Vieira").
+  let clientName = parties[0] ?? "";
+  let client = findClient(clientName, clients);
+  let clientPartIndex = -1;
+  if (!client && !clientName) {
+    for (const [index, part] of parts.entries()) {
+      if (index === processIndex || index === responsibleIndex) continue;
+      const encontrado = findClient(part, clients);
+      if (encontrado) {
+        client = encontrado;
+        clientName = part;
+        clientPartIndex = index;
+        break;
+      }
+    }
+  }
+                                                                const marker = !/^\[/.test(rawTitle) ? "" : judgment ? "[JULGAMENTO]" : followUp ? "[ACOMPANHAMENTO]" : hearing ? "[AUDIÊNCIA]" : meeting ? "[REUNIÃO]" : "";
+        const title = `${marker ? `${marker} ` : ""}${parts.filter((part, index) => index !== processIndex && index !== partiesIndex && index !== responsibleIndex && index !== clientPartIndex && !/^\[PROTOCOLO\]$/i.test(part)).join(" - ")}`.trim();
     const imported = existingIds.has(event.id);
-                                                                const kind = judgment ? "julgamento" : followUp ? "acompanhamento" : hearing ? "audiencia" : meeting ? "reuniao" : protocol ? "protocolo" : event.colorId === "7" ? "prazo" : "compromisso";
+                                                                // Prazo: cor Pavão (7) ou evento de dia inteiro sem cor própria (padrão do escritório para prazos).
+  const allDay = Boolean(event.start?.date) && !event.start?.dateTime;
+  const kind = judgment ? "julgamento" : followUp ? "acompanhamento" : hearing ? "audiencia" : meeting ? "reuniao" : protocol ? "protocolo" : event.colorId === "7" || (allDay && !event.colorId) ? "prazo" : "compromisso";
 
     return {
             googleId: event.id,
