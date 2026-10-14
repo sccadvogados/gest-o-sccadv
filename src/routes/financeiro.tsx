@@ -147,13 +147,8 @@ function FinancePage() {
       <div className="mt-6 grid gap-4 sm:grid-cols-3">
         <Summary label="Recebido" value={received} />
         <Summary label="A receber" value={pending} />
-        <Summary label="Em atraso" value={overdue} tone="danger" />
+                <Summary label="Em atraso" value={overdue} tone="danger" />
       </div>
-
-      
-        
-
-      <section className="panel mt-6 p-6">
         <h2 className="text-base font-semibold">Previsão dos próximos 12 meses</h2>
         <div className="mt-5 flex items-end gap-2">
           {forecast.map((month) => (
