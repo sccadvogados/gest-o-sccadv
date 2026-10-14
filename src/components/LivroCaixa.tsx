@@ -223,4 +223,267 @@ export function LivroCaixa() {
   }
 
   const categoriasForm = form?.tipo === "entrada" ? CATEGORIAS_ENTRADA : CATEGORIAS_SAIDA;
-  const nomePeriodo = periodo.length === 4 ? `Ano de ${periodo}` : `${MESES[Number(periodo.slice(5, 7)) - 1]}/${periodo.slice(0, 4)}`;
+    const nomePeriodo = periodo.length === 4 ? `Ano de ${periodo}` : `${MESES[Number(periodo.slice(5, 7)) - 1]}/${periodo.slice(0, 4)}`;
+
+  return (
+    <div className="mt-6">
+      <div className="flex flex-wrap items-center gap-2">
+        <Select value={periodo} onValueChange={setPeriodo}>
+          <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            {MESES.map((mes, index) => {
+              const valor = `${anoAtual}-${String(index + 1).padStart(2, "0")}`;
+              return <SelectItem key={valor} value={valor}>{`${mes}/${anoAtual}`}</SelectItem>;
+            })}
+            <SelectItem value={String(anoAtual)}>{`Ano de ${anoAtual}`}</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={tipo} onValueChange={setTipo}>
+          <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="todos">Todos os Tipos</SelectItem>
+            <SelectItem value="entrada">Entradas</SelectItem>
+            <SelectItem value="saida">Saídas</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={categoria} onValueChange={setCategoria}>
+          <SelectTrigger className="w-56"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="todas">Todas as Categorias</SelectItem>
+            {[...CATEGORIAS_ENTRADA, ...CATEGORIAS_SAIDA].map((nome) => <SelectItem key={nome} value={nome}>{nome}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        <Select value={socio} onValueChange={setSocio}>
+          <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="todos">Todos os Sócios</SelectItem>
+            {SOCIOS.map((sigla) => <SelectItem key={sigla} value={sigla}>{sigla}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        <Button className="ml-auto" onClick={() => setForm({ ...FORM_VAZIO, data: hoje })}>
+          <Plus className="size-4" />
+          Novo Lançamento
+        </Button>
+      </div>
+
+      {paraRevisar > 0 ? (
+        <p className="mt-3 rounded-md border border-[#E8B9A5] bg-[#FBF1EC] px-3 py-2 text-sm text-[#7A3F2D]">
+          {`${paraRevisar} lançamento${paraRevisar > 1 ? "s" : ""} marcado${paraRevisar > 1 ? "s" : ""} para revisar (etiqueta "Revisar" na tabela).`}
+        </p>
+      ) : null}
+
+      <div className="mt-4 grid gap-4 sm:grid-cols-4">
+        <Card titulo={periodo.length === 4 ? "Saldo Inicial do Ano" : "Saldo Inicial do Mês"} valor={saldoInicial} cor="#C9BFAE" />
+        <Card titulo="Entradas" valor={entradas} cor="#0F2340" />
+        <Card titulo="Saídas" valor={saidas} cor="#B42318" perigo />
+        <Card titulo="Saldo Atual" valor={saldoFinal} cor="#C08A5E" perigo={saldoFinal < 0} />
+      </div>
+
+      <div className="mt-4 grid items-start gap-4 lg:grid-cols-[1fr_270px]">
+        <div className="panel overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Data</TableHead>
+                <TableHead>Descrição</TableHead>
+                <TableHead>Categoria</TableHead>
+                <TableHead>Cliente / Contrato</TableHead>
+                <TableHead>Sócio</TableHead>
+                <TableHead className="text-right">Entrada</TableHead>
+                <TableHead className="text-right">Saída</TableHead>
+                <TableHead className="text-right">Saldo</TableHead>
+                <TableHead />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow className="bg-[#FBFAF7] italic text-muted-foreground">
+                <TableCell colSpan={7}>{periodo.length === 4 ? "Saldo inicial" : "Saldo vindo do mês anterior"}</TableCell>
+                <TableCell className="text-right tabular-nums">{formatCurrency(saldoInicial)}</TableCell>
+                <TableCell />
+              </TableRow>
+              {isLoading ? (
+                <TableRow><TableCell colSpan={9} className="py-8 text-center text-muted-foreground">Carregando lançamentos…</TableCell></TableRow>
+              ) : null}
+              {!isLoading && visiveis.length === 0 ? (
+                <TableRow><TableCell colSpan={9} className="py-8 text-center text-muted-foreground">Nenhum lançamento neste período.</TableCell></TableRow>
+              ) : null}
+              {visiveis.map(({ item, saldo }) => (
+                <TableRow key={item.id}>
+                  <TableCell className="whitespace-nowrap">{formatDate(item.data)}</TableCell>
+                  <TableCell>
+                    {item.descricao}
+                    {item.origem === "parcela" ? <span className="ml-2 text-[10px] font-semibold text-[#B07A4F]">AUTOMÁTICO</span> : null}
+                    {item.revisar ? (
+                      <span title={item.observacao ?? ""} className="ml-2 cursor-help rounded bg-[#FBF1EC] px-1.5 py-0.5 text-[10px] font-semibold text-[#7A3F2D]">REVISAR</span>
+                    ) : null}
+                    {!item.revisar && item.observacao ? <div className="text-xs text-muted-foreground">{item.observacao}</div> : null}
+                  </TableCell>
+                  <TableCell>
+                    <span className={`inline-block rounded-full px-2 py-0.5 text-[11px] ${item.tipo === "entrada" ? "bg-[#E7EEF6] text-[#0F2340]" : "bg-[#F6E9E1] text-[#7A3F2D]"}`}>{item.categoria}</span>
+                  </TableCell>
+                  <TableCell className="text-sm">
+                    {item.clients ? (
+                      <Link to="/clientes/$clientId" params={{ clientId: item.clients.id }} className="underline-offset-4 hover:text-accent hover:underline">
+                        {item.clients.name}
+                      </Link>
+                    ) : "—"}
+                    {numeroContrato(item.contracts) ? <span className="text-muted-foreground">{` · ${numeroContrato(item.contracts)}`}</span> : null}
+                  </TableCell>
+                  <TableCell>{item.socio ?? ""}</TableCell>
+                  <TableCell className="text-right tabular-nums text-[#256b3a]">{item.tipo === "entrada" ? formatCurrency(item.valor) : ""}</TableCell>
+                  <TableCell className="text-right tabular-nums text-[#B42318]">{item.tipo === "saida" ? formatCurrency(item.valor) : ""}</TableCell>
+                  <TableCell className={`text-right tabular-nums ${saldo < 0 ? "text-[#B42318]" : ""}`}>{filtrado ? "" : formatCurrency(saldo)}</TableCell>
+                  <TableCell className="whitespace-nowrap text-right">
+                    {item.origem === "parcela" ? (
+                      <span className="text-[11px] text-muted-foreground" title="Gerado pela baixa da parcela. Para desfazer, desfaça a baixa na parcela.">—</span>
+                    ) : (
+                      <>
+                        <Button variant="ghost" size="icon" aria-label="Editar Lançamento" title="Editar Lançamento" onClick={() => editar(item)}>
+                          <Pencil className="size-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          aria-label="Excluir Lançamento"
+                          title="Excluir Lançamento"
+                          disabled={excluir.isPending}
+                          onClick={() => {
+                            if (window.confirm(`Excluir o lançamento "${item.descricao}"?`)) excluir.mutate(item.id);
+                          }}
+                        >
+                          <Trash2 className="size-4 text-destructive" />
+                        </Button>
+                      </>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+              <TableRow className="bg-[#FBFAF7] font-semibold text-[#0F2340]">
+                <TableCell colSpan={5}>{`Total · ${nomePeriodo}`}</TableCell>
+                <TableCell className="text-right tabular-nums text-[#256b3a]">{formatCurrency(entradas)}</TableCell>
+                <TableCell className="text-right tabular-nums text-[#B42318]">{formatCurrency(saidas)}</TableCell>
+                <TableCell className="text-right tabular-nums">{formatCurrency(saldoFinal)}</TableCell>
+                <TableCell />
+              </TableRow>
+            </TableBody>
+          </Table>
+          {filtrado ? <p className="px-4 py-2 text-xs text-muted-foreground">Com filtro aplicado, a coluna Saldo fica oculta para não confundir; os cards mostram o período inteiro.</p> : null}
+        </div>
+
+        <div className="panel p-4 text-sm">
+          <p className="font-semibold text-[#0F2340]">{`Distribuição por Sócio · ${nomePeriodo}`}</p>
+          <div className="mt-2 space-y-1.5">
+            {porSocio.map(({ sigla, valor }) => (
+              <div key={sigla} className="flex items-center justify-between">
+                <span className="flex items-center gap-2">
+                  <span className="inline-block size-2.5 rounded-full" style={{ background: CORES_SOCIO[sigla] }} />
+                  {sigla}
+                </span>
+                <b className="tabular-nums">{formatCurrency(valor)}</b>
+              </div>
+            ))}
+          </div>
+          <p className="mt-5 font-semibold text-[#0F2340]">Por Categoria</p>
+          <div className="mt-2 space-y-1.5">
+            {porCategoria.length === 0 ? <p className="text-muted-foreground">—</p> : null}
+            {porCategoria.map(({ nome, valor }) => (
+              <div key={nome} className="flex items-center justify-between gap-2">
+                <span>{nome}</span>
+                <span className="tabular-nums">{formatCurrency(valor)}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <Dialog open={form !== null} onOpenChange={(aberto) => { if (!aberto) setForm(null); }}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>{form?.id ? "Editar Lançamento" : "Novo Lançamento"}</DialogTitle>
+          </DialogHeader>
+          {form ? (
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="lanc-data">Data</Label>
+                <Input id="lanc-data" type="date" min="2026-01-01" value={form.data} onChange={(e) => setForm({ ...form, data: e.target.value })} />
+              </div>
+              <div className="space-y-2">
+                <Label>Tipo</Label>
+                <Select
+                  value={form.tipo}
+                  onValueChange={(valor: "entrada" | "saida") => setForm({ ...form, tipo: valor, categoria: valor === "entrada" ? CATEGORIAS_ENTRADA[0] : "(D) Serviços", socio: "" })}
+                >
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="entrada">Entrada</SelectItem>
+                    <SelectItem value="saida">Saída</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2 sm:col-span-2">
+                <Label>Categoria</Label>
+                <Select value={form.categoria} onValueChange={(valor) => setForm({ ...form, categoria: valor })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>{categoriasForm.map((nome) => <SelectItem key={nome} value={nome}>{nome}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2 sm:col-span-2">
+                <Label htmlFor="lanc-descricao">Descrição</Label>
+                <Input id="lanc-descricao" value={form.descricao} placeholder="Ex.: Meta Ads (outubro)" onChange={(e) => setForm({ ...form, descricao: e.target.value })} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="lanc-valor">Valor</Label>
+                <CurrencyInput id="lanc-valor" value={form.valor} onChange={(valor) => setForm({ ...form, valor })} />
+              </div>
+              {form.categoria === "(D) Distribuição de Honorários" ? (
+                <div className="space-y-2">
+                  <Label>Sócio</Label>
+                  <Select value={form.socio} onValueChange={(valor) => setForm({ ...form, socio: valor })}>
+                    <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                    <SelectContent>{SOCIOS.map((sigla) => <SelectItem key={sigla} value={sigla}>{sigla}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
+              ) : <div />}
+              <div className="space-y-2 sm:col-span-2">
+                <Label>Cliente (Opcional)</Label>
+                <Select value={form.cliente_id || "nenhum"} onValueChange={(valor) => setForm({ ...form, cliente_id: valor === "nenhum" ? "" : valor })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="nenhum">Nenhum</SelectItem>
+                    {(clientes ?? []).map((cliente) => <SelectItem key={cliente.id} value={cliente.id}>{cliente.name}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2 sm:col-span-2">
+                <Label htmlFor="lanc-obs">Observação</Label>
+                <Textarea id="lanc-obs" rows={2} value={form.observacao} onChange={(e) => setForm({ ...form, observacao: e.target.value })} />
+              </div>
+              {form.id ? (
+                <label className="flex items-center gap-2 text-sm sm:col-span-2">
+                  <Checkbox checked={form.revisar} onCheckedChange={(marcado) => setForm({ ...form, revisar: marcado === true })} />
+                  Marcar para revisar
+                </label>
+              ) : null}
+            </div>
+          ) : null}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setForm(null)}>Cancelar</Button>
+            <Button disabled={salvar.isPending} onClick={() => form && salvar.mutate(form)}>
+              {salvar.isPending ? "Salvando…" : form?.id ? "Salvar Alterações" : "Incluir Lançamento"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+function Card({ titulo, valor, cor, perigo }: { titulo: string; valor: number; cor: string; perigo?: boolean }) {
+  return (
+    <div className="panel border-t-4 p-5" style={{ borderTopColor: cor }}>
+      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{titulo}</p>
+      <p className={`mt-2 text-2xl font-semibold tabular-nums ${perigo ? "text-[#B42318]" : "text-[#0F2340]"}`}>{formatCurrency(valor)}</p>
+    </div>
+  );
+}
+
