@@ -133,8 +133,17 @@ function FinancePage() {
         alt=""
         aria-hidden="true"
         className="hidden"
-      />
+            />
 
+      <Tabs defaultValue="parcelas" className="mt-6">
+        <TabsList>
+          <TabsTrigger value="parcelas">Parcelas</TabsTrigger>
+          <TabsTrigger value="caixa">Livro-Caixa</TabsTrigger>
+        </TabsList>
+        <TabsContent value="caixa">
+          <LivroCaixa />
+        </TabsContent>
+        <TabsContent value="parcelas">
       <div className="mt-6 grid gap-4 sm:grid-cols-3">
         <Summary label="Recebido" value={received} />
         <Summary label="A receber" value={pending} />
