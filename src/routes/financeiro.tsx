@@ -152,7 +152,29 @@ function FinancePage() {
         <Summary label="A receber" value={pending} />
                 <Summary label="Em atraso" value={overdue} tone="danger" />
       </div>
-              <section className="panel mt-6 p-6">
+                    <section className="panel mt-6 p-6">
+        <h2 className="text-base font-semibold">Previsão dos próximos 12 meses</h2>
+        <div className="mt-5 h-64 w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={forecast} margin={{ top: 28, right: 28, bottom: 4, left: 8 }}>
+              <CartesianGrid stroke="#ECE8E1" vertical={false} />
+              <XAxis dataKey="label" tick={{ fontSize: 11, fill: "#6b7280" }} tickLine={false} axisLine={{ stroke: "#E6E1D8" }} />
+              <YAxis
+                width={72}
+                domain={[0, Math.ceil((forecastMax * 1.15) / 100) * 100]}
+                tick={{ fontSize: 11, fill: "#6b7280" }}
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={(value: number) => valorCurto(value)}
+              />
+              <Tooltip formatter={(value: number) => [formatCurrency(value), "A receber"]} labelStyle={{ color: "#0F2340" }} />
+              <Line type="monotone" dataKey="total" stroke="#C08A5E" strokeWidth={2.5} dot={{ r: 4, fill: "#0F2340", stroke: "#0F2340" }} activeDot={{ r: 6 }}>
+                <LabelList dataKey="total" position="top" offset={10} style={{ fontSize: 11, fill: "#0F2340", fontWeight: 600 }} formatter={(value: number) => valorCurto(value)} />
+              </Line>
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </section>
         <h2 className="text-base font-semibold">Previsão dos próximos 12 meses</h2>
         <div className="mt-5 flex items-end gap-2">
           {forecast.map((month) => (
