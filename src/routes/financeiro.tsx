@@ -99,11 +99,8 @@ function FinancePage() {
     .reduce((sum, r) => sum + Number(r.amount), 0);
   const pending = list
     .filter((r) => installmentSituation(r.due_date, r.status) === "Pendente")
-    .reduce((sum, r) => sum + Number(r.amount), 0);
+        .reduce((sum, r) => sum + Number(r.amount), 0);
 
-  // Distribuição de honorários sobre o já recebido.
-  const partnerShare = received * 0.3;
-  const firmShare = received * 0.1;
 
   // Previsão dos próximos 12 meses (parcelas ainda não pagas).
     const [currentYear, currentMonth] = currentMonthKey().split("-").map(Number);
