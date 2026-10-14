@@ -430,13 +430,16 @@ function ClientDetailPage() {
                         </TableCell>
                         <TableCell>{formatCurrency(installment.amount)}</TableCell>
                         <TableCell>{formatDate(installment.due_date)}</TableCell>
-                        <TableCell>
+                                                <TableCell>
                           <SituationBadge situation={situation} />
+                          {installment.status === "Pago" && installment.paid_at && installment.paid_at < "2026-01-01" ? (
+                            <span className="ml-2 text-[11px] text-muted-foreground" title="Paga antes do início do Livro-Caixa (01/01/2026); não entra no caixa do sistema.">(2025)</span>
+                          ) : null}
                         </TableCell>
                         <TableCell className="text-right">
                           {installment.status === "Pago" ? (
                             <span className="text-xs text-muted-foreground">
-                              Baixada em {formatDate(installment.paid_at)}
+                              {installment.paid_at && installment.paid_at < "2026-01-01" ? "Paga antes do sistema" : `Baixada em ${formatDate(installment.paid_at)}`}
                             </span>
                           ) : (
                             <Button
