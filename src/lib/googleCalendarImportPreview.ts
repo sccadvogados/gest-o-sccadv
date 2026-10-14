@@ -60,11 +60,13 @@ function dateOf(event: GoogleCalendarItem): string {
   return event.start?.date ?? event.start?.dateTime?.slice(0, 10) ?? "";
 }
 
+
 function parseEvent(event: GoogleCalendarItem, clients: Client[], existingIds: Set<string>): GoogleImportPreviewRow {
-    const rawTitle = event.summary?.replace(/^\[SCCAdv\]\s*/, "") ?? "";
+    // Aceita [SCCadv] (minúsculas) e o "- " logo depois do prefixo.
+    const rawTitle = (event.summary ?? "").replace(/^\s*\[SCCAdv\]\s*/i, "").replace(/^[-–]\s*/, "");
         const meeting = /^\[REUNIÃO\]\s*/i.test(rawTitle);
-  const hearing = /^\[AUDIÊNCIA\]\s*/i.test(rawTitle);
-  const judgment = /^\[JULGAMENTO\]\s*/i.test(rawTitle);
+  const hearing = /^\[AUDIÊNCIA\]\s*/i.test(rawTitle) || /^audi[eê]ncia\b/i.test(rawTitle);
+  const judgment = /^\[JULGAMENTO\]\s*/i.test(rawTitle) || /^julgamento\b/i.test(rawTitle);
   const followUp = /^\[ACOMPANHAMENTO\]\s*/i.test(rawTitle);
     const titleSource = rawTitle.replace(/^\[(?:REUNIÃO|AUDIÊNCIA|JULGAMENTO|ACOMPANHAMENTO|PROTOCOLO)\]\s*/i, "");
     const protocol = !meeting && !hearing && !judgment && !followUp && /^\[PROTOCOLO\]\s*/i.test(rawTitle);
