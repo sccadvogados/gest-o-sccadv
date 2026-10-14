@@ -243,8 +243,10 @@ function FinancePage() {
               );
             })}
           </TableBody>
-        </Table>
+                </Table>
       </div>
+        </TabsContent>
+      </Tabs>
     </AppShell>
   );
 }
