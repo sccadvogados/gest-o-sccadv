@@ -35,6 +35,27 @@ function normalize(value: string): string {
   return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
 }
 
+/** Procura o cliente pelo nome exato; se não achar, aceita nome abreviado (ex.: "Hiam Mona" → "Hiam Mona Alves El Aouar"). */
+function findClient(name: string, clients: Client[]): Client | undefined {
+  const alvo = normalize(name);
+  if (!alvo) return undefined;
+  const exato = clients.find((item) => normalize(item.name) === alvo);
+  if (exato) return exato;
+  if (alvo.split(/\s+/).length < 2) return undefined;
+  const parciais = clients.filter((item) => {
+    const nome = normalize(item.name);
+    return nome.startsWith(`${alvo} `) || alvo.startsWith(`${nome} `);
+  });
+  if (parciais.length === 1) return parciais[0];
+  // Último recurso: mesmo primeiro e último nome (ex.: "Juliana Conceição Schmitt" → "Juliana Silva Schmitt").
+  const palavras = alvo.split(/\s+/);
+  const pontas = clients.filter((item) => {
+    const nome = normalize(item.name).split(/\s+/);
+    return nome[0] === palavras[0] && nome[nome.length - 1] === palavras[palavras.length - 1];
+  });
+  return pontas.length === 1 ? pontas[0] : undefined;
+}
+
 function dateOf(event: GoogleCalendarItem): string {
   return event.start?.date ?? event.start?.dateTime?.slice(0, 10) ?? "";
 }
