@@ -161,29 +161,7 @@ function FinancePage() {
           <span className="flex-[3] bg-[#7D8BA0]" />
           <span className="flex-1 bg-[#E6D6C4]" />
         </div>
-        <div className="mt-5 grid gap-3 sm:grid-cols-4">
-                    {["TAC", "RCMT", "ASS"].map((partner, index) => (
-            <div key={partner} className="rounded-lg border border-border bg-[#F6F4EF] p-3">
-              <span
-                className={`mr-2 inline-block h-2.5 w-2.5 rounded-full ${
-                  ["bg-[#0F2340]", "bg-[#C08A5E]", "bg-[#7D8BA0]"][index]
-                }`}
-              />
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                {partner} · 30%
-              </p>
-              <p className="mt-1 text-lg">{formatCurrency(partnerShare)}</p>
-            </div>
-          ))}
-                    <div className="rounded-lg border border-border bg-[#F6F4EF] p-3">
-            <span className="mr-2 inline-block h-2.5 w-2.5 rounded-full bg-[#E6D6C4]" />
-            <p className="inline text-xs uppercase tracking-wide text-muted-foreground">
-              Escritório · 10%
-            </p>
-            <p className="mt-1 text-lg">{formatCurrency(firmShare)}</p>
-          </div>
-        </div>
-      </section>
+        
 
       <section className="panel mt-6 p-6">
         <h2 className="text-base font-semibold">Previsão dos próximos 12 meses</h2>
