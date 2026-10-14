@@ -110,7 +110,7 @@ export function GoogleCalendarImportDialog({ onImported }: { onImported: () => v
             <Input type="date" value={from} onChange={(event) => setFrom(event.target.value)} />
           </label>
           <Button onClick={() => void previewImport()} disabled={loading || !from}>
-            {loading ? "Lendo agenda…" : "Mostrar prévia"}
+            {loading ? "Lendo Agenda…" : "Mostrar Prévia"}
           </Button>
           {rows.length > 0 ? (
             <Button onClick={() => void importSelected()} disabled={importing || rows.every((row) => !row.selecionado)}>
