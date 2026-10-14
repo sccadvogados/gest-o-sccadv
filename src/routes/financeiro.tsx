@@ -294,7 +294,7 @@ function Summary({
       <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{label}</p>
       <p
         className={
-                    tone === "danger" ? "mt-2 text-3xl font-semibold text-[#B42318]" : "mt-2 text-3xl font-semibold text-[#0F2340]"
+                                        tone === "danger" ? "mt-2 whitespace-nowrap text-2xl font-semibold tabular-nums text-[#B42318] xl:text-3xl" : "mt-2 whitespace-nowrap text-2xl font-semibold tabular-nums text-[#0F2340] xl:text-3xl"
         }
       >
         {formatCurrency(value)}
