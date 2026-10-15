@@ -450,7 +450,7 @@ export function LivroCaixa() {
               </div>
               <div className="space-y-2 sm:col-span-2">
                 <Label htmlFor="lanc-descricao">Descrição</Label>
-                <Input id="lanc-descricao" value={form.descricao} placeholder="Ex.: Meta Ads (outubro)" onChange={(e) => setForm({ ...form, descricao: e.target.value })} />
+                <Input id="lanc-descricao" value={form.descricao} placeholder="Tráfego Pago (Meta + Google)" onChange={(e) => setForm({ ...form, descricao: e.target.value })} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="lanc-valor">Valor</Label>
