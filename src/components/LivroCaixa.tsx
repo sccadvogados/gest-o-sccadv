@@ -122,9 +122,25 @@ export function LivroCaixa() {
     queryFn: async () => {
       const { data, error } = await db.from("clients").select("id, name").eq("rascunho", false).order("name");
       if (error) throw error;
-      return (data ?? []) as Array<{ id: string; name: string }>;
+            return (data ?? []) as Array<{ id: string; name: string }>;
     },
   });
+
+  // Contratos do cliente escolhido no formulário (igual aos outros campos de cliente do sistema).
+  const clienteForm = form?.cliente_id ?? "";
+  const { data: contratosCliente } = useQuery({
+    queryKey: ["contratos-cliente-caixa", clienteForm],
+    enabled: Boolean(clienteForm),
+    queryFn: async () => {
+      const { data, error } = await db
+        .from("contracts")
+        .select("id, numero, ano, objeto")
+        .eq("client_id", clienteForm)
+        .eq("rascunho", false)
+        .order("created_at");
+      if (error) throw error;
+      return (data ?? []) as Array<{ id: string; numero: number | null; ano: number | null; objeto: string | null }>;
+    },
 
   // Período: mês ("2026-08") ou ano inteiro ("2026").
   const inicio = periodo.length === 4 ? `${periodo}-01-01` : `${periodo}-01`;
