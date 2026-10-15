@@ -1,0 +1,2 @@
+ALTER TABLE public.contracts ADD COLUMN IF NOT EXISTS socios text[];
+COMMENT ON COLUMN public.contracts.socios IS 'Sócios envolvidos no contrato; NULL mantém o comportamento legado de divisão entre todos os sócios.';

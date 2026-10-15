@@ -175,20 +175,6 @@ function FinancePage() {
           </ResponsiveContainer>
         </div>
       </section>
-        <h2 className="text-base font-semibold">Previsão dos próximos 12 meses</h2>
-        <div className="mt-5 flex items-end gap-2">
-          {forecast.map((month) => (
-            <div key={month.key} className="flex flex-1 flex-col items-center gap-2">
-              <div
-                className="w-full rounded-t bg-accent/80"
-                style={{ height: `${Math.max(4, (month.total / forecastMax) * 120)}px` }}
-                title={formatCurrency(month.total)}
-              />
-              <span className="text-[10px] text-muted-foreground">{month.label}</span>
-            </div>
-          ))}
-        </div>
-      </section>
 
       <div className="panel mt-6 overflow-hidden">
         <Table>

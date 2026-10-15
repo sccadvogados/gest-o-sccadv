@@ -16,6 +16,10 @@ export const Route = createFileRoute("/inicio")({
     meta: [
       { title: "Início | Gestão Administrativa | SCC Adv" },
       { name: "description", content: "Resumo do dia: agenda, parcelas e cadastros pendentes." },
+      { property: "og:title", content: "Início | Gestão Administrativa | SCC Adv" },
+      { property: "og:description", content: "Resumo do dia: agenda, parcelas e cadastros pendentes." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: HomePage,
