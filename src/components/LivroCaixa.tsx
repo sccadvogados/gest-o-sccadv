@@ -66,7 +66,8 @@ type Form = {
   descricao: string;
   valor: number;
   socio: string;
-  cliente_id: string;
+    cliente_id: string;
+  contrato_id: string;
   observacao: string;
   revisar: boolean;
 };
@@ -78,7 +79,8 @@ const FORM_VAZIO: Form = {
   descricao: "",
   valor: 0,
   socio: "",
-  cliente_id: "",
+    cliente_id: "",
+  contrato_id: "",
   observacao: "",
   revisar: false,
 };
