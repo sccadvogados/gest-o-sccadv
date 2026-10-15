@@ -64,7 +64,7 @@ export function DeadlineCalculator({ holidays, onUseDate }: DeadlineCalculatorPr
 
   return <div className="rounded-lg border bg-muted/20 p-3">
     <button type="button" className="flex w-full items-center justify-between text-left text-sm font-semibold" onClick={() => setOpen((value) => !value)} aria-expanded={open}>
-      <span>Calculadora de prazo</span><ChevronDown className={`size-4 transition-transform ${open ? "rotate-180" : ""}`} />
+      <span>Calculadora de Prazo</span><ChevronDown className={`size-4 transition-transform ${open ? "rotate-180" : ""}`} />
     </button>
     {open ? <div className="mt-4 grid gap-3">
       <div className="grid gap-2"><Label>Data da intimação/publicação</Label><Input type="date" value={startDate} onChange={(event) => setStartDate(event.target.value)} /></div>
