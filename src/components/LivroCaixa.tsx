@@ -465,15 +465,31 @@ export function LivroCaixa() {
                 </div>
               ) : <div />}
               <div className="space-y-2 sm:col-span-2">
-                <Label>Cliente (Opcional)</Label>
-                <Select value={form.cliente_id || "nenhum"} onValueChange={(valor) => setForm({ ...form, cliente_id: valor === "nenhum" ? "" : valor })}>
+                                <Label>Cliente</Label>
+                <Select value={form.cliente_id || "nenhum"} onValueChange={(valor) => setForm({ ...form, cliente_id: valor === "nenhum" ? "" : valor, contrato_id: "" })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="nenhum">Nenhum</SelectItem>
                     {(clientes ?? []).map((cliente) => <SelectItem key={cliente.id} value={cliente.id}>{cliente.name}</SelectItem>)}
                   </SelectContent>
-                </Select>
+                                </Select>
               </div>
+              {form.cliente_id ? (
+                <div className="space-y-2 sm:col-span-2">
+                  <Label>Contrato</Label>
+                  <Select value={form.contrato_id || "nenhum"} onValueChange={(valor) => setForm({ ...form, contrato_id: valor === "nenhum" ? "" : valor })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="nenhum">Sem contrato</SelectItem>
+                      {(contratosCliente ?? []).map((contrato) => (
+                        <SelectItem key={contrato.id} value={contrato.id}>
+                          {`${contrato.numero != null && contrato.ano != null ? `Contrato ${String(contrato.numero).padStart(3, "0")}/${contrato.ano}` : "Contrato"}${contrato.objeto ? ` · ${contrato.objeto.slice(0, 50)}${contrato.objeto.length > 50 ? "…" : ""}` : ""}`}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              ) : null}
               <div className="space-y-2 sm:col-span-2">
                 <Label htmlFor="lanc-obs">Observação</Label>
                 <Textarea id="lanc-obs" rows={2} value={form.observacao} onChange={(e) => setForm({ ...form, observacao: e.target.value })} />
