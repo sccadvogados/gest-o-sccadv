@@ -1,9 +1,10 @@
 # SCC Advogados — roadmap
 
 ## Revisão dos alertas de monitoramento
-- [ ] Verificar formulário de contratos e mensagem de acesso não liberado.
-- [ ] Confirmar numeração de contratos e parte contrária na Agenda no banco atual.
-- [ ] Corrigir bloqueios atuais da prévia e validar as telas afetadas.
+- [x] Verificar formulário de contratos e mensagem de acesso não liberado: os quatro alertas descrevem estados já corrigidos.
+- [x] Confirmar numeração de contratos e parte contrária na Agenda no banco atual.
+- [x] Corrigir bloqueios atuais da prévia: previsão duplicada no Financeiro e campo socios ausente; compilação OK e acesso público sem erros.
+- [ ] Validar criação de contrato e leitura das telas com sessão real — bloqueado até o usuário entrar na prévia; não foi possível obter uma sessão autorizada automaticamente.
 
 ## Concluído (etapa 1)
 - Login por e-mail e senha com confirmação por e-mail
