@@ -217,6 +217,7 @@ export type Database = {
           payment_method: string | null
           recurring: boolean
           signature_date: string | null
+          socios: string[] | null
           success_fee_percent: number
           total_value: number
           updated_at: string
@@ -241,6 +242,7 @@ export type Database = {
           payment_method?: string | null
           recurring?: boolean
           signature_date?: string | null
+          socios?: string[] | null
           success_fee_percent?: number
           total_value?: number
           updated_at?: string
@@ -265,6 +267,7 @@ export type Database = {
           payment_method?: string | null
           recurring?: boolean
           signature_date?: string | null
+          socios?: string[] | null
           success_fee_percent?: number
           total_value?: number
           updated_at?: string
