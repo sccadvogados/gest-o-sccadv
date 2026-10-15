@@ -141,6 +141,7 @@ export function LivroCaixa() {
       if (error) throw error;
       return (data ?? []) as Array<{ id: string; numero: number | null; ano: number | null; objeto: string | null }>;
     },
+  });
 
   // Período: mês ("2026-08") ou ano inteiro ("2026").
   const inicio = periodo.length === 4 ? `${periodo}-01-01` : `${periodo}-01`;
