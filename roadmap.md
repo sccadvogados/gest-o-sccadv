@@ -1,5 +1,10 @@
 # SCC Advogados — roadmap
 
+## Revisão dos alertas de monitoramento
+- [ ] Verificar formulário de contratos e mensagem de acesso não liberado.
+- [ ] Confirmar numeração de contratos e parte contrária na Agenda no banco atual.
+- [ ] Corrigir bloqueios atuais da prévia e validar as telas afetadas.
+
 ## Concluído (etapa 1)
 - Login por e-mail e senha com confirmação por e-mail
 - Identidade visual: azul marinho #0C2340 + terracota #C48B5F
