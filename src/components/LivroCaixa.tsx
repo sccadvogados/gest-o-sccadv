@@ -195,7 +195,8 @@ export function LivroCaixa() {
         descricao: dados.descricao.trim(),
         valor: dados.valor,
         socio: dados.categoria === "(D) Distribuição de Honorários" ? dados.socio : null,
-        cliente_id: dados.cliente_id || null,
+                cliente_id: dados.cliente_id || null,
+        contrato_id: dados.cliente_id && dados.contrato_id ? dados.contrato_id : null,
         observacao: dados.observacao.trim() || null,
         revisar: dados.revisar,
         updated_at: new Date().toISOString(),
@@ -234,7 +235,8 @@ export function LivroCaixa() {
       descricao: item.descricao,
       valor: Number(item.valor),
       socio: item.socio ?? "",
-      cliente_id: item.cliente_id ?? "",
+            cliente_id: item.cliente_id ?? "",
+      contrato_id: item.contrato_id ?? "",
       observacao: item.observacao ?? "",
       revisar: item.revisar,
     });
@@ -415,7 +417,7 @@ export function LivroCaixa() {
       </div>
 
       <Dialog open={form !== null} onOpenChange={(aberto) => { if (!aberto) setForm(null); }}>
-        <DialogContent className="sm:max-w-lg">
+                <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>{form?.id ? "Editar Lançamento" : "Novo Lançamento"}</DialogTitle>
           </DialogHeader>
