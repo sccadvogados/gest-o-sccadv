@@ -426,7 +426,7 @@ export function LivroCaixa() {
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="lanc-data">Data</Label>
-                <Input id="lanc-data" type="date" min="2026-01-01" value={form.data} onChange={(e) => setForm({ ...form, data: e.target.value })} />
+                <Input id="lanc-data" type="date" min="2026-01-01" className="block leading-[50px] [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-60" value={form.data} onChange={(e) => setForm({ ...form, data: e.target.value })} />
               </div>
               <div className="space-y-2">
                 <Label>Tipo</Label>
