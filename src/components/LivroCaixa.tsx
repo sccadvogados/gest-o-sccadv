@@ -235,7 +235,8 @@ export function LivroCaixa() {
       descricao: item.descricao,
       valor: Number(item.valor),
       socio: item.socio ?? "",
-      cliente_id: item.cliente_id ?? "",
+            cliente_id: item.cliente_id ?? "",
+      contrato_id: item.contrato_id ?? "",
       observacao: item.observacao ?? "",
       revisar: item.revisar,
     });
