@@ -9,6 +9,7 @@ import { AppShell } from "@/components/AppShell";
 import { ContractForm } from "@/components/ContractForm";
 import { ContractPartners } from "@/components/ContractPartners";
 import { ContractCostSummary } from "@/components/ContractCostSummary";
+import { InstallmentDueDate } from "@/components/InstallmentDueDate";
 import { ContractReview } from "@/components/ContractReview";
 import { CurrencyInput } from "@/components/CurrencyInput";
 import { ObjectClauseField } from "@/components/ObjectClauseField";
