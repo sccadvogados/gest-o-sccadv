@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDate } from "@/lib/format";
  
-/** Vencimento da parcela com edição no próprio lugar (só para parcelas não pagas). */
+/** Vencimento da parcela com edição no próprio lugar (parcelas em aberto e pagas). */
 export function InstallmentDueDate({
   installment,
   clientId,
