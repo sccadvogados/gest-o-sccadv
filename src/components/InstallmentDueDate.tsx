@@ -34,7 +34,7 @@ export function InstallmentDueDate({
     onError: () => toast.error("Não foi possível alterar o vencimento."),
   });
  
-  if (installment.status === "Pago" || installment.status === "Cancelado") return <>{formatDate(installment.due_date)}</>;
+  if (installment.status === "Cancelado") return <>{formatDate(installment.due_date)}</>;
  
   if (!editando) {
     return (
