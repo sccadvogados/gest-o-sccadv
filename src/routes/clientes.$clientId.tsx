@@ -429,7 +429,7 @@ function ClientDetailPage() {
                           {installment.number}/{contract.installments_count}
                         </TableCell>
                         <TableCell>{formatCurrency(installment.amount)}</TableCell>
-                        <TableCell>{formatDate(installment.due_date)}</TableCell>
+                        <TableCell><InstallmentDueDate installment={installment} clientId={clientId} /></TableCell>
                                                 <TableCell>
                           <SituationBadge situation={situation} />
                           {installment.status === "Pago" && installment.paid_at && installment.paid_at < "2026-01-01" ? (
