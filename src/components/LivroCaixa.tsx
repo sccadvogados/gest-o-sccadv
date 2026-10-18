@@ -460,9 +460,9 @@ export function LivroCaixa() {
           <div className="mt-2 space-y-1.5">
             {porCategoria.length === 0 ? <p className="text-muted-foreground">—</p> : null}
             {porCategoria.map(({ nome, valor }) => (
-              <div key={nome} className="flex items-center justify-between gap-2">
-                <span>{nome}</span>
-                <span className="tabular-nums">{formatCurrency(valor)}</span>
+                            <div key={nome} className="flex items-start justify-between gap-3">
+                <span className="min-w-0">{nome.replace(/^\(([RD])\)\s*/, "")}</span>
+                <span className="shrink-0 whitespace-nowrap tabular-nums">{formatCurrency(valor)}</span>
               </div>
             ))}
           </div>
