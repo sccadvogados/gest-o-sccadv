@@ -416,7 +416,11 @@ export function LivroCaixa() {
                           aria-label="Excluir Lançamento"
                           title="Excluir Lançamento"
                           disabled={excluir.isPending}
-                          onClick={() => {
+                                                    onClick={() => {
+                            if (item.lote_id && item.tipo === "saida") {
+                              if (window.confirm("Este lançamento faz parte de uma distribuição. Desfazer a distribuição inteira? As saídas dela serão apagadas e os recebimentos voltam para A Distribuir.")) desfazer.mutate(item.lote_id);
+                              return;
+                            }
                             if (window.confirm(`Excluir o lançamento "${item.descricao}"?`)) excluir.mutate(item.id);
                           }}
                         >
