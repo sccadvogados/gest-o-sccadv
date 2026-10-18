@@ -865,7 +865,7 @@ function EditContractDialog({
                 {!semParcelas ? (
           <>
             <div className="space-y-2">
-              <Label htmlFor={`edit-contract-total-${contract.id}`}>{modality === "mensal" ? "Valor mensal" : "Valor total"}</Label>
+              <Label htmlFor={`edit-contract-total-${contract.id}`}>{modality === "mensal" ? "Valor Mensal" : "Valor Total"}</Label>
               <CurrencyInput id={`edit-contract-total-${contract.id}`} value={totalValue} onChange={setTotalValue} disabled={hasPaidInstallment} />
             </div>
             <div className="space-y-2">
