@@ -869,7 +869,7 @@ function EditContractDialog({
               <CurrencyInput id={`edit-contract-total-${contract.id}`} value={totalValue} onChange={setTotalValue} disabled={hasPaidInstallment} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor={`edit-contract-count-${contract.id}`}>Número de parcelas</Label>
+              <Label htmlFor={`edit-contract-count-${contract.id}`}>Número de Parcelas</Label>
               <Input id={`edit-contract-count-${contract.id}`} type="number" min={1} value={count} onChange={(e) => setCount(e.target.value)} disabled={hasPaidInstallment} />
             </div>
             <div className="space-y-2">
