@@ -485,30 +485,7 @@ export function LivroCaixa() {
           {filtrado ? <p className="px-4 py-2 text-xs text-muted-foreground">Com filtro aplicado, a coluna Saldo fica oculta para não confundir; os cards mostram o período inteiro.</p> : null}
         </div>
 
-        <div className="panel p-4 text-sm">
-          <p className="font-semibold text-[#0F2340]">{`Distribuição por Sócio · ${nomePeriodo}`}</p>
-          <div className="mt-2 space-y-1.5">
-            {porSocio.map(({ sigla, valor }) => (
-              <div key={sigla} className="flex items-center justify-between">
-                <span className="flex items-center gap-2">
-                  <span className="inline-block size-2.5 rounded-full" style={{ background: CORES_SOCIO[sigla] }} />
-                  {NOMES_SOCIO[sigla]}
-                </span>
-                                <b className="whitespace-nowrap tabular-nums">{formatCurrency(valor)}</b>
-              </div>
-            ))}
-          </div>
-          <p className="mt-5 font-semibold text-[#0F2340]">Por Categoria</p>
-          <div className="mt-2 space-y-1.5">
-            {porCategoria.length === 0 ? <p className="text-muted-foreground">—</p> : null}
-            {porCategoria.map(({ nome, valor }) => (
-                            <div key={nome} className="flex items-start justify-between gap-3">
-                <span className="min-w-0">{nome.replace(/^\(([RD])\)\s*/, "")}</span>
-                <span className="shrink-0 whitespace-nowrap tabular-nums">{formatCurrency(valor)}</span>
-              </div>
-            ))}
-          </div>
-        </div>
+        
       </div>
 
       <Dialog open={form !== null} onOpenChange={(aberto) => { if (!aberto) setForm(null); }}>
