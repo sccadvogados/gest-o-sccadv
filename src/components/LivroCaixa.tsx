@@ -107,7 +107,8 @@ export function LivroCaixa() {
   const [tipo, setTipo] = useState("todos");
   const [categoria, setCategoria] = useState("todas");
   const [socio, setSocio] = useState("todos");
-  const [form, setForm] = useState<Form | null>(null);
+    const [form, setForm] = useState<Form | null>(null);
+  const mesesFechados = useMesesFechados();
 
   const { data: lancamentos, isLoading } = useQuery({
     queryKey: ["lancamentos"],
