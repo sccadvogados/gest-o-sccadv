@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { AlertTriangle, CalendarDays, UserRoundPen, Wallet } from "lucide-react";
+import { useState } from "react";
 import type { ReactNode } from "react";
 
 import { AppShell } from "@/components/AppShell";
