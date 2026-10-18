@@ -84,7 +84,7 @@ const FORM_VAZIO: Form = {
   descricao: "",
   valor: 0,
   socio: "",
-      cliente_id: "",
+        cliente_id: "",
   contrato_id: "",
   observacao: "",
   revisar: false,
