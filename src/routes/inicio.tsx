@@ -269,7 +269,14 @@ function HomePage() {
 
 function SummaryCard({ label, description, value, color, ativo, onClick }: { label: string; description: string; value: string; color: string; ativo: boolean; onClick: () => void }) {
   return (
-    <div className="panel flex min-h-28 items-center justify-between border-t-4 bg-card p-5" style={{ borderTopColor: color }}>
+        <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={ativo}
+      title={ativo ? "Clique para mostrar tudo" : "Clique para ver os detalhes"}
+      className={`panel flex min-h-28 cursor-pointer items-center justify-between border-t-4 bg-card p-5 text-left transition hover:shadow-md ${ativo ? "ring-2 ring-offset-2" : ""}`}
+      style={{ borderTopColor: color, ["--tw-ring-color" as string]: color }}
+    >
       <span>
         <span className="block text-xs font-semibold tracking-wide text-muted-foreground">{label}</span>
         <span className="mt-1 block text-sm text-muted-foreground">{description}</span>
