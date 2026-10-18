@@ -470,7 +470,7 @@ export function LivroCaixa() {
       </div>
 
       <Dialog open={form !== null} onOpenChange={(aberto) => { if (!aberto) setForm(null); }}>
-                                <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
+                                        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>{form?.id ? "Editar Lançamento" : "Novo Lançamento"}</DialogTitle>
           </DialogHeader>
@@ -513,12 +513,12 @@ export function LivroCaixa() {
                   <Label>Sócio</Label>
                   <Select value={form.socio} onValueChange={(valor) => setForm({ ...form, socio: valor })}>
                     <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
-                                        <SelectContent>{SOCIOS.map((sigla) => <SelectItem key={sigla} value={sigla}>{NOMES_SOCIO[sigla]}</SelectItem>)}</SelectContent>
+                                                            <SelectContent>{SOCIOS.map((sigla) => <SelectItem key={sigla} value={sigla}>{NOMES_SOCIO[sigla]}</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
               ) : <div />}
               <div className="space-y-2 sm:col-span-2">
-                                                                <Label>Cliente</Label>
+                                                                                <Label>Cliente</Label>
                 <Select value={form.cliente_id || "nenhum"} onValueChange={(valor) => setForm({ ...form, cliente_id: valor === "nenhum" ? "" : valor, contrato_id: "" })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
