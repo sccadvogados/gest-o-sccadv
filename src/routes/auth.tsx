@@ -97,8 +97,10 @@ function AuthPage() {
         await supabase.auth.signOut();
         setAccessDeniedMessage(deniedMessage);
         return;
-      }
+            }
 
+      // Auditoria: registra a entrada no sistema (se falhar, não impede o acesso).
+      await Promise.resolve((supabase.rpc as unknown as (fn: string, args: Record<string, unknown>) => PromiseLike<unknown>)("registrar_acesso", { p_acao: "login" })).catch(() => undefined);
             await navigate({ to: "/inicio", replace: true });
     } catch (error) {
       const message = error instanceof Error ? error.message : "Erro inesperado";
