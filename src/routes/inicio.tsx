@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { AlertTriangle, CalendarDays, UserRoundPen, Wallet } from "lucide-react";
+import { useState } from "react";
 import type { ReactNode } from "react";
 
 import { AppShell } from "@/components/AppShell";
@@ -108,7 +109,11 @@ function contractLabel(row: InstallmentRow) {
 }
 
 function HomePage() {
-  const today = todayISO();
+    const today = todayISO();
+  // Clique num card filtra a tela; clicar de novo (ou em "Mostrar Tudo") volta ao normal.
+  const [filtro, setFiltro] = useState<null | "hoje" | "semana" | "atrasadas" | "receber">(null);
+  const alternar = (valor: "hoje" | "semana" | "atrasadas" | "receber") => setFiltro((atual) => (atual === valor ? null : valor));
+  const NOMES_FILTRO = { hoje: "Agenda de Hoje", semana: "Agenda dos Próximos 7 Dias", atrasadas: "Parcelas Atrasadas", receber: "A Receber em 7 Dias" } as const;
   const in7 = addDays(today, 7);
 
   const { data: events = [], isLoading: loadingEvents } = useQuery({
@@ -183,11 +188,41 @@ function HomePage() {
       />
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <SummaryCard label="HOJE" description="Agenda do dia" value={loadingEvents ? "—" : String(todayEvents.length)} color="#C48B5F" />
-        <SummaryCard label="PRÓXIMOS 7 DIAS" description="Agenda da semana" value={loadingEvents ? "—" : String(nextEvents.length)} color="#0C2340" />
-        <SummaryCard label="PARCELAS ATRASADAS" description={loadingInstallments ? "" : formatCurrency(sum(lateInstallments))} value={loadingInstallments ? "—" : String(lateInstallments.length)} color="#B42318" />
-        <SummaryCard label="A RECEBER EM 7 DIAS" description={loadingInstallments ? "" : formatCurrency(sum(upcomingInstallments))} value={loadingInstallments ? "—" : String(upcomingInstallments.length)} color="#33B679" />
+                <SummaryCard label="HOJE" description="Agenda do dia" value={loadingEvents ? "—" : String(todayEvents.length)} color="#C48B5F" ativo={filtro === "hoje"} onClick={() => alternar("hoje")} />
+        <SummaryCard label="PRÓXIMOS 7 DIAS" description="Agenda da semana" value={loadingEvents ? "—" : String(nextEvents.length)} color="#0C2340" ativo={filtro === "semana"} onClick={() => alternar("semana")} />
+        <SummaryCard label="PARCELAS ATRASADAS" description={loadingInstallments ? "" : formatCurrency(sum(lateInstallments))} value={loadingInstallments ? "—" : String(lateInstallments.length)} color="#B42318" ativo={filtro === "atrasadas"} onClick={() => alternar("atrasadas")} />
+        <SummaryCard label="A RECEBER EM 7 DIAS" description={loadingInstallments ? "" : formatCurrency(sum(upcomingInstallments))} value={loadingInstallments ? "—" : String(upcomingInstallments.length)} color="#33B679" ativo={filtro === "receber"} onClick={() => alternar("receber")} />
       </div>
+
+      
+      {filtro ? (
+        <div className="mt-4 flex flex-wrap items-center gap-3 text-sm">
+          <span className="text-muted-foreground">Mostrando: <b className="text-[#0F2340]">{NOMES_FILTRO[filtro]}</b></span>
+          <button type="button" onClick={() => setFiltro(null)} className="text-xs text-[#B07A4F] underline underline-offset-4 hover:text-[#0F2340]">Mostrar Tudo</button>
+        </div>
+      ) : null}
+
+      {filtro === "hoje" || filtro === "semana" ? (
+        <div className="mt-4">
+          <Panel title={NOMES_FILTRO[filtro]} icon={<CalendarDays className="size-4" />} link={{ to: "/agenda", label: "Abrir agenda" }}>
+            {loadingEvents ? <Empty text="Carregando…" /> : null}
+            {!loadingEvents && (filtro === "hoje" ? todayEvents : nextEvents).length === 0 ? <Empty text={filtro === "hoje" ? "Nada na agenda de hoje." : "Nada na agenda dos próximos 7 dias."} /> : null}
+            <EventGroup title={filtro === "hoje" ? "Hoje" : "Próximos 7 dias"} events={filtro === "hoje" ? todayEvents : nextEvents} />
+          </Panel>
+        </div>
+      ) : null}
+
+      {filtro === "atrasadas" || filtro === "receber" ? (
+        <div className="mt-4">
+          <Panel title={NOMES_FILTRO[filtro]} icon={<Wallet className="size-4" />} link={{ to: "/financeiro", label: "Abrir financeiro" }}>
+            {loadingInstallments ? <Empty text="Carregando…" /> : null}
+            {!loadingInstallments && (filtro === "atrasadas" ? lateInstallments : upcomingInstallments).length === 0 ? <Empty text={filtro === "atrasadas" ? "Nenhuma parcela atrasada." : "Nenhuma parcela vencendo nos próximos 7 dias."} /> : null}
+            <InstallmentGroup title={filtro === "atrasadas" ? "Atrasadas" : "Vencem nos próximos 7 dias"} rows={filtro === "atrasadas" ? lateInstallments : upcomingInstallments} danger={filtro === "atrasadas"} />
+          </Panel>
+        </div>
+      ) : null}
+
+      {filtro === null ? (<>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
         <Panel title="Agenda" icon={<CalendarDays className="size-4" />} link={{ to: "/agenda", label: "Abrir agenda" }}>
@@ -226,20 +261,28 @@ function HomePage() {
             </p>
           ) : null}
         </Panel>
-      </div>
+            </div>
+      </>) : null}
     </AppShell>
   );
 }
 
-function SummaryCard({ label, description, value, color }: { label: string; description: string; value: string; color: string }) {
+function SummaryCard({ label, description, value, color, ativo, onClick }: { label: string; description: string; value: string; color: string; ativo: boolean; onClick: () => void }) {
   return (
-    <div className="panel flex min-h-28 items-center justify-between border-t-4 bg-card p-5" style={{ borderTopColor: color }}>
+        <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={ativo}
+      title={ativo ? "Clique para mostrar tudo" : "Clique para ver os detalhes"}
+      className={`panel flex min-h-28 cursor-pointer items-center justify-between border-t-4 bg-card p-5 text-left transition hover:shadow-md ${ativo ? "ring-2 ring-offset-2" : ""}`}
+      style={{ borderTopColor: color, ["--tw-ring-color" as string]: color }}
+    >
       <span>
         <span className="block text-xs font-semibold tracking-wide text-muted-foreground">{label}</span>
         <span className="mt-1 block text-sm text-muted-foreground">{description}</span>
       </span>
-      <span className="text-4xl font-semibold" style={{ color }}>{value}</span>
-    </div>
+            <span className="text-4xl font-semibold" style={{ color }}>{value}</span>
+    </button>
   );
 }
 
