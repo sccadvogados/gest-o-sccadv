@@ -237,7 +237,7 @@ export function LivroCaixa() {
       toast.success(dados.id ? "Lançamento atualizado." : "Lançamento incluído.");
       setForm(null);
     },
-    onError: (error) => toast.error(error instanceof Error ? error.message : "Não foi possível salvar o lançamento."),
+        onError: (error) => toast.error((error as { message?: string } | null)?.message ?? "Não foi possível salvar o lançamento."),
   });
 
   const excluir = useMutation({
