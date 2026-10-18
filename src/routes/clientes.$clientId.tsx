@@ -82,7 +82,7 @@ export const Route = createFileRoute("/clientes/$clientId")({
         content:
           "Qualificação, documentos, contratos e parcelas do cliente no escritório SCC Advogados.",
       },
-      { property: "og:title", content: "Ficha do cliente | Gestão Administrativa | SCC Adv" },
+      { property: "og:title", content: "Ficha do Cliente | Gestão Administrativa | SCC Adv" },
       {
         property: "og:description",
         content: "Dados do cliente, contratos e condições de pagamento.",
