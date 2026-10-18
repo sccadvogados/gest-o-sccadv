@@ -185,7 +185,12 @@ export function LivroCaixa() {
       valor: doPeriodo.filter((item) => item.categoria === nome).reduce((soma, item) => soma + Number(item.valor), 0),
     }))
     .sort((a, b) => a.nome.localeCompare(b.nome));
-  const paraRevisar = todos.filter((item) => item.revisar).length;
+    const paraRevisar = todos.filter((item) => item.revisar).length;
+  const [distribuirAberto, setDistribuirAberto] = useState(false);
+  const pendentes = todos.filter((item) => item.tipo === "entrada" && !item.distribuido && CATEGORIAS_DISTRIBUIVEIS.includes(item.categoria));
+  const totalPendente = pendentes.reduce((soma, item) => soma + Number(item.valor), 0);
+
+
 
   const salvar = useMutation({
     mutationFn: async (dados: Form) => {
