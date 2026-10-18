@@ -44,7 +44,26 @@ export const arquivarContrato = createServerFn({ method: "POST" })
       .single();
     if (clientError || !client) throw new Error("Cliente não encontrado.");
 
-    const reativar = data.reativar === true;
+        const reativar = data.reativar === true;
+    if (!reativar) {
+      // Só arquiva sem pendências: parcelas em aberto ou compromissos pendentes na Agenda.
+      const { data: parcelas } = await database.from("installments").select("status").eq("contract_id", contract.id);
+      const emAberto = ((parcelas ?? []) as Array<{ status: string }>).filter(
+        (parcela) => parcela.status !== "Pago" && parcela.status !== "Cancelado",
+      ).length;
+      const { count: compromissos } = await database
+        .from("eventos")
+        .select("id", { count: "exact", head: true })
+        .eq("contrato_id", contract.id)
+        .eq("status", "pendente");
+      const pendencias = [
+        emAberto ? `${emAberto} parcela${emAberto > 1 ? "s" : ""} em aberto` : "",
+        compromissos ? `${compromissos} compromisso${compromissos > 1 ? "s" : ""} pendente${compromissos > 1 ? "s" : ""} na Agenda` : "",
+      ].filter(Boolean);
+      if (pendencias.length > 0) {
+        throw new Error(`Não é possível arquivar: o contrato tem ${pendencias.join(" e ")}.`);
+      }
+    }
     const { error: updateError } = await database
       .from("contracts")
       .update({ situacao: reativar ? "ativo" : "arquivado", arquivado_em: reativar ? null : new Date().toISOString() })
