@@ -273,6 +273,10 @@ export function ContractForm({
           </Select>
         </div>
 
+                {captacao === "Indicação" || captacao === "Parceria" ? (
+          <CaptadorField tipo={captacao} value={captadorId} onChange={setCaptadorId} />
+        ) : null}
+
         {temRepasse ? (
           <div className="space-y-2">
                         <Label htmlFor="captacaoPercentual">% de Repasse da {captacao}{!captacaoPercentual ? <span className="ml-0.5 text-destructive">*</span> : null}</Label>
