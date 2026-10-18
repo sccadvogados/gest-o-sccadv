@@ -322,7 +322,7 @@ export function LivroCaixa() {
         </Select>
                         <FecharMes periodo={periodo} nomePeriodo={nomePeriodo} lancamentos={todos} />
         <RelatorioMes periodo={periodo} nomePeriodo={nomePeriodo} lancamentos={todos} />
-        <Button onClick={() => setForm({ ...FORM_VAZIO, data: hoje })>
+        <Button onClick={() => setForm({ ...FORM_VAZIO, data: hoje })}>
           <Plus className="size-4" />
           Novo Lançamento
         </Button>
