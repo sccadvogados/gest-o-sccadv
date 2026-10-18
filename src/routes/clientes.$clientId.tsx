@@ -694,7 +694,7 @@ function ContractActions({
             variant="ghost"
 
             size="icon"
-            aria-label="Excluir contrato"
+                        aria-label="Excluir Contrato"
             onClick={(event) => {
               if (hasPaidInstallment) {
                 event.preventDefault();
