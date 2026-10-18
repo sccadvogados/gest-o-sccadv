@@ -6,6 +6,7 @@ import { toast } from "sonner";
 
 import { CurrencyInput } from "@/components/CurrencyInput";
 import { CATEGORIAS_DISTRIBUIVEIS, DistribuirRecebimentos } from "@/components/DistribuirRecebimentos";
+import { FecharMes, useMesesFechados } from "@/components/FecharMes";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -106,7 +107,8 @@ export function LivroCaixa() {
   const [tipo, setTipo] = useState("todos");
   const [categoria, setCategoria] = useState("todas");
   const [socio, setSocio] = useState("todos");
-  const [form, setForm] = useState<Form | null>(null);
+    const [form, setForm] = useState<Form | null>(null);
+  const mesesFechados = useMesesFechados();
 
   const { data: lancamentos, isLoading } = useQuery({
     queryKey: ["lancamentos"],
@@ -235,7 +237,7 @@ export function LivroCaixa() {
       toast.success(dados.id ? "Lançamento atualizado." : "Lançamento incluído.");
       setForm(null);
     },
-    onError: (error) => toast.error(error instanceof Error ? error.message : "Não foi possível salvar o lançamento."),
+        onError: (error) => toast.error((error as { message?: string } | null)?.message ?? "Não foi possível salvar o lançamento."),
   });
 
   const excluir = useMutation({
@@ -247,7 +249,7 @@ export function LivroCaixa() {
       queryClient.invalidateQueries({ queryKey: ["lancamentos"] });
       toast.success("Lançamento excluído.");
     },
-    onError: () => toast.error("Não foi possível excluir o lançamento."),
+        onError: (error) => toast.error((error as { message?: string } | null)?.message ?? "Não foi possível excluir o lançamento."),
   });
 
   
@@ -260,7 +262,7 @@ export function LivroCaixa() {
       queryClient.invalidateQueries({ queryKey: ["lancamentos"] });
       toast.success("Distribuição desfeita. Os recebimentos voltaram para A Distribuir.");
     },
-    onError: () => toast.error("Não foi possível desfazer a distribuição."),
+        onError: (error) => toast.error((error as { message?: string } | null)?.message ?? "Não foi possível desfazer a distribuição."),
   });
 
   function editar(item: Lancamento) {
@@ -317,7 +319,8 @@ export function LivroCaixa() {
                                     {SOCIOS.map((sigla) => <SelectItem key={sigla} value={sigla}>{NOMES_SOCIO[sigla]}</SelectItem>)}
           </SelectContent>
         </Select>
-        <Button className="ml-auto" onClick={() => setForm({ ...FORM_VAZIO, data: hoje })}>
+                <FecharMes periodo={periodo} nomePeriodo={nomePeriodo} lancamentos={todos} />
+        <Button onClick={() => setForm({ ...FORM_VAZIO, data: hoje })}>
           <Plus className="size-4" />
           Novo Lançamento
         </Button>
@@ -445,8 +448,8 @@ export function LivroCaixa() {
                   <TableCell className="whitespace-nowrap text-right tabular-nums text-[#B42318]">{item.tipo === "saida" ? formatCurrency(item.valor) : ""}</TableCell>
                   <TableCell className={`whitespace-nowrap text-right tabular-nums ${saldo < 0 ? "text-[#B42318]" : ""}`}>{filtrado ? "" : formatCurrency(saldo)}</TableCell>
                   <TableCell className="whitespace-nowrap text-right">
-                    {item.origem === "parcela" ? (
-                      <span className="text-[11px] text-muted-foreground" title="Gerado pela baixa da parcela. Para desfazer, desfaça a baixa na parcela.">—</span>
+                                        {item.origem === "parcela" || mesesFechados.has(item.data.slice(0, 7)) ? (
+                      <span className="text-[11px] text-muted-foreground" title={mesesFechados.has(item.data.slice(0, 7)) ? "Mês fechado. Para alterar, reabra o mês." : "Gerado pela baixa da parcela. Para desfazer, desfaça a baixa na parcela."}>—</span>
                     ) : (
                       <>
                         <Button variant="ghost" size="icon" aria-label="Editar Lançamento" title="Editar Lançamento" onClick={() => editar(item)}>
