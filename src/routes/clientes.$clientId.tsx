@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { ContractForm } from "@/components/ContractForm";
 import { ContractPartners } from "@/components/ContractPartners";
+import { CaptadorField, CaptadorNome } from "@/components/CaptadorField";
 import { ContractCostSummary } from "@/components/ContractCostSummary";
 import { InstallmentDueDate } from "@/components/InstallmentDueDate";
 import { ContractReview } from "@/components/ContractReview";
@@ -390,7 +391,8 @@ function ClientDetailPage() {
                 ) : null}
                 {contract.captacao ? (
                   <Badge variant="secondary">
-                    {`Captação: ${contract.captacao}${contract.captacao_percentual ? ` – ${String(contract.captacao_percentual).replace(".", ",")}%` : ""}`}
+                                        {`Captação: ${contract.captacao}${contract.captacao_percentual ? ` – ${String(contract.captacao_percentual).replace(".", ",")}%` : ""}`}
+                    {contract.captador_id && (contract.captacao === "Indicação" || contract.captacao === "Parceria") ? <> · <CaptadorNome id={contract.captador_id} /></> : null}
                   </Badge>
                 ) : null}
                 <ContractActions
@@ -569,7 +571,8 @@ type ContractRow = {
     objeto?: string | null;
   parte_contraria?: string | null;
   gratuidade?: boolean;
-      captacao?: string | null;
+            captacao?: string | null;
+  captador_id?: string | null;
     captacao_percentual?: number | null;
   retencao_percentual?: number | null;
   socios?: string[] | null;
@@ -748,7 +751,8 @@ function EditContractDialog({
   const [successFee, setSuccessFee] = useState(String(contract.success_fee_percent));
   const [object, setObject] = useState(contract.objeto ?? "");
     const [gratuidade, setGratuidade] = useState(contract.gratuidade ?? false);
-  const [captacao, setCaptacao] = useState<string>(contract.captacao ?? "");
+    const [captacao, setCaptacao] = useState<string>(contract.captacao ?? "");
+  const [captadorId, setCaptadorId] = useState(contract.captador_id ?? "");
   const [captacaoPercentual, setCaptacaoPercentual] = useState(
     contract.captacao_percentual != null ? String(contract.captacao_percentual).replace(".", ",") : "",
   );
@@ -766,9 +770,10 @@ function EditContractDialog({
       const objeto = object.trim().replace(/\.+$/, "").trim() || null;
             const gratuidadeToSave = personType === "PF" ? gratuidade : false;
             const repasse = Number(captacaoPercentual.replace(",", "."));
-      if (temRepasse && (!Number.isFinite(repasse) || repasse <= 0 || repasse > 100)) {
+            if (temRepasse && (!Number.isFinite(repasse) || repasse <= 0 || repasse > 100)) {
         throw new Error("Informe o percentual de repasse entre 0 e 100.");
       }
+      if (temRepasse && !captadorId) throw new Error("Selecione ou cadastre o captador ou parceiro.");
       const retencaoNumero = Number(retencao.replace(",", "."));
       if (!proBono && (!retencao.trim() || !Number.isFinite(retencaoNumero) || retencaoNumero < 0 || retencaoNumero > 100)) {
                 throw new Error("Informe a retenção do escritório entre 0 e 100%.");
@@ -788,7 +793,8 @@ function EditContractDialog({
         success_fee_percent: fee,
         objeto,
                 gratuidade: gratuidadeToSave,
-        captacao: captacao || null,
+                captacao: captacao || null,
+        captador_id: temRepasse ? captadorId || null : null,
                 captacao_percentual: temRepasse ? repasse : null,
         retencao_percentual: proBono ? null : retencaoNumero,
         socios: proBono ? null : socios,
@@ -888,6 +894,7 @@ function EditContractDialog({
             <SelectContent><SelectItem value="nenhuma">Nenhuma</SelectItem>{CAPTACAO.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
           </Select>
         </div>
+                {temRepasse ? <CaptadorField tipo={captacao} value={captadorId} onChange={setCaptadorId} /> : null}
         {temRepasse ? (
           <div className="space-y-2">
             <Label htmlFor={`edit-contract-repasse-${contract.id}`}>% de Repasse da {captacao}</Label>
