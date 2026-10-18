@@ -627,7 +627,7 @@ function ContractActions({
         <>
       <Dialog open={reviewOpen} onOpenChange={setReviewOpen}>
         <DialogTrigger asChild>
-          <Button variant="ghost" size="icon" aria-label="Gerar documentos" title="Gerar documentos">
+          <Button variant="ghost" size="icon" aria-label="Gerar Documentos" title="Gerar Documentos">
             <FileText className="size-4" />
           </Button>
         </DialogTrigger>
