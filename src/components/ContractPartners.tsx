@@ -254,8 +254,8 @@ export function ContractPartners({
                   type="button"
                   variant="ghost"
                   size="icon"
-                  aria-label="Remover parceiro"
-                  title="Remover parceiro"
+                  aria-label="Remover Parceiro"
+                  title="Remover Parceiro"
                   disabled={remover.isPending}
                   onClick={() => remover.mutate(item.id)}
                 >
