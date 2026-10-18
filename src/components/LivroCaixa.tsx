@@ -390,7 +390,7 @@ export function LivroCaixa() {
                   <TableCell>
                                         <span className={`inline-block whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] ${item.tipo === "entrada" ? "bg-[#E7EEF6] text-[#0F2340]" : "bg-[#F6E9E1] text-[#7A3F2D]"}`}>{item.categoria.replace(/^\(([RD])\)\s*/, "")}</span>
                   </TableCell>
-                  <TableCell className="text-sm">
+                                    <TableCell className="min-w-44 text-sm">
                     {item.clients ? (
                       <Link to="/clientes/$clientId" params={{ clientId: item.clients.id }} className="underline-offset-4 hover:text-accent hover:underline">
                         {item.clients.name}
