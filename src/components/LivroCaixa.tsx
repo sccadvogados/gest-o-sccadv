@@ -249,7 +249,7 @@ export function LivroCaixa() {
       queryClient.invalidateQueries({ queryKey: ["lancamentos"] });
       toast.success("Lançamento excluído.");
     },
-    onError: () => toast.error("Não foi possível excluir o lançamento."),
+        onError: (error) => toast.error((error as { message?: string } | null)?.message ?? "Não foi possível excluir o lançamento."),
   });
 
   
