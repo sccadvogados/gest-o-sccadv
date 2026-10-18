@@ -366,7 +366,7 @@ export function LivroCaixa() {
                 <TableRow key={item.id}>
                   <TableCell className="whitespace-nowrap">{formatDate(item.data)}</TableCell>
                   <TableCell>
-                                        {(() => {
+                                                            {(() => {
                       // "Cliente · Parcela 1/4" → nome em cima e "Parcela 1 de 4" embaixo.
                       const m = /^(.*) · Parcela (\d+)(?:\/(\d+))?$/.exec(item.descricao);
                       return m ? (
