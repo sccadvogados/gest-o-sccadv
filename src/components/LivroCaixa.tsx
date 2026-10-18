@@ -206,7 +206,7 @@ export function LivroCaixa() {
         descricao: dados.descricao.trim(),
         valor: dados.valor,
         socio: dados.categoria === "(D) Distribuição de Honorários" ? dados.socio : null,
-                        cliente_id: dados.cliente_id || null,
+                                cliente_id: dados.cliente_id || null,
         contrato_id: dados.cliente_id && dados.contrato_id ? dados.contrato_id : null,
         observacao: dados.observacao.trim() || null,
         revisar: dados.revisar,
