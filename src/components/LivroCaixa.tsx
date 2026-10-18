@@ -6,6 +6,7 @@ import { toast } from "sonner";
 
 import { CurrencyInput } from "@/components/CurrencyInput";
 import { CATEGORIAS_DISTRIBUIVEIS, DistribuirRecebimentos } from "@/components/DistribuirRecebimentos";
+import { FecharMes, useMesesFechados } from "@/components/FecharMes";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
