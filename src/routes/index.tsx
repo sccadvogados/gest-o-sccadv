@@ -25,13 +25,13 @@ import { formatDate } from "@/lib/format";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Gestão Administrativa | SCC Adv" },
+      { title: "Clientes | Gestão Administrativa | SCC Adv" },
       {
         name: "description",
         content:
           "Busca e cadastro de clientes do escritório Souza, Craveiro & Corradi Advogados.",
       },
-      { property: "og:title", content: "Gestão Administrativa | SCC Adv" },
+      { property: "og:title", content: "Clientes | Gestão Administrativa | SCC Adv" },
       {
         property: "og:description",
         content: "Lista de clientes, pastas no Drive e cadastro de novos clientes.",
