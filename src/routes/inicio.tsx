@@ -225,7 +225,7 @@ function HomePage() {
       {filtro === null ? (<>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
-        <Panel title="Agenda" icon={<CalendarDays className="size-4" />} link={{ to: "/agenda", label: "Abrir agenda" }}>
+                <Panel title="Agenda" icon={<CalendarDays className="size-4" }}>
           {loadingEvents ? <Empty text="Carregando…" /> : null}
           {!loadingEvents && overdueEvents.length + todayEvents.length + nextEvents.length === 0 ? <Empty text="Nada pendente para hoje e os próximos 7 dias." /> : null}
           <EventGroup title="Vencidos (não cumpridos)" events={overdueEvents} danger />
