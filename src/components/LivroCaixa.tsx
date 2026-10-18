@@ -267,7 +267,7 @@ export function LivroCaixa() {
   }
 
   const categoriasForm = form?.tipo === "entrada" ? CATEGORIAS_ENTRADA : CATEGORIAS_SAIDA;
-    const nomePeriodo = periodo.length === 4 ? `Ano de ${periodo}` : `${MESES[Number(periodo.slice(5, 7)) - 1]}/${periodo.slice(0, 4)}`;
+      const nomePeriodo = periodo.length === 4 ? `Ano de ${periodo}` : `${MESES[Number(periodo.slice(5, 7)) - 1]}/${periodo.slice(0, 4)}`;
 
   return (
     <div className="mt-6">
