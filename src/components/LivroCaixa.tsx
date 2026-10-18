@@ -39,6 +39,7 @@ const CATEGORIAS_SAIDA = [
 ] as const;
 const SOCIOS = ["TAC", "RCMT", "ASS"] as const;
 const CORES_SOCIO: Record<string, string> = { TAC: "#0F2340", RCMT: "#C08A5E", ASS: "#7D8BA0" };
+const NOMES_SOCIO: Record<string, string> = { TAC: "Tiago Craveiro", RCMT: "Raphael Corradi", ASS: "Alexandre Souza" };
 const MESES = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
 
 type Lancamento = {
