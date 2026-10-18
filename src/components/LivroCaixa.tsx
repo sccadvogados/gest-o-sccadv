@@ -398,10 +398,10 @@ export function LivroCaixa() {
                     ) : "—"}
                     {numeroContrato(item.contracts) ? <span className="text-muted-foreground">{` · ${numeroContrato(item.contracts)}`}</span> : null}
                   </TableCell>
-                  <TableCell>{item.socio ?? ""}</TableCell>
-                  <TableCell className="text-right tabular-nums text-[#256b3a]">{item.tipo === "entrada" ? formatCurrency(item.valor) : ""}</TableCell>
-                  <TableCell className="text-right tabular-nums text-[#B42318]">{item.tipo === "saida" ? formatCurrency(item.valor) : ""}</TableCell>
-                  <TableCell className={`text-right tabular-nums ${saldo < 0 ? "text-[#B42318]" : ""}`}>{filtrado ? "" : formatCurrency(saldo)}</TableCell>
+                                    <TableCell className="whitespace-nowrap">{item.socio ? NOMES_SOCIO[item.socio] ?? item.socio : ""}</TableCell>
+                  <TableCell className="whitespace-nowrap text-right tabular-nums text-[#256b3a]">{item.tipo === "entrada" ? formatCurrency(item.valor) : ""}</TableCell>
+                  <TableCell className="whitespace-nowrap text-right tabular-nums text-[#B42318]">{item.tipo === "saida" ? formatCurrency(item.valor) : ""}</TableCell>
+                  <TableCell className={`whitespace-nowrap text-right tabular-nums ${saldo < 0 ? "text-[#B42318]" : ""}`}>{filtrado ? "" : formatCurrency(saldo)}</TableCell>
                   <TableCell className="whitespace-nowrap text-right">
                     {item.origem === "parcela" ? (
                       <span className="text-[11px] text-muted-foreground" title="Gerado pela baixa da parcela. Para desfazer, desfaça a baixa na parcela.">—</span>
