@@ -244,7 +244,7 @@ function ClientDetailPage() {
       <Button asChild variant="ghost" size="sm" className="-ml-2 text-muted-foreground">
         <Link to="/">
           <ArrowLeft className="size-4" />
-          Voltar para clientes
+                    Voltar para Clientes
         </Link>
       </Button>
 
