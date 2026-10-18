@@ -649,7 +649,7 @@ function ContractActions({
       </Dialog>
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
         <DialogTrigger asChild>
-          <Button variant="ghost" size="icon" aria-label="Editar contrato">
+          <Button variant="ghost" size="icon" aria-label="Editar Contrato">
             <Pencil className="size-4" />
           </Button>
         </DialogTrigger>
