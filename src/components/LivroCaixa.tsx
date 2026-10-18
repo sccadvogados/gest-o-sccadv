@@ -310,6 +310,17 @@ export function LivroCaixa() {
         </Button>
       </div>
 
+            {pendentes.length > 0 ? (
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-md border border-[#E6D6C4] bg-[#FBF7F1] px-4 py-3 text-sm">
+          <span>
+            <b className="whitespace-nowrap text-[#0F2340]">{`${formatCurrency(totalPendente)} a distribuir`}</b>
+            <span className="text-muted-foreground">{` · ${pendentes.length} recebimento${pendentes.length > 1 ? "s" : ""} ainda sem distribuição`}</span>
+          </span>
+          <Button variant="outline" className="border-[#D4A782]" onClick={() => setDistribuirAberto(true)}>Distribuir Recebimentos</Button>
+        </div>
+      ) : null}
+      <DistribuirRecebimentos pendentes={pendentes} open={distribuirAberto} onOpenChange={setDistribuirAberto} />
+
       {paraRevisar > 0 ? (
         <p className="mt-3 rounded-md border border-[#E8B9A5] bg-[#FBF1EC] px-3 py-2 text-sm text-[#7A3F2D]">
           {`${paraRevisar} lançamento${paraRevisar > 1 ? "s" : ""} marcado${paraRevisar > 1 ? "s" : ""} para revisar (etiqueta "Revisar" na tabela).`}
