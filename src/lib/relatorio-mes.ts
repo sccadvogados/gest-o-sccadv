@@ -204,6 +204,120 @@ export async function gerarRelatorioMes({
     fonte("normal", 8.6, MARROM);
     pendencias.forEach((texto, i) => doc.text(`• ${texto}`, margem + 5, y + 10.5 + i * 5.5));
     y += alturaQuadro + 9;
-  } else {
+    } else {
     y += 2;
   }
+
+  // ---- Seções numeradas
+  let numero = 0;
+  const secao = (titulo: string, subtitulo: string) => {
+    if (y > LIMITE - 30) {
+      doc.addPage();
+      y = TOPO_PAGINAS + 4;
+    }
+    doc.setFillColor(...AZUL);
+    doc.roundedRect(margem, y - 5.2, 8, 8, 1.6, 1.6, "F");
+    fonte("bold", 9, [255, 255, 255]);
+    doc.text(ROMANOS[numero] ?? String(numero + 1), margem + 4, y + 0.3, { align: "center" });
+    numero += 1;
+    fonte("bold", 13, AZUL, -0.1);
+    doc.text(titulo, margem + 11.5, y);
+    fonte("normal", 8, COBRE);
+    doc.text(subtitulo, margem + 11.5, y + 4.6);
+    y += 9;
+  };
+
+  const tabela = {
+    theme: "plain" as const,
+    margin: { left: margem, right: margem, top: TOPO_PAGINAS, bottom: 24 },
+    styles: { font: "helvetica", fontSize: 8.5, cellPadding: { top: 2.2, bottom: 2.2, left: 2, right: 2 }, textColor: TEXTO },
+    headStyles: { fontStyle: "bold" as const, fontSize: 6.8, textColor: ROTULO, fillColor: [255, 255, 255] as Cor },
+    footStyles: { fontStyle: "bold" as const, textColor: AZUL, fillColor: [250, 247, 243] as Cor },
+    // Linhas finas entre as linhas da tabela (sem grade)
+    didDrawCell: (dados: { section: string; cell: { x: number; y: number; width: number; height: number } }) => {
+      if (dados.section === "foot") return;
+      doc.setDrawColor(...BORDA);
+      doc.setLineWidth(0.25);
+      doc.line(dados.cell.x, dados.cell.y + dados.cell.height, dados.cell.x + dados.cell.width, dados.cell.y + dados.cell.height);
+    },
+  };
+  const direita = (valor: string, cor?: Cor) => ({ content: valor, styles: { halign: "right" as const, ...(cor ? { textColor: cor } : {}) } });
+  const cabDireita = (texto: string) => ({ content: texto, styles: { halign: "right" as const } });
+  const depois = () => {
+    y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 11;
+  };
+
+  secao("Distribuição por Sócio", "Honorários repassados aos sócios no mês");
+  autoTable(doc, {
+    ...tabela,
+    startY: y,
+    head: [["SÓCIO", cabDireita("VALOR DISTRIBUÍDO")]],
+    body: porSocio.map(([sigla, valor]) => [NOMES_SOCIO[sigla] ?? sigla, direita(real(valor))]),
+    foot: [["Total distribuído", direita(real(totalDistribuido))]],
+  });
+  depois();
+
+  const porCategoria = (titulo: string, subtitulo: string, itens: LancamentoRelatorio[], total: number, cor: Cor) => {
+    secao(titulo, subtitulo);
+    const linhas = agrupar(itens);
+    autoTable(doc, {
+      ...tabela,
+      startY: y,
+      head: [["CATEGORIA", cabDireita("VALOR")]],
+      body: linhas.length ? linhas.map(([nome, valor]) => [nome, direita(real(valor), cor)]) : [["Nenhum lançamento", direita("—")]],
+      foot: [["Total", direita(real(total))]],
+    });
+    depois();
+  };
+  porCategoria("Entradas por Categoria", "Recebimentos registrados no caixa", entradasMes, totalEntradas, VERDE);
+  porCategoria("Saídas por Categoria", "Despesas, repasses e distribuições", saidasMes, totalSaidas, VERMELHO);
+
+  secao("Lançamentos do Mês", "Movimentação em ordem de data, com saldo corrido");
+  let corrido = saldoInicial;
+  const corpo: Array<Array<string | ReturnType<typeof direita>>> = [["", "Saldo inicial", "", "", "", "", direita(real(saldoInicial))]];
+  for (const item of doMes) {
+    corrido += sinal(item);
+    const contrato = item.contracts?.numero != null && item.contracts?.ano != null ? ` · ${String(item.contracts.numero).padStart(3, "0")}/${item.contracts.ano}` : "";
+    const nomeSocio = item.socio ? NOMES_SOCIO[item.socio] : undefined;
+    const descricao = nomeSocio && item.categoria === "(D) Distribuição de Honorários" && !item.descricao.includes(nomeSocio) ? `${item.descricao} (${nomeSocio})` : item.descricao;
+    corpo.push([
+      data(item.data),
+      descricao,
+      semPrefixo(item.categoria),
+      item.clients?.name ? `${item.clients.name}${contrato}` : "",
+      item.tipo === "entrada" ? direita(real(item.valor), VERDE) : "",
+      item.tipo === "saida" ? direita(real(item.valor), VERMELHO) : "",
+      direita(real(corrido), corrido < 0 ? VERMELHO : undefined),
+    ]);
+  }
+  autoTable(doc, {
+    ...tabela,
+    startY: y,
+    styles: { ...tabela.styles, fontSize: 7.4 },
+    head: [["DATA", "DESCRIÇÃO", "CATEGORIA", "CLIENTE", cabDireita("ENTRADA"), cabDireita("SAÍDA"), cabDireita("SALDO")]],
+    body: corpo,
+    foot: [["", "Totais do mês", "", "", direita(real(totalEntradas)), direita(real(totalSaidas)), direita(real(saldoFinal))]],
+    columnStyles: { 0: { cellWidth: 17 }, 2: { cellWidth: 27 }, 3: { cellWidth: 34 }, 4: { cellWidth: 21 }, 5: { cellWidth: 21 }, 6: { cellWidth: 22 } },
+  });
+  depois();
+
+  // ---- Cabeçalho (páginas 2+) e rodapé em todas
+  const total = doc.getNumberOfPages();
+  for (let pagina = 1; pagina <= total; pagina += 1) {
+    doc.setPage(pagina);
+    if (pagina > 1) cabecalho();
+    fonte("normal", 6.8, ROTULO);
+    doc.text(ENDERECO, margem, altura - 12);
+    doc.text(CONTATO, margem, altura - 8.5);
+    fonte("bold", 7.5, MARROM);
+    const texto = `Página ${pagina} de ${total}`;
+    const w = doc.getTextWidth(texto) + 8;
+    doc.setFillColor(...BEGE);
+    doc.roundedRect(largura - margem - w, altura - 14, w, 7, 3.5, 3.5, "F");
+    doc.text(texto, largura - margem - w / 2, altura - 9.4, { align: "center" });
+  }
+  doc.setCharSpace(0);
+
+  return { doc, nomeArquivo: `Relatório do Mês ${periodo} - SCC Advogados.pdf` };
+}
+
