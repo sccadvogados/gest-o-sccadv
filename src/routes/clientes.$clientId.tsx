@@ -76,7 +76,7 @@ import {
 export const Route = createFileRoute("/clientes/$clientId")({
   head: () => ({
     meta: [
-      { title: "Ficha do cliente | Gestão Administrativa | SCC Adv" },
+      { title: "Ficha do Cliente | Gestão Administrativa | SCC Adv" },
       {
         name: "description",
         content:
