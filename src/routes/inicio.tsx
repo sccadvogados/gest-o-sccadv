@@ -267,7 +267,7 @@ function HomePage() {
   );
 }
 
-function SummaryCard({ label, description, value, color }: { label: string; description: string; value: string; color: string }) {
+function SummaryCard({ label, description, value, color, ativo, onClick }: { label: string; description: string; value: string; color: string; ativo: boolean; onClick: () => void }) {
   return (
     <div className="panel flex min-h-28 items-center justify-between border-t-4 bg-card p-5" style={{ borderTopColor: color }}>
       <span>
