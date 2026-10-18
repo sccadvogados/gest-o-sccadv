@@ -1,0 +1,230 @@
+import { useQuery } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { Newspaper } from "lucide-react";
+import { Fragment, useState } from "react";
+
+import { Input } from "@/components/ui/input";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { formatDate, todayISO } from "@/lib/format";
+import { resumirPublicacoes } from "@/lib/publicacoes.functions";
+
+/**
+ * Publicações do dia no DJEN (Diário de Justiça Eletrônico Nacional – CNJ) em nome do
+ * RAPHAEL DE MATTOS TEODORO (OAB/DF 70.293), só dos tribunais acompanhados e só de clientes cadastrados.
+ * A consulta é feita pelo navegador (a API do CNJ só responde para acessos do Brasil).
+ * Cliente novo entra sozinho: a ligação é pelo nome das partes x cadastro de clientes.
+ */
+const OAB = { numero: "70293", uf: "DF" };
+const TRIBUNAIS = ["TJDFT", "TJGO", "TJPE", "TRT1", "TJMG", "TRF1", "TJSP"];
+const API = "https://comunicaapi.pje.jus.br/api/v1/comunicacao";
+const CACHE_ATOS = "scc-publicacoes-atos";
+
+type Comunicacao = {
+  id: number;
+  hash: string | null;
+  data_disponibilizacao: string;
+  siglaTribunal: string;
+  tipoComunicacao: string | null;
+  tipoDocumento: string | null;
+  nomeOrgao: string | null;
+  nomeClasse: string | null;
+  texto: string | null;
+  numeroprocessocommascara: string | null;
+  link: string | null;
+  destinatarios: Array<{ nome: string; polo: string }> | null;
+};
+
+type Publicacao = Comunicacao & { cliente: { id: string; name: string } };
+
+function normalizar(texto: string) {
+  return texto
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toUpperCase()
+    .replace(/[^A-Z0-9 ]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function mesmoNome(parte: string, cliente: string) {
+  if (!parte || !cliente) return false;
+  if (parte === cliente) return true;
+  // Variações como "EMPRESA X LTDA" x "EMPRESA X LTDA EPP": aceita quando um começa com o outro e o nome é longo o bastante.
+  const menor = parte.length < cliente.length ? parte : cliente;
+  const maior = menor === parte ? cliente : parte;
+  return menor.length >= 12 && maior.startsWith(menor);
+}
+
+function limparTeor(texto: string | null) {
+  if (!texto) return "";
+  return texto.replace(/<br\s*\/?>/gi, "\n").replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/[ \t]+/g, " ").trim();
+}
+
+function lerCache(): Record<string, string> {
+  try {
+    return JSON.parse(localStorage.getItem(CACHE_ATOS) ?? "{}") as Record<string, string>;
+  } catch {
+    return {};
+  }
+}
+
+function gravarCache(novos: Record<string, string>) {
+  try {
+    const atual = lerCache();
+    const chaves = Object.keys(atual);
+    // Guarda no máximo 500 resumos (os mais recentes).
+    const base = chaves.length > 500 ? Object.fromEntries(chaves.slice(-400).map((k) => [k, atual[k]])) : atual;
+    localStorage.setItem(CACHE_ATOS, JSON.stringify({ ...base, ...novos }));
+  } catch {
+    // sem armazenamento local: só não guarda
+  }
+}
+
+async function buscarComunicacoes(data: string): Promise<Comunicacao[]> {
+  const itens: Comunicacao[] = [];
+  for (let pagina = 1; pagina <= 20; pagina += 1) {
+    const params = new URLSearchParams({
+      numeroOab: OAB.numero,
+      ufOab: OAB.uf,
+      dataDisponibilizacaoInicio: data,
+      dataDisponibilizacaoFim: data,
+      itensPorPagina: "100",
+      pagina: String(pagina),
+    });
+    const resposta = await fetch(`${API}?${params}`);
+    if (!resposta.ok) throw new Error(`DJEN respondeu ${resposta.status}`);
+    const json = (await resposta.json()) as { count?: number; items?: Comunicacao[] };
+    const pagina_ = json.items ?? [];
+    itens.push(...pagina_);
+    if (pagina_.length < 100 || itens.length >= (json.count ?? 0)) break;
+  }
+  return itens;
+}
+
+export function PublicacoesDoDia({ clients }: { clients: Array<{ id: string; name: string }> }) {
+  const resumirFn = useServerFn(resumirPublicacoes);
+  const [data, setData] = useState(todayISO());
+  const [aberta, setAberta] = useState<number | null>(null);
+
+  const { data: comunicacoes = [], isLoading, isError } = useQuery({
+    queryKey: ["publicacoes-djen", data],
+    queryFn: () => buscarComunicacoes(data),
+    staleTime: 15 * 60 * 1000,
+    retry: 1,
+  });
+
+  // Só tribunais acompanhados, só clientes cadastrados e sem repetir a mesma comunicação.
+  const clientesNormalizados = clients.map((cliente) => ({ ...cliente, chave: normalizar(cliente.name) }));
+  const vistos = new Set<string>();
+  const publicacoes: Publicacao[] = [];
+  for (const item of comunicacoes) {
+    if (!TRIBUNAIS.includes(item.siglaTribunal)) continue;
+    const chave = item.hash ?? `${item.numeroprocessocommascara}|${item.tipoDocumento}|${(item.texto ?? "").slice(0, 200)}`;
+    if (vistos.has(chave)) continue;
+    const partes = (item.destinatarios ?? []).map((parte) => normalizar(parte.nome));
+    const cliente = clientesNormalizados.find((c) => partes.some((parte) => mesmoNome(parte, c.chave)));
+    if (!cliente) continue;
+    vistos.add(chave);
+    publicacoes.push({ ...item, cliente: { id: cliente.id, name: cliente.name } });
+  }
+
+  const ids = publicacoes.map((p) => p.id);
+  const { data: atos = {}, isLoading: resumindo } = useQuery({
+    queryKey: ["publicacoes-atos", ids.join(",")],
+    enabled: publicacoes.length > 0,
+    staleTime: Infinity,
+    queryFn: async () => {
+      const cache = lerCache();
+      const faltam = publicacoes.filter((p) => !cache[String(p.id)]);
+      for (let i = 0; i < faltam.length; i += 20) {
+        const lote = faltam.slice(i, i + 20).map((p) => ({
+          id: p.id,
+          cliente: p.cliente.name,
+          tipo: p.tipoDocumento ?? p.tipoComunicacao ?? "",
+          classe: p.nomeClasse ?? "",
+          texto: limparTeor(p.texto).slice(0, 8000),
+        }));
+        try {
+          const novos = await resumirFn({ data: { publicacoes: lote } });
+          gravarCache(novos);
+          Object.assign(cache, novos);
+        } catch {
+          // sem resumo: a coluna Ato mostra o tipo do documento
+        }
+      }
+      return cache;
+    },
+  });
+
+  return (
+    <section className="panel overflow-hidden rounded-xl border border-t-[3px] border-t-accent bg-card text-card-foreground">
+      <div className="flex flex-wrap items-center justify-between gap-3 p-5 pb-3">
+        <h2 className="flex items-center gap-2 text-base font-semibold text-[#0F2340]">
+          <Newspaper className="size-4" />
+          {`Publicações do Dia${isLoading ? "" : ` (${publicacoes.length})`}`}
+        </h2>
+        <Input type="date" className="h-9 w-[160px] bg-white" value={data} max={todayISO()} onChange={(e) => e.target.value && setData(e.target.value)} />
+      </div>
+
+      {isLoading ? <p className="px-5 pb-5 text-sm text-muted-foreground">Consultando o Diário de Justiça Eletrônico Nacional…</p> : null}
+      {isError ? (
+        <p className="px-5 pb-5 text-sm text-[#B42318]">Não foi possível consultar o DJEN agora. A consulta só funciona com acesso pelo Brasil; tente de novo em instantes.</p>
+      ) : null}
+      {!isLoading && !isError && publicacoes.length === 0 ? <p className="px-5 pb-5 text-sm text-muted-foreground">Nenhuma publicação de clientes nesta data.</p> : null}
+
+      {publicacoes.length > 0 ? (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Número</TableHead>
+              <TableHead>Cliente</TableHead>
+              <TableHead>Tribunal/Órgão</TableHead>
+              <TableHead>Disponibilização</TableHead>
+              <TableHead>Ato</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {publicacoes.map((item) => {
+              const ato = atos[String(item.id)];
+              return (
+                <Fragment key={item.id}>
+                  <TableRow className="align-top">
+                    <TableCell className="whitespace-nowrap tabular-nums">{item.numeroprocessocommascara ?? "—"}</TableCell>
+                    <TableCell className="min-w-40">
+                      <Link to="/clientes/$clientId" params={{ clientId: item.cliente.id }} className="font-medium text-[#0F2340] hover:underline">
+                        {item.cliente.name}
+                      </Link>
+                    </TableCell>
+                    <TableCell className="min-w-44">{[item.siglaTribunal, item.nomeOrgao].filter(Boolean).join(" – ")}</TableCell>
+                    <TableCell className="whitespace-nowrap">{formatDate(item.data_disponibilizacao)}</TableCell>
+                    <TableCell className="min-w-64">
+                      {ato ?? (resumindo ? <span className="text-muted-foreground">Lendo a publicação…</span> : item.tipoDocumento ?? item.tipoComunicacao ?? "—")}
+                      <button
+                        type="button"
+                        onClick={() => setAberta((atual) => (atual === item.id ? null : item.id))}
+                        className="mt-1 block text-xs text-[#B07A4F] underline underline-offset-4 hover:text-[#0F2340]"
+                      >
+                        {aberta === item.id ? "Ocultar Teor ▴" : "Ver Teor ▾"}
+                      </button>
+                    </TableCell>
+                  </TableRow>
+                  {aberta === item.id ? (
+                    <TableRow>
+                      <TableCell colSpan={5} className="bg-[#FBF7F1]">
+                        <div className="max-h-80 overflow-y-auto whitespace-pre-line text-xs leading-relaxed">{limparTeor(item.texto) || "Sem teor disponível."}</div>
+                        {item.link ? (
+                          <a href={item.link} target="_blank" rel="noreferrer" className="mt-2 inline-block text-xs text-[#B07A4F] underline">Abrir Documento</a>
+                        ) : null}
+                      </TableCell>
+                    </TableRow>
+                  ) : null}
+                </Fragment>
+              );
+            })}
+          </TableBody>
+        </Table>
+      ) : null}
+    </section>
+  );
+}
