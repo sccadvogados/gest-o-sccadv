@@ -835,7 +835,7 @@ function EditContractDialog({
   return (
     <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
       <DialogHeader>
-        <DialogTitle>{contract.numero != null && contract.ano != null ? `Editar contrato ${String(contract.numero).padStart(3, "0")}/${contract.ano}` : "Editar Contrato"}</DialogTitle>
+        <DialogTitle>{contract.numero != null && contract.ano != null ? `Editar Contrato ${String(contract.numero).padStart(3, "0")}/${contract.ano}` : "Editar Contrato"}</DialogTitle>
       </DialogHeader>
       <div className="grid gap-4 sm:grid-cols-2">
         {hasPaidInstallment ? (
