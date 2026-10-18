@@ -214,7 +214,7 @@ function HomePage() {
 
       {filtro === "atrasadas" || filtro === "receber" ? (
         <div className="mt-4">
-                    <Panel title={NOMES_FILTRO[filtro]} icon={<Wallet className="size-4" }}>
+                    <Panel title={NOMES_FILTRO[filtro]} icon={<Wallet className="size-4" />}>
             {loadingInstallments ? <Empty text="Carregando…" /> : null}
             {!loadingInstallments && (filtro === "atrasadas" ? lateInstallments : upcomingInstallments).length === 0 ? <Empty text={filtro === "atrasadas" ? "Nenhuma parcela atrasada." : "Nenhuma parcela vencendo nos próximos 7 dias."} /> : null}
             <InstallmentGroup title={filtro === "atrasadas" ? "Atrasadas" : "Vencem nos próximos 7 dias"} rows={filtro === "atrasadas" ? lateInstallments : upcomingInstallments} danger={filtro === "atrasadas"} />
@@ -233,7 +233,7 @@ function HomePage() {
           <EventGroup title="Próximos 7 dias" events={nextEvents} />
         </Panel>
 
-                <Panel title="Parcelas" icon={<Wallet className="size-4" }>
+                <Panel title="Parcelas" icon={<Wallet className="size-4" />}
           {loadingInstallments ? <Empty text="Carregando…" /> : null}
           {!loadingInstallments && installments.length === 0 ? <Empty text="Nenhuma parcela atrasada ou vencendo nos próximos 7 dias." /> : null}
           <InstallmentGroup title="Atrasadas" rows={lateInstallments} danger />
