@@ -194,6 +194,36 @@ function HomePage() {
         <SummaryCard label="A RECEBER EM 7 DIAS" description={loadingInstallments ? "" : formatCurrency(sum(upcomingInstallments))} value={loadingInstallments ? "—" : String(upcomingInstallments.length)} color="#33B679" ativo={filtro === "receber"} onClick={() => alternar("receber")} />
       </div>
 
+      
+      {filtro ? (
+        <div className="mt-4 flex flex-wrap items-center gap-3 text-sm">
+          <span className="text-muted-foreground">Mostrando: <b className="text-[#0F2340]">{NOMES_FILTRO[filtro]}</b></span>
+          <button type="button" onClick={() => setFiltro(null)} className="text-xs text-[#B07A4F] underline underline-offset-4 hover:text-[#0F2340]">Mostrar Tudo</button>
+        </div>
+      ) : null}
+
+      {filtro === "hoje" || filtro === "semana" ? (
+        <div className="mt-4">
+          <Panel title={NOMES_FILTRO[filtro]} icon={<CalendarDays className="size-4" />} link={{ to: "/agenda", label: "Abrir agenda" }}>
+            {loadingEvents ? <Empty text="Carregando…" /> : null}
+            {!loadingEvents && (filtro === "hoje" ? todayEvents : nextEvents).length === 0 ? <Empty text={filtro === "hoje" ? "Nada na agenda de hoje." : "Nada na agenda dos próximos 7 dias."} /> : null}
+            <EventGroup title={filtro === "hoje" ? "Hoje" : "Próximos 7 dias"} events={filtro === "hoje" ? todayEvents : nextEvents} />
+          </Panel>
+        </div>
+      ) : null}
+
+      {filtro === "atrasadas" || filtro === "receber" ? (
+        <div className="mt-4">
+          <Panel title={NOMES_FILTRO[filtro]} icon={<Wallet className="size-4" />} link={{ to: "/financeiro", label: "Abrir financeiro" }}>
+            {loadingInstallments ? <Empty text="Carregando…" /> : null}
+            {!loadingInstallments && (filtro === "atrasadas" ? lateInstallments : upcomingInstallments).length === 0 ? <Empty text={filtro === "atrasadas" ? "Nenhuma parcela atrasada." : "Nenhuma parcela vencendo nos próximos 7 dias."} /> : null}
+            <InstallmentGroup title={filtro === "atrasadas" ? "Atrasadas" : "Vencem nos próximos 7 dias"} rows={filtro === "atrasadas" ? lateInstallments : upcomingInstallments} danger={filtro === "atrasadas"} />
+          </Panel>
+        </div>
+      ) : null}
+
+      {filtro === null ? (<>
+
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
         <Panel title="Agenda" icon={<CalendarDays className="size-4" />} link={{ to: "/agenda", label: "Abrir agenda" }}>
           {loadingEvents ? <Empty text="Carregando…" /> : null}
