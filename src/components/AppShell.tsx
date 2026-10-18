@@ -76,7 +76,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <BrandMark />
           </Link>
           <nav className="flex items-center gap-1">
-                                                {NAV.map(({ to, label, icon }) => {
+                                                                                                {itensMenu.map(({ to, label, icon }) => {
               const NavItemIcon = icon;
               return (
               <Link
