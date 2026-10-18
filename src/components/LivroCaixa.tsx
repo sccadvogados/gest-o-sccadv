@@ -301,7 +301,7 @@ export function LivroCaixa() {
           <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="todos">Todos os Sócios</SelectItem>
-                        {SOCIOS.map((sigla) => <SelectItem key={sigla} value={sigla}>{NOMES_SOCIO[sigla]}</SelectItem>)}
+                                    {SOCIOS.map((sigla) => <SelectItem key={sigla} value={sigla}>{NOMES_SOCIO[sigla]}</SelectItem>)}
           </SelectContent>
         </Select>
         <Button className="ml-auto" onClick={() => setForm({ ...FORM_VAZIO, data: hoje })}>
