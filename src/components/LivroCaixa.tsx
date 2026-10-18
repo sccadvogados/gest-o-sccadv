@@ -450,7 +450,7 @@ export function LivroCaixa() {
               <div key={sigla} className="flex items-center justify-between">
                 <span className="flex items-center gap-2">
                   <span className="inline-block size-2.5 rounded-full" style={{ background: CORES_SOCIO[sigla] }} />
-                  {sigla}
+                  {NOMES_SOCIO[sigla]}
                 </span>
                 <b className="tabular-nums">{formatCurrency(valor)}</b>
               </div>
