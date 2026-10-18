@@ -71,7 +71,7 @@ type Form = {
   descricao: string;
   valor: number;
   socio: string;
-    cliente_id: string;
+      cliente_id: string;
   contrato_id: string;
   observacao: string;
   revisar: boolean;
