@@ -873,7 +873,7 @@ function EditContractDialog({
               <Input id={`edit-contract-count-${contract.id}`} type="number" min={1} value={count} onChange={(e) => setCount(e.target.value)} disabled={hasPaidInstallment} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor={`edit-contract-due-${contract.id}`}>Primeiro vencimento</Label>
+                            <Label htmlFor={`edit-contract-due-${contract.id}`}>Primeiro Vencimento</Label>
               <Input id={`edit-contract-due-${contract.id}`} type="date" value={firstDue} onChange={(e) => setFirstDue(e.target.value)} disabled={hasPaidInstallment} />
             </div>
           </>
