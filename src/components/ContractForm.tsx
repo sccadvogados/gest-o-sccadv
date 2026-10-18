@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
+import { CaptadorField } from "@/components/CaptadorField";
 import { CurrencyInput } from "@/components/CurrencyInput";
 import { ObjectClauseField } from "@/components/ObjectClauseField";
 import { Button } from "@/components/ui/button";
