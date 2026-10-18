@@ -105,7 +105,8 @@ export function ContractForm({
         throw new Error("Informe a retenção do escritório entre 0 e 100%.");
       }
       if (modality !== "probono" && socios.length === 0) throw new Error("Marque ao menos um sócio envolvido.");
-      if (temRepasse && (!Number.isFinite(repasse) || repasse <= 0 || repasse > 100)) throw new Error("Informe o percentual de repasse entre 0 e 100.");
+            if (temRepasse && (!Number.isFinite(repasse) || repasse <= 0 || repasse > 100)) throw new Error("Informe o percentual de repasse entre 0 e 100.");
+      if (temRepasse && !captadorId) throw new Error("Selecione ou cadastre o captador ou parceiro.");
 
 
             const installmentsCount = Math.max(1, Number(count));
