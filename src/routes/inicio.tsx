@@ -225,7 +225,11 @@ function HomePage() {
 
       {filtro === null ? (<>
 
-      <div className="mt-8 grid gap-6 lg:grid-cols-2">
+            <div className="mt-8">
+        <PublicacoesDoDia clients={clients} />
+      </div>
+
+      <div className="mt-6 grid gap-6 lg:grid-cols-2">
                 <Panel title="Agenda" icon={<CalendarDays className="size-4" }}>
           {loadingEvents ? <Empty text="Carregando…" /> : null}
           {!loadingEvents && overdueEvents.length + todayEvents.length + nextEvents.length === 0 ? <Empty text="Nada pendente para hoje e os próximos 7 dias." /> : null}
