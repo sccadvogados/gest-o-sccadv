@@ -1,5 +1,5 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { CalendarDays, House, LogOut, Users, Wallet } from "lucide-react";
+import { CalendarDays, House, LogOut, ShieldCheck, Users, Wallet } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -30,7 +30,14 @@ export function BrandMark({ className }: { className?: string }) {
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
-  const navigate = useNavigate();
+    const navigate = useNavigate();
+  // Aba Auditoria: só para administradores.
+  const [admin, setAdmin] = useState(false);
+  useEffect(() => {
+    if (!user) return;
+    void supabase.rpc("is_admin").then(({ data }) => setAdmin(data === true));
+  }, [user]);
+  const itensMenu = admin ? [...NAV, { to: "/auditoria" as const, label: "Auditoria", icon: ShieldCheck }] : NAV;
     const pathname = useRouterState({ select: (s) => s.location.pathname });
   
 
@@ -76,7 +83,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <BrandMark />
           </Link>
           <nav className="flex items-center gap-1">
-                                                {NAV.map(({ to, label, icon }) => {
+                                                                                                {itensMenu.map(({ to, label, icon }) => {
               const NavItemIcon = icon;
               return (
               <Link
@@ -103,7 +110,8 @@ export function AppShell({ children }: { children: ReactNode }) {
                             variant="outline"
               size="sm"
               className="border-[#D4A782] bg-white text-[#0F2340] hover:bg-[#F4EDE4]"
-              onClick={async () => {
+                            onClick={async () => {
+                await Promise.resolve((supabase.rpc as unknown as (fn: string, args: Record<string, unknown>) => PromiseLike<unknown>)("registrar_acesso", { p_acao: "logout" })).catch(() => undefined);
                 await supabase.auth.signOut();
                 navigate({ to: "/auth" });
               }}
