@@ -388,7 +388,7 @@ export function LivroCaixa() {
                     {!item.revisar && item.observacao ? <div className="text-xs text-muted-foreground">{item.observacao}</div> : null}
                   </TableCell>
                   <TableCell>
-                    <span className={`inline-block rounded-full px-2 py-0.5 text-[11px] ${item.tipo === "entrada" ? "bg-[#E7EEF6] text-[#0F2340]" : "bg-[#F6E9E1] text-[#7A3F2D]"}`}>{item.categoria}</span>
+                                        <span className={`inline-block whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] ${item.tipo === "entrada" ? "bg-[#E7EEF6] text-[#0F2340]" : "bg-[#F6E9E1] text-[#7A3F2D]"}`}>{item.categoria.replace(/^\(([RD])\)\s*/, "")}</span>
                   </TableCell>
                   <TableCell className="text-sm">
                     {item.clients ? (
