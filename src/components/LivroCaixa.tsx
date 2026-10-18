@@ -310,7 +310,7 @@ export function LivroCaixa() {
         </Button>
       </div>
 
-            {pendentes.length > 0 ? (
+                  {pendentes.length > 0 ? (
         <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-md border border-[#E6D6C4] bg-[#FBF7F1] px-4 py-3 text-sm">
           <span>
             <b className="whitespace-nowrap text-[#0F2340]">{`${formatCurrency(totalPendente)} a distribuir`}</b>
