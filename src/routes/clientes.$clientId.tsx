@@ -250,7 +250,7 @@ function ClientDetailPage() {
 
             {getMissingClientFields(client).length > 0 ? (
         <div className="mt-4 rounded-md border border-[#E8B9A5] bg-[#FFF4EF] px-4 py-3 text-sm text-[#7A3F2D]">
-          <strong>Cadastro incompleto:</strong> faltam {getMissingClientFields(client).join(", ")}.
+          <strong>Cadastro Incompleto:</strong> faltam {getMissingClientFields(client).join(", ")}.
           <span className="ml-1 inline-flex">
             <EditClientDialog
               clientId={clientId}
