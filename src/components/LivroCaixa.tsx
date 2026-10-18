@@ -55,7 +55,9 @@ type Lancamento = {
   socio: string | null;
   observacao: string | null;
   revisar: boolean;
-  origem: "manual" | "parcela" | "importacao" | "saldo_inicial";
+    origem: "manual" | "parcela" | "importacao" | "saldo_inicial";
+  distribuido: boolean;
+  lote_id: string | null;
   created_at: string;
   clients: { id: string; name: string } | null;
   contracts: { numero: number | null; ano: number | null } | null;
