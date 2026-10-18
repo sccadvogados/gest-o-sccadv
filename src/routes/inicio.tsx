@@ -109,7 +109,11 @@ function contractLabel(row: InstallmentRow) {
 }
 
 function HomePage() {
-  const today = todayISO();
+    const today = todayISO();
+  // Clique num card filtra a tela; clicar de novo (ou em "Mostrar Tudo") volta ao normal.
+  const [filtro, setFiltro] = useState<null | "hoje" | "semana" | "atrasadas" | "receber">(null);
+  const alternar = (valor: "hoje" | "semana" | "atrasadas" | "receber") => setFiltro((atual) => (atual === valor ? null : valor));
+  const NOMES_FILTRO = { hoje: "Agenda de Hoje", semana: "Agenda dos Próximos 7 Dias", atrasadas: "Parcelas Atrasadas", receber: "A Receber em 7 Dias" } as const;
   const in7 = addDays(today, 7);
 
   const { data: events = [], isLoading: loadingEvents } = useQuery({
