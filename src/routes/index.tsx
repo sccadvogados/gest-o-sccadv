@@ -25,7 +25,7 @@ import { formatDate } from "@/lib/format";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Gestão Administrativa | SCC Adv" },
+      { title: "Clientes | Gestão Administrativa | SCC Adv" },
       {
         name: "description",
         content:
