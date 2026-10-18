@@ -894,6 +894,7 @@ function EditContractDialog({
             <SelectContent><SelectItem value="nenhuma">Nenhuma</SelectItem>{CAPTACAO.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
           </Select>
         </div>
+                {temRepasse ? <CaptadorField tipo={captacao} value={captadorId} onChange={setCaptadorId} /> : null}
         {temRepasse ? (
           <div className="space-y-2">
             <Label htmlFor={`edit-contract-repasse-${contract.id}`}>% de Repasse da {captacao}</Label>
