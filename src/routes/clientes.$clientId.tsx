@@ -880,7 +880,7 @@ function EditContractDialog({
         ) : null}
                 {!proBono ? (
           <div className="space-y-2">
-            <Label>Forma de pagamento</Label>
+                        <Label>Forma de Pagamento</Label>
             <Select value={paymentMethod} onValueChange={setPaymentMethod}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>{paymentMethodOptions.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
