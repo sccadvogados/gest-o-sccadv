@@ -569,7 +569,8 @@ type ContractRow = {
     objeto?: string | null;
   parte_contraria?: string | null;
   gratuidade?: boolean;
-      captacao?: string | null;
+            captacao?: string | null;
+  captador_id?: string | null;
     captacao_percentual?: number | null;
   retencao_percentual?: number | null;
   socios?: string[] | null;
