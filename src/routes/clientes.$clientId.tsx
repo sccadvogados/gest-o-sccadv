@@ -76,13 +76,13 @@ import {
 export const Route = createFileRoute("/clientes/$clientId")({
   head: () => ({
     meta: [
-      { title: "Ficha do cliente | Gestão Administrativa | SCC Adv" },
+      { title: "Ficha do Cliente | Gestão Administrativa | SCC Adv" },
       {
         name: "description",
         content:
           "Qualificação, documentos, contratos e parcelas do cliente no escritório SCC Advogados.",
       },
-      { property: "og:title", content: "Ficha do cliente | Gestão Administrativa | SCC Adv" },
+      { property: "og:title", content: "Ficha do Cliente | Gestão Administrativa | SCC Adv" },
       {
         property: "og:description",
         content: "Dados do cliente, contratos e condições de pagamento.",
@@ -244,13 +244,13 @@ function ClientDetailPage() {
       <Button asChild variant="ghost" size="sm" className="-ml-2 text-muted-foreground">
         <Link to="/">
           <ArrowLeft className="size-4" />
-          Voltar para clientes
+                    Voltar para Clientes
         </Link>
       </Button>
 
             {getMissingClientFields(client).length > 0 ? (
         <div className="mt-4 rounded-md border border-[#E8B9A5] bg-[#FFF4EF] px-4 py-3 text-sm text-[#7A3F2D]">
-          <strong>Cadastro incompleto:</strong> faltam {getMissingClientFields(client).join(", ")}.
+          <strong>Cadastro Incompleto:</strong> faltam {getMissingClientFields(client).join(", ")}.
           <span className="ml-1 inline-flex">
             <EditClientDialog
               clientId={clientId}
@@ -284,8 +284,8 @@ function ClientDetailPage() {
 
             <section className="panel mt-6 grid gap-5 rounded-xl border border-[#E6D6C4] border-t-[3px] border-t-[#D4A782] bg-white p-6 shadow-panel sm:grid-cols-2">
                 <Field label="Nacionalidade" value={client.nationality} />
-        {client.person_type === "PJ" ? <Field label="Descrição da pessoa jurídica" value={client.pj_descricao ?? null} /> : null}
-        <Field label="Estado civil" value={client.marital_status} />
+        {client.person_type === "PJ" ? <Field label="Descrição da Pessoa Jurídica" value={client.pj_descricao ?? null} /> : null}
+        <Field label="Estado Civil" value={client.marital_status} />
         <Field label="Profissão" value={client.profession} />
         <Field
           label="RG"
@@ -379,7 +379,7 @@ function ClientDetailPage() {
                   </Badge>
                                 ) : null}
                                 {contract.modality !== "probono" ? (
-                                    <Badge variant="secondary">{contract.payment_method || "Forma a definir"}</Badge>
+                                    <Badge variant="secondary">{contract.payment_method || "Forma a Definir"}</Badge>
                 ) : null}
                 {contract.socios?.length && contract.modality !== "probono" ? (
                   <Badge variant="secondary" title={SOCIOS.filter((s) => contract.socios?.includes(s.sigla)).map((s) => s.nome).join(", ")}>
@@ -627,13 +627,13 @@ function ContractActions({
         <>
       <Dialog open={reviewOpen} onOpenChange={setReviewOpen}>
         <DialogTrigger asChild>
-          <Button variant="ghost" size="icon" aria-label="Gerar documentos" title="Gerar documentos">
+          <Button variant="ghost" size="icon" aria-label="Gerar Documentos" title="Gerar Documentos">
             <FileText className="size-4" />
           </Button>
         </DialogTrigger>
         <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Revisão e geração dos documentos</DialogTitle>
+            <DialogTitle>Revisão e Geração dos Documentos</DialogTitle>
           </DialogHeader>
           {reviewOpen ? (
             <ContractReview
@@ -694,7 +694,7 @@ function ContractActions({
             variant="ghost"
 
             size="icon"
-            aria-label="Excluir contrato"
+                        aria-label="Excluir Contrato"
             onClick={(event) => {
               if (hasPaidInstallment) {
                 event.preventDefault();
@@ -715,7 +715,7 @@ function ContractActions({
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction onClick={() => remove.mutate()} disabled={remove.isPending}>
-              {remove.isPending ? "Excluindo…" : "Excluir contrato"}
+              {remove.isPending ? "Excluindo…" : "Excluir Contrato"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
