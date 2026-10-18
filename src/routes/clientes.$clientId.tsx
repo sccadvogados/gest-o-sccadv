@@ -633,7 +633,7 @@ function ContractActions({
         </DialogTrigger>
         <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Revisão e geração dos documentos</DialogTitle>
+            <DialogTitle>Revisão e Geração dos Documentos</DialogTitle>
           </DialogHeader>
           {reviewOpen ? (
             <ContractReview
