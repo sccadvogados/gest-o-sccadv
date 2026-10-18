@@ -391,7 +391,8 @@ function ClientDetailPage() {
                 ) : null}
                 {contract.captacao ? (
                   <Badge variant="secondary">
-                    {`Captação: ${contract.captacao}${contract.captacao_percentual ? ` – ${String(contract.captacao_percentual).replace(".", ",")}%` : ""}`}
+                                        {`Captação: ${contract.captacao}${contract.captacao_percentual ? ` – ${String(contract.captacao_percentual).replace(".", ",")}%` : ""}`}
+                    {contract.captador_id && (contract.captacao === "Indicação" || contract.captacao === "Parceria") ? <> · <CaptadorNome id={contract.captador_id} /></> : null}
                   </Badge>
                 ) : null}
                 <ContractActions
