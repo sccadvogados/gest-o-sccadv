@@ -433,9 +433,9 @@ export function LivroCaixa() {
               ))}
               <TableRow className="bg-[#FBFAF7] font-semibold text-[#0F2340]">
                 <TableCell colSpan={5}>{`Total · ${nomePeriodo}`}</TableCell>
-                <TableCell className="text-right tabular-nums text-[#256b3a]">{formatCurrency(entradas)}</TableCell>
-                <TableCell className="text-right tabular-nums text-[#B42318]">{formatCurrency(saidas)}</TableCell>
-                <TableCell className="text-right tabular-nums">{formatCurrency(saldoFinal)}</TableCell>
+                                <TableCell className="whitespace-nowrap text-right tabular-nums text-[#256b3a]">{formatCurrency(entradas)}</TableCell>
+                <TableCell className="whitespace-nowrap text-right tabular-nums text-[#B42318]">{formatCurrency(saidas)}</TableCell>
+                <TableCell className="whitespace-nowrap text-right tabular-nums">{formatCurrency(saldoFinal)}</TableCell>
                 <TableCell />
               </TableRow>
             </TableBody>
