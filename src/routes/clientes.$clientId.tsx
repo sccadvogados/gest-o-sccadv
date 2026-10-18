@@ -749,7 +749,8 @@ function EditContractDialog({
   const [successFee, setSuccessFee] = useState(String(contract.success_fee_percent));
   const [object, setObject] = useState(contract.objeto ?? "");
     const [gratuidade, setGratuidade] = useState(contract.gratuidade ?? false);
-  const [captacao, setCaptacao] = useState<string>(contract.captacao ?? "");
+    const [captacao, setCaptacao] = useState<string>(contract.captacao ?? "");
+  const [captadorId, setCaptadorId] = useState(contract.captador_id ?? "");
   const [captacaoPercentual, setCaptacaoPercentual] = useState(
     contract.captacao_percentual != null ? String(contract.captacao_percentual).replace(".", ",") : "",
   );
