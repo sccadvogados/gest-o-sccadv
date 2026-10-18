@@ -230,7 +230,7 @@ function HomePage() {
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
-                <Panel title="Agenda" icon={<CalendarDays className="size-4" }}>
+                <Panel title="Agenda" icon={<CalendarDays className="size-4" />}>
           {loadingEvents ? <Empty text="Carregando…" /> : null}
           {!loadingEvents && overdueEvents.length + todayEvents.length + nextEvents.length === 0 ? <Empty text="Nada pendente para hoje e os próximos 7 dias." /> : null}
           <EventGroup title="Vencidos (não cumpridos)" events={overdueEvents} danger />
