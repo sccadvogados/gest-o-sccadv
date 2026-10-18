@@ -30,7 +30,14 @@ export function BrandMark({ className }: { className?: string }) {
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
-  const navigate = useNavigate();
+    const navigate = useNavigate();
+  // Aba Auditoria: só para administradores.
+  const [admin, setAdmin] = useState(false);
+  useEffect(() => {
+    if (!user) return;
+    void supabase.rpc("is_admin").then(({ data }) => setAdmin(data === true));
+  }, [user]);
+  const itensMenu = admin ? [...NAV, { to: "/auditoria" as const, label: "Auditoria", icon: ShieldCheck }] : NAV;
     const pathname = useRouterState({ select: (s) => s.location.pathname });
   
 
