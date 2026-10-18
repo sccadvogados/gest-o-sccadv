@@ -649,7 +649,7 @@ function ContractActions({
       </Dialog>
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
         <DialogTrigger asChild>
-          <Button variant="ghost" size="icon" aria-label="Editar contrato">
+          <Button variant="ghost" size="icon" aria-label="Editar Contrato">
             <Pencil className="size-4" />
           </Button>
         </DialogTrigger>
@@ -835,7 +835,7 @@ function EditContractDialog({
   return (
     <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
       <DialogHeader>
-        <DialogTitle>{contract.numero != null && contract.ano != null ? `Editar contrato ${String(contract.numero).padStart(3, "0")}/${contract.ano}` : "Editar contrato"}</DialogTitle>
+        <DialogTitle>{contract.numero != null && contract.ano != null ? `Editar Contrato ${String(contract.numero).padStart(3, "0")}/${contract.ano}` : "Editar Contrato"}</DialogTitle>
       </DialogHeader>
       <div className="grid gap-4 sm:grid-cols-2">
         {hasPaidInstallment ? (
@@ -865,22 +865,22 @@ function EditContractDialog({
                 {!semParcelas ? (
           <>
             <div className="space-y-2">
-              <Label htmlFor={`edit-contract-total-${contract.id}`}>{modality === "mensal" ? "Valor mensal" : "Valor total"}</Label>
+              <Label htmlFor={`edit-contract-total-${contract.id}`}>{modality === "mensal" ? "Valor Mensal" : "Valor Total"}</Label>
               <CurrencyInput id={`edit-contract-total-${contract.id}`} value={totalValue} onChange={setTotalValue} disabled={hasPaidInstallment} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor={`edit-contract-count-${contract.id}`}>Número de parcelas</Label>
+              <Label htmlFor={`edit-contract-count-${contract.id}`}>Número de Parcelas</Label>
               <Input id={`edit-contract-count-${contract.id}`} type="number" min={1} value={count} onChange={(e) => setCount(e.target.value)} disabled={hasPaidInstallment} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor={`edit-contract-due-${contract.id}`}>Primeiro vencimento</Label>
+                            <Label htmlFor={`edit-contract-due-${contract.id}`}>Primeiro Vencimento</Label>
               <Input id={`edit-contract-due-${contract.id}`} type="date" value={firstDue} onChange={(e) => setFirstDue(e.target.value)} disabled={hasPaidInstallment} />
             </div>
           </>
         ) : null}
                 {!proBono ? (
           <div className="space-y-2">
-            <Label>Forma de pagamento</Label>
+                        <Label>Forma de Pagamento</Label>
             <Select value={paymentMethod} onValueChange={setPaymentMethod}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>{paymentMethodOptions.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
@@ -908,7 +908,7 @@ function EditContractDialog({
         ) : null}
                 {!proBono ? (
           <div className="space-y-2">
-                        <Label htmlFor={`edit-contract-fee-${contract.id}`}>% de êxito{modality === "exito" ? " (obrigatório)" : ""}</Label>
+                        <Label htmlFor={`edit-contract-fee-${contract.id}`}>% de Êxito{modality === "exito" ? " (Obrigatório)" : ""}</Label>
             <PercentInput id={`edit-contract-fee-${contract.id}`} value={successFee} onChange={(e) => setSuccessFee(e.target.value)} />
           </div>
         ) : null}

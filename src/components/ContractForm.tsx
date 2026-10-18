@@ -287,7 +287,7 @@ export function ContractForm({
 
                 {!proBono ? (
           <div className="space-y-2">
-                        <Label htmlFor="successFee">% de êxito{modality === "exito" ? " (obrigatório)" : ""}</Label>
+                                                <Label htmlFor="successFee">% de Êxito{modality === "exito" ? " (Obrigatório)" : ""}</Label>
             <PercentInput id="successFee" value={successFee} onChange={(e) => setSuccessFee(e.target.value)} />
           </div>
         ) : null}
