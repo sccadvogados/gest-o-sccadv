@@ -715,7 +715,7 @@ function ContractActions({
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction onClick={() => remove.mutate()} disabled={remove.isPending}>
-              {remove.isPending ? "Excluindo…" : "Excluir contrato"}
+              {remove.isPending ? "Excluindo…" : "Excluir Contrato"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
