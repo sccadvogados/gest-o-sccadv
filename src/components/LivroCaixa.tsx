@@ -127,7 +127,7 @@ export function LivroCaixa() {
     queryFn: async () => {
       const { data, error } = await db.from("clients").select("id, name").eq("rascunho", false).order("name");
       if (error) throw error;
-                        return (data ?? []) as Array<{ id: string; name: string }>;
+                              return (data ?? []) as Array<{ id: string; name: string }>;
     },
   });
 
