@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 
 import { AppShell } from "@/components/AppShell";
 import { ExportSpreadsheetButton } from "@/components/ExportSpreadsheetButton";
+import { PublicacoesDoDia } from "@/components/PublicacoesDoDia";
 import { PageHeader } from "@/components/ui/page-header";
 import { supabase } from "@/integrations/supabase/client";
 import { officeDatabase } from "@/lib/office-database";
