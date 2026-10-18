@@ -37,8 +37,8 @@ type Generated = { kind: string; file_name: string; file_path: string };
 type DriveResult = { ok: true; pasta_url: string } | { ok: false; erro: string } | null;
 
 const MODALIDADES: Record<string, string> = {
-  parcelado: "Pró-labore Parcelado",
-  mensal: "Pró-labore Mensal",
+    parcelado: "Pró-labore",
+  mensal: "Pró-labore",
     exito: "Somente Êxito",
   probono: "Pro Bono",
 };
