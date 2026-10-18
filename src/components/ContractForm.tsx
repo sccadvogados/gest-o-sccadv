@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
+import { CaptadorField } from "@/components/CaptadorField";
 import { CurrencyInput } from "@/components/CurrencyInput";
 import { ObjectClauseField } from "@/components/ObjectClauseField";
 import { Button } from "@/components/ui/button";
@@ -70,7 +71,8 @@ export function ContractForm({
   const [count, setCount] = useState("1");
   const [firstDue, setFirstDue] = useState(todayISO());
     const [paymentMethod, setPaymentMethod] = useState<string>(PAYMENT_METHODS[0]);
-    const [captacao, setCaptacao] = useState<string>("");
+        const [captacao, setCaptacao] = useState<string>("");
+  const [captadorId, setCaptadorId] = useState("");
   const [captacaoPercentual, setCaptacaoPercentual] = useState("");
   const temRepasse = captacao === "Indicação" || captacao === "Parceria";
     const [retencao, setRetencao] = useState("");
@@ -141,7 +143,8 @@ export function ContractForm({
         recurring: modality === "mensal",
         objeto: objectToSave || null,
                 gratuidade: gratuidadeToSave,
-                captacao: captacao || null,
+                                captacao: captacao || null,
+        captador_id: captadorId || null,
                         captacao_percentual: temRepasse ? repasse : null,
         retencao_percentual: modality === "probono" ? null : retencaoNumero,
         socios: modality === "probono" ? null : socios,
@@ -269,6 +272,10 @@ export function ContractForm({
             <SelectContent><SelectItem value="nenhuma">Nenhuma</SelectItem>{CAPTACAO.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
           </Select>
         </div>
+
+                {captacao === "Indicação" || captacao === "Parceria" ? (
+          <CaptadorField tipo={captacao} value={captadorId} onChange={setCaptadorId} />
+        ) : null}
 
         {temRepasse ? (
           <div className="space-y-2">
