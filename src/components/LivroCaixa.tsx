@@ -30,7 +30,7 @@ const CATEGORIAS_ENTRADA = [
 ] as const;
 const CATEGORIAS_SAIDA = [
   "(D) Distribuição de Honorários",
-    "(D) Captação/Parceria",
+      "(D) Captação/Parceria",
   "(D) Marketing",
   "(D) Serviços",
   "(D) Emissão de Nota Fiscal",
