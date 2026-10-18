@@ -71,7 +71,8 @@ export function ContractForm({
   const [count, setCount] = useState("1");
   const [firstDue, setFirstDue] = useState(todayISO());
     const [paymentMethod, setPaymentMethod] = useState<string>(PAYMENT_METHODS[0]);
-    const [captacao, setCaptacao] = useState<string>("");
+        const [captacao, setCaptacao] = useState<string>("");
+  const [captadorId, setCaptadorId] = useState("");
   const [captacaoPercentual, setCaptacaoPercentual] = useState("");
   const temRepasse = captacao === "Indicação" || captacao === "Parceria";
     const [retencao, setRetencao] = useState("");
