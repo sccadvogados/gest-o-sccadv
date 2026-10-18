@@ -525,7 +525,7 @@ export function LivroCaixa() {
                     <SelectItem value="nenhum">Nenhum</SelectItem>
                     {(clientes ?? []).map((cliente) => <SelectItem key={cliente.id} value={cliente.id}>{cliente.name}</SelectItem>)}
                   </SelectContent>
-                                </Select>
+                </Select>
               </div>
               {form.cliente_id ? (
                 <div className="space-y-2 sm:col-span-2">
