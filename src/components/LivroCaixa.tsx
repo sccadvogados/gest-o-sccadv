@@ -320,8 +320,9 @@ export function LivroCaixa() {
                                     {SOCIOS.map((sigla) => <SelectItem key={sigla} value={sigla}>{NOMES_SOCIO[sigla]}</SelectItem>)}
           </SelectContent>
         </Select>
-                <FecharMes periodo={periodo} nomePeriodo={nomePeriodo} lancamentos={todos} />
-        <Button onClick={() => setForm({ ...FORM_VAZIO, data: hoje })}>
+                        <FecharMes periodo={periodo} nomePeriodo={nomePeriodo} lancamentos={todos} />
+        <RelatorioMes periodo={periodo} nomePeriodo={nomePeriodo} lancamentos={todos} />
+        <Button onClick={() => setForm({ ...FORM_VAZIO, data: hoje })>
           <Plus className="size-4" />
           Novo Lançamento
         </Button>
