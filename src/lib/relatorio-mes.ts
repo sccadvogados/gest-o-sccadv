@@ -3,7 +3,47 @@
  * Visual no padrão dos memoriais do escritório (logo, quadro de dados, títulos numerados em azul e cobre).
  * Gerado no navegador com jsPDF + jspdf-autotable (carregados só ao clicar no botão).
  */
-import { LOGO_SCC } from "@/lib/logo-scc";
+/**
+ * Relatório do Mês (PDF) do Livro-Caixa, para prestação de contas entre os sócios.
+ * Gerado no navegador com jsPDF + jspdf-autotable (carregados só ao clicar no botão).
+ */
+export type LancamentoRelatorio = {
+  data: string;
+  descricao: string;
+  tipo: string;
+  categoria: string;
+  valor: number;
+  socio: string | null;
+  origem: string;
+  revisar: boolean;
+  distribuido?: boolean;
+  clients?: { name: string } | null;
+  contracts?: { numero: number | null; ano: number | null } | null;
+};
+
+export type FechamentoRelatorio = { fechado_em: string; fechado_por_email: string | null } | null | undefined;
+
+const NOMES_SOCIO: Record<string, string> = { TAC: "Tiago Craveiro", RCMT: "Raphael Corradi", ASS: "Alexandre Souza" };
+const ORDEM_SOCIOS = ["TAC", "RCMT", "ASS"];
+const CATEGORIAS_HONORARIOS = ["(R) Pró-labore", "(R) Honorários de Êxito", "(R) Honorários de Sucumbência"];
+const AZUL: [number, number, number] = [15, 35, 64];
+const COBRE: [number, number, number] = [176, 122, 79];
+const CINZA: [number, number, number] = [110, 110, 110];
+
+const BRL = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
+const real = (valor: number) => BRL.format(valor || 0).replace(/ /g, " ");
+const data = (iso: string) => {
+  const [y, m, d] = iso.slice(0, 10).split("-");
+  return `${d}/${m}/${y}`;
+};
+const semPrefixo = (categoria: string) => categoria.replace(/^\(([RD])\)\s*/, "");
+const sinal = (item: LancamentoRelatorio) => (item.tipo === "entrada" ? 1 : -1) * Number(item.valor);
+
+function agrupar(itens: LancamentoRelatorio[]) {
+  const mapa = new Map<string, number>();
+  for (const item of itens) mapa.set(semPrefixo(item.categoria), (mapa.get(semPrefixo(item.categoria)) ?? 0) + Number(item.valor));
+  return [...mapa.entries()].sort((a, b) => b[1] - a[1]);
+}
 
 export type LancamentoRelatorio = {
   data: string;
