@@ -273,7 +273,7 @@ export function ContractReview({ contractId, personType, onBack, onEditObject, o
               {analysis.motivo_bloqueio}
               {onEditObject ? (
                 <div className="mt-3">
-                  <Button type="button" variant="outline" size="sm" onClick={onEditObject}>Corrigir objeto</Button>
+                  <Button type="button" variant="outline" size="sm" onClick={onEditObject}>Corrigir Objeto</Button>
                 </div>
               ) : null}
             </AlertDescription>
