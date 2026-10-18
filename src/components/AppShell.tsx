@@ -110,7 +110,8 @@ export function AppShell({ children }: { children: ReactNode }) {
                             variant="outline"
               size="sm"
               className="border-[#D4A782] bg-white text-[#0F2340] hover:bg-[#F4EDE4]"
-              onClick={async () => {
+                            onClick={async () => {
+                await Promise.resolve((supabase.rpc as unknown as (fn: string, args: Record<string, unknown>) => PromiseLike<unknown>)("registrar_acesso", { p_acao: "logout" })).catch(() => undefined);
                 await supabase.auth.signOut();
                 navigate({ to: "/auth" });
               }}
