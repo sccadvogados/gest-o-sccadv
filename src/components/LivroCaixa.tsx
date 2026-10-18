@@ -365,8 +365,8 @@ export function LivroCaixa() {
               {visiveis.map(({ item, saldo }) => (
                 <TableRow key={item.id}>
                   <TableCell className="whitespace-nowrap">{formatDate(item.data)}</TableCell>
-                  <TableCell>
-                                                            {(() => {
+                                    <TableCell className="min-w-52">
+                    {(() => {
                       // "Cliente · Parcela 1/4" → nome em cima e "Parcela 1 de 4" embaixo.
                       const m = /^(.*) · Parcela (\d+)(?:\/(\d+))?$/.exec(item.descricao);
                       return m ? (
