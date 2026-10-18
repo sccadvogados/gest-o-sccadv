@@ -204,7 +204,7 @@ function HomePage() {
 
       {filtro === "hoje" || filtro === "semana" ? (
         <div className="mt-4">
-          <Panel title={NOMES_FILTRO[filtro]} icon={<CalendarDays className="size-4" />} link={{ to: "/agenda", label: "Abrir agenda" }}>
+                    <Panel title={NOMES_FILTRO[filtro]} icon={<CalendarDays className="size-4" />}>
             {loadingEvents ? <Empty text="Carregando…" /> : null}
             {!loadingEvents && (filtro === "hoje" ? todayEvents : nextEvents).length === 0 ? <Empty text={filtro === "hoje" ? "Nada na agenda de hoje." : "Nada na agenda dos próximos 7 dias."} /> : null}
             <EventGroup title={filtro === "hoje" ? "Hoje" : "Próximos 7 dias"} events={filtro === "hoje" ? todayEvents : nextEvents} />
