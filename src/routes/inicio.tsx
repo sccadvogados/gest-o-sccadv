@@ -261,7 +261,8 @@ function HomePage() {
             </p>
           ) : null}
         </Panel>
-      </div>
+            </div>
+      </>) : null}
     </AppShell>
   );
 }
