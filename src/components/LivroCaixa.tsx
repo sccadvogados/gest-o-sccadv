@@ -151,7 +151,20 @@ export function LivroCaixa() {
   // Período: mês ("2026-08") ou ano inteiro ("2026").
   const inicio = periodo.length === 4 ? `${periodo}-01-01` : `${periodo}-01`;
   const fim = periodo.length === 4 ? `${periodo}-12-31` : `${periodo}-31`;
-  const todos = lancamentos ?? [];
+    const todos = lancamentos ?? [];
+  // Sugestões de descrição: as já usadas na categoria escolhida (mais usadas primeiro). Só sugere; pode digitar outra.
+  const sugestoesDescricao = (() => {
+    const contagem = new Map<string, { texto: string; vezes: number }>();
+    for (const item of todos) {
+      if (item.categoria !== form?.categoria || item.origem === "saldo_inicial") continue;
+      const texto = item.descricao.trim();
+      if (!texto || / · Parcela \d/.test(texto)) continue;
+      const chave = texto.toLowerCase();
+      const atual = contagem.get(chave);
+      contagem.set(chave, { texto: atual?.texto ?? texto, vezes: (atual?.vezes ?? 0) + 1 });
+    }
+    return [...contagem.values()].sort((a, b) => b.vezes - a.vezes).slice(0, 15).map((item) => item.texto);
+  })();
   const saldoInicial = todos
     .filter((item) => item.data < inicio || (item.origem === "saldo_inicial" && item.data <= fim))
     .reduce((soma, item) => soma + assinado(item), 0);
@@ -502,7 +515,10 @@ export function LivroCaixa() {
               </div>
               <div className="space-y-2 sm:col-span-2">
                 <Label htmlFor="lanc-descricao">Descrição</Label>
-                <Input id="lanc-descricao" value={form.descricao} placeholder="Tráfego Pago (Meta + Google)" onChange={(e) => setForm({ ...form, descricao: e.target.value })} />
+                <Input id="lanc-descricao" list="lanc-descricao-sugestoes" autoComplete="off" value={form.descricao} placeholder="Tráfego Pago (Meta + Google)" onChange={(e) => setForm({ ...form, descricao: e.target.value })} />
+                <datalist id="lanc-descricao-sugestoes">
+                  {sugestoesDescricao.map((texto) => <option key={texto} value={texto} />)}
+                </datalist>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="lanc-valor">Valor</Label>
