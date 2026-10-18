@@ -470,7 +470,7 @@ export function LivroCaixa() {
       </div>
 
       <Dialog open={form !== null} onOpenChange={(aberto) => { if (!aberto) setForm(null); }}>
-                        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
+                                <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>{form?.id ? "Editar Lançamento" : "Novo Lançamento"}</DialogTitle>
           </DialogHeader>
