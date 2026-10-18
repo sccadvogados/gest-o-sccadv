@@ -448,8 +448,8 @@ export function LivroCaixa() {
                   <TableCell className="whitespace-nowrap text-right tabular-nums text-[#B42318]">{item.tipo === "saida" ? formatCurrency(item.valor) : ""}</TableCell>
                   <TableCell className={`whitespace-nowrap text-right tabular-nums ${saldo < 0 ? "text-[#B42318]" : ""}`}>{filtrado ? "" : formatCurrency(saldo)}</TableCell>
                   <TableCell className="whitespace-nowrap text-right">
-                    {item.origem === "parcela" ? (
-                      <span className="text-[11px] text-muted-foreground" title="Gerado pela baixa da parcela. Para desfazer, desfaça a baixa na parcela.">—</span>
+                                        {item.origem === "parcela" || mesesFechados.has(item.data.slice(0, 7)) ? (
+                      <span className="text-[11px] text-muted-foreground" title={mesesFechados.has(item.data.slice(0, 7)) ? "Mês fechado. Para alterar, reabra o mês." : "Gerado pela baixa da parcela. Para desfazer, desfaça a baixa na parcela."}>—</span>
                     ) : (
                       <>
                         <Button variant="ghost" size="icon" aria-label="Editar Lançamento" title="Editar Lançamento" onClick={() => editar(item)}>
