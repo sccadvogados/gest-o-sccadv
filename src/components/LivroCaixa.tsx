@@ -30,7 +30,7 @@ const CATEGORIAS_ENTRADA = [
 ] as const;
 const CATEGORIAS_SAIDA = [
   "(D) Distribuição de Honorários",
-    "(D) Captação/Parceria",
+      "(D) Captação/Parceria",
   "(D) Marketing",
   "(D) Serviços",
   "(D) Emissão de Nota Fiscal",
@@ -185,7 +185,7 @@ export function LivroCaixa() {
       valor: doPeriodo.filter((item) => item.categoria === nome).reduce((soma, item) => soma + Number(item.valor), 0),
     }))
     .sort((a, b) => a.nome.localeCompare(b.nome));
-      const paraRevisar = todos.filter((item) => item.revisar).length;
+        const paraRevisar = todos.filter((item) => item.revisar).length;
   const [distribuirAberto, setDistribuirAberto] = useState(false);
   const pendentes = todos.filter((item) => item.tipo === "entrada" && !item.distribuido && CATEGORIAS_DISTRIBUIVEIS.includes(item.categoria));
   const totalPendente = pendentes.reduce((soma, item) => soma + Number(item.valor), 0);
@@ -267,7 +267,7 @@ export function LivroCaixa() {
   }
 
   const categoriasForm = form?.tipo === "entrada" ? CATEGORIAS_ENTRADA : CATEGORIAS_SAIDA;
-        const nomePeriodo = periodo.length === 4 ? `Ano de ${periodo}` : `${MESES[Number(periodo.slice(5, 7)) - 1]}/${periodo.slice(0, 4)}`;
+          const nomePeriodo = periodo.length === 4 ? `Ano de ${periodo}` : `${MESES[Number(periodo.slice(5, 7)) - 1]}/${periodo.slice(0, 4)}`;
 
   return (
     <div className="mt-6">
@@ -301,7 +301,7 @@ export function LivroCaixa() {
           <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="todos">Todos os Sócios</SelectItem>
-                        {SOCIOS.map((sigla) => <SelectItem key={sigla} value={sigla}>{NOMES_SOCIO[sigla]}</SelectItem>)}
+                                    {SOCIOS.map((sigla) => <SelectItem key={sigla} value={sigla}>{NOMES_SOCIO[sigla]}</SelectItem>)}
           </SelectContent>
         </Select>
         <Button className="ml-auto" onClick={() => setForm({ ...FORM_VAZIO, data: hoje })}>
@@ -310,7 +310,7 @@ export function LivroCaixa() {
         </Button>
       </div>
 
-            {pendentes.length > 0 ? (
+                  {pendentes.length > 0 ? (
         <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-md border border-[#E6D6C4] bg-[#FBF7F1] px-4 py-3 text-sm">
           <span>
             <b className="whitespace-nowrap text-[#0F2340]">{`${formatCurrency(totalPendente)} a distribuir`}</b>
@@ -353,7 +353,7 @@ export function LivroCaixa() {
             <TableBody>
               <TableRow className="bg-[#FBFAF7] italic text-muted-foreground">
                 <TableCell colSpan={7}>{periodo.length === 4 ? "Saldo inicial" : "Saldo vindo do mês anterior"}</TableCell>
-                                <TableCell className="whitespace-nowrap text-right tabular-nums">{formatCurrency(saldoInicial)}</TableCell>
+                                                <TableCell className="whitespace-nowrap text-right tabular-nums">{formatCurrency(saldoInicial)}</TableCell>
                 <TableCell />
               </TableRow>
               {isLoading ? (
@@ -365,8 +365,8 @@ export function LivroCaixa() {
               {visiveis.map(({ item, saldo }) => (
                 <TableRow key={item.id}>
                   <TableCell className="whitespace-nowrap">{formatDate(item.data)}</TableCell>
-                  <TableCell>
-                                        {(() => {
+                                    <TableCell className="min-w-52">
+                    {(() => {
                       // "Cliente · Parcela 1/4" → nome em cima e "Parcela 1 de 4" embaixo.
                       const m = /^(.*) · Parcela (\d+)(?:\/(\d+))?$/.exec(item.descricao);
                       return m ? (
@@ -388,9 +388,9 @@ export function LivroCaixa() {
                     {!item.revisar && item.observacao ? <div className="text-xs text-muted-foreground">{item.observacao}</div> : null}
                   </TableCell>
                   <TableCell>
-                    <span className={`inline-block rounded-full px-2 py-0.5 text-[11px] ${item.tipo === "entrada" ? "bg-[#E7EEF6] text-[#0F2340]" : "bg-[#F6E9E1] text-[#7A3F2D]"}`}>{item.categoria}</span>
+                                        <span className={`inline-block whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] ${item.tipo === "entrada" ? "bg-[#E7EEF6] text-[#0F2340]" : "bg-[#F6E9E1] text-[#7A3F2D]"}`}>{item.categoria.replace(/^\(([RD])\)\s*/, "")}</span>
                   </TableCell>
-                  <TableCell className="text-sm">
+                                    <TableCell className="min-w-44 text-sm">
                     {item.clients ? (
                       <Link to="/clientes/$clientId" params={{ clientId: item.clients.id }} className="underline-offset-4 hover:text-accent hover:underline">
                         {item.clients.name}
@@ -398,10 +398,10 @@ export function LivroCaixa() {
                     ) : "—"}
                     {numeroContrato(item.contracts) ? <span className="text-muted-foreground">{` · ${numeroContrato(item.contracts)}`}</span> : null}
                   </TableCell>
-                  <TableCell>{item.socio ?? ""}</TableCell>
-                  <TableCell className="text-right tabular-nums text-[#256b3a]">{item.tipo === "entrada" ? formatCurrency(item.valor) : ""}</TableCell>
-                  <TableCell className="text-right tabular-nums text-[#B42318]">{item.tipo === "saida" ? formatCurrency(item.valor) : ""}</TableCell>
-                  <TableCell className={`text-right tabular-nums ${saldo < 0 ? "text-[#B42318]" : ""}`}>{filtrado ? "" : formatCurrency(saldo)}</TableCell>
+                                    <TableCell className="whitespace-nowrap">{item.socio ? NOMES_SOCIO[item.socio] ?? item.socio : ""}</TableCell>
+                  <TableCell className="whitespace-nowrap text-right tabular-nums text-[#256b3a]">{item.tipo === "entrada" ? formatCurrency(item.valor) : ""}</TableCell>
+                  <TableCell className="whitespace-nowrap text-right tabular-nums text-[#B42318]">{item.tipo === "saida" ? formatCurrency(item.valor) : ""}</TableCell>
+                  <TableCell className={`whitespace-nowrap text-right tabular-nums ${saldo < 0 ? "text-[#B42318]" : ""}`}>{filtrado ? "" : formatCurrency(saldo)}</TableCell>
                   <TableCell className="whitespace-nowrap text-right">
                     {item.origem === "parcela" ? (
                       <span className="text-[11px] text-muted-foreground" title="Gerado pela baixa da parcela. Para desfazer, desfaça a baixa na parcela.">—</span>
@@ -416,7 +416,11 @@ export function LivroCaixa() {
                           aria-label="Excluir Lançamento"
                           title="Excluir Lançamento"
                           disabled={excluir.isPending}
-                          onClick={() => {
+                                                    onClick={() => {
+                            if (item.lote_id && item.tipo === "saida") {
+                              if (window.confirm("Este lançamento faz parte de uma distribuição. Desfazer a distribuição inteira? As saídas dela serão apagadas e os recebimentos voltam para A Distribuir.")) desfazer.mutate(item.lote_id);
+                              return;
+                            }
                             if (window.confirm(`Excluir o lançamento "${item.descricao}"?`)) excluir.mutate(item.id);
                           }}
                         >
@@ -429,9 +433,9 @@ export function LivroCaixa() {
               ))}
               <TableRow className="bg-[#FBFAF7] font-semibold text-[#0F2340]">
                 <TableCell colSpan={5}>{`Total · ${nomePeriodo}`}</TableCell>
-                <TableCell className="text-right tabular-nums text-[#256b3a]">{formatCurrency(entradas)}</TableCell>
-                <TableCell className="text-right tabular-nums text-[#B42318]">{formatCurrency(saidas)}</TableCell>
-                <TableCell className="text-right tabular-nums">{formatCurrency(saldoFinal)}</TableCell>
+                                <TableCell className="whitespace-nowrap text-right tabular-nums text-[#256b3a]">{formatCurrency(entradas)}</TableCell>
+                <TableCell className="whitespace-nowrap text-right tabular-nums text-[#B42318]">{formatCurrency(saidas)}</TableCell>
+                <TableCell className="whitespace-nowrap text-right tabular-nums">{formatCurrency(saldoFinal)}</TableCell>
                 <TableCell />
               </TableRow>
             </TableBody>
@@ -446,9 +450,9 @@ export function LivroCaixa() {
               <div key={sigla} className="flex items-center justify-between">
                 <span className="flex items-center gap-2">
                   <span className="inline-block size-2.5 rounded-full" style={{ background: CORES_SOCIO[sigla] }} />
-                  {sigla}
+                  {NOMES_SOCIO[sigla]}
                 </span>
-                <b className="tabular-nums">{formatCurrency(valor)}</b>
+                                <b className="whitespace-nowrap tabular-nums">{formatCurrency(valor)}</b>
               </div>
             ))}
           </div>
@@ -456,9 +460,9 @@ export function LivroCaixa() {
           <div className="mt-2 space-y-1.5">
             {porCategoria.length === 0 ? <p className="text-muted-foreground">—</p> : null}
             {porCategoria.map(({ nome, valor }) => (
-              <div key={nome} className="flex items-center justify-between gap-2">
-                <span>{nome}</span>
-                <span className="tabular-nums">{formatCurrency(valor)}</span>
+                            <div key={nome} className="flex items-start justify-between gap-3">
+                <span className="min-w-0">{nome.replace(/^\(([RD])\)\s*/, "")}</span>
+                <span className="shrink-0 whitespace-nowrap tabular-nums">{formatCurrency(valor)}</span>
               </div>
             ))}
           </div>
@@ -466,7 +470,7 @@ export function LivroCaixa() {
       </div>
 
       <Dialog open={form !== null} onOpenChange={(aberto) => { if (!aberto) setForm(null); }}>
-                <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
+                                <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>{form?.id ? "Editar Lançamento" : "Novo Lançamento"}</DialogTitle>
           </DialogHeader>
@@ -509,19 +513,19 @@ export function LivroCaixa() {
                   <Label>Sócio</Label>
                   <Select value={form.socio} onValueChange={(valor) => setForm({ ...form, socio: valor })}>
                     <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
-                    <SelectContent>{SOCIOS.map((sigla) => <SelectItem key={sigla} value={sigla}>{sigla}</SelectItem>)}</SelectContent>
+                                        <SelectContent>{SOCIOS.map((sigla) => <SelectItem key={sigla} value={sigla}>{NOMES_SOCIO[sigla]}</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
               ) : <div />}
               <div className="space-y-2 sm:col-span-2">
-                                <Label>Cliente</Label>
+                                                                <Label>Cliente</Label>
                 <Select value={form.cliente_id || "nenhum"} onValueChange={(valor) => setForm({ ...form, cliente_id: valor === "nenhum" ? "" : valor, contrato_id: "" })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="nenhum">Nenhum</SelectItem>
                     {(clientes ?? []).map((cliente) => <SelectItem key={cliente.id} value={cliente.id}>{cliente.name}</SelectItem>)}
                   </SelectContent>
-                                </Select>
+                </Select>
               </div>
               {form.cliente_id ? (
                 <div className="space-y-2 sm:col-span-2">
