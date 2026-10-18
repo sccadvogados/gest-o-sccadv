@@ -342,7 +342,7 @@ export function LivroCaixa() {
             <TableBody>
               <TableRow className="bg-[#FBFAF7] italic text-muted-foreground">
                 <TableCell colSpan={7}>{periodo.length === 4 ? "Saldo inicial" : "Saldo vindo do mês anterior"}</TableCell>
-                <TableCell className="text-right tabular-nums">{formatCurrency(saldoInicial)}</TableCell>
+                                <TableCell className="whitespace-nowrap text-right tabular-nums">{formatCurrency(saldoInicial)}</TableCell>
                 <TableCell />
               </TableRow>
               {isLoading ? (
