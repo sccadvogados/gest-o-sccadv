@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { CurrencyInput } from "@/components/CurrencyInput";
 import { CATEGORIAS_DISTRIBUIVEIS, DistribuirRecebimentos } from "@/components/DistribuirRecebimentos";
 import { FecharMes, useMesesFechados } from "@/components/FecharMes";
+import { RelatorioMes } from "@/components/RelatorioMes";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -319,7 +320,8 @@ export function LivroCaixa() {
                                     {SOCIOS.map((sigla) => <SelectItem key={sigla} value={sigla}>{NOMES_SOCIO[sigla]}</SelectItem>)}
           </SelectContent>
         </Select>
-                <FecharMes periodo={periodo} nomePeriodo={nomePeriodo} lancamentos={todos} />
+                        <FecharMes periodo={periodo} nomePeriodo={nomePeriodo} lancamentos={todos} />
+        <RelatorioMes periodo={periodo} nomePeriodo={nomePeriodo} lancamentos={todos} />
         <Button onClick={() => setForm({ ...FORM_VAZIO, data: hoje })}>
           <Plus className="size-4" />
           Novo Lançamento
