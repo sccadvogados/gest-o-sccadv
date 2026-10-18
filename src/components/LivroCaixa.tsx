@@ -237,6 +237,19 @@ export function LivroCaixa() {
     onError: () => toast.error("Não foi possível excluir o lançamento."),
   });
 
+  
+  const desfazer = useMutation({
+    mutationFn: async (lote: string) => {
+      const { error } = await (supabase as unknown as { rpc: (fn: string, args: Record<string, unknown>) => Promise<{ error: unknown }> }).rpc("desfazer_distribuicao", { p_lote: lote });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["lancamentos"] });
+      toast.success("Distribuição desfeita. Os recebimentos voltaram para A Distribuir.");
+    },
+    onError: () => toast.error("Não foi possível desfazer a distribuição."),
+  });
+
   function editar(item: Lancamento) {
     setForm({
       id: item.id,
