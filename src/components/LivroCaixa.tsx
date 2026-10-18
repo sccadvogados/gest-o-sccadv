@@ -332,8 +332,22 @@ export function LivroCaixa() {
                 <TableRow key={item.id}>
                   <TableCell className="whitespace-nowrap">{formatDate(item.data)}</TableCell>
                   <TableCell>
-                    {item.descricao}
-                    {item.origem === "parcela" ? <span className="ml-2 text-[10px] font-semibold text-[#B07A4F]">AUTOMÁTICO</span> : null}
+                                        {(() => {
+                      // "Cliente · Parcela 1/4" → nome em cima e "Parcela 1 de 4" embaixo.
+                      const m = /^(.*) · Parcela (\d+)(?:\/(\d+))?$/.exec(item.descricao);
+                      return m ? (
+                        <>
+                          {m[1]}
+                          {item.origem === "parcela" ? <span className="ml-2 text-[10px] font-semibold text-[#B07A4F]">AUTOMÁTICO</span> : null}
+                          <div className="text-xs text-muted-foreground">{`Parcela ${m[2]}${m[3] ? ` de ${m[3]}` : ""}`}</div>
+                        </>
+                      ) : (
+                        <>
+                          {item.descricao}
+                          {item.origem === "parcela" ? <span className="ml-2 text-[10px] font-semibold text-[#B07A4F]">AUTOMÁTICO</span> : null}
+                        </>
+                      );
+                    })()}
                     {item.revisar ? (
                       <span title={item.observacao ?? ""} className="ml-2 cursor-help rounded bg-[#FBF1EC] px-1.5 py-0.5 text-[10px] font-semibold text-[#7A3F2D]">REVISAR</span>
                     ) : null}
