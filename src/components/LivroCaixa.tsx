@@ -513,7 +513,7 @@ export function LivroCaixa() {
                   <Label>Sócio</Label>
                   <Select value={form.socio} onValueChange={(valor) => setForm({ ...form, socio: valor })}>
                     <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
-                    <SelectContent>{SOCIOS.map((sigla) => <SelectItem key={sigla} value={sigla}>{sigla}</SelectItem>)}</SelectContent>
+                                        <SelectContent>{SOCIOS.map((sigla) => <SelectItem key={sigla} value={sigla}>{NOMES_SOCIO[sigla]}</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
               ) : <div />}
