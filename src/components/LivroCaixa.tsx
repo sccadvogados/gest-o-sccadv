@@ -5,6 +5,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { CurrencyInput } from "@/components/CurrencyInput";
+import { CATEGORIAS_DISTRIBUIVEIS, DistribuirRecebimentos } from "@/components/DistribuirRecebimentos";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -29,7 +30,8 @@ const CATEGORIAS_ENTRADA = [
 ] as const;
 const CATEGORIAS_SAIDA = [
   "(D) Distribuição de Honorários",
-  "(D) Captação/Parceria",
+    "(D) Captação/Parceria",
+  "(D) Marketing",
   "(D) Serviços",
   "(D) Emissão de Nota Fiscal",
   "(D) Impostos",
@@ -37,6 +39,7 @@ const CATEGORIAS_SAIDA = [
 ] as const;
 const SOCIOS = ["TAC", "RCMT", "ASS"] as const;
 const CORES_SOCIO: Record<string, string> = { TAC: "#0F2340", RCMT: "#C08A5E", ASS: "#7D8BA0" };
+const NOMES_SOCIO: Record<string, string> = { TAC: "Tiago Craveiro", RCMT: "Raphael Corradi", ASS: "Alexandre Souza" };
 const MESES = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
 
 type Lancamento = {
@@ -52,7 +55,9 @@ type Lancamento = {
   socio: string | null;
   observacao: string | null;
   revisar: boolean;
-  origem: "manual" | "parcela" | "importacao" | "saldo_inicial";
+    origem: "manual" | "parcela" | "importacao" | "saldo_inicial";
+  distribuido: boolean;
+  lote_id: string | null;
   created_at: string;
   clients: { id: string; name: string } | null;
   contracts: { numero: number | null; ano: number | null } | null;
@@ -66,7 +71,7 @@ type Form = {
   descricao: string;
   valor: number;
   socio: string;
-    cliente_id: string;
+        cliente_id: string;
   contrato_id: string;
   observacao: string;
   revisar: boolean;
@@ -79,7 +84,7 @@ const FORM_VAZIO: Form = {
   descricao: "",
   valor: 0,
   socio: "",
-    cliente_id: "",
+        cliente_id: "",
   contrato_id: "",
   observacao: "",
   revisar: false,
@@ -122,7 +127,7 @@ export function LivroCaixa() {
     queryFn: async () => {
       const { data, error } = await db.from("clients").select("id, name").eq("rascunho", false).order("name");
       if (error) throw error;
-            return (data ?? []) as Array<{ id: string; name: string }>;
+                        return (data ?? []) as Array<{ id: string; name: string }>;
     },
   });
 
@@ -180,7 +185,12 @@ export function LivroCaixa() {
       valor: doPeriodo.filter((item) => item.categoria === nome).reduce((soma, item) => soma + Number(item.valor), 0),
     }))
     .sort((a, b) => a.nome.localeCompare(b.nome));
-  const paraRevisar = todos.filter((item) => item.revisar).length;
+      const paraRevisar = todos.filter((item) => item.revisar).length;
+  const [distribuirAberto, setDistribuirAberto] = useState(false);
+  const pendentes = todos.filter((item) => item.tipo === "entrada" && !item.distribuido && CATEGORIAS_DISTRIBUIVEIS.includes(item.categoria));
+  const totalPendente = pendentes.reduce((soma, item) => soma + Number(item.valor), 0);
+
+
 
   const salvar = useMutation({
     mutationFn: async (dados: Form) => {
@@ -196,7 +206,7 @@ export function LivroCaixa() {
         descricao: dados.descricao.trim(),
         valor: dados.valor,
         socio: dados.categoria === "(D) Distribuição de Honorários" ? dados.socio : null,
-                cliente_id: dados.cliente_id || null,
+                                cliente_id: dados.cliente_id || null,
         contrato_id: dados.cliente_id && dados.contrato_id ? dados.contrato_id : null,
         observacao: dados.observacao.trim() || null,
         revisar: dados.revisar,
@@ -227,6 +237,19 @@ export function LivroCaixa() {
     onError: () => toast.error("Não foi possível excluir o lançamento."),
   });
 
+  
+  const desfazer = useMutation({
+    mutationFn: async (lote: string) => {
+      const { error } = await (supabase as unknown as { rpc: (fn: string, args: Record<string, unknown>) => Promise<{ error: unknown }> }).rpc("desfazer_distribuicao", { p_lote: lote });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["lancamentos"] });
+      toast.success("Distribuição desfeita. Os recebimentos voltaram para A Distribuir.");
+    },
+    onError: () => toast.error("Não foi possível desfazer a distribuição."),
+  });
+
   function editar(item: Lancamento) {
     setForm({
       id: item.id,
@@ -236,7 +259,7 @@ export function LivroCaixa() {
       descricao: item.descricao,
       valor: Number(item.valor),
       socio: item.socio ?? "",
-            cliente_id: item.cliente_id ?? "",
+                        cliente_id: item.cliente_id ?? "",
       contrato_id: item.contrato_id ?? "",
       observacao: item.observacao ?? "",
       revisar: item.revisar,
@@ -244,7 +267,7 @@ export function LivroCaixa() {
   }
 
   const categoriasForm = form?.tipo === "entrada" ? CATEGORIAS_ENTRADA : CATEGORIAS_SAIDA;
-    const nomePeriodo = periodo.length === 4 ? `Ano de ${periodo}` : `${MESES[Number(periodo.slice(5, 7)) - 1]}/${periodo.slice(0, 4)}`;
+        const nomePeriodo = periodo.length === 4 ? `Ano de ${periodo}` : `${MESES[Number(periodo.slice(5, 7)) - 1]}/${periodo.slice(0, 4)}`;
 
   return (
     <div className="mt-6">
@@ -278,7 +301,7 @@ export function LivroCaixa() {
           <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="todos">Todos os Sócios</SelectItem>
-            {SOCIOS.map((sigla) => <SelectItem key={sigla} value={sigla}>{sigla}</SelectItem>)}
+                        {SOCIOS.map((sigla) => <SelectItem key={sigla} value={sigla}>{NOMES_SOCIO[sigla]}</SelectItem>)}
           </SelectContent>
         </Select>
         <Button className="ml-auto" onClick={() => setForm({ ...FORM_VAZIO, data: hoje })}>
@@ -286,6 +309,17 @@ export function LivroCaixa() {
           Novo Lançamento
         </Button>
       </div>
+
+            {pendentes.length > 0 ? (
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-md border border-[#E6D6C4] bg-[#FBF7F1] px-4 py-3 text-sm">
+          <span>
+            <b className="whitespace-nowrap text-[#0F2340]">{`${formatCurrency(totalPendente)} a distribuir`}</b>
+            <span className="text-muted-foreground">{` · ${pendentes.length} recebimento${pendentes.length > 1 ? "s" : ""} ainda sem distribuição`}</span>
+          </span>
+          <Button variant="outline" className="border-[#D4A782]" onClick={() => setDistribuirAberto(true)}>Distribuir Recebimentos</Button>
+        </div>
+      ) : null}
+      <DistribuirRecebimentos pendentes={pendentes} open={distribuirAberto} onOpenChange={setDistribuirAberto} />
 
       {paraRevisar > 0 ? (
         <p className="mt-3 rounded-md border border-[#E8B9A5] bg-[#FBF1EC] px-3 py-2 text-sm text-[#7A3F2D]">
@@ -319,7 +353,7 @@ export function LivroCaixa() {
             <TableBody>
               <TableRow className="bg-[#FBFAF7] italic text-muted-foreground">
                 <TableCell colSpan={7}>{periodo.length === 4 ? "Saldo inicial" : "Saldo vindo do mês anterior"}</TableCell>
-                <TableCell className="text-right tabular-nums">{formatCurrency(saldoInicial)}</TableCell>
+                                <TableCell className="whitespace-nowrap text-right tabular-nums">{formatCurrency(saldoInicial)}</TableCell>
                 <TableCell />
               </TableRow>
               {isLoading ? (
