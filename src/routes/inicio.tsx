@@ -233,7 +233,7 @@ function HomePage() {
           <EventGroup title="Próximos 7 dias" events={nextEvents} />
         </Panel>
 
-        <Panel title="Parcelas" icon={<Wallet className="size-4" />} link={{ to: "/financeiro", label: "Abrir financeiro" }}>
+                <Panel title="Parcelas" icon={<Wallet className="size-4" }>
           {loadingInstallments ? <Empty text="Carregando…" /> : null}
           {!loadingInstallments && installments.length === 0 ? <Empty text="Nenhuma parcela atrasada ou vencendo nos próximos 7 dias." /> : null}
           <InstallmentGroup title="Atrasadas" rows={lateInstallments} danger />
