@@ -518,7 +518,7 @@ export function LivroCaixa() {
                 </div>
               ) : <div />}
               <div className="space-y-2 sm:col-span-2">
-                                                                <Label>Cliente</Label>
+                                                                                <Label>Cliente</Label>
                 <Select value={form.cliente_id || "nenhum"} onValueChange={(valor) => setForm({ ...form, cliente_id: valor === "nenhum" ? "" : valor, contrato_id: "" })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
