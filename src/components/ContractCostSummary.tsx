@@ -132,7 +132,7 @@ export function ContractCostSummary({
           aria-expanded={aberto}
           className="text-xs text-[#B07A4F] underline underline-offset-4 hover:text-[#0F2340]"
         >
-          {aberto ? "Ocultar detalhes ▴" : "Mostrar detalhes ▾"}
+          {aberto ? "Ocultar Detalhes ▴" : "Mostrar Detalhes ▾"}
         </button>
       </div>
 
