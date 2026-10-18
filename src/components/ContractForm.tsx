@@ -145,7 +145,7 @@ export function ContractForm({
         objeto: objectToSave || null,
                 gratuidade: gratuidadeToSave,
                                 captacao: captacao || null,
-        captador_id: captadorId || null,
+                captador_id: temRepasse ? captadorId || null : null,
                         captacao_percentual: temRepasse ? repasse : null,
         retencao_percentual: modality === "probono" ? null : retencaoNumero,
         socios: modality === "probono" ? null : socios,
