@@ -262,7 +262,7 @@ export function LivroCaixa() {
       queryClient.invalidateQueries({ queryKey: ["lancamentos"] });
       toast.success("Distribuição desfeita. Os recebimentos voltaram para A Distribuir.");
     },
-    onError: () => toast.error("Não foi possível desfazer a distribuição."),
+        onError: (error) => toast.error((error as { message?: string } | null)?.message ?? "Não foi possível desfazer a distribuição."),
   });
 
   function editar(item: Lancamento) {
