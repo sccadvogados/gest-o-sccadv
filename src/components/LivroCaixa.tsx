@@ -515,7 +515,10 @@ export function LivroCaixa() {
               </div>
               <div className="space-y-2 sm:col-span-2">
                 <Label htmlFor="lanc-descricao">Descrição</Label>
-                <Input id="lanc-descricao" value={form.descricao} placeholder="Tráfego Pago (Meta + Google)" onChange={(e) => setForm({ ...form, descricao: e.target.value })} />
+                <Input id="lanc-descricao" list="lanc-descricao-sugestoes" autoComplete="off" value={form.descricao} placeholder="Tráfego Pago (Meta + Google)" onChange={(e) => setForm({ ...form, descricao: e.target.value })} />
+                <datalist id="lanc-descricao-sugestoes">
+                  {sugestoesDescricao.map((texto) => <option key={texto} value={texto} />)}
+                </datalist>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="lanc-valor">Valor</Label>
