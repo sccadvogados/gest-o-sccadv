@@ -452,7 +452,7 @@ export function LivroCaixa() {
                   <span className="inline-block size-2.5 rounded-full" style={{ background: CORES_SOCIO[sigla] }} />
                   {NOMES_SOCIO[sigla]}
                 </span>
-                <b className="tabular-nums">{formatCurrency(valor)}</b>
+                                <b className="whitespace-nowrap tabular-nums">{formatCurrency(valor)}</b>
               </div>
             ))}
           </div>
