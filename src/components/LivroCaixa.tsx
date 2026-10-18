@@ -55,7 +55,7 @@ type Lancamento = {
   socio: string | null;
   observacao: string | null;
   revisar: boolean;
-    origem: "manual" | "parcela" | "importacao" | "saldo_inicial";
+      origem: "manual" | "parcela" | "importacao" | "saldo_inicial";
   distribuido: boolean;
   lote_id: string | null;
   created_at: string;
@@ -71,7 +71,7 @@ type Form = {
   descricao: string;
   valor: number;
   socio: string;
-        cliente_id: string;
+          cliente_id: string;
   contrato_id: string;
   observacao: string;
   revisar: boolean;
@@ -84,7 +84,7 @@ const FORM_VAZIO: Form = {
   descricao: "",
   valor: 0,
   socio: "",
-        cliente_id: "",
+          cliente_id: "",
   contrato_id: "",
   observacao: "",
   revisar: false,
@@ -127,7 +127,7 @@ export function LivroCaixa() {
     queryFn: async () => {
       const { data, error } = await db.from("clients").select("id, name").eq("rascunho", false).order("name");
       if (error) throw error;
-                        return (data ?? []) as Array<{ id: string; name: string }>;
+                              return (data ?? []) as Array<{ id: string; name: string }>;
     },
   });
 
@@ -206,7 +206,7 @@ export function LivroCaixa() {
         descricao: dados.descricao.trim(),
         valor: dados.valor,
         socio: dados.categoria === "(D) Distribuição de Honorários" ? dados.socio : null,
-                                cliente_id: dados.cliente_id || null,
+                                        cliente_id: dados.cliente_id || null,
         contrato_id: dados.cliente_id && dados.contrato_id ? dados.contrato_id : null,
         observacao: dados.observacao.trim() || null,
         revisar: dados.revisar,
@@ -259,7 +259,7 @@ export function LivroCaixa() {
       descricao: item.descricao,
       valor: Number(item.valor),
       socio: item.socio ?? "",
-                        cliente_id: item.cliente_id ?? "",
+                              cliente_id: item.cliente_id ?? "",
       contrato_id: item.contrato_id ?? "",
       observacao: item.observacao ?? "",
       revisar: item.revisar,
