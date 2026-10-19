@@ -22,7 +22,7 @@ export function BrandMark({ className }: { className?: string }) {
       <img
                 src={logoHorizontal}
         alt="Souza, Craveiro & Corradi Advogados"
-        className="h-11 w-auto object-contain"
+                className="h-9 w-auto object-contain sm:h-11"
       />
     </div>
   );
