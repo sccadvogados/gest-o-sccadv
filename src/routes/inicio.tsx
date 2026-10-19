@@ -188,7 +188,7 @@ function HomePage() {
         action={<ExportSpreadsheetButton />}
       />
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="mt-5 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
                 <SummaryCard label="HOJE" description="Agenda do dia" value={loadingEvents ? "—" : String(todayEvents.length)} color="#C48B5F" ativo={filtro === "hoje"} onClick={() => alternar("hoje")} />
         <SummaryCard label="PRÓXIMOS 7 DIAS" description="Agenda da semana" value={loadingEvents ? "—" : String(nextEvents.length)} color="#0C2340" ativo={filtro === "semana"} onClick={() => alternar("semana")} />
         <SummaryCard label="PARCELAS ATRASADAS" description={loadingInstallments ? "" : formatCurrency(sum(lateInstallments))} value={loadingInstallments ? "—" : String(lateInstallments.length)} color="#B42318" ativo={filtro === "atrasadas"} onClick={() => alternar("atrasadas")} />
@@ -280,14 +280,14 @@ function SummaryCard({ label, description, value, color, ativo, onClick }: { lab
       onClick={onClick}
       aria-pressed={ativo}
       title={ativo ? "Clique para mostrar tudo" : "Clique para ver os detalhes"}
-      className={`panel flex min-h-28 cursor-pointer items-center justify-between border-t-4 bg-card p-5 text-left transition hover:shadow-md ${ativo ? "ring-2 ring-offset-2" : ""}`}
+            className={`panel flex cursor-pointer flex-col-reverse items-start justify-between gap-1 border-t-4 bg-card p-3.5 text-left transition hover:shadow-md sm:min-h-28 sm:flex-row sm:items-center sm:p-5 ${ativo ? "ring-2 ring-offset-2" : ""}`}
       style={{ borderTopColor: color, ["--tw-ring-color" as string]: color }}
     >
       <span>
-        <span className="block text-xs font-semibold tracking-wide text-muted-foreground">{label}</span>
-        <span className="mt-1 block text-sm text-muted-foreground">{description}</span>
+                <span className="block text-[11px] font-semibold tracking-wide text-muted-foreground sm:text-xs">{label}</span>
+        <span className="mt-0.5 block text-xs text-muted-foreground sm:mt-1 sm:text-sm">{description}</span>
       </span>
-            <span className="text-4xl font-semibold" style={{ color }}>{value}</span>
+                        <span className="text-3xl font-semibold sm:text-4xl" style={{ color }}>{value}</span>
     </button>
   );
 }
