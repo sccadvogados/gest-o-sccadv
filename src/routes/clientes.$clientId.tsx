@@ -540,8 +540,10 @@ function ClientDetailPage() {
               })}
             </TableBody>
           </Table>
-        </div>
+                </div>
       </section>
+        </TabsContent>
+      </Tabs>
     </AppShell>
   );
 }
