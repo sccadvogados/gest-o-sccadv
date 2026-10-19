@@ -8,6 +8,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
+import { BotaoFlutuante } from "@/components/BotaoFlutuante";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
