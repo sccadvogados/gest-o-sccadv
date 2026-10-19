@@ -27,7 +27,7 @@ export function RelatorioMes({ periodo, nomePeriodo, lancamentos }: { periodo: s
   }
 
   return (
-    <Button variant="outline" onClick={baixar} disabled={gerando} title={fechamento ? undefined : "O mês ainda está aberto: o relatório sai como prévia."}>
+    <Button variant="outline" className="w-full sm:w-auto" onClick={baixar} disabled={gerando} title={fechamento ? undefined : "O mês ainda está aberto: o relatório sai como prévia."}>
       <FileDown className="size-4" />
       {gerando ? "Gerando…" : "Relatório do Mês"}
     </Button>
