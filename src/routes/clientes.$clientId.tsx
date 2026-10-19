@@ -163,11 +163,14 @@ function ClientDetailPage() {
     queryFn: async () => {
       const { data, error } = await officeDatabase(supabase)
         .from("contracts")
-        .select("*, installments(*)")
+                .select("*, installments(*)")
         .eq("client_id", clientId)
         .order("created_at");
       if (error) throw error;
-      return data;
+      // Arquivados ficam depois dos ativos.
+      return [...(data ?? [])].sort(
+        (a, b) => Number(a.situacao === "arquivado") - Number(b.situacao === "arquivado"),
+      );
     },
   });
 
@@ -630,7 +633,10 @@ function ContractActions({
         const [editOpen, setEditOpen] = useState(false);
   const [reviewOpen, setReviewOpen] = useState(false);
   const hasPaidInstallment = (contract.installments ?? []).some((installment) => installment.status === "Pago");
-  const arquivado = contract.situacao === "arquivado";
+    const arquivado = contract.situacao === "arquivado";
+  const parcelasEmAberto = (contract.installments ?? []).filter(
+    (installment) => installment.status !== "Pago" && installment.status !== "Cancelado",
+  ).length;
   const arquivarFn = useServerFn(arquivarContrato);
   const arquivar = useMutation({
     mutationFn: () => arquivarFn({ data: { contrato_id: contract.id, reativar: arquivado } }),
@@ -701,7 +707,13 @@ function ContractActions({
             variant="ghost"
             size="icon"
             aria-label={arquivado ? "Reativar Contrato" : "Arquivar Contrato"}
-            title={arquivado ? "Reativar Contrato" : "Arquivar Contrato"}
+                        title={arquivado ? "Reativar Contrato" : "Arquivar Contrato"}
+            onClick={(event) => {
+              if (!arquivado && parcelasEmAberto > 0) {
+                event.preventDefault();
+                toast.error(`Não é possível arquivar: o contrato tem ${parcelasEmAberto} parcela${parcelasEmAberto > 1 ? "s" : ""} em aberto.`);
+              }
+            }}
           >
             {arquivado ? <ArchiveRestore className="size-4" /> : <Archive className="size-4" />}
           </Button>
@@ -712,7 +724,7 @@ function ContractActions({
             <AlertDialogDescription>
               {arquivado
                 ? "O contrato volta a contar como ativo e a pasta dele retorna do Arquivo Morto para a pasta do cliente no Arquivo Digital."
-                : "Use quando o trabalho estiver encerrado. O contrato deixa de contar como ativo e a pasta dele no Drive vai para o Arquivo Morto, dentro da pasta do cliente. Nada é apagado: parcelas, documentos e histórico continuam no sistema."}
+                : "Use quando o trabalho estiver encerrado e sem pendências (parcelas em aberto ou compromissos pendentes na Agenda). O contrato deixa de contar como ativo e a pasta dele no Drive vai para o Arquivo Morto, dentro da pasta do cliente. Nada é apagado: parcelas, documentos e histórico continuam no sistema."}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
