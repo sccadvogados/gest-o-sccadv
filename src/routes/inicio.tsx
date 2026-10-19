@@ -284,8 +284,8 @@ function SummaryCard({ label, description, value, color, ativo, onClick }: { lab
       style={{ borderTopColor: color, ["--tw-ring-color" as string]: color }}
     >
       <span>
-        <span className="block text-xs font-semibold tracking-wide text-muted-foreground">{label}</span>
-        <span className="mt-1 block text-sm text-muted-foreground">{description}</span>
+                <span className="block text-[11px] font-semibold tracking-wide text-muted-foreground sm:text-xs">{label}</span>
+        <span className="mt-0.5 block text-xs text-muted-foreground sm:mt-1 sm:text-sm">{description}</span>
       </span>
                         <span className="text-3xl font-semibold sm:text-4xl" style={{ color }}>{value}</span>
     </button>
