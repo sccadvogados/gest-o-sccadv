@@ -22,7 +22,7 @@ export function BrandMark({ className }: { className?: string }) {
       <img
                 src={logoHorizontal}
         alt="Souza, Craveiro & Corradi Advogados"
-        className="h-11 w-auto object-contain"
+                className="h-9 w-auto object-contain sm:h-11"
       />
     </div>
   );
@@ -78,7 +78,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-background">
             <header className="border-b border-[#ECE8E1] border-t-[3px] border-t-[#D4A782] bg-white text-[#0F2340]">
-                <div className="mx-auto flex max-w-[1240px] flex-wrap items-center justify-between gap-4 px-6 py-4">
+                                <div className="mx-auto flex max-w-[1240px] flex-wrap items-center justify-between gap-4 px-4 py-2.5 sm:px-6 sm:py-4">
                     <Link to="/inicio" aria-label="Ir para o Início" className="rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
             <BrandMark />
           </Link>
