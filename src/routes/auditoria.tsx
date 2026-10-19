@@ -108,27 +108,27 @@ function AuditoriaPage() {
         <p className="mt-6 text-sm text-muted-foreground">Acesso restrito aos administradores.</p>
       ) : (
         <>
-          <div className="mt-6 flex flex-wrap items-center gap-2">
+                    <div className="mt-6 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
             <Select value={periodo} onValueChange={setPeriodo}>
-              <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-full sm:w-44"><SelectValue /></SelectTrigger>
               <SelectContent>{PERIODOS.map((p) => <SelectItem key={p.valor} value={p.valor}>{p.rotulo}</SelectItem>)}</SelectContent>
             </Select>
             <Select value={usuario} onValueChange={setUsuario}>
-              <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-full sm:w-48"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="todos">Todos os Usuários</SelectItem>
                 {usuarios.map((nome) => <SelectItem key={nome} value={nome}>{nome}</SelectItem>)}
               </SelectContent>
             </Select>
             <Select value={modulo} onValueChange={setModulo}>
-              <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-full sm:w-44"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="todos">Todos os Módulos</SelectItem>
                 {MODULOS.map((m) => <SelectItem key={m.valor} value={m.valor}>{m.rotulo}</SelectItem>)}
               </SelectContent>
             </Select>
             <Select value={acao} onValueChange={setAcao}>
-              <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-full sm:w-40"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="todas">Todas as Ações</SelectItem>
                 <SelectItem value="inclusao">Inclusões</SelectItem>
@@ -137,7 +137,7 @@ function AuditoriaPage() {
                 <SelectItem value="acessos">Entradas e Saídas</SelectItem>
               </SelectContent>
             </Select>
-            <Input className="h-9 w-56 bg-white" placeholder="Buscar" value={busca} onChange={(e) => setBusca(e.target.value)} />
+            <Input className="col-span-2 h-9 w-full bg-white sm:w-56" placeholder="Buscar" value={busca} onChange={(e) => setBusca(e.target.value)} />
           </div>
 
           <div className="panel mt-4 overflow-hidden">
