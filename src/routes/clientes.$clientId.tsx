@@ -718,7 +718,7 @@ function ContractActions({
             <AlertDialogDescription>
               {arquivado
                 ? "O contrato volta a contar como ativo e a pasta dele retorna do Arquivo Morto para a pasta do cliente no Arquivo Digital."
-                : "Use quando o trabalho estiver encerrado. O contrato deixa de contar como ativo e a pasta dele no Drive vai para o Arquivo Morto, dentro da pasta do cliente. Nada é apagado: parcelas, documentos e histórico continuam no sistema."}
+                : "Use quando o trabalho estiver encerrado e sem pendências (parcelas em aberto ou compromissos pendentes na Agenda). O contrato deixa de contar como ativo e a pasta dele no Drive vai para o Arquivo Morto, dentro da pasta do cliente. Nada é apagado: parcelas, documentos e histórico continuam no sistema."}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
