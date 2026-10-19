@@ -188,7 +188,7 @@ function HomePage() {
         action={<ExportSpreadsheetButton />}
       />
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="mt-5 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
                 <SummaryCard label="HOJE" description="Agenda do dia" value={loadingEvents ? "—" : String(todayEvents.length)} color="#C48B5F" ativo={filtro === "hoje"} onClick={() => alternar("hoje")} />
         <SummaryCard label="PRÓXIMOS 7 DIAS" description="Agenda da semana" value={loadingEvents ? "—" : String(nextEvents.length)} color="#0C2340" ativo={filtro === "semana"} onClick={() => alternar("semana")} />
         <SummaryCard label="PARCELAS ATRASADAS" description={loadingInstallments ? "" : formatCurrency(sum(lateInstallments))} value={loadingInstallments ? "—" : String(lateInstallments.length)} color="#B42318" ativo={filtro === "atrasadas"} onClick={() => alternar("atrasadas")} />
