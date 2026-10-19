@@ -144,7 +144,10 @@ function FinancePage() {
           <TabsTrigger value="parcelas">Parcelas</TabsTrigger>
                     <TabsTrigger value="caixa">Livro-Caixa</TabsTrigger>
           <TabsTrigger value="indicadores">Indicadores</TabsTrigger>
-        </TabsList>
+                </TabsList>
+        <TabsContent value="indicadores">
+          <Indicadores />
+        </TabsContent>
         <TabsContent value="caixa">
           <LivroCaixa />
         </TabsContent>
