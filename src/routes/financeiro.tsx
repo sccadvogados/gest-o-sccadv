@@ -4,6 +4,7 @@ import { CartesianGrid, LabelList, Line, LineChart, ResponsiveContainer, Tooltip
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
+import { CartoesParcelas } from "@/components/CartoesParcelas";
 import { LivroCaixa } from "@/components/LivroCaixa";
 import { Indicadores } from "@/components/Indicadores";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -58,7 +59,9 @@ type Row = {
   paid_at: string | null;
   payment_method: string | null;
   category: string | null;
-  clients: { id: string; name: string } | null;
+    clients: { id: string; name: string } | null;
+  number?: number | null;
+  contracts?: { numero: number | null; ano: number | null } | null;
 };
 
 function FinancePage() {
@@ -69,7 +72,7 @@ function FinancePage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("installments")
-        .select("id, amount, due_date, status, paid_at, payment_method, category, clients(id, name)")
+        .select("id, amount, due_date, status, paid_at, payment_method, category, number, clients(id, name), contracts(numero, ano)")
         .order("due_date");
       if (error) throw error;
       return data as unknown as Row[];
@@ -181,7 +184,8 @@ function FinancePage() {
         </div>
       </section>
 
-      <div className="panel mt-6 overflow-hidden">
+            <CartoesParcelas lista={list} carregando={isLoading} ocupado={markPaid.isPending} onBaixar={(id) => markPaid.mutate(id)} />
+      <div className="panel mt-6 hidden overflow-hidden md:block">
         <Table>
           <TableHeader>
             <TableRow>
