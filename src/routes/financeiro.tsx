@@ -4,6 +4,7 @@ import { CartesianGrid, LabelList, Line, LineChart, ResponsiveContainer, Tooltip
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
+import { CartoesParcelas } from "@/components/CartoesParcelas";
 import { LivroCaixa } from "@/components/LivroCaixa";
 import { Indicadores } from "@/components/Indicadores";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
