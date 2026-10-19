@@ -21,7 +21,8 @@ export const MODULOS = [
   { valor: "parcelas", rotulo: "Parcelas", tabelas: ["installments"] },
   { valor: "caixa", rotulo: "Livro-Caixa", tabelas: ["lancamentos", "fechamentos"] },
   { valor: "agenda", rotulo: "Agenda", tabelas: ["eventos", "feriados"] },
-  { valor: "cadastros", rotulo: "Parceiros e Captadores", tabelas: ["parceiros", "captadores"] },
+    { valor: "cadastros", rotulo: "Parceiros e Captadores", tabelas: ["parceiros", "captadores"] },
+  { valor: "arquivos", rotulo: "Arquivos", tabelas: ["drive"] },
   { valor: "configuracoes", rotulo: "Configurações", tabelas: ["perfis", "procuracao_exemplos", "tribunais"] },
 ];
 
