@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Newspaper } from "lucide-react";
+import { CalendarPlus, Newspaper } from "lucide-react";
 import { Fragment, useState } from "react";
 
 import { Input } from "@/components/ui/input";
@@ -103,7 +103,30 @@ async function buscarComunicacoes(data: string): Promise<Comunicacao[]> {
 }
 
 export function PublicacoesDoDia({ clients }: { clients: Array<{ id: string; name: string }> }) {
-  const resumirFn = useServerFn(resumirPublicacoes);
+    const resumirFn = useServerFn(resumirPublicacoes);
+  const navigate = useNavigate();
+
+  /** Abre a Agenda com o Novo Evento já preenchido a partir da publicação. */
+  function agendar(item: Publicacao, ato: string | undefined) {
+    const tipo = item.tipoDocumento ?? item.tipoComunicacao ?? "Publicação";
+    const descricao = [
+      ato ? `Ato: ${ato}` : "",
+      `Publicação DJEN de ${formatDate(item.data_disponibilizacao)} · ${[item.siglaTribunal, item.nomeOrgao].filter(Boolean).join(" – ")}`,
+      item.numeroprocessocommascara ? `Processo ${item.numeroprocessocommascara}` : "",
+      item.link ? `Documento: ${item.link}` : "",
+      "",
+      limparTeor(item.texto).slice(0, 1500),
+    ].filter((linha, i) => linha || i === 4).join("\n");
+    try {
+      sessionStorage.setItem(
+        "scc-agendar-publicacao",
+        JSON.stringify({ titulo: `${tipo}${item.numeroprocessocommascara ? ` – ${item.numeroprocessocommascara}` : ""}`, descricao, cliente_id: item.cliente.id }),
+      );
+    } catch {
+      /* sem armazenamento: abre a Agenda mesmo assim */
+    }
+    void navigate({ to: "/agenda" });
+  }
   const [data, setData] = useState(todayISO());
   const [aberta, setAberta] = useState<number | null>(null);
 
@@ -206,6 +229,13 @@ export function PublicacoesDoDia({ clients }: { clients: Array<{ id: string; nam
                         className="mt-1 block text-xs text-[#B07A4F] underline underline-offset-4 hover:text-[#0F2340]"
                       >
                         {aberta === item.id ? "Ocultar Teor ▴" : "Ver Teor ▾"}
+                                            </button>
+                      <button
+                        type="button"
+                        onClick={() => agendar(item, ato)}
+                        className="mt-2 inline-flex items-center gap-1 rounded-md border border-[#D4A782] bg-white px-2.5 py-1 text-xs font-medium text-[#0F2340] hover:bg-[#F4EDE4]"
+                      >
+                        <CalendarPlus className="size-3.5" /> Agendar
                       </button>
                     </TableCell>
                   </TableRow>
