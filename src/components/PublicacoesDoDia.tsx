@@ -253,7 +253,8 @@ export function PublicacoesDoDia({ clients }: { clients: Array<{ id: string; nam
               );
             })}
           </TableBody>
-        </Table>
+                </Table>
+        </div>
       ) : null}
     </section>
   );
