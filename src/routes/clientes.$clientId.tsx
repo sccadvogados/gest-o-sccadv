@@ -489,9 +489,15 @@ function ClientDetailPage() {
             </Table>
           </div>
         ))}
-            </section>
+                        </section>
+        </TabsContent>
 
-      <section className="mt-8">
+        <TabsContent value="arquivos">
+          <ArquivosCliente clienteId={clientId} />
+        </TabsContent>
+
+        <TabsContent value="agenda">
+      <section className="mt-6">
         <h2 className="text-xl font-semibold text-[#0F2340]">Prazos e Reuniões</h2>
         <div className="panel mt-3 overflow-hidden rounded-xl border border-[#E6D6C4] border-t-[3px] border-t-[#D4A782] bg-white shadow-panel">
           <Table>
