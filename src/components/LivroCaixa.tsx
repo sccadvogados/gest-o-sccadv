@@ -393,7 +393,56 @@ export function LivroCaixa() {
           </div>
         </div>
 
-        <div className="panel overflow-hidden">
+        {/* Celular: lançamentos em cartões, agrupados por dia (tocar no cartão abre a edição) */}
+        <div className="space-y-2 md:hidden">
+          {isLoading ? <p className="py-8 text-center text-sm text-muted-foreground">Carregando lançamentos…</p> : null}
+          {!isLoading && visiveis.length === 0 ? <p className="py-8 text-center text-sm text-muted-foreground">Nenhum lançamento neste período.</p> : null}
+          {[...visiveis].reverse().map(({ item, saldo }, i, lista) => {
+            const novoDia = i === 0 || lista[i - 1]?.item.data !== item.data;
+            const m = /^(.*) · Parcela (\d+)(?:\/(\d+))?$/.exec(item.descricao);
+            const titulo = m ? m[1] : item.descricao;
+            const travado = item.origem === "parcela" || mesesFechados.has(item.data.slice(0, 7));
+            const detalhe = [
+              m ? `Parcela ${m[2]}${m[3] ? ` de ${m[3]}` : ""}` : "",
+              item.socio ? NOMES_SOCIO[item.socio] ?? item.socio : "",
+              !m && item.clients ? item.clients.name : "",
+              numeroContrato(item.contracts) ? `Contrato ${numeroContrato(item.contracts)}` : "",
+            ].filter(Boolean).join(" · ");
+            return (
+              <div key={item.id}>
+                {novoDia ? (
+                  <p className="flex justify-between px-1 pb-1 pt-3 text-xs font-semibold text-[#0F2340]">
+                    {new Intl.DateTimeFormat("pt-BR", { weekday: "short", day: "2-digit", month: "2-digit", timeZone: "UTC" }).format(new Date(`${item.data}T12:00:00Z`)).replace(".", "")}
+                    {!filtrado ? <span className="font-normal text-muted-foreground">{`saldo ${formatCurrency(saldo)}`}</span> : null}
+                  </p>
+                ) : null}
+                <div
+                  role={travado ? undefined : "button"}
+                  onClick={travado ? undefined : () => editar(item)}
+                  className="rounded-xl border border-[#ECE7DF] bg-white p-3 shadow-sm"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <span className="min-w-0 text-sm font-semibold leading-snug text-[#0F2340]">{titulo}</span>
+                    <span className={`shrink-0 whitespace-nowrap text-sm font-bold tabular-nums ${item.tipo === "entrada" ? "text-[#256b3a]" : "text-[#B42318]"}`}>{`${item.tipo === "entrada" ? "+" : "-"}${formatCurrency(item.valor)}`}</span>
+                  </div>
+                  {detalhe ? <p className="mt-0.5 text-xs text-muted-foreground">{detalhe}</p> : null}
+                  <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                    <span className={`rounded-full px-2 py-0.5 text-[11px] ${item.tipo === "entrada" ? "bg-[#E7EEF6] text-[#0F2340]" : "bg-[#F6E9E1] text-[#7A3F2D]"}`}>{item.categoria.replace(/^\(([RD])\)\s*/, "")}</span>
+                    {item.revisar ? <span className="rounded-full bg-[#FBF1EC] px-2 py-0.5 text-[11px] font-semibold text-[#7A3F2D]">Revisar</span> : null}
+                    {item.origem === "parcela" ? <span className="rounded-full bg-[#F3F1EC] px-2 py-0.5 text-[11px] text-muted-foreground">Automático</span> : null}
+                    {!travado ? (
+                      <Button size="icon" variant="ghost" className="ml-auto size-8" aria-label="Excluir Lançamento" disabled={excluir.isPending} onClick={(e) => { e.stopPropagation(); pedirExclusao(item); }}>
+                        <Trash2 className="size-4 text-muted-foreground" />
+                      </Button>
+                    ) : null}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="panel hidden overflow-hidden md:block">
           <Table>
             <TableHeader>
               <TableRow>
