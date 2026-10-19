@@ -345,7 +345,7 @@ export function LivroCaixa() {
         </p>
       ) : null}
 
-      <div className="mt-4 grid gap-4 sm:grid-cols-4">
+            <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <Card titulo={periodo.length === 4 ? "Saldo Inicial do Ano" : "Saldo Inicial do Mês"} valor={saldoInicial} cor="#C9BFAE" />
         <Card titulo="Entradas" valor={entradas} cor="#0F2340" />
         <Card titulo="Saídas" valor={saidas} cor="#B42318" perigo />
