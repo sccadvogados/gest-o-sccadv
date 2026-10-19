@@ -82,7 +82,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                     <Link to="/inicio" aria-label="Ir para o Início" className="rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
             <BrandMark />
           </Link>
-          <nav className="flex items-center gap-1">
+                    <nav className="hidden items-center gap-1 md:flex">
                                                                                                 {itensMenu.map(({ to, label, icon }) => {
               const NavItemIcon = icon;
               return (
@@ -122,8 +122,24 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         </div>
       </header>
-            <main className="mx-auto w-full max-w-[1240px] flex-1 px-6 py-8">{children}</main>
-      <footer className="px-6 py-6 text-center text-[13px] text-[#5B6472]">
+                        <main className="mx-auto w-full max-w-[1240px] flex-1 px-4 pb-28 pt-6 sm:px-6 md:py-8">{children}</main>
+      {/* Celular: menu fixo embaixo, como um aplicativo */}
+      <nav
+        className="fixed inset-x-0 bottom-0 z-40 grid border-t border-[#ECE8E1] bg-white/95 backdrop-blur md:hidden"
+        style={{ gridTemplateColumns: `repeat(${itensMenu.length}, minmax(0, 1fr))`, paddingBottom: "env(safe-area-inset-bottom)" }}
+      >
+        {itensMenu.map(({ to, label, icon }) => {
+          const Icone = icon;
+          const ativo = pathname === to;
+          return (
+            <Link key={to} to={to} className={cn("flex flex-col items-center gap-0.5 py-2 text-[11px] font-medium", ativo ? "text-[#0F2340]" : "text-[#8A8F98]")}>
+              <Icone className={cn("size-5", ativo ? "text-[#B07A4F]" : "")} />
+              {label}
+            </Link>
+          );
+        })}
+      </nav>
+      <footer className="hidden px-6 py-6 text-center text-[13px] text-[#5B6472] md:block">
                 © Souza, Craveiro & Corradi Advogados · Acesso Restrito
       </footer>
     </div>
