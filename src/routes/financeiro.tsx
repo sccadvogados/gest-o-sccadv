@@ -278,7 +278,7 @@ function Summary({
 }) {
   return (
         <div
-      className={`panel border-t-4 p-5 ${
+            className={`panel flex items-center justify-between gap-3 border-t-4 px-4 py-3 sm:block sm:p-5 ${
         tone === "danger" ? "border-t-[#B42318]" : label === "A receber" ? "border-t-[#C08A5E]" : "border-t-[#0F2340]"
       }`}
     >
