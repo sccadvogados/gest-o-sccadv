@@ -18,7 +18,7 @@ function PageHeader({ title, subtitle, action, className, ...props }: PageHeader
                 <h1 className="text-[26px] font-bold leading-tight text-[#0F2340] sm:text-[32px]">{title}</h1>
         {subtitle ? <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p> : null}
       </div>
-      {action ? <div className="shrink-0">{action}</div> : null}
+            {action ? <div className="flex flex-wrap gap-2 sm:shrink-0">{action}</div> : null}
     </div>
   );
 }
