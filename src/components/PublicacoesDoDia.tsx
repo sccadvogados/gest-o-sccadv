@@ -187,7 +187,7 @@ export function PublicacoesDoDia({ clients }: { clients: Array<{ id: string; nam
           <Newspaper className="size-4" />
           {`Publicações do Dia${isLoading ? "" : ` (${publicacoes.length})`}`}
         </h2>
-        <Input type="date" className="h-9 w-[160px] bg-white" value={data} max={todayISO()} onChange={(e) => e.target.value && setData(e.target.value)} />
+        <Input type="date" className="h-9 w-44 bg-white sm:w-[160px]" value={data} max={todayISO()} onChange={(e) => e.target.value && setData(e.target.value)} />
       </div>
 
       {isLoading ? <p className="px-5 pb-5 text-sm text-muted-foreground">Consultando o Diário de Justiça Eletrônico Nacional…</p> : null}
