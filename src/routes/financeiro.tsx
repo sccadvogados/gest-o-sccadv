@@ -142,7 +142,8 @@ function FinancePage() {
       <Tabs defaultValue="parcelas" className="mt-6">
         <TabsList>
           <TabsTrigger value="parcelas">Parcelas</TabsTrigger>
-          <TabsTrigger value="caixa">Livro-Caixa</TabsTrigger>
+                    <TabsTrigger value="caixa">Livro-Caixa</TabsTrigger>
+          <TabsTrigger value="indicadores">Indicadores</TabsTrigger>
         </TabsList>
         <TabsContent value="caixa">
           <LivroCaixa />
