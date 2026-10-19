@@ -4,6 +4,8 @@ import { Pencil, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
+
+import { BotaoFlutuante } from "@/components/BotaoFlutuante";
 import { CurrencyInput } from "@/components/CurrencyInput";
 import { CATEGORIAS_DISTRIBUIVEIS, DistribuirRecebimentos } from "@/components/DistribuirRecebimentos";
 import { FecharMes, useMesesFechados } from "@/components/FecharMes";
