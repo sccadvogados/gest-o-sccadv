@@ -572,7 +572,7 @@ export function AgendaScreen() {
           </div>
         </div>
 
-        <div className="mt-6 grid gap-4 md:grid-cols-3">
+                <div className="mt-5 grid grid-cols-3 gap-2 sm:gap-4">
           <SummaryCard label="VENCIDOS" description="Não cumpridos" value={counts.vencidos} color="#B42318" active={cardFilter === "vencidos"} onClick={() => setCardFilter(cardFilter === "vencidos" ? "todos" : "vencidos")} />
           <SummaryCard label="HOJE" description="Compromissos de hoje" value={counts.hoje} color="#C48B5F" active={cardFilter === "hoje"} onClick={() => setCardFilter(cardFilter === "hoje" ? "todos" : "hoje")} />
           <SummaryCard label="PRÓXIMOS 7 DIAS" description="Compromissos futuros" value={counts.proximos} color="#0C2340" active={cardFilter === "proximos"} onClick={() => setCardFilter(cardFilter === "proximos" ? "todos" : "proximos")} />
