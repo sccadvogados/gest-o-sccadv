@@ -152,7 +152,7 @@ function FinancePage() {
           <LivroCaixa />
         </TabsContent>
         <TabsContent value="parcelas">
-      <div className="mt-6 grid gap-4 sm:grid-cols-3">
+            <div className="mt-5 grid gap-3 sm:mt-6 sm:grid-cols-3 sm:gap-4">
         <Summary label="Recebido" value={received} />
         <Summary label="A receber" value={pending} />
                 <Summary label="Em atraso" value={overdue} tone="danger" />
