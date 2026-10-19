@@ -97,7 +97,7 @@ export function FecharMes({ periodo, nomePeriodo, lancamentos }: { periodo: stri
     onError: (error) => toast.error(mensagem(error, "Não foi possível reabrir o mês.")),
   });
 
-  if (!ehMes) return <div className="ml-auto" />;
+    if (!ehMes) return <div className="hidden sm:block" />;
 
   if (fechamento) {
     return (
