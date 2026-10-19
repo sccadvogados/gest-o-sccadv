@@ -16,6 +16,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as FinanceiroRouteImport } from './routes/financeiro'
 import { Route as InicioRouteImport } from './routes/inicio'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as ApiAvisosPublicacoesRouteImport } from './routes/api.avisos-publicacoes'
 import { Route as ClientesClientIdRouteImport } from './routes/clientes.$clientId'
 import { Route as ClientesNovoRouteImport } from './routes/clientes.novo'
 
@@ -54,6 +55,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
   path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAvisosPublicacoesRoute = ApiAvisosPublicacoesRouteImport.update({
+  id: '/api/avisos-publicacoes',
+  path: '/api/avisos-publicacoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ClientesClientIdRoute = ClientesClientIdRouteImport.update({
   id: '/clientes/$clientId',
   path: '/clientes/$clientId',
@@ -73,6 +79,7 @@ export interface FileRoutesByFullPath {
   '/financeiro': typeof FinanceiroRoute
   '/inicio': typeof InicioRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/api/avisos-publicacoes': typeof ApiAvisosPublicacoesRoute
   '/clientes/$clientId': typeof ClientesClientIdRoute
   '/clientes/novo': typeof ClientesNovoRoute
 }
@@ -84,6 +91,7 @@ export interface FileRoutesByTo {
   '/financeiro': typeof FinanceiroRoute
   '/inicio': typeof InicioRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/api/avisos-publicacoes': typeof ApiAvisosPublicacoesRoute
   '/clientes/$clientId': typeof ClientesClientIdRoute
   '/clientes/novo': typeof ClientesNovoRoute
 }
@@ -96,6 +104,7 @@ export interface FileRoutesById {
   '/financeiro': typeof FinanceiroRoute
   '/inicio': typeof InicioRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/api/avisos-publicacoes': typeof ApiAvisosPublicacoesRoute
   '/clientes/$clientId': typeof ClientesClientIdRoute
   '/clientes/novo': typeof ClientesNovoRoute
 }
@@ -109,6 +118,7 @@ export interface FileRouteTypes {
     | '/financeiro'
     | '/inicio'
     | '/reset-password'
+    | '/api/avisos-publicacoes'
     | '/clientes/$clientId'
     | '/clientes/novo'
   fileRoutesByTo: FileRoutesByTo
@@ -120,6 +130,7 @@ export interface FileRouteTypes {
     | '/financeiro'
     | '/inicio'
     | '/reset-password'
+    | '/api/avisos-publicacoes'
     | '/clientes/$clientId'
     | '/clientes/novo'
   id:
@@ -131,6 +142,7 @@ export interface FileRouteTypes {
     | '/financeiro'
     | '/inicio'
     | '/reset-password'
+    | '/api/avisos-publicacoes'
     | '/clientes/$clientId'
     | '/clientes/novo'
   fileRoutesById: FileRoutesById
@@ -143,6 +155,7 @@ export interface RootRouteChildren {
   FinanceiroRoute: typeof FinanceiroRoute
   InicioRoute: typeof InicioRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  ApiAvisosPublicacoesRoute: typeof ApiAvisosPublicacoesRoute
   ClientesClientIdRoute: typeof ClientesClientIdRoute
   ClientesNovoRoute: typeof ClientesNovoRoute
 }
@@ -198,6 +211,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/avisos-publicacoes': {
+      id: '/api/avisos-publicacoes'
+      path: '/api/avisos-publicacoes'
+      fullPath: '/api/avisos-publicacoes'
+      preLoaderRoute: typeof ApiAvisosPublicacoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/clientes/$clientId': {
       id: '/clientes/$clientId'
       path: '/clientes/$clientId'
@@ -223,6 +243,7 @@ const rootRouteChildren: RootRouteChildren = {
   FinanceiroRoute: FinanceiroRoute,
   InicioRoute: InicioRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  ApiAvisosPublicacoesRoute: ApiAvisosPublicacoesRoute,
   ClientesClientIdRoute: ClientesClientIdRoute,
   ClientesNovoRoute: ClientesNovoRoute,
 }
