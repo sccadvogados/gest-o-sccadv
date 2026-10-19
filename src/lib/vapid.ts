@@ -1,0 +1,2 @@
+/** Chave pública dos avisos no celular (Web Push). A chave privada fica só no servidor (segredo SCC_VAPID_PRIVATE_KEY). */
+export const VAPID_PUBLICA = "BBGKo6ttF-LJ91ppLR7cwH5IHi1Naet1wXwSZkxaH2RDPOxI9d87wJfx78I2rICU0B7q4b77avmYqqNyXahSLhw";
