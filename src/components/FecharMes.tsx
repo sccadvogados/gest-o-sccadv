@@ -129,8 +129,9 @@ export function FecharMes({ periodo, nomePeriodo, lancamentos }: { periodo: stri
   ].filter(Boolean);
 
   return (
-    <div className="ml-auto">
-      <Button variant="outline" onClick={() => setAberto(true)}>
+        <div>
+      <Button variant="outline" className="w-full sm:w-auto" onClick={() => setAberto(true)}>
+
         <Lock className="size-4" /> Fechar Mês
       </Button>
       <Dialog open={aberto} onOpenChange={setAberto}>
