@@ -701,7 +701,13 @@ function ContractActions({
             variant="ghost"
             size="icon"
             aria-label={arquivado ? "Reativar Contrato" : "Arquivar Contrato"}
-            title={arquivado ? "Reativar Contrato" : "Arquivar Contrato"}
+                        title={arquivado ? "Reativar Contrato" : "Arquivar Contrato"}
+            onClick={(event) => {
+              if (!arquivado && parcelasEmAberto > 0) {
+                event.preventDefault();
+                toast.error(`Não é possível arquivar: o contrato tem ${parcelasEmAberto} parcela${parcelasEmAberto > 1 ? "s" : ""} em aberto.`);
+              }
+            }}
           >
             {arquivado ? <ArchiveRestore className="size-4" /> : <Archive className="size-4" />}
           </Button>
