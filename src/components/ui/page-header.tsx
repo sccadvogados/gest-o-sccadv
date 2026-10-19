@@ -11,7 +11,7 @@ export interface PageHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
 function PageHeader({ title, subtitle, action, className, ...props }: PageHeaderProps) {
   return (
     <div
-      className={cn("flex items-start justify-between gap-4", className)}
+            className={cn("flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4", className)}
       {...props}
     >
       <div className="min-w-0">
