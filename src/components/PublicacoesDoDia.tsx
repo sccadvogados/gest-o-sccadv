@@ -103,7 +103,30 @@ async function buscarComunicacoes(data: string): Promise<Comunicacao[]> {
 }
 
 export function PublicacoesDoDia({ clients }: { clients: Array<{ id: string; name: string }> }) {
-  const resumirFn = useServerFn(resumirPublicacoes);
+    const resumirFn = useServerFn(resumirPublicacoes);
+  const navigate = useNavigate();
+
+  /** Abre a Agenda com o Novo Evento já preenchido a partir da publicação. */
+  function agendar(item: Publicacao, ato: string | undefined) {
+    const tipo = item.tipoDocumento ?? item.tipoComunicacao ?? "Publicação";
+    const descricao = [
+      ato ? `Ato: ${ato}` : "",
+      `Publicação DJEN de ${formatDate(item.data_disponibilizacao)} · ${[item.siglaTribunal, item.nomeOrgao].filter(Boolean).join(" – ")}`,
+      item.numeroprocessocommascara ? `Processo ${item.numeroprocessocommascara}` : "",
+      item.link ? `Documento: ${item.link}` : "",
+      "",
+      limparTeor(item.texto).slice(0, 1500),
+    ].filter((linha, i) => linha || i === 4).join("\n");
+    try {
+      sessionStorage.setItem(
+        "scc-agendar-publicacao",
+        JSON.stringify({ titulo: `${tipo}${item.numeroprocessocommascara ? ` – ${item.numeroprocessocommascara}` : ""}`, descricao, cliente_id: item.cliente.id }),
+      );
+    } catch {
+      /* sem armazenamento: abre a Agenda mesmo assim */
+    }
+    void navigate({ to: "/agenda" });
+  }
   const [data, setData] = useState(todayISO());
   const [aberta, setAberta] = useState<number | null>(null);
 
