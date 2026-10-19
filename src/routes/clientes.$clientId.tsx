@@ -272,11 +272,11 @@ function ClientDetailPage() {
         title={client.name}
         subtitle={`${client.person_type === "PJ" ? "Pessoa Jurídica" : "Pessoa Física"} · ${client.cpf_cnpj || "CPF/CNPJ não informado"}`}
         action={
-          <div className="flex flex-wrap gap-2">
+                    <div className="grid w-full grid-cols-2 gap-2 *:w-full sm:flex sm:w-auto sm:flex-wrap sm:*:w-auto">
                         <EditClientDialog clientId={clientId} client={client} />
             <DeleteClientDialog clientId={clientId} clientName={client.name} />
             {client.drive_folder_url ? (
-              <Button asChild variant="outline">
+              <Button asChild variant="outline" className="col-span-2">
                 <a href={client.drive_folder_url} target="_blank" rel="noreferrer">
                   <FolderOpen className="size-4" />
                                     Abrir Pasta no Drive
