@@ -21,7 +21,8 @@ export const MODULOS = [
   { valor: "parcelas", rotulo: "Parcelas", tabelas: ["installments"] },
   { valor: "caixa", rotulo: "Livro-Caixa", tabelas: ["lancamentos", "fechamentos"] },
   { valor: "agenda", rotulo: "Agenda", tabelas: ["eventos", "feriados"] },
-  { valor: "cadastros", rotulo: "Parceiros e Captadores", tabelas: ["parceiros", "captadores"] },
+    { valor: "cadastros", rotulo: "Parceiros e Captadores", tabelas: ["parceiros", "captadores"] },
+  { valor: "arquivos", rotulo: "Arquivos", tabelas: ["drive"] },
   { valor: "configuracoes", rotulo: "Configurações", tabelas: ["perfis", "procuracao_exemplos", "tribunais"] },
 ];
 
@@ -47,7 +48,7 @@ const ROTULOS: Record<string, string> = {
   revisar: "Revisar", distribuido: "Distribuído", lote_id: "Lote de Distribuição", origem: "Origem", titulo: "Título",
   data_inicio: "Início", data_fim: "Fim", dia_inteiro: "Dia Inteiro", local_link: "Local ou Link", numero_processo: "Nº do Processo",
   orgao_vara: "Órgão/Vara", exito_percentual: "% do Êxito", oab_numero: "OAB", oab_uf: "UF da OAB", documento: "CPF/CNPJ",
-  ativo: "Ativo", papel: "Papel", entradas: "Entradas", saidas: "Saídas", saldo_final: "Saldo Final", mes: "Mês",
+    ativo: "Ativo", papel: "Papel", pasta_id: "Pasta (ID)", tamanho: "Tamanho (bytes)", entradas: "Entradas", saidas: "Saídas", saldo_final: "Saldo Final", mes: "Mês",
 };
 const DINHEIRO = ["total_value", "amount", "valor", "entradas", "saidas", "saldo_final"];
 const OCULTOS = ["id", "created_at", "updated_at", "created_by", "parcelas_rascunho", "drive_folder_id", "drive_folder_url", "google_event_id"];
