@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { CalendarPlus, Newspaper } from "lucide-react";
 import { Fragment, useEffect, useState } from "react";
 
+import { AtivarAvisos } from "@/components/AtivarAvisos";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatDate, todayISO } from "@/lib/format";
