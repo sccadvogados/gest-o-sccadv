@@ -280,7 +280,7 @@ function SummaryCard({ label, description, value, color, ativo, onClick }: { lab
       onClick={onClick}
       aria-pressed={ativo}
       title={ativo ? "Clique para mostrar tudo" : "Clique para ver os detalhes"}
-      className={`panel flex min-h-28 cursor-pointer items-center justify-between border-t-4 bg-card p-5 text-left transition hover:shadow-md ${ativo ? "ring-2 ring-offset-2" : ""}`}
+            className={`panel flex cursor-pointer flex-col-reverse items-start justify-between gap-1 border-t-4 bg-card p-3.5 text-left transition hover:shadow-md sm:min-h-28 sm:flex-row sm:items-center sm:p-5 ${ativo ? "ring-2 ring-offset-2" : ""}`}
       style={{ borderTopColor: color, ["--tw-ring-color" as string]: color }}
     >
       <span>
