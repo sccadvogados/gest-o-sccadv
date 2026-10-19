@@ -137,7 +137,13 @@ function RootComponent() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
-  const publicPaths = pathname === "/auth" || pathname === "/reset-password";
+    const publicPaths = pathname === "/auth" || pathname === "/reset-password";
+
+  // App no celular: registra o service worker (fora da pré-visualização do Lovable).
+  useEffect(() => {
+    if (typeof window === "undefined" || !("serviceWorker" in navigator) || window.self !== window.top) return;
+    void navigator.serviceWorker.register("/sw.js").catch(() => undefined);
+  }, []);
 
   useEffect(() => {
     if (!loading && !user && !publicPaths) {
