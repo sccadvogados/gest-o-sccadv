@@ -18,7 +18,11 @@ export const Route = createFileRoute("/auditoria")({
   head: () => ({
     meta: [
       { title: "Auditoria | Gestão Administrativa | SCC Adv" },
+      { name: "description", content: "Histórico de alterações e acessos à gestão administrativa do escritório SCC Advogados." },
       { property: "og:title", content: "Auditoria | Gestão Administrativa | SCC Adv" },
+      { property: "og:description", content: "Histórico de alterações e acessos à gestão administrativa do escritório SCC Advogados." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: AuditoriaPage,
