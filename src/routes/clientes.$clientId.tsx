@@ -163,11 +163,14 @@ function ClientDetailPage() {
     queryFn: async () => {
       const { data, error } = await officeDatabase(supabase)
         .from("contracts")
-        .select("*, installments(*)")
+                .select("*, installments(*)")
         .eq("client_id", clientId)
         .order("created_at");
       if (error) throw error;
-      return data;
+      // Arquivados ficam depois dos ativos.
+      return [...(data ?? [])].sort(
+        (a, b) => Number(a.situacao === "arquivado") - Number(b.situacao === "arquivado"),
+      );
     },
   });
 
