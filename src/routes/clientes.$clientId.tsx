@@ -284,6 +284,29 @@ function ClientDetailPage() {
         }
       />
 
+            
+      {/* Ficha em abas: Dados | Contratos | Arquivos | Agenda */}
+      <Tabs defaultValue="dados" className="mt-6">
+        <TabsList className="h-auto w-full justify-start gap-1 rounded-none border-b border-[#E6E1D8] bg-transparent p-0">
+          {(
+            [
+              ["dados", "Dados"],
+              ["contratos", "Contratos"],
+              ["arquivos", "Arquivos"],
+              ["agenda", "Agenda"],
+            ] as const
+          ).map(([valor, rotulo]) => (
+            <TabsTrigger
+              key={valor}
+              value={valor}
+              className="-mb-px rounded-none border-b-2 border-transparent px-4 py-2.5 text-[#6B7280] data-[state=active]:border-[#B07A4F] data-[state=active]:bg-transparent data-[state=active]:text-[#0F2340] data-[state=active]:shadow-none"
+            >
+              {rotulo}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+
+        <TabsContent value="dados">
             <section className="panel mt-6 grid gap-5 rounded-xl border border-[#E6D6C4] border-t-[3px] border-t-[#D4A782] bg-white p-6 shadow-panel sm:grid-cols-2">
                 <Field label="Nacionalidade" value={client.nationality} />
         {client.person_type === "PJ" ? <Field label="Descrição da Pessoa Jurídica" value={client.pj_descricao ?? null} /> : null}
