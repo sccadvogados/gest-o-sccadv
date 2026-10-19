@@ -543,8 +543,8 @@ export function AgendaScreen() {
       <img src="/imagens/imagem-e3c618da.png" alt="" aria-hidden="true" className="hidden" />
       <TooltipProvider>
         <div className="flex flex-wrap items-end justify-between gap-4">
-          <div><h1 className="text-[32px] font-bold leading-tight text-[#0F2340]">Prazos e Reuniões</h1><p className="mt-1 text-sm text-muted-foreground">Acompanhe prazos, reuniões e compromissos do escritório.</p></div>
-          <div className="flex items-center gap-3">
+                    <div><h1 className="text-[26px] font-bold leading-tight text-[#0F2340] sm:text-[32px]">Prazos e Reuniões</h1><p className="mt-1 text-sm text-muted-foreground">Acompanhe prazos, reuniões e compromissos do escritório.</p></div>
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <div className="flex rounded-md border bg-card p-1">
               <Button size="sm" variant={view === "lista" ? "secondary" : "ghost"} onClick={() => setView("lista")}>Lista</Button>
                             <Button size="sm" variant={view === "mes" ? "secondary" : "ghost"} onClick={() => setView("mes")}>Mês</Button>
