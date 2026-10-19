@@ -173,7 +173,7 @@ export function ContractCostSummary({
                 </div>
                 <div className="rounded-lg border border-border border-t-[3px] border-t-[#C08A5E] px-3 py-2">
                   <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">A Receber</p>
-                  <p className="mt-1 font-semibold tabular-nums text-[#0F2340]">{formatCurrency(aReceber)}</p>
+                  <p className="mt-1 whitespace-nowrap font-semibold tabular-nums text-[#0F2340]">{formatCurrency(aReceber)}</p>
                 </div>
                 <div className="rounded-lg border border-border border-t-[3px] border-t-[#B42318] px-3 py-2">
                   <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Em Atraso</p>
