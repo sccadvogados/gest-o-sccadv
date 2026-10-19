@@ -543,8 +543,8 @@ export function AgendaScreen() {
       <img src="/imagens/imagem-e3c618da.png" alt="" aria-hidden="true" className="hidden" />
       <TooltipProvider>
         <div className="flex flex-wrap items-end justify-between gap-4">
-          <div><h1 className="text-[32px] font-bold leading-tight text-[#0F2340]">Prazos e Reuniões</h1><p className="mt-1 text-sm text-muted-foreground">Acompanhe prazos, reuniões e compromissos do escritório.</p></div>
-          <div className="flex items-center gap-3">
+                    <div><h1 className="text-[26px] font-bold leading-tight text-[#0F2340] sm:text-[32px]">Prazos e Reuniões</h1><p className="mt-1 text-sm text-muted-foreground">Acompanhe prazos, reuniões e compromissos do escritório.</p></div>
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <div className="flex rounded-md border bg-card p-1">
               <Button size="sm" variant={view === "lista" ? "secondary" : "ghost"} onClick={() => setView("lista")}>Lista</Button>
                             <Button size="sm" variant={view === "mes" ? "secondary" : "ghost"} onClick={() => setView("mes")}>Mês</Button>
@@ -572,13 +572,13 @@ export function AgendaScreen() {
           </div>
         </div>
 
-        <div className="mt-6 grid gap-4 md:grid-cols-3">
+                <div className="mt-5 grid grid-cols-3 gap-2 sm:gap-4">
           <SummaryCard label="VENCIDOS" description="Não cumpridos" value={counts.vencidos} color="#B42318" active={cardFilter === "vencidos"} onClick={() => setCardFilter(cardFilter === "vencidos" ? "todos" : "vencidos")} />
           <SummaryCard label="HOJE" description="Compromissos de hoje" value={counts.hoje} color="#C48B5F" active={cardFilter === "hoje"} onClick={() => setCardFilter(cardFilter === "hoje" ? "todos" : "hoje")} />
           <SummaryCard label="PRÓXIMOS 7 DIAS" description="Compromissos futuros" value={counts.proximos} color="#0C2340" active={cardFilter === "proximos"} onClick={() => setCardFilter(cardFilter === "proximos" ? "todos" : "proximos")} />
         </div>
 
-        <div className="mt-6 flex flex-wrap items-center gap-3"><div className="relative min-w-64 flex-1"><Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" /><Input className="pl-9" placeholder="Buscar evento…" value={search} onChange={(event) => setSearch(event.target.value)} /></div>
+                <div className="mt-6 flex flex-wrap items-center gap-3"><div className="relative w-full flex-1 sm:w-auto sm:min-w-64"><Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" /><Input className="pl-9" placeholder="Buscar evento…" value={search} onChange={(event) => setSearch(event.target.value)} /></div>
           <Select value={typeFilter} onValueChange={(value: "todos" | EventType) => setTypeFilter(value)}><SelectTrigger className="w-44"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="todos">Todos os Tipos</SelectItem>{Object.entries(labels).map(([value, label]) => <SelectItem key={value} value={value}>{label}</SelectItem>)}</SelectContent></Select>
           <Select value={responsibleFilter} onValueChange={setResponsibleFilter}><SelectTrigger className="w-44"><SelectValue placeholder="Responsável" /></SelectTrigger><SelectContent><SelectItem value="todos">Todos os Responsáveis</SelectItem>{responsibleNames.map((name) => <SelectItem key={name} value={name}>{name}</SelectItem>)}</SelectContent></Select>
           <Select value={statusFilter} onValueChange={(value: "todos" | EventStatus) => setStatusFilter(value)}><SelectTrigger className="w-44"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="todos">Todas as Situações</SelectItem><SelectItem value="pendente">Pendente</SelectItem><SelectItem value="cumprido">Cumprido</SelectItem><SelectItem value="cancelado">Cancelado</SelectItem></SelectContent></Select>
@@ -593,7 +593,7 @@ export function AgendaScreen() {
 }
 
 function SummaryCard({ label, description, value, color, active, onClick }: { label: string; description: string; value: number; color: string; active: boolean; onClick: () => void }) {
-  return <button type="button" onClick={onClick} className={`panel flex min-h-28 items-center justify-between border-t-4 p-5 text-left transition-shadow hover:shadow-md ${active ? "ring-2 ring-accent" : ""}`} style={{ borderTopColor: color }}><span><span className="block text-xs font-semibold tracking-wide text-muted-foreground">{label}</span><span className="mt-1 block text-sm text-muted-foreground">{description}</span></span><span className="text-4xl font-semibold" style={{ color }}>{value}</span></button>;
+    return <button type="button" onClick={onClick} className={`panel flex flex-col-reverse items-start justify-between gap-1 border-t-4 p-3 text-left transition-shadow hover:shadow-md sm:min-h-28 sm:flex-row sm:items-center sm:p-5 ${active ? "ring-2 ring-accent" : ""}`} style={{ borderTopColor: color }}><span><span className="block text-xs font-semibold tracking-wide text-muted-foreground">{label}</span><span className="mt-1 block text-sm text-muted-foreground">{description}</span></span><span className="text-4xl font-semibold" style={{ color }}>{value}</span></button>;
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) { return <div className="grid gap-2"><Label>{label}</Label>{children}</div>; }
