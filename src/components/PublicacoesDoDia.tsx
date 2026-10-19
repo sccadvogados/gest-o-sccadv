@@ -229,6 +229,13 @@ export function PublicacoesDoDia({ clients }: { clients: Array<{ id: string; nam
                         className="mt-1 block text-xs text-[#B07A4F] underline underline-offset-4 hover:text-[#0F2340]"
                       >
                         {aberta === item.id ? "Ocultar Teor ▴" : "Ver Teor ▾"}
+                                            </button>
+                      <button
+                        type="button"
+                        onClick={() => agendar(item, ato)}
+                        className="mt-2 inline-flex items-center gap-1 rounded-md border border-[#D4A782] bg-white px-2.5 py-1 text-xs font-medium text-[#0F2340] hover:bg-[#F4EDE4]"
+                      >
+                        <CalendarPlus className="size-3.5" /> Agendar
                       </button>
                     </TableCell>
                   </TableRow>
