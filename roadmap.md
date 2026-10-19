@@ -1,5 +1,9 @@
 # SCC Advogados — roadmap
 
+## Solicitação atual
+- [ ] Salvar os quatro ícones enviados em public/icons/ com os nomes originais.
+- [ ] Corrigir o registro da página de Auditoria e verificar os erros da prévia.
+
 ## Revisão dos alertas de monitoramento
 - [x] Verificar formulário de contratos e mensagem de acesso não liberado: os quatro alertas descrevem estados já corrigidos.
 - [x] Confirmar numeração de contratos e parte contrária na Agenda no banco atual.
