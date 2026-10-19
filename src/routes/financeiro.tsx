@@ -152,7 +152,7 @@ function FinancePage() {
           <LivroCaixa />
         </TabsContent>
         <TabsContent value="parcelas">
-      <div className="mt-6 grid gap-4 sm:grid-cols-3">
+            <div className="mt-5 grid gap-3 sm:mt-6 sm:grid-cols-3 sm:gap-4">
         <Summary label="Recebido" value={received} />
         <Summary label="A receber" value={pending} />
                 <Summary label="Em atraso" value={overdue} tone="danger" />
@@ -278,14 +278,14 @@ function Summary({
 }) {
   return (
         <div
-      className={`panel border-t-4 p-5 ${
+            className={`panel flex items-center justify-between gap-3 border-t-4 px-4 py-3 sm:block sm:p-5 ${
         tone === "danger" ? "border-t-[#B42318]" : label === "A receber" ? "border-t-[#C08A5E]" : "border-t-[#0F2340]"
       }`}
     >
       <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{label}</p>
       <p
         className={
-                                        tone === "danger" ? "mt-2 whitespace-nowrap text-2xl font-semibold tabular-nums text-[#B42318] xl:text-3xl" : "mt-2 whitespace-nowrap text-2xl font-semibold tabular-nums text-[#0F2340] xl:text-3xl"
+                                                                                tone === "danger" ? "whitespace-nowrap text-lg font-semibold tabular-nums text-[#B42318] sm:mt-2 sm:text-2xl xl:text-3xl" : "whitespace-nowrap text-lg font-semibold tabular-nums text-[#0F2340] sm:mt-2 sm:text-2xl xl:text-3xl"
         }
       >
         {formatCurrency(value)}
