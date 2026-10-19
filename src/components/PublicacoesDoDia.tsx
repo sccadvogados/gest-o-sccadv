@@ -2,8 +2,9 @@ import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { CalendarPlus, Newspaper } from "lucide-react";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 
+import { AtivarAvisos } from "@/components/AtivarAvisos";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatDate, todayISO } from "@/lib/format";
@@ -176,9 +177,27 @@ export function PublicacoesDoDia({ clients }: { clients: Array<{ id: string; nam
           // sem resumo: a coluna Ato mostra o tipo do documento
         }
       }
-      return cache;
+            return cache;
     },
   });
+
+  // Toque no aviso do celular: abre /inicio?data=AAAA-MM-DD&agendar=<id> → já abre o Agendar daquela publicação.
+  const [pedidoAgendar, setPedidoAgendar] = useState<number | null>(null);
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const id = Number(params.get("agendar"));
+    if (!id) return;
+    const dia = params.get("data");
+    if (dia && /^\d{4}-\d{2}-\d{2}$/.test(dia)) setData(dia);
+    setPedidoAgendar(id);
+    window.history.replaceState(window.history.state, "", window.location.pathname);
+  }, []);
+  useEffect(() => {
+    if (!pedidoAgendar || isLoading || resumindo) return;
+    const item = publicacoes.find((p) => p.id === pedidoAgendar);
+    setPedidoAgendar(null);
+    if (item) agendar(item, atos[String(item.id)]);
+  }, [pedidoAgendar, isLoading, resumindo, publicacoes, atos]);
 
   return (
     <section className="panel overflow-hidden rounded-xl border border-t-[3px] border-t-accent bg-card text-card-foreground">
@@ -187,7 +206,10 @@ export function PublicacoesDoDia({ clients }: { clients: Array<{ id: string; nam
           <Newspaper className="size-4" />
           {`Publicações do Dia${isLoading ? "" : ` (${publicacoes.length})`}`}
         </h2>
-        <Input type="date" className="h-9 w-44 bg-white sm:w-[160px]" value={data} max={todayISO()} onChange={(e) => e.target.value && setData(e.target.value)} />
+                <div className="flex items-center gap-2">
+          <Input type="date" className="h-9 w-44 bg-white sm:w-[160px]" value={data} max={todayISO()} onChange={(e) => e.target.value && setData(e.target.value)} />
+          <AtivarAvisos />
+        </div>
       </div>
 
       {isLoading ? <p className="px-5 pb-5 text-sm text-muted-foreground">Consultando o Diário de Justiça Eletrônico Nacional…</p> : null}

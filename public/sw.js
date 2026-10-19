@@ -10,5 +10,39 @@ self.addEventListener("install", () => self.skipWaiting());
 self.addEventListener("activate", (event) => event.waitUntil(self.clients.claim()));
 self.addEventListener("fetch", (event) => {
   if (event.request.mode !== "navigate") return; // só páginas; o resto segue normal
-  event.respondWith(fetch(event.request).catch(() => new Response(AVISO, { headers: { "Content-Type": "text/html; charset=utf-8" } })));
+    event.respondWith(fetch(event.request).catch(() => new Response(AVISO, { headers: { "Content-Type": "text/html; charset=utf-8" } })));
+});
+// Avisos de publicações (push). O servidor manda título, texto e a tela a abrir.
+self.addEventListener("push", (event) => {
+  let dados = {};
+  try {
+    dados = event.data ? event.data.json() : {};
+  } catch (erro) {
+    dados = { body: event.data ? event.data.text() : "" };
+  }
+  event.waitUntil(
+    self.registration.showNotification(dados.title || "SCC Adv Gestão", {
+      body: dados.body || "",
+      icon: "/icons/icon-192.png",
+      badge: "/icons/badge-96.png",
+      tag: dados.tag || "scc-aviso",
+      data: { url: dados.url || "/inicio" },
+    }),
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const url = new URL((event.notification.data && event.notification.data.url) || "/inicio", self.location.origin).href;
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((janelas) => {
+      for (const janela of janelas) {
+        if ("focus" in janela) {
+          janela.navigate(url);
+          return janela.focus();
+        }
+      }
+      return self.clients.openWindow(url);
+    }),
+  );
 });
