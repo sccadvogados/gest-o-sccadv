@@ -298,9 +298,9 @@ export function LivroCaixa() {
 
   return (
     <div className="mt-6">
-      <div className="flex flex-wrap items-center gap-2">
+            <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
         <Select value={periodo} onValueChange={setPeriodo}>
-          <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-full sm:w-44"><SelectValue /></SelectTrigger>
           <SelectContent>
             {MESES.map((mes, index) => {
               const valor = `${anoAtual}-${String(index + 1).padStart(2, "0")}`;
@@ -310,7 +310,7 @@ export function LivroCaixa() {
           </SelectContent>
         </Select>
         <Select value={tipo} onValueChange={setTipo}>
-          <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-full sm:w-40"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="todos">Todos os Tipos</SelectItem>
             <SelectItem value="entrada">Entradas</SelectItem>
@@ -318,21 +318,23 @@ export function LivroCaixa() {
           </SelectContent>
         </Select>
         <Select value={categoria} onValueChange={setCategoria}>
-          <SelectTrigger className="w-56"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-full sm:w-56"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="todas">Todas as Categorias</SelectItem>
             {[...CATEGORIAS_ENTRADA, ...CATEGORIAS_SAIDA].map((nome) => <SelectItem key={nome} value={nome}>{nome}</SelectItem>)}
           </SelectContent>
         </Select>
         <Select value={socio} onValueChange={setSocio}>
-          <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-full sm:w-40"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="todos">Todos os Sócios</SelectItem>
                                     {SOCIOS.map((sigla) => <SelectItem key={sigla} value={sigla}>{NOMES_SOCIO[sigla]}</SelectItem>)}
           </SelectContent>
         </Select>
-                        <FecharMes periodo={periodo} nomePeriodo={nomePeriodo} lancamentos={todos} />
-        <RelatorioMes periodo={periodo} nomePeriodo={nomePeriodo} lancamentos={todos} />
+        <div className="col-span-2 grid grid-cols-2 gap-2 sm:ml-auto sm:flex sm:items-center">
+          <FecharMes periodo={periodo} nomePeriodo={nomePeriodo} lancamentos={todos} />
+          <RelatorioMes periodo={periodo} nomePeriodo={nomePeriodo} lancamentos={todos} />
+        </div>
         <Button className="hidden md:inline-flex" onClick={() => setForm({ ...FORM_VAZIO, data: hoje })}>
           <Plus className="size-4" />
           Novo Lançamento
