@@ -633,7 +633,10 @@ function ContractActions({
         const [editOpen, setEditOpen] = useState(false);
   const [reviewOpen, setReviewOpen] = useState(false);
   const hasPaidInstallment = (contract.installments ?? []).some((installment) => installment.status === "Pago");
-  const arquivado = contract.situacao === "arquivado";
+    const arquivado = contract.situacao === "arquivado";
+  const parcelasEmAberto = (contract.installments ?? []).filter(
+    (installment) => installment.status !== "Pago" && installment.status !== "Cancelado",
+  ).length;
   const arquivarFn = useServerFn(arquivarContrato);
   const arquivar = useMutation({
     mutationFn: () => arquivarFn({ data: { contrato_id: contract.id, reativar: arquivado } }),
