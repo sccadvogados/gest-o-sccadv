@@ -184,7 +184,8 @@ function FinancePage() {
         </div>
       </section>
 
-      <div className="panel mt-6 overflow-hidden">
+            <CartoesParcelas lista={list} carregando={isLoading} ocupado={markPaid.isPending} onBaixar={(id) => markPaid.mutate(id)} />
+      <div className="panel mt-6 hidden overflow-hidden md:block">
         <Table>
           <TableHeader>
             <TableRow>
