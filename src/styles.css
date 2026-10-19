@@ -188,6 +188,17 @@
   min-width: 0;
 }
 
+/* Campo de data: no iPhone a data não quebra em duas linhas e fica alinhada à esquerda. */
+input[type="date"] {
+  -webkit-appearance: none;
+  appearance: none;
+  white-space: nowrap;
+}
+input[type="date"]::-webkit-date-and-time-value {
+  text-align: left;
+  margin: 0;
+}
+
 @media (max-width: 600px) {
   .login-card {
     height: auto;
