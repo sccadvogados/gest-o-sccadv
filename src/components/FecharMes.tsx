@@ -101,7 +101,7 @@ export function FecharMes({ periodo, nomePeriodo, lancamentos }: { periodo: stri
 
   if (fechamento) {
     return (
-      <div className="ml-auto flex flex-wrap items-center gap-2 text-sm">
+            <div className="flex flex-wrap items-center gap-2 text-sm">
         <span
           className="inline-flex items-center gap-1.5 rounded-full bg-[#E7EEF6] px-3 py-1 text-xs font-medium text-[#0F2340]"
           title={`Fechado em ${formatDate(fechamento.fechado_em)}${fechamento.fechado_por_email ? ` por ${fechamento.fechado_por_email}` : ""} · Saldo final ${formatCurrency(fechamento.saldo_final)}`}
