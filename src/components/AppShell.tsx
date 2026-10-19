@@ -82,7 +82,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                     <Link to="/inicio" aria-label="Ir para o Início" className="rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
             <BrandMark />
           </Link>
-          <nav className="flex items-center gap-1">
+                    <nav className="hidden items-center gap-1 md:flex">
                                                                                                 {itensMenu.map(({ to, label, icon }) => {
               const NavItemIcon = icon;
               return (
