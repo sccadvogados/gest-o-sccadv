@@ -5,6 +5,7 @@ import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
 import { LivroCaixa } from "@/components/LivroCaixa";
+import { Indicadores } from "@/components/Indicadores";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageHeader } from "@/components/ui/page-header";
 import { SituationBadge } from "@/routes/clientes.$clientId";
