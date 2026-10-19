@@ -42,6 +42,8 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { PercentInput } from "@/components/PercentInput";
+import { ArquivosCliente } from "@/components/ArquivosCliente";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SOCIOS, SociosField, TODOS_SOCIOS } from "@/components/SociosField";
 import { Label } from "@/components/ui/label";
 import { PageHeader } from "@/components/ui/page-header";
@@ -282,6 +284,29 @@ function ClientDetailPage() {
         }
       />
 
+            
+      {/* Ficha em abas: Dados | Contratos | Arquivos | Agenda */}
+      <Tabs defaultValue="dados" className="mt-6">
+        <TabsList className="h-auto w-full justify-start gap-1 rounded-none border-b border-[#E6E1D8] bg-transparent p-0">
+          {(
+            [
+              ["dados", "Dados"],
+              ["contratos", "Contratos"],
+              ["arquivos", "Arquivos"],
+              ["agenda", "Agenda"],
+            ] as const
+          ).map(([valor, rotulo]) => (
+            <TabsTrigger
+              key={valor}
+              value={valor}
+              className="-mb-px rounded-none border-b-2 border-transparent px-4 py-2.5 text-[#6B7280] data-[state=active]:border-[#B07A4F] data-[state=active]:bg-transparent data-[state=active]:text-[#0F2340] data-[state=active]:shadow-none"
+            >
+              {rotulo}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+
+        <TabsContent value="dados">
             <section className="panel mt-6 grid gap-5 rounded-xl border border-[#E6D6C4] border-t-[3px] border-t-[#D4A782] bg-white p-6 shadow-panel sm:grid-cols-2">
                 <Field label="Nacionalidade" value={client.nationality} />
         {client.person_type === "PJ" ? <Field label="Descrição da Pessoa Jurídica" value={client.pj_descricao ?? null} /> : null}
@@ -342,10 +367,12 @@ function ClientDetailPage() {
               ))}
             </TableBody>
           </Table>
-        </div>
+                </div>
       </section>
+        </TabsContent>
 
-      <section className="mt-8">
+                <TabsContent value="contratos">
+      <section className="mt-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
                     <h2 className="text-xl font-semibold text-[#0F2340]">Contratos e Condições de Pagamento</h2>
           <NewContractDialog clientId={clientId} personType={client.person_type as "PF" | "PJ"} />
@@ -462,9 +489,15 @@ function ClientDetailPage() {
             </Table>
           </div>
         ))}
-            </section>
+                        </section>
+        </TabsContent>
 
-      <section className="mt-8">
+        <TabsContent value="arquivos">
+          <ArquivosCliente clienteId={clientId} />
+        </TabsContent>
+
+        <TabsContent value="agenda">
+      <section className="mt-6">
         <h2 className="text-xl font-semibold text-[#0F2340]">Prazos e Reuniões</h2>
         <div className="panel mt-3 overflow-hidden rounded-xl border border-[#E6D6C4] border-t-[3px] border-t-[#D4A782] bg-white shadow-panel">
           <Table>
@@ -507,8 +540,10 @@ function ClientDetailPage() {
               })}
             </TableBody>
           </Table>
-        </div>
+                </div>
       </section>
+        </TabsContent>
+      </Tabs>
     </AppShell>
   );
 }
