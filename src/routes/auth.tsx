@@ -185,7 +185,7 @@ function AuthPage() {
           </div>
         </form>
               </main>
-      <footer className="mt-[22px] text-center text-[12px] text-[#94A3B8]">© 2026 SCC Advogados · Acesso Restrito</footer>
+      <footer className="mt-[22px] text-center text-[12px] text-[#94A3B8]">© Souza, Craveiro &amp; Corradi Advogados</footer>
     </div>
   );
 }
