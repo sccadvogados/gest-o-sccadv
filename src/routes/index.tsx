@@ -120,8 +120,8 @@ function ClientsPage() {
         )}
       />
 
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-        <div className="relative min-w-[280px] flex-1">
+                        <div className="mt-8 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3">
+        <div className="relative col-span-2 sm:min-w-[280px] sm:flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
             placeholder="Buscar cliente…"
@@ -132,6 +132,7 @@ function ClientsPage() {
         </div>
         <Button
           type="button"
+          className="w-full sm:w-auto"
           variant={onlyIncomplete ? "default" : "outline"}
           onClick={() => setOnlyIncomplete((current) => !current)}
           aria-pressed={onlyIncomplete}
@@ -139,13 +140,13 @@ function ClientsPage() {
           <Filter className="size-4" />
           Somente Incompletos
         </Button>
-        <div className="ml-auto flex min-w-44 items-center gap-3 rounded-xl border border-[#E6E1D8] bg-white px-4 py-3 shadow-sm">
-          <div className="rounded-lg bg-[#F1EEE7] p-2">
+        <div className="flex items-center justify-center gap-3 rounded-xl border border-[#E6E1D8] bg-white px-3 py-1.5 shadow-sm sm:ml-auto sm:min-w-44 sm:justify-start sm:px-4 sm:py-3">
+          <div className="hidden rounded-lg bg-[#F1EEE7] p-2 sm:block">
             <BriefcaseBusiness className="size-5 text-accent" />
           </div>
-          <div>
+          <div className="flex flex-row-reverse items-baseline gap-1.5 sm:block">
             <p className="text-xs text-muted-foreground">Contratos Ativos</p>
-            <p className="text-xl font-semibold tabular-nums">
+            <p className="text-base font-semibold tabular-nums sm:text-xl">
                             {contractCountsLoading ? "—" : totalActiveProcesses}
             </p>
           </div>
