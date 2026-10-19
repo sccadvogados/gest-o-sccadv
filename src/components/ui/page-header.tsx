@@ -15,7 +15,7 @@ function PageHeader({ title, subtitle, action, className, ...props }: PageHeader
       {...props}
     >
       <div className="min-w-0">
-        <h1 className="text-[32px] font-bold leading-tight text-[#0F2340]">{title}</h1>
+                <h1 className="text-[26px] font-bold leading-tight text-[#0F2340] sm:text-[32px]">{title}</h1>
         {subtitle ? <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p> : null}
       </div>
       {action ? <div className="shrink-0">{action}</div> : null}
