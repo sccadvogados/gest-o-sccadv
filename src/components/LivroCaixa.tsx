@@ -598,7 +598,7 @@ function Card({ titulo, valor, cor, perigo }: { titulo: string; valor: number; c
   return (
         <div className="panel border-t-4 p-3.5 sm:p-5" style={{ borderTopColor: cor }}>
       <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{titulo}</p>
-                                                <p className={`mt-2 whitespace-nowrap text-xl font-semibold tabular-nums xl:text-2xl ${perigo ? "text-[#B42318]" : "text-[#0F2340]"}`}>{formatCurrency(valor)}</p>
+                                                                                                <p className={`mt-1.5 whitespace-nowrap text-base font-semibold tabular-nums sm:mt-2 sm:text-xl xl:text-2xl ${perigo ? "text-[#B42318]" : "text-[#0F2340]"}`}>{formatCurrency(valor)}</p>
     </div>
   );
 }
