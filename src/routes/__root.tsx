@@ -82,7 +82,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+            { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
+      // App no celular (PWA)
+      { name: "theme-color", content: "#0F2340" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "default" },
+      { name: "apple-mobile-web-app-title", content: "SCCAdv" },
       { title: "Gestão Administrativa | SCC Adv" },
       {
         name: "description",
@@ -109,7 +115,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap",
       },
-      { rel: "icon", href: "/favicon.png", type: "image/png" },
+            { rel: "icon", href: "/favicon.png", type: "image/png" },
+      { rel: "manifest", href: "/manifest.webmanifest" },
+      { rel: "apple-touch-icon", href: "/icons/apple-touch-icon.png" },
     ],
   }),
   shellComponent: RootShell,
@@ -137,7 +145,13 @@ function RootComponent() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
-  const publicPaths = pathname === "/auth" || pathname === "/reset-password";
+    const publicPaths = pathname === "/auth" || pathname === "/reset-password";
+
+  // App no celular: registra o service worker (fora da pré-visualização do Lovable).
+  useEffect(() => {
+    if (typeof window === "undefined" || !("serviceWorker" in navigator) || window.self !== window.top) return;
+    void navigator.serviceWorker.register("/sw.js").catch(() => undefined);
+  }, []);
 
   useEffect(() => {
     if (!loading && !user && !publicPaths) {
