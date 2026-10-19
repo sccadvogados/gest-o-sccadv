@@ -371,6 +371,32 @@ export function AgendaScreen() {
     },
   });
 
+  
+
+  // "Agendar" vindo das Publicações do Dia: abre o Novo Evento já preenchido (uma vez só).
+  const agendouPublicacao = useRef(false);
+  useEffect(() => {
+    if (agendouPublicacao.current || typeof window === "undefined") return;
+    let dados: { titulo?: string; descricao?: string; cliente_id?: string } | null = null;
+    try {
+      dados = JSON.parse(sessionStorage.getItem("scc-agendar-publicacao") ?? "null");
+    } catch {
+      dados = null;
+    }
+    if (!dados) return;
+    if (dados.cliente_id && clients.length === 0) return; // espera a lista de clientes carregar
+    agendouPublicacao.current = true;
+    try {
+      sessionStorage.removeItem("scc-agendar-publicacao");
+    } catch {
+      /* sem armazenamento: segue */
+    }
+    setForm({ ...emptyForm, ...defaultTimedValues(), tipo: "prazo", titulo: dados.titulo ?? "", descricao: dados.descricao ?? "", cliente_id: dados.cliente_id ?? "" });
+    setResponsibleOtherSelected(false);
+    setClientSearch(clients.find((client) => client.id === dados?.cliente_id)?.name ?? "");
+    setOpen(true);
+  }, [clients]);
+
   const { data: holidays = [] } = useQuery({
     queryKey: ["feriados"],
     queryFn: async () => {
