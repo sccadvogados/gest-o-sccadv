@@ -547,6 +547,9 @@ export function LivroCaixa() {
         
       </div>
 
+      
+      <BotaoFlutuante onClick={() => setForm({ ...FORM_VAZIO, data: hoje })}>Lançamento</BotaoFlutuante>
+
       <Dialog open={form !== null} onOpenChange={(aberto) => { if (!aberto) setForm(null); }}>
                                         <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
           <DialogHeader>
