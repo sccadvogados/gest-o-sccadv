@@ -59,7 +59,9 @@ type Row = {
   paid_at: string | null;
   payment_method: string | null;
   category: string | null;
-  clients: { id: string; name: string } | null;
+    clients: { id: string; name: string } | null;
+  number?: number | null;
+  contracts?: { numero: number | null; ano: number | null } | null;
 };
 
 function FinancePage() {
