@@ -196,7 +196,45 @@ export function PublicacoesDoDia({ clients }: { clients: Array<{ id: string; nam
       ) : null}
       {!isLoading && !isError && publicacoes.length === 0 ? <p className="px-5 pb-5 text-sm text-muted-foreground">Nenhuma publicação de clientes nesta data.</p> : null}
 
+            {publicacoes.length > 0 ? (
+        <div className="space-y-2 px-3 pb-3 md:hidden">
+          {publicacoes.map((item) => {
+            const ato = atos[String(item.id)];
+            return (
+              <div key={item.id} className="rounded-xl border border-[#ECE7DF] bg-white p-3">
+                <div className="flex items-start justify-between gap-2">
+                  <Link to="/clientes/$clientId" params={{ clientId: item.cliente.id }} className="min-w-0 text-sm font-semibold leading-snug text-[#0F2340]">
+                    {item.cliente.name}
+                  </Link>
+                  <span className="shrink-0 rounded-full bg-[#F3F1EC] px-2 py-0.5 text-[11px] text-muted-foreground">{item.siglaTribunal}</span>
+                </div>
+                <p className="mt-1 text-sm text-[#2C3440]">
+                  {ato ?? (resumindo ? <span className="text-muted-foreground">Lendo a publicação…</span> : item.tipoDocumento ?? item.tipoComunicacao ?? "—")}
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">{[item.numeroprocessocommascara, item.nomeOrgao].filter(Boolean).join(" · ")}</p>
+                <div className="mt-2 flex items-center gap-3">
+                  <button type="button" onClick={() => setAberta((atual) => (atual === item.id ? null : item.id))} className="text-xs text-[#B07A4F] underline underline-offset-4">
+                    {aberta === item.id ? "Ocultar Teor ▴" : "Ver Teor ▾"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => agendar(item, ato)}
+                    className="ml-auto inline-flex items-center gap-1 rounded-md bg-[#0F2340] px-3 py-1.5 text-xs font-semibold text-white"
+                  >
+                    <CalendarPlus className="size-3.5" /> Agendar
+                  </button>
+                </div>
+                {aberta === item.id ? (
+                  <div className="mt-2 max-h-72 overflow-y-auto whitespace-pre-line rounded-md bg-[#FBF7F1] p-2.5 text-xs leading-relaxed">{limparTeor(item.texto) || "Sem teor disponível."}</div>
+                ) : null}
+              </div>
+            );
+          })}
+        </div>
+      ) : null}
+
       {publicacoes.length > 0 ? (
+        <div className="hidden md:block">
         <Table>
           <TableHeader>
             <TableRow>
