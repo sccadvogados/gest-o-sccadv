@@ -42,6 +42,8 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { PercentInput } from "@/components/PercentInput";
+import { ArquivosCliente } from "@/components/ArquivosCliente";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SOCIOS, SociosField, TODOS_SOCIOS } from "@/components/SociosField";
 import { Label } from "@/components/ui/label";
 import { PageHeader } from "@/components/ui/page-header";
