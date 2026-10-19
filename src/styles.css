@@ -182,6 +182,12 @@
   background-size: 18px 18px;
 }
 
+/* Celular: itens de grade e de linha podem encolher, para nada "alargar" a página. */
+.grid > *,
+.flex-1 {
+  min-width: 0;
+}
+
 @media (max-width: 600px) {
   .login-card {
     height: auto;
