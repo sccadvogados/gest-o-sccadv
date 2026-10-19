@@ -176,9 +176,27 @@ export function PublicacoesDoDia({ clients }: { clients: Array<{ id: string; nam
           // sem resumo: a coluna Ato mostra o tipo do documento
         }
       }
-      return cache;
+            return cache;
     },
   });
+
+  // Toque no aviso do celular: abre /inicio?data=AAAA-MM-DD&agendar=<id> → já abre o Agendar daquela publicação.
+  const [pedidoAgendar, setPedidoAgendar] = useState<number | null>(null);
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const id = Number(params.get("agendar"));
+    if (!id) return;
+    const dia = params.get("data");
+    if (dia && /^\d{4}-\d{2}-\d{2}$/.test(dia)) setData(dia);
+    setPedidoAgendar(id);
+    window.history.replaceState(window.history.state, "", window.location.pathname);
+  }, []);
+  useEffect(() => {
+    if (!pedidoAgendar || isLoading || resumindo) return;
+    const item = publicacoes.find((p) => p.id === pedidoAgendar);
+    setPedidoAgendar(null);
+    if (item) agendar(item, atos[String(item.id)]);
+  }, [pedidoAgendar, isLoading, resumindo, publicacoes, atos]);
 
   return (
     <section className="panel overflow-hidden rounded-xl border border-t-[3px] border-t-accent bg-card text-card-foreground">
