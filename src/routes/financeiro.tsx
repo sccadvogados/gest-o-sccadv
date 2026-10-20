@@ -29,6 +29,7 @@ import {
   installmentSituation,
   todayISO,
 } from "@/lib/format";
+import { useValoresOcultos } from "@/lib/valores-ocultos";
 
 export const Route = createFileRoute("/financeiro")({
   head: () => ({
