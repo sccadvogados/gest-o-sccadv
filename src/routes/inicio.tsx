@@ -111,6 +111,7 @@ function contractLabel(row: InstallmentRow) {
 }
 
 function HomePage() {
+  useValoresOcultos(); // redesenha ao tocar no olho
     const today = todayISO();
   // Clique num card filtra a tela; clicar de novo (ou em "Mostrar Tudo") volta ao normal.
   const [filtro, setFiltro] = useState<null | "hoje" | "semana" | "atrasadas" | "receber">(null);
