@@ -32,6 +32,7 @@ import {
   type ExtractedClientData,
 } from "@/lib/document-extraction.functions";
 import { maskCep, maskCpfCnpj, maskPhone, onlyDigits } from "@/lib/format";
+import { useValoresOcultos } from "@/lib/valores-ocultos";
 
 export const Route = createFileRoute("/clientes/novo")({
   head: () => ({
