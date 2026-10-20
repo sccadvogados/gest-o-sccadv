@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { officeDatabase } from "@/lib/office-database";
 import { TIPO_CORES } from "@/lib/calendarSync";
 import { formatCurrency, formatDate, todayISO } from "@/lib/format";
+import { useValoresOcultos } from "@/lib/valores-ocultos";
 
 export const Route = createFileRoute("/inicio")({
   head: () => ({
@@ -110,6 +111,7 @@ function contractLabel(row: InstallmentRow) {
 }
 
 function HomePage() {
+  useValoresOcultos(); // redesenha ao tocar no olho
     const today = todayISO();
   // Clique num card filtra a tela; clicar de novo (ou em "Mostrar Tudo") volta ao normal.
   const [filtro, setFiltro] = useState<null | "hoje" | "semana" | "atrasadas" | "receber">(null);

@@ -32,6 +32,7 @@ import {
   type ExtractedClientData,
 } from "@/lib/document-extraction.functions";
 import { maskCep, maskCpfCnpj, maskPhone, onlyDigits } from "@/lib/format";
+import { useValoresOcultos } from "@/lib/valores-ocultos";
 
 export const Route = createFileRoute("/clientes/novo")({
   head: () => ({
@@ -142,6 +143,7 @@ function Pending({ value }: { value: string | null | undefined }) {
 }
 
 function NewClientPage() {
+  useValoresOcultos(); // redesenha ao tocar no olho
   const [form, setForm] = useState<Form>(EMPTY);
   const [files, setFiles] = useState<Record<string, File[]>>({});
   const [extracting, setExtracting] = useState<Record<string, boolean>>({});

@@ -74,6 +74,7 @@ import {
   todayISO,
   type ContractModality,
 } from "@/lib/format";
+import { useValoresOcultos } from "@/lib/valores-ocultos";
 
 export const Route = createFileRoute("/clientes/$clientId")({
   head: () => ({
@@ -129,6 +130,7 @@ function getMissingClientFields(client: {
 }
 
 function ClientDetailPage() {
+  useValoresOcultos(); // redesenha ao tocar no olho
   const { clientId } = Route.useParams();
   const queryClient = useQueryClient();
 

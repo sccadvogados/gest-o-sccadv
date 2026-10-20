@@ -29,6 +29,7 @@ import {
   installmentSituation,
   todayISO,
 } from "@/lib/format";
+import { useValoresOcultos } from "@/lib/valores-ocultos";
 
 export const Route = createFileRoute("/financeiro")({
   head: () => ({
@@ -65,6 +66,7 @@ type Row = {
 };
 
 function FinancePage() {
+  useValoresOcultos(); // redesenha ao tocar no olho
   const queryClient = useQueryClient();
 
   const { data: rows, isLoading } = useQuery({
