@@ -41,6 +41,7 @@ function anterior(mes: string) {
 }
 
 function valorCurto(valor: number) {
+  if (valoresEstaoOcultos()) return "•••";
   return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 }).format(valor || 0);
 }
 
