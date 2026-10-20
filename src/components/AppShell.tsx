@@ -1,5 +1,5 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { CalendarDays, House, LogOut, ShieldCheck, Users, Wallet } from "lucide-react";
+import { CalendarDays, Eye, EyeOff, House, LogOut, ShieldCheck, Users, Wallet } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
