@@ -1,11 +1,12 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { CalendarDays, House, LogOut, ShieldCheck, Users, Wallet } from "lucide-react";
+import { CalendarDays, Eye, EyeOff, House, LogOut, ShieldCheck, Users, Wallet } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { alternarValoresOcultos, iniciarValoresOcultos, useValoresOcultos } from "@/lib/valores-ocultos";
 const logoHorizontal = "/__l5e/assets-v1/195a2125-7946-439b-bd3f-5ddac237f27f/scc-logo-horizontal.png";
 
 const NAV = [
@@ -29,8 +30,11 @@ export function BrandMark({ className }: { className?: string }) {
 }
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const { user, loading } = useAuth();
+    const { user, loading } = useAuth();
     const navigate = useNavigate();
+  // Celular: olho para ocultar/mostrar valores (escolha salva neste aparelho).
+  const valoresOcultos = useValoresOcultos();
+  useEffect(() => iniciarValoresOcultos(), []);
   // Aba Auditoria: só para administradores.
   const [admin, setAdmin] = useState(false);
   useEffect(() => {
@@ -102,7 +106,16 @@ export function AppShell({ children }: { children: ReactNode }) {
                           );
             })}
           </nav>
-          <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={alternarValoresOcultos}
+              aria-label={valoresOcultos ? "Mostrar valores" : "Ocultar valores"}
+              aria-pressed={valoresOcultos}
+              className="grid size-9 place-items-center rounded-full text-[#0F2340] hover:bg-[#F4EDE4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:hidden"
+            >
+              {valoresOcultos ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
+            </button>
                         <span className="hidden text-sm text-[#5B6472] sm:inline">
               {user.email}
             </span>
