@@ -29,8 +29,11 @@ export function BrandMark({ className }: { className?: string }) {
 }
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const { user, loading } = useAuth();
+    const { user, loading } = useAuth();
     const navigate = useNavigate();
+  // Celular: olho para ocultar/mostrar valores (escolha salva neste aparelho).
+  const valoresOcultos = useValoresOcultos();
+  useEffect(() => iniciarValoresOcultos(), []);
   // Aba Auditoria: só para administradores.
   const [admin, setAdmin] = useState(false);
   useEffect(() => {
