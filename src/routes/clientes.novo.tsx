@@ -142,6 +142,7 @@ function Pending({ value }: { value: string | null | undefined }) {
 }
 
 function NewClientPage() {
+  useValoresOcultos(); // redesenha ao tocar no olho
   const [form, setForm] = useState<Form>(EMPTY);
   const [files, setFiles] = useState<Record<string, File[]>>({});
   const [extracting, setExtracting] = useState<Record<string, boolean>>({});
