@@ -106,7 +106,16 @@ export function AppShell({ children }: { children: ReactNode }) {
                           );
             })}
           </nav>
-          <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={alternarValoresOcultos}
+              aria-label={valoresOcultos ? "Mostrar valores" : "Ocultar valores"}
+              aria-pressed={valoresOcultos}
+              className="grid size-9 place-items-center rounded-full text-[#0F2340] hover:bg-[#F4EDE4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:hidden"
+            >
+              {valoresOcultos ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
+            </button>
                         <span className="hidden text-sm text-[#5B6472] sm:inline">
               {user.email}
             </span>
