@@ -1,9 +1,12 @@
+import { VALOR_OCULTO, valoresEstaoOcultos } from "@/lib/valores-ocultos";
+
 export const BRL = new Intl.NumberFormat("pt-BR", {
   style: "currency",
   currency: "BRL",
 });
 
 export function formatCurrency(value: number | string | null | undefined) {
+  if (valoresEstaoOcultos()) return VALOR_OCULTO;
   const n = typeof value === "string" ? Number(value) : (value ?? 0);
   return BRL.format(Number.isFinite(n) ? n : 0);
 }
