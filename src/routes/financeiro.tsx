@@ -65,6 +65,7 @@ type Row = {
 };
 
 function FinancePage() {
+  useValoresOcultos(); // redesenha ao tocar no olho
   const queryClient = useQueryClient();
 
   const { data: rows, isLoading } = useQuery({
