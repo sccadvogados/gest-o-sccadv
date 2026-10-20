@@ -5,6 +5,7 @@ import { CartesianGrid, LabelList, Legend, Line, LineChart, ResponsiveContainer,
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { formatCurrency, todayISO } from "@/lib/format";
+import { valoresEstaoOcultos } from "@/lib/valores-ocultos";
 
 // Tabelas novas ainda não estão nos tipos gerados.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
