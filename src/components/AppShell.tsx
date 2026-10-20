@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { alternarValoresOcultos, iniciarValoresOcultos, useValoresOcultos } from "@/lib/valores-ocultos";
 const logoHorizontal = "/__l5e/assets-v1/195a2125-7946-439b-bd3f-5ddac237f27f/scc-logo-horizontal.png";
 
 const NAV = [
