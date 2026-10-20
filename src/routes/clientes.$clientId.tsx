@@ -74,6 +74,7 @@ import {
   todayISO,
   type ContractModality,
 } from "@/lib/format";
+import { useValoresOcultos } from "@/lib/valores-ocultos";
 
 export const Route = createFileRoute("/clientes/$clientId")({
   head: () => ({
