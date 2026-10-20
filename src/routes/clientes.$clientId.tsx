@@ -129,6 +129,7 @@ function getMissingClientFields(client: {
 }
 
 function ClientDetailPage() {
+  useValoresOcultos(); // redesenha ao tocar no olho
   const { clientId } = Route.useParams();
   const queryClient = useQueryClient();
 
