@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { officeDatabase } from "@/lib/office-database";
 import { TIPO_CORES } from "@/lib/calendarSync";
 import { formatCurrency, formatDate, todayISO } from "@/lib/format";
+import { useValoresOcultos } from "@/lib/valores-ocultos";
 
 export const Route = createFileRoute("/inicio")({
   head: () => ({
