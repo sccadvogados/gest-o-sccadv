@@ -1,3 +1,5 @@
+import { VALOR_OCULTO, valoresEstaoOcultos } from "@/lib/valores-ocultos";
+
 export const BRL = new Intl.NumberFormat("pt-BR", {
   style: "currency",
   currency: "BRL",
