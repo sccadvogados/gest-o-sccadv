@@ -206,8 +206,13 @@ function ClientsPage() {
                     params={{ clientId: client.id }}
                     className="font-medium underline-offset-4 hover:text-accent hover:underline"
                   >
-                    {client.name}
+                                        {client.name}
                   </Link>
+                  {vistos && !vistos.has(client.id) ? (
+                    <Badge className="ml-2 align-middle border-transparent bg-[#0F2340] text-[10px] font-semibold text-white hover:bg-[#0F2340]">
+                      Novo
+                    </Badge>
+                  ) : null}
                                     
                   {isClientIncomplete(client) ? (
                     <Badge className="ml-2 align-middle border-transparent bg-[#E8B9A5] text-[#7A3F2D] hover:bg-[#E8B9A5] text-[10px]">
