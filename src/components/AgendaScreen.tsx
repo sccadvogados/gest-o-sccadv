@@ -8,7 +8,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
-import { BotaoFlutuante } from "@/components/BotaoFlutuante";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -571,14 +571,14 @@ export function AgendaScreen() {
       <TooltipProvider>
         <div className="flex flex-wrap items-end justify-between gap-4">
                     <div><h1 className="text-[26px] font-bold leading-tight text-[#0F2340] sm:text-[32px]">Prazos e Reuniões</h1><p className="mt-1 text-sm text-muted-foreground">Acompanhe prazos, reuniões e compromissos do escritório.</p></div>
-          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-            <div className="flex rounded-md border bg-card p-1">
+                    <div className="grid w-full grid-cols-2 gap-2 [&>button]:w-full sm:flex sm:w-auto sm:flex-wrap sm:items-center sm:gap-3 sm:[&>button]:w-auto">
+            <div className="col-span-2 flex rounded-md border bg-card p-1 [&>button]:flex-1 sm:[&>button]:flex-none">
               <Button size="sm" variant={view === "lista" ? "secondary" : "ghost"} onClick={() => setView("lista")}>Lista</Button>
                             <Button size="sm" variant={view === "mes" ? "secondary" : "ghost"} onClick={() => setView("mes")}>Mês</Button>
               <Button size="sm" variant={view === "semana" ? "secondary" : "ghost"} onClick={() => setView("semana")}>Semana</Button>
                         </div>
             <GoogleCalendarImportDialog onImported={() => queryClient.invalidateQueries({ queryKey: ["agenda-events"] })} />
-                        <EventFormDialog open={open} onOpenChange={setOpen}><DialogTrigger asChild><Button className="hidden md:inline-flex"><Plus className="size-4" /> Novo Evento</Button></DialogTrigger>
+                        <EventFormDialog open={open} onOpenChange={setOpen}><DialogTrigger asChild><Button><Plus className="size-4" /> Novo Evento</Button></DialogTrigger>
               <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl"><DialogHeader><DialogTitle>{form.id ? "Editar Evento" : "Novo Evento"}</DialogTitle></DialogHeader>
                 <form className="grid gap-4" onSubmit={(event) => { event.preventDefault(); const hasRequiredFields = ["prazo", "protocolo", "julgamento", "acompanhamento"].includes(form.tipo) ? form.titulo.trim() && form.data_inicio : ["reuniao", "audiencia", "julgamento"].includes(form.tipo) ? form.titulo.trim() && form.data_inicio.slice(0, 10) && timeToMinutes(form.data_inicio.slice(11, 16)) !== null && timeToMinutes(form.data_fim.slice(11, 16)) !== null : form.titulo.trim() && form.data_inicio; if (!hasRequiredFields) { toast.error(form.tipo === "prazo" ? "Informe o título e o prazo." : ["reuniao", "audiencia", "julgamento"].includes(form.tipo) ? "Informe os horários." : "Informe o título e a data do evento."); return; } if (["reuniao", "audiencia", "julgamento"].includes(form.tipo) && new Date(form.data_fim).getTime() <= new Date(form.data_inicio).getTime()) { toast.error("A hora de término deve ser depois da hora de início."); return; } createEvent.mutate(); }}>
                                     <div className="grid gap-4 sm:grid-cols-2"><Field label="Tipo"><Select value={form.tipo} onValueChange={(value: EventType) => setForm((current) => {
@@ -647,7 +647,7 @@ export function AgendaScreen() {
           {isLoading ? <TableRow><TableCell colSpan={6} className="py-10 text-center text-muted-foreground">Carregando agenda…</TableCell></TableRow> : filteredEvents.length === 0 ? <TableRow><TableCell colSpan={6} className="py-16 text-center"><span className="mx-auto flex size-14 items-center justify-center rounded-full bg-[#F1E8DD] text-[#0F2340]"><CalendarDays className="size-7" /></span><p className="mt-4 font-semibold text-[#0F2340]">Nenhum compromisso por aqui</p><p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">Cadastre seu primeiro evento para acompanhar prazos e reuniões.</p><Button className="mt-5" variant="outline" onClick={() => openNewEvent()}><Plus className="size-4" />Cadastrar primeiro evento</Button></TableCell></TableRow> : filteredEvents.map((event) => <TableRow key={event.id}><TableCell><Badge style={{ backgroundColor: colors[event.tipo], color: typeTextColor(event.tipo) }}>{labels[event.tipo]}</Badge></TableCell><TableCell><div className="flex items-center gap-2"><button type="button" className="font-medium text-left hover:underline" onClick={() => openEditEvent(event)}>{event.titulo}</button>{!event.google_event_id ? <Tooltip><TooltipTrigger asChild><CloudOff className="size-4 text-muted-foreground" aria-label="Não sincronizado" /></TooltipTrigger><TooltipContent>Não sincronizado</TooltipContent></Tooltip> : null}</div><div className="text-xs text-muted-foreground">{clientNames.get(event.cliente_id ?? "") ?? "Sem cliente vinculado"}</div>{!event.google_event_id ? <Button type="button" variant="ghost" size="sm" className="mt-1 h-7 px-2 text-xs" onClick={() => retrySync.mutate(event)} disabled={retrySync.isPending}>Tentar novamente</Button> : null}</TableCell><TableCell className="whitespace-nowrap text-sm">{formatDate(event.data_inicio)}<div className="text-xs text-muted-foreground">{new Intl.DateTimeFormat("pt-BR", { timeZone: APP_TIME_ZONE, hour: "2-digit", minute: "2-digit" }).format(new Date(event.data_inicio))}</div></TableCell><TableCell className="text-sm text-muted-foreground">{event.responsavel || "—"}</TableCell><TableCell>{isOverdue(event) ? <Badge variant="destructive">VENCIDO</Badge> : <Badge variant="secondary">{event.status === "cumprido" ? "Cumprido" : event.status === "cancelado" ? "Cancelado" : "Pendente"}</Badge>}</TableCell><TableCell className="text-right"><div className="flex justify-end gap-2">{event.status !== "cumprido" && event.status !== "cancelado" ? <Button size="sm" variant="outline" onClick={() => markDone.mutate(event.id)} disabled={markDone.isPending}><Check className="size-4" />Cumprido</Button> : <span className="text-xs text-muted-foreground">Concluído</span>}<Button size="sm" variant="outline" onClick={() => { if (window.confirm("Excluir este evento?")) deleteEvent.mutate(event.id); }} disabled={deleteEvent.isPending} aria-label="Excluir evento"><Trash2 className="size-4" /></Button></div></TableCell></TableRow>)}
                 </TableBody></Table></div></> : view === "mes" ? <MonthCalendar currentDate={calendarDate} onDateChange={setCalendarDate} onDayClick={openNewEvent} events={filteredEvents} onEventClick={openEditEvent} /> : view === "semana" ? <WeekCalendar currentDate={calendarDate} onDateChange={setCalendarDate} onSlotClick={openNewEvent} events={filteredEvents} onEventClick={openEditEvent} /> : null}
             </TooltipProvider>
-      <BotaoFlutuante onClick={() => openNewEvent()}>Novo Evento</BotaoFlutuante>
+      
     </AppShell>
   );
 }
