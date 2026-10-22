@@ -38,8 +38,14 @@ function cabecalhos(): Record<string, string> {
 async function chamar(path: string, init?: RequestInit): Promise<Response> {
   const resposta = await fetch(`${DRIVE_API_BASE}${path}`, { ...init, headers: { ...cabecalhos(), ...init?.headers } });
   if (!resposta.ok) {
-    const corpo = (await resposta.json().catch(() => null)) as { error?: { message?: string } } | null;
-    throw new Error(corpo?.error?.message ?? `O Google Drive respondeu ${resposta.status}.`);
+        const corpo = (await resposta.json().catch(() => null)) as { error?: { message?: string; errors?: Array<{ reason?: string }> } } | null;
+    const motivo = corpo?.error?.errors?.[0]?.reason ?? "";
+    const mensagem = corpo?.error?.message ?? "";
+    // O Google só deixa o sistema alterar arquivos que ele mesmo criou ou enviou.
+    if (motivo === "appNotAuthorizedToFile" || /has not granted the app/i.test(mensagem)) {
+      throw new Error("Este arquivo foi colocado no Drive por fora do sistema, e o Google não deixa o sistema alterá-lo. Faça a alteração direto no Google Drive (botão Abrir no Drive).");
+    }
+    throw new Error(mensagem || `O Google Drive respondeu ${resposta.status}.`);
   }
   return resposta;
 }
