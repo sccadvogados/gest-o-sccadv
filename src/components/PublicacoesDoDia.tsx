@@ -144,7 +144,8 @@ export function PublicacoesDoDia({ clients }: { clients: Array<{ id: string; nam
   const publicacoes: Publicacao[] = [];
   for (const item of comunicacoes) {
     if (!TRIBUNAIS.includes(item.siglaTribunal)) continue;
-    const chave = item.hash ?? `${item.numeroprocessocommascara}|${item.tipoDocumento}|${(item.texto ?? "").slice(0, 200)}`;
+        // A mesma decisão costuma vir em 2 comunicações (uma só para o cliente e outra para as duas partes): conta uma vez.
+    const chave = `${item.numeroprocessocommascara}|${item.tipoDocumento}|${item.link || limparTeor(item.texto).slice(0, 500)}`;
     if (vistos.has(chave)) continue;
     const partes = (item.destinatarios ?? []).map((parte) => normalizar(parte.nome));
     const cliente = clientesNormalizados.find((c) => partes.some((parte) => mesmoNome(parte, c.chave)));
