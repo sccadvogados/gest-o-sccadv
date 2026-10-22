@@ -20,7 +20,8 @@ type Comunicacao = {
   texto: string | null;
   tipoComunicacao?: string | null;
   nomeClasse?: string | null;
-  destinatarios: Array<{ nome: string }> | null;
+    destinatarios: Array<{ nome: string }> | null;
+  link?: string | null;
 };
 
 type Publicacao = { id: number; clienteId: string; cliente: string; tribunal: string; tipo: string; classe: string; texto: string };
