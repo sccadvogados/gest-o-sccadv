@@ -189,7 +189,8 @@ export const Route = createFileRoute("/api/avisos-publicacoes")({
         const publicacoes: Publicacao[] = [];
         for (const item of itens) {
           if (!TRIBUNAIS.includes(item.siglaTribunal)) continue;
-          const chave = item.hash ?? `${item.numeroprocessocommascara}|${item.tipoDocumento}|${(item.texto ?? "").slice(0, 200)}`;
+                    // A mesma decisão costuma vir em 2 comunicações (uma só para o cliente e outra para as duas partes): avisa uma vez.
+          const chave = `${item.numeroprocessocommascara}|${item.tipoDocumento}|${item.link || limparTeor(item.texto).slice(0, 500)}`;
           if (vistos.has(chave)) continue;
           const partes = (item.destinatarios ?? []).map((p) => normalizar(p.nome));
           const cliente = lista.find((c) => partes.some((parte) => mesmoNome(parte, c.chave)));
