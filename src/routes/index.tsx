@@ -75,6 +75,19 @@ function ClientsPage() {
   });
 
 
+    // Clientes que este usuário já abriu (os demais ganham a etiqueta "Novo").
+  const { data: vistos } = useQuery({
+    queryKey: ["clientes-vistos"],
+    queryFn: async () => {
+      const db = supabase as unknown as {
+        from: (t: string) => { select: (c: string) => PromiseLike<{ data: Array<{ cliente_id: string }> | null; error: unknown }> };
+      };
+      const { data, error } = await db.from("clientes_vistos").select("cliente_id");
+      if (error) throw error;
+      return new Set((data ?? []).map((linha) => linha.cliente_id));
+    },
+  });
+
   const { data: clients, isLoading } = useQuery({
     queryKey: ["clients"],
     queryFn: async () => {
