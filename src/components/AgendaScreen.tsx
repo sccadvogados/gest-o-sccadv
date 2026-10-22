@@ -571,8 +571,8 @@ export function AgendaScreen() {
       <TooltipProvider>
         <div className="flex flex-wrap items-end justify-between gap-4">
                     <div><h1 className="text-[26px] font-bold leading-tight text-[#0F2340] sm:text-[32px]">Prazos e Reuniões</h1><p className="mt-1 text-sm text-muted-foreground">Acompanhe prazos, reuniões e compromissos do escritório.</p></div>
-          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-            <div className="flex rounded-md border bg-card p-1">
+                    <div className="grid w-full grid-cols-2 gap-2 [&>button]:w-full sm:flex sm:w-auto sm:flex-wrap sm:items-center sm:gap-3 sm:[&>button]:w-auto">
+            <div className="col-span-2 flex rounded-md border bg-card p-1 [&>button]:flex-1 sm:[&>button]:flex-none">
               <Button size="sm" variant={view === "lista" ? "secondary" : "ghost"} onClick={() => setView("lista")}>Lista</Button>
                             <Button size="sm" variant={view === "mes" ? "secondary" : "ghost"} onClick={() => setView("mes")}>Mês</Button>
               <Button size="sm" variant={view === "semana" ? "secondary" : "ghost"} onClick={() => setView("semana")}>Semana</Button>
