@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { Archive, ArchiveRestore, ArrowLeft, Download, FileText, FolderOpen, Pencil, Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
@@ -131,8 +131,19 @@ function getMissingClientFields(client: {
 
 function ClientDetailPage() {
   useValoresOcultos(); // redesenha ao tocar no olho
-  const { clientId } = Route.useParams();
+    const { clientId } = Route.useParams();
   const queryClient = useQueryClient();
+
+  // Marca a ficha como vista por este usuário: some a etiqueta "Novo" na lista de Clientes (só para ele).
+  useEffect(() => {
+    const db = supabase as unknown as {
+      from: (t: string) => { upsert: (d: Record<string, unknown>, o: { onConflict: string; ignoreDuplicates: boolean }) => PromiseLike<{ error: unknown }> };
+    };
+    void Promise.resolve(db.from("clientes_vistos").upsert({ cliente_id: clientId }, { onConflict: "user_id,cliente_id", ignoreDuplicates: true })).then(({ error }) => {
+      if (!error) void queryClient.invalidateQueries({ queryKey: ["clientes-vistos"] });
+    });
+  }, [clientId, queryClient]);
+
 
   const { data: client, isLoading } = useQuery({
     queryKey: ["client", clientId],
