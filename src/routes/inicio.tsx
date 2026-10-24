@@ -146,8 +146,11 @@ function HomePage() {
         .lte("due_date", in7)
         .order("due_date", { ascending: true })
         .limit(300);
-      if (error) throw error;
-      return (data ?? []) as unknown as InstallmentRow[];
+            if (error) throw error;
+      // Quem ainda não assinou (ou não fechou) não entra nas parcelas.
+      return ((data ?? []) as unknown as Array<InstallmentRow & { clients: { etapa?: string } | null }>).filter(
+        (linha) => !linha.clients?.etapa || linha.clients.etapa === "cliente",
+      );
     },
   });
 
