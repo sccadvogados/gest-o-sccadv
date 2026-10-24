@@ -228,7 +228,8 @@ function HomePage() {
 
       {filtro === null ? (<>
 
-            <div className="mt-8">
+                        <div className="mt-8 space-y-6">
+        <AguardandoAssinatura />
         <PublicacoesDoDia clients={clients} />
       </div>
 
