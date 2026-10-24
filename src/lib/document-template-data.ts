@@ -14,8 +14,10 @@ export type ClientForTemplate = {
   state?: string | null;
   cep?: string | null;
   person_type: string;
-  pj_descricao?: string | null;
+    pj_descricao?: string | null;
   sexo?: string | null;
+  email?: string | null;
+  phone?: string | null;
 };
 
 export type RepresentativeForTemplate = {
@@ -81,9 +83,34 @@ export type DocumentTemplateData = {
   numero_exito: string;
   numero_prolabore: string;
   exito_percentual: string;
-  exito_extenso: string;
+    exito_extenso: string;
   data_extenso: string;
+  // Contrato (modelo 2026): contatos na qualificação, itens (i)/(ii) e numeração das subcláusulas que variam.
+  contatos_texto: string;
+  documento_assinatura: string;
+  item_prolabore: string;
+  item_exito: string;
+  c2_proveito: string;
+  c2_exigivel: string;
+  c2_retencao: string;
+  c2_sucumbencia: string;
+  c2_pagamento: string;
+  c2_atraso: string;
+  c2_vencimento: string;
+  c5_acordo: string;
+  c5_renuncia: string;
+  c5_falecimento: string;
 };
+
+/** Numera em sequência só as subcláusulas presentes (ex.: sem êxito, "2.5" vira "2.2"). */
+function numerarSubclausulas(clausula: number, inicio: number, itens: Array<[string, boolean]>): Record<string, string> {
+  const numeros: Record<string, string> = {};
+  let atual = inicio;
+  for (const [chave, presente] of itens) {
+    numeros[chave] = presente ? `${clausula}.${atual++}` : "";
+  }
+  return numeros;
+}
 
 const unidades = [
   "zero", "um", "dois", "três", "quatro", "cinco", "seis", "sete", "oito", "nove", "dez",
@@ -274,8 +301,26 @@ export function montarDadosModelos(client: ClientForTemplate, contract: Contract
   const prolabore = !probono && contract.modality !== "exito" && installments.some((installment) => installment.amount > 0);
   const exito = !probono && Number(contract.success_fee_percent ?? 0) > 0;
   const percentual = Number(contract.success_fee_percent ?? 0);
-  // Pessoa jurídica: sempre no feminino ("a CONTRATANTE", "inscrita", "denominada").
+    // Pessoa jurídica: sempre no feminino ("a CONTRATANTE", "inscrita", "denominada").
   const genero: Genero = pj ? "F" : generoDe(client.sexo);
+  const email = (client.email ?? "").trim();
+  const telefone = (client.phone ?? "").trim();
+  const contatos = [email && `e-mail ${email}`, telefone && `telefone/WhatsApp ${telefone}`].filter(Boolean).join(" e ");
+  const numeros2 = numerarSubclausulas(2, 2, [
+    ["c2_proveito", exito],
+    ["c2_exigivel", exito],
+    ["c2_retencao", exito],
+    ["c2_sucumbencia", true],
+    ["c2_pagamento", !probono],
+    ["c2_atraso", !probono],
+    ["c2_vencimento", prolabore],
+  ]);
+  // Cláusula 5: 5.2 e 5.3 (honorários na extinção) só existem quando há cobrança.
+  const numeros5 = numerarSubclausulas(5, probono ? 2 : 4, [
+    ["c5_acordo", true],
+    ["c5_renuncia", true],
+    ["c5_falecimento", true],
+  ]);
   return {
     pf: !pj,
     pj,
@@ -318,7 +363,21 @@ export function montarDadosModelos(client: ClientForTemplate, contract: Contract
       : percentual % 1 === 0.5
         ? `${numeroPorExtenso(Math.floor(percentual))} e meio`
         : `${numeroPorExtenso(Math.floor(percentual))} vírgula ${numeroPorExtenso(Math.round((percentual % 1) * 100))}`, 
-    data_extenso: dataPorExtenso(now),
+        data_extenso: dataPorExtenso(now),
+    contatos_texto: contatos ? `, ${contatos}` : "",
+    documento_assinatura: `${pj ? "CNPJ" : "CPF"} nº ${client.cpf_cnpj ?? ""}`,
+    item_prolabore: prolabore && exito ? "(i) " : "",
+    item_exito: prolabore && exito ? "(ii) " : "",
+    c2_proveito: numeros2["c2_proveito"] ?? "",
+    c2_exigivel: numeros2["c2_exigivel"] ?? "",
+    c2_retencao: numeros2["c2_retencao"] ?? "",
+    c2_sucumbencia: numeros2["c2_sucumbencia"] ?? "",
+    c2_pagamento: numeros2["c2_pagamento"] ?? "",
+    c2_atraso: numeros2["c2_atraso"] ?? "",
+    c2_vencimento: numeros2["c2_vencimento"] ?? "",
+    c5_acordo: numeros5["c5_acordo"] ?? "",
+    c5_renuncia: numeros5["c5_renuncia"] ?? "",
+    c5_falecimento: numeros5["c5_falecimento"] ?? "",
   };
 }
 
