@@ -57,13 +57,24 @@ type Calculo = {
 const centavos = (valor: number) => Math.round(valor * 100) / 100;
 
 /** Regra do contrato aplicada a um recebimento: retenção sobre o bruto; captação só no pró-labore;
- *  parceiros proporcionais (valor fixo sobre o pró-labore, % sobre o êxito); o saldo dividido igualmente entre os sócios. */
+ *  parceiros proporcionais (valor fixo sobre o pró-labore, % sobre o êxito); o saldo dividido igualmente entre os sócios.
+ *  Sucumbência: sem retenção e sem captação; partes iguais entre o escritório (1 parte) e cada parceiro;
+ *  a parte do escritório é dividida entre os sócios do contrato. */
 function calcular(recebimento: Recebimento, contrato: Contrato | undefined, parcerias: Parceria[]): Calculo {
   const base: Calculo = { recebimento, problema: null, retencao: 0, captacao: 0, parceiros: [], socios: [], porSocio: 0 };
   if (!contrato) return { ...base, problema: "Sem contrato vinculado." };
-  const socios = ORDEM_SOCIOS.filter((sigla) => (contrato.socios ?? []).includes(sigla));
-  if (contrato.retencao_percentual == null) return { ...base, problema: "Contrato sem % de Retenção." };
+    const socios = ORDEM_SOCIOS.filter((sigla) => (contrato.socios ?? []).includes(sigla));
   if (socios.length === 0) return { ...base, problema: "Contrato sem Sócios Envolvidos." };
+
+  if (recebimento.categoria === "(R) Honorários de Sucumbência") {
+    // Ex.: 1 parceiro → metade para o parceiro e metade para o escritório; 2 parceiros → um terço para cada.
+    const total = Number(recebimento.valor);
+    const parte = centavos(total / (1 + parcerias.length));
+    const parceirosSuc = parcerias.map((parceria) => ({ nome: parceria.parceiros?.nome ?? "Parceiro", valor: parte }));
+    const escritorio = total - parte * parcerias.length;
+    return { recebimento, problema: null, retencao: 0, captacao: 0, parceiros: parceirosSuc, socios, porSocio: Math.floor((escritorio / socios.length) * 100) / 100 };
+  }
+  if (contrato.retencao_percentual == null) return { ...base, problema: "Contrato sem % de Retenção." };
 
   const valor = Number(recebimento.valor);
   const ehExito = recebimento.categoria !== "(R) Pró-labore";

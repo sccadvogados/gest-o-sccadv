@@ -216,7 +216,10 @@ export function LivroCaixa() {
       if (dados.data < "2026-01-01") throw new Error("O caixa começa em 01/01/2026.");
       if (!dados.descricao.trim()) throw new Error("Informe a descrição.");
       if (!(dados.valor > 0)) throw new Error("Informe um valor maior que zero.");
-      if (dados.categoria === "(D) Distribuição de Honorários" && !dados.socio) throw new Error("Escolha o sócio da distribuição.");
+            if (dados.categoria === "(D) Distribuição de Honorários" && !dados.socio) throw new Error("Escolha o sócio da distribuição.");
+      if (["(R) Honorários de Êxito", "(R) Honorários de Sucumbência"].includes(dados.categoria) && (!dados.cliente_id || !dados.contrato_id)) {
+        throw new Error("Para êxito ou sucumbência, escolha o cliente e o contrato (assim aparece no contrato e a distribuição usa a regra certa).");
+      }
       const registro = {
         data: dados.data,
         tipo: dados.tipo,
