@@ -363,7 +363,21 @@ export function montarDadosModelos(client: ClientForTemplate, contract: Contract
       : percentual % 1 === 0.5
         ? `${numeroPorExtenso(Math.floor(percentual))} e meio`
         : `${numeroPorExtenso(Math.floor(percentual))} vírgula ${numeroPorExtenso(Math.round((percentual % 1) * 100))}`, 
-    data_extenso: dataPorExtenso(now),
+        data_extenso: dataPorExtenso(now),
+    contatos_texto: contatos ? `, ${contatos}` : "",
+    documento_assinatura: `${pj ? "CNPJ" : "CPF"} nº ${client.cpf_cnpj ?? ""}`,
+    item_prolabore: prolabore && exito ? "(i) " : "",
+    item_exito: prolabore && exito ? "(ii) " : "",
+    c2_proveito: numeros2["c2_proveito"] ?? "",
+    c2_exigivel: numeros2["c2_exigivel"] ?? "",
+    c2_retencao: numeros2["c2_retencao"] ?? "",
+    c2_sucumbencia: numeros2["c2_sucumbencia"] ?? "",
+    c2_pagamento: numeros2["c2_pagamento"] ?? "",
+    c2_atraso: numeros2["c2_atraso"] ?? "",
+    c2_vencimento: numeros2["c2_vencimento"] ?? "",
+    c5_acordo: numeros5["c5_acordo"] ?? "",
+    c5_renuncia: numeros5["c5_renuncia"] ?? "",
+    c5_falecimento: numeros5["c5_falecimento"] ?? "",
   };
 }
 
