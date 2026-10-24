@@ -14,8 +14,10 @@ export type ClientForTemplate = {
   state?: string | null;
   cep?: string | null;
   person_type: string;
-  pj_descricao?: string | null;
+    pj_descricao?: string | null;
   sexo?: string | null;
+  email?: string | null;
+  phone?: string | null;
 };
 
 export type RepresentativeForTemplate = {
