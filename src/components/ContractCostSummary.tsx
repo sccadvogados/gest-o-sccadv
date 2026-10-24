@@ -152,7 +152,7 @@ export function ContractCostSummary({
                   <td className="py-1">{linha.rotulo}</td>
                                     {temProlabore ? <td className={`whitespace-nowrap py-1 pl-3 text-right tabular-nums${saldoValor < 0 && linha.destaque ? " text-destructive" : ""}`}>{linha.valor}</td> : null}
                   {temExito ? (
-                    <td className={`py-1 text-right tabular-nums${saldoExito < 0 && linha.destaque ? " text-destructive" : ""}`}>
+                    <td className={`whitespace-nowrap py-1 pl-3 text-right tabular-nums${saldoExito < 0 && linha.destaque ? " text-destructive" : ""}`}>
                       <span title={linha.dica} className={linha.dica ? "cursor-help underline decoration-dotted decoration-muted-foreground/60 underline-offset-4" : undefined}>
                         {linha.exito}
                       </span>
