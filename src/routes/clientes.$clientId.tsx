@@ -463,8 +463,14 @@ function ClientDetailPage() {
                 {contract.captacao ? (
                   <Badge variant="secondary">
                                         {`Captação: ${contract.captacao}${contract.captacao_percentual ? ` – ${String(contract.captacao_percentual).replace(".", ",")}%` : ""}`}
-                    {contract.captador_id && (contract.captacao === "Indicação" || contract.captacao === "Parceria") ? <> · <CaptadorNome id={contract.captador_id} /></> : null}
+                                        {contract.captador_id && (contract.captacao === "Indicação" || contract.captacao === "Parceria") ? <> · <CaptadorNome id={contract.captador_id} /></> : null}
                   </Badge>
+                ) : null}
+                {recebidosExito?.[contract.id]?.exito ? (
+                  <Badge className="border-[#BFD3C5] bg-[#E7F2EA] font-semibold text-[#256b3a] hover:bg-[#E7F2EA]">{`Êxito recebido: ${formatCurrency(recebidosExito[contract.id]!.exito)}`}</Badge>
+                ) : null}
+                {recebidosExito?.[contract.id]?.sucumbencia ? (
+                  <Badge className="border-[#BFD3C5] bg-[#E7F2EA] font-semibold text-[#256b3a] hover:bg-[#E7F2EA]">{`Sucumbência recebida: ${formatCurrency(recebidosExito[contract.id]!.sucumbencia)}`}</Badge>
                 ) : null}
                 <ContractActions
                   clientId={clientId}
