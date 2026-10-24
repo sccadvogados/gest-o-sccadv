@@ -57,7 +57,9 @@ type Calculo = {
 const centavos = (valor: number) => Math.round(valor * 100) / 100;
 
 /** Regra do contrato aplicada a um recebimento: retenção sobre o bruto; captação só no pró-labore;
- *  parceiros proporcionais (valor fixo sobre o pró-labore, % sobre o êxito); o saldo dividido igualmente entre os sócios. */
+ *  parceiros proporcionais (valor fixo sobre o pró-labore, % sobre o êxito); o saldo dividido igualmente entre os sócios.
+ *  Sucumbência: sem retenção e sem captação; partes iguais entre o escritório (1 parte) e cada parceiro;
+ *  a parte do escritório é dividida entre os sócios do contrato. */
 function calcular(recebimento: Recebimento, contrato: Contrato | undefined, parcerias: Parceria[]): Calculo {
   const base: Calculo = { recebimento, problema: null, retencao: 0, captacao: 0, parceiros: [], socios: [], porSocio: 0 };
   if (!contrato) return { ...base, problema: "Sem contrato vinculado." };
