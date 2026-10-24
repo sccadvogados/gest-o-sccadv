@@ -83,9 +83,34 @@ export type DocumentTemplateData = {
   numero_exito: string;
   numero_prolabore: string;
   exito_percentual: string;
-  exito_extenso: string;
+    exito_extenso: string;
   data_extenso: string;
+  // Contrato (modelo 2026): contatos na qualificação, itens (i)/(ii) e numeração das subcláusulas que variam.
+  contatos_texto: string;
+  documento_assinatura: string;
+  item_prolabore: string;
+  item_exito: string;
+  c2_proveito: string;
+  c2_exigivel: string;
+  c2_retencao: string;
+  c2_sucumbencia: string;
+  c2_pagamento: string;
+  c2_atraso: string;
+  c2_vencimento: string;
+  c5_acordo: string;
+  c5_renuncia: string;
+  c5_falecimento: string;
 };
+
+/** Numera em sequência só as subcláusulas presentes (ex.: sem êxito, "2.5" vira "2.2"). */
+function numerarSubclausulas(clausula: number, inicio: number, itens: Array<[string, boolean]>): Record<string, string> {
+  const numeros: Record<string, string> = {};
+  let atual = inicio;
+  for (const [chave, presente] of itens) {
+    numeros[chave] = presente ? `${clausula}.${atual++}` : "";
+  }
+  return numeros;
+}
 
 const unidades = [
   "zero", "um", "dois", "três", "quatro", "cinco", "seis", "sete", "oito", "nove", "dez",
