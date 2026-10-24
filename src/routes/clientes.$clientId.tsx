@@ -145,6 +145,34 @@ function ClientDetailPage() {
   }, [clientId, queryClient]);
 
 
+    // Êxito e sucumbência já recebidos (lançados no Livro-Caixa com este contrato), por contrato.
+  const { data: recebidosExito } = useQuery({
+    queryKey: ["lancamentos-exito", clientId],
+    queryFn: async () => {
+      const db = supabase as unknown as {
+        from: (t: string) => {
+          select: (c: string) => {
+            eq: (c: string, v: string) => { in: (c: string, v: string[]) => PromiseLike<{ data: Array<{ contrato_id: string | null; categoria: string; valor: number }> | null; error: unknown }> };
+          };
+        };
+      };
+      const { data, error } = await db
+        .from("lancamentos")
+        .select("contrato_id, categoria, valor")
+        .eq("cliente_id", clientId)
+        .in("categoria", ["(R) Honorários de Êxito", "(R) Honorários de Sucumbência"]);
+      if (error) throw error;
+      const porContrato: Record<string, { exito: number; sucumbencia: number }> = {};
+      for (const linha of data ?? []) {
+        if (!linha.contrato_id) continue;
+        const atual = (porContrato[linha.contrato_id] ??= { exito: 0, sucumbencia: 0 });
+        if (linha.categoria === "(R) Honorários de Êxito") atual.exito += Number(linha.valor) || 0;
+        else atual.sucumbencia += Number(linha.valor) || 0;
+      }
+      return porContrato;
+    },
+  });
+
   const { data: client, isLoading } = useQuery({
     queryKey: ["client", clientId],
     queryFn: async () => {
