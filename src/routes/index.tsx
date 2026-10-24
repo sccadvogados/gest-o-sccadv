@@ -94,7 +94,8 @@ function ClientsPage() {
             const { data, error } = await officeDatabase(supabase)
         .from("clients")
         .select("id, name, person_type, cpf_cnpj, cep, street, email, phone, city, state, drive_folder_id, drive_folder_url, drive_error, created_at")
-        .eq("rascunho", false)
+                .eq("rascunho", false)
+        .eq("etapa" as never, "cliente" as never) // aguardando assinatura fica no Início
         .order("name");
       if (error) throw error;
       return data;
