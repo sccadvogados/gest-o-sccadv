@@ -141,8 +141,9 @@ function HomePage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("installments")
-        .select("id, amount, due_date, number, client_id, clients(name), contracts(numero, ano)")
+                .select("id, amount, due_date, number, client_id, clients(name, etapa), contracts(numero, ano)")
         .neq("status", "Pago")
+        .neq("status", "Cancelado")
         .lte("due_date", in7)
         .order("due_date", { ascending: true })
         .limit(300);
