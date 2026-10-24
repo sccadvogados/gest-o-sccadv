@@ -430,7 +430,7 @@ function ClientDetailPage() {
                   </Badge>
                 ) : null}
                 {contract.retencao_percentual != null && contract.modality !== "probono" ? (
-                  <Badge variant="secondary">{`Retenção: ${String(contract.retencao_percentual).replace(".", ",")}%`}</Badge>
+                  <Badge className="border-[#E3C4A6] bg-[#FBF1EA] font-semibold text-[#8A5A33] hover:bg-[#FBF1EA]">{`Retenção: ${String(contract.retencao_percentual).replace(".", ",")}%`}</Badge>
                 ) : null}
                 {contract.captacao ? (
                   <Badge variant="secondary">
