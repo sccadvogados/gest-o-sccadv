@@ -301,8 +301,26 @@ export function montarDadosModelos(client: ClientForTemplate, contract: Contract
   const prolabore = !probono && contract.modality !== "exito" && installments.some((installment) => installment.amount > 0);
   const exito = !probono && Number(contract.success_fee_percent ?? 0) > 0;
   const percentual = Number(contract.success_fee_percent ?? 0);
-  // Pessoa jurídica: sempre no feminino ("a CONTRATANTE", "inscrita", "denominada").
+    // Pessoa jurídica: sempre no feminino ("a CONTRATANTE", "inscrita", "denominada").
   const genero: Genero = pj ? "F" : generoDe(client.sexo);
+  const email = (client.email ?? "").trim();
+  const telefone = (client.phone ?? "").trim();
+  const contatos = [email && `e-mail ${email}`, telefone && `telefone/WhatsApp ${telefone}`].filter(Boolean).join(" e ");
+  const numeros2 = numerarSubclausulas(2, 2, [
+    ["c2_proveito", exito],
+    ["c2_exigivel", exito],
+    ["c2_retencao", exito],
+    ["c2_sucumbencia", true],
+    ["c2_pagamento", !probono],
+    ["c2_atraso", !probono],
+    ["c2_vencimento", prolabore],
+  ]);
+  // Cláusula 5: 5.2 e 5.3 (honorários na extinção) só existem quando há cobrança.
+  const numeros5 = numerarSubclausulas(5, probono ? 2 : 4, [
+    ["c5_acordo", true],
+    ["c5_renuncia", true],
+    ["c5_falecimento", true],
+  ]);
   return {
     pf: !pj,
     pj,
