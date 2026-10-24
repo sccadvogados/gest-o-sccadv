@@ -74,10 +74,13 @@ function FinancePage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("installments")
-        .select("id, amount, due_date, status, paid_at, payment_method, category, number, clients(id, name), contracts(numero, ano)")
+                .select("id, amount, due_date, status, paid_at, payment_method, category, number, clients(id, name, etapa), contracts(numero, ano)")
         .order("due_date");
       if (error) throw error;
-      return data as unknown as Row[];
+      // Parcelas de quem ainda não assinou (ou não fechou) ficam fora do Financeiro.
+      return (data as unknown as Array<Row & { clients: { etapa?: string } | null }>).filter(
+        (linha) => !linha.clients?.etapa || linha.clients.etapa === "cliente",
+      );
     },
   });
 

@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 
 import { AppShell } from "@/components/AppShell";
 import { ExportSpreadsheetButton } from "@/components/ExportSpreadsheetButton";
+import { AguardandoAssinatura } from "@/components/AguardandoAssinatura";
 import { PublicacoesDoDia } from "@/components/PublicacoesDoDia";
 import { PageHeader } from "@/components/ui/page-header";
 import { supabase } from "@/integrations/supabase/client";
@@ -140,13 +141,17 @@ function HomePage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("installments")
-        .select("id, amount, due_date, number, client_id, clients(name), contracts(numero, ano)")
+                .select("id, amount, due_date, number, client_id, clients(name, etapa), contracts(numero, ano)")
         .neq("status", "Pago")
+        .neq("status", "Cancelado")
         .lte("due_date", in7)
         .order("due_date", { ascending: true })
         .limit(300);
-      if (error) throw error;
-      return (data ?? []) as unknown as InstallmentRow[];
+            if (error) throw error;
+      // Quem ainda não assinou (ou não fechou) não entra nas parcelas.
+      return ((data ?? []) as unknown as Array<InstallmentRow & { clients: { etapa?: string } | null }>).filter(
+        (linha) => !linha.clients?.etapa || linha.clients.etapa === "cliente",
+      );
     },
   });
 
@@ -227,7 +232,8 @@ function HomePage() {
 
       {filtro === null ? (<>
 
-            <div className="mt-8">
+                        <div className="mt-8 space-y-6">
+        <AguardandoAssinatura />
         <PublicacoesDoDia clients={clients} />
       </div>
 

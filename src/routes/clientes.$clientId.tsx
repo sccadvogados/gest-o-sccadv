@@ -329,6 +329,17 @@ function ClientDetailPage() {
       />
 
             
+            {(client as { etapa?: string }).etapa === "aguardando" ? (
+        <div className="mt-4 rounded-lg border border-[#F0D58A] border-l-4 border-l-[#E0B43C] bg-[#FFF8E6] px-4 py-3 text-sm text-[#7a5a12]">
+          <strong className="text-[#0F2340]">Ainda não é cliente · aguardando assinatura do contrato.</strong>{" "}
+          Quando assinar, confirme em <Link to="/inicio" className="font-semibold underline underline-offset-4">Início › Aguardando Assinatura</Link>.
+        </div>
+      ) : (client as { etapa?: string }).etapa === "nao_fechou" ? (
+        <div className="mt-4 rounded-lg border border-border bg-[#F2F0EC] px-4 py-3 text-sm text-muted-foreground">
+          <strong className="text-[#0F2340]">Não fechou:</strong> o contrato não foi assinado e as parcelas em aberto foram canceladas.
+        </div>
+      ) : null}
+
       {/* Ficha em abas: Dados | Contratos | Arquivos | Agenda */}
       <Tabs defaultValue="dados" className="mt-6">
         <TabsList className="h-auto w-full justify-start gap-1 rounded-none border-b border-[#E6E1D8] bg-transparent p-0">
