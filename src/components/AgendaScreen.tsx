@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CalendarDays, Check, ChevronDown, CloudOff, Plus, Search, Trash2, X } from "lucide-react";
+import { CalendarDays, Check, ChevronDown, CloudOff, Copy, Plus, Search, Trash2, Video, X } from "lucide-react";
 
 import { DeadlineCalculator } from "@/components/DeadlineCalculator";
 import { EventFormDialog } from "@/components/EventFormDialog";
