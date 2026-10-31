@@ -494,8 +494,8 @@ export function AgendaScreen() {
       if (form.id) {
                 const { error } = await officeDatabase(supabase).from("eventos").update(payload).eq("id", form.id);
         if (error) throw error;
-                        try {
-          await syncUpdateEvent({
+                                                try {
+          const sync = await syncUpdateEvent({
             data: {
               id: form.id,
               event: {
