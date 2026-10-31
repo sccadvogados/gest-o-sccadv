@@ -444,7 +444,8 @@ export function AgendaScreen() {
         return matchesSearch && matchesCard &&
           (typeFilter === "todos" || event.tipo === typeFilter) &&
           (responsibleFilter === "todos" || event.responsavel === responsibleFilter) &&
-          (statusFilter === "todos" || event.status === statusFilter);
+                    // Cumpridos e cancelados saem da lista; aparecem só se escolhidos no filtro de Situação
+          (statusFilter === "todos" ? event.status !== "cumprido" && event.status !== "cancelado" : event.status === statusFilter);
       })
             .sort((a, b) => {
         // 1º a vencer (mais próximo primeiro) · 2º vencidos · 3º cumpridos/cancelados (mais recentes primeiro)
