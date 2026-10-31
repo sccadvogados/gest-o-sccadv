@@ -17,7 +17,8 @@ type CalendarEvent = {
     data_inicio: string;
   data_fim?: string | null | undefined;
   
-  local_link?: string | null | undefined;
+    local_link?: string | null | undefined;
+  gerar_meet?: boolean | undefined;
 };
 
 type GoogleEvent = {
