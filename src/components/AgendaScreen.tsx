@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CalendarDays, Check, ChevronDown, CloudOff, Plus, Search, Trash2, X } from "lucide-react";
+import { CalendarDays, Check, ChevronDown, CloudOff, Copy, Plus, Search, Trash2, Video, X } from "lucide-react";
 
 import { DeadlineCalculator } from "@/components/DeadlineCalculator";
 import { EventFormDialog } from "@/components/EventFormDialog";
@@ -124,9 +124,33 @@ const emptyForm = {
   data_inicio: "",
   data_fim: "",
   
-  local_link: "",
+    local_link: "",
   responsavel: "",
+  gerar_meet: true,
 };
+
+/** Link de reunião (Meet, Zoom, Teams…): botões Entrar e Copiar para mandar no WhatsApp */
+function LinkReuniao({ link }: { link: string | null }) {
+  if (!link || !/^https?:\/\//i.test(link.trim())) return null;
+  const url = link.trim();
+  const meet = url.includes("meet.google.com");
+  return (
+    <span className="mt-2 flex flex-wrap items-center gap-1.5">
+      <Button asChild size="sm" variant="outline" className="h-7 px-2 text-xs">
+        <a href={url} target="_blank" rel="noreferrer"><Video className="size-3.5" />{meet ? "Entrar no Meet" : "Entrar"}</a>
+      </Button>
+      <Button
+        type="button"
+        size="sm"
+        variant="ghost"
+        className="h-7 px-2 text-xs"
+        onClick={() => void navigator.clipboard.writeText(url).then(() => toast.success("Link copiado."), () => toast.error("Não foi possível copiar."))}
+      >
+        <Copy className="size-3.5" />Copiar Link
+      </Button>
+    </span>
+  );
+}
 
 function localDateKey(value: string) {
   return new Intl.DateTimeFormat("en-CA", { timeZone: APP_TIME_ZONE }).format(new Date(value));
@@ -457,7 +481,7 @@ export function AgendaScreen() {
 
     const createEvent = useMutation({
         mutationFn: async () => {
-      const { id: eventId, ...values } = form;
+            const { id: eventId, gerar_meet: gerarMeet, ...values } = form;
       const brazilDateTime = (value: string) => {
         if (!value) return null;
         const localValue = value.slice(0, 16);
@@ -470,45 +494,52 @@ export function AgendaScreen() {
       if (form.id) {
                 const { error } = await officeDatabase(supabase).from("eventos").update(payload).eq("id", form.id);
         if (error) throw error;
-                        try {
-          await syncUpdateEvent({
+                                                try {
+          const sync = await syncUpdateEvent({
             data: {
               id: form.id,
               event: {
                 ...payload,
-                id: form.id,
+                                id: form.id,
                 cliente_nome: clients.find((client) => client.id === form.cliente_id)?.name ?? null,
+                gerar_meet: gerarMeet,
               },
             },
           });
+          return { googleFailed: false, meetLink: sync.meetLink, meetFalhou: sync.meetFalhou };
         } catch {
           return { googleFailed: true };
         }
-        return { googleFailed: false };
       }
             const { data, error } = await officeDatabase(supabase).from("eventos").insert(payload).select("id").single();
       if (error) throw error;
-                        try {
-              await syncCreateEvent({
+                                                try {
+              const sync = await syncCreateEvent({
           data: {
             ...data,
             ...payload,
             id: data.id,
             cliente_nome: clients.find((client) => client.id === form.cliente_id)?.name ?? null,
+            gerar_meet: gerarMeet,
           },
         });
+              return { googleFailed: false, meetLink: sync.meetLink, meetFalhou: sync.meetFalhou };
             } catch {
               return { googleFailed: true };
             }
-      return { googleFailed: false };
     },
 
         onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: ["agenda-events"] });
       setForm(emptyForm);
       setOpen(false);
-      if (result?.googleFailed) {
+            if (result?.googleFailed) {
         toast.error("Evento salvo, mas não foi possível enviar ao Google Agenda.");
+      } else if (result?.meetLink) {
+        const link = result.meetLink;
+        toast.success("Reunião salva com link do Meet.", { description: link, action: { label: "Copiar", onClick: () => void navigator.clipboard.writeText(link) } });
+      } else if (result?.meetFalhou) {
+        toast.warning("Reunião salva, mas o Google não gerou o link do Meet.");
       } else {
         toast.success(form.id ? "Evento atualizado." : "Evento criado.");
       }
@@ -593,7 +624,7 @@ export function AgendaScreen() {
                   })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{Object.entries(labels).map(([value, label]) => <SelectItem key={value} value={value}>{label}</SelectItem>)}</SelectContent></Select></Field><Field label="Responsável"><Select value={form.responsavel ? (["Tiago Craveiro", "Raphael Corradi", "Alexandre Souza", "Lauro Trajano"].includes(form.responsavel) ? form.responsavel : "outra") : ""} onValueChange={(value) => { setResponsibleOtherSelected(value === "outra"); setForm((current) => ({ ...current, responsavel: value === "outra" ? "" : value })); }}><SelectTrigger><SelectValue placeholder="-" /></SelectTrigger><SelectContent><SelectItem value="Tiago Craveiro">Tiago Craveiro</SelectItem><SelectItem value="Raphael Corradi">Raphael Corradi</SelectItem><SelectItem value="Alexandre Souza">Alexandre Souza</SelectItem><SelectItem value="Lauro Trajano">Lauro Trajano</SelectItem><SelectItem value="outra">Outro</SelectItem></SelectContent></Select>{responsibleOtherSelected ? <Input className="mt-2" placeholder="Nome da outra pessoa" value={form.responsavel} onChange={(event) => setForm((current) => ({ ...current, responsavel: event.target.value }))} /> : null}</Field></div>
                                     <Field label="Título"><Input value={form.titulo} onChange={(event) => setForm((current) => ({ ...current, titulo: event.target.value }))} /></Field>
                   <Field label="Situação"><Select value={form.status} onValueChange={(value: EventStatus) => setForm((current) => ({ ...current, status: value }))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="pendente">Pendente</SelectItem><SelectItem value="cumprido">Cumprido</SelectItem><SelectItem value="cancelado">Cancelado</SelectItem></SelectContent></Select></Field>
-                  {["prazo", "protocolo", "acompanhamento"].includes(form.tipo) ? <div className="grid gap-3"><Field label="Data"><DateField value={form.data_inicio} onChange={(value) => setForm((current) => ({ ...current, data_inicio: value }))} /></Field>{["prazo", "protocolo"].includes(form.tipo) ? <DeadlineCalculator holidays={holidays} onUseDate={(value) => setForm((current) => ({ ...current, data_inicio: value }))} /> : null}</div> : <div className="flex flex-wrap items-end gap-2 [&_input[type=date]]:w-[160px]">{["reuniao", "audiencia", "julgamento"].includes(form.tipo) ? <><Field label="Data"><DateField value={form.data_inicio} onChange={(value) => setForm((current) => ({ ...current, data_inicio: value ? `${value}T${current.data_inicio.slice(11, 16) || "09:00"}` : "", data_fim: value && current.data_fim.slice(11, 16) ? `${value}T${current.data_fim.slice(11, 16)}` : current.data_fim }))} /></Field><TimeRangeField start={form.data_inicio.slice(11, 16)} end={form.data_fim.slice(11, 16)} onStartChange={(time) => setForm((current) => { const date = current.data_inicio.slice(0, 10); const previousStart = timeToMinutes(current.data_inicio.slice(11, 16)); const previousEnd = timeToMinutes(current.data_fim.slice(11, 16)); const duration = previousStart !== null && previousEnd !== null && previousEnd > previousStart ? previousEnd - previousStart : 60; const nextStart = timeToMinutes(time); const nextEnd = nextStart !== null ? minutesToTime(nextStart + duration) : current.data_fim.slice(11, 16); return { ...current, data_inicio: date && time ? `${date}T${time}` : current.data_inicio, data_fim: date && nextEnd ? `${date}T${nextEnd}` : current.data_fim }; })} onEndChange={(time) => setForm((current) => { const date = current.data_fim.slice(0, 10) || current.data_inicio.slice(0, 10); return { ...current, data_fim: date && time ? `${date}T${time}` : current.data_fim }; })} /><Field label="Local ou link"><Input value={form.local_link} onChange={(event) => setForm((current) => ({ ...current, local_link: event.target.value }))} /></Field></> : <><Field label="Data"><DateField value={form.data_inicio} onChange={(value) => setForm((current) => ({ ...current, data_inicio: value ? `${value}${current.data_inicio.slice(10)}` : "", data_fim: current.data_fim ? `${value}${current.data_fim.slice(10)}` : current.data_fim }))} /></Field><TimeRangeField start={form.data_inicio.slice(11, 16)} end={form.data_fim.slice(11, 16)} onStartChange={(time) => setForm((current) => { const date = current.data_inicio.slice(0, 10); return { ...current, data_inicio: date && time ? `${date}T${time}` : current.data_inicio }; })} onEndChange={(time) => setForm((current) => { const date = current.data_fim.slice(0, 10) || current.data_inicio.slice(0, 10); return { ...current, data_fim: date && time ? `${date}T${time}` : current.data_fim }; })} /><Field label="Local ou link"><Input value={form.local_link} onChange={(event) => setForm((current) => ({ ...current, local_link: event.target.value }))} /></Field></>}</div>}
+                  {["prazo", "protocolo", "acompanhamento"].includes(form.tipo) ? <div className="grid gap-3"><Field label="Data"><DateField value={form.data_inicio} onChange={(value) => setForm((current) => ({ ...current, data_inicio: value }))} /></Field>{["prazo", "protocolo"].includes(form.tipo) ? <DeadlineCalculator holidays={holidays} onUseDate={(value) => setForm((current) => ({ ...current, data_inicio: value }))} /> : null}</div> : <div className="flex flex-wrap items-end gap-2 [&_input[type=date]]:w-[160px]">{["reuniao", "audiencia", "julgamento"].includes(form.tipo) ? <><Field label="Data"><DateField value={form.data_inicio} onChange={(value) => setForm((current) => ({ ...current, data_inicio: value ? `${value}T${current.data_inicio.slice(11, 16) || "09:00"}` : "", data_fim: value && current.data_fim.slice(11, 16) ? `${value}T${current.data_fim.slice(11, 16)}` : current.data_fim }))} /></Field><TimeRangeField start={form.data_inicio.slice(11, 16)} end={form.data_fim.slice(11, 16)} onStartChange={(time) => setForm((current) => { const date = current.data_inicio.slice(0, 10); const previousStart = timeToMinutes(current.data_inicio.slice(11, 16)); const previousEnd = timeToMinutes(current.data_fim.slice(11, 16)); const duration = previousStart !== null && previousEnd !== null && previousEnd > previousStart ? previousEnd - previousStart : 60; const nextStart = timeToMinutes(time); const nextEnd = nextStart !== null ? minutesToTime(nextStart + duration) : current.data_fim.slice(11, 16); return { ...current, data_inicio: date && time ? `${date}T${time}` : current.data_inicio, data_fim: date && nextEnd ? `${date}T${nextEnd}` : current.data_fim }; })} onEndChange={(time) => setForm((current) => { const date = current.data_fim.slice(0, 10) || current.data_inicio.slice(0, 10); return { ...current, data_fim: date && time ? `${date}T${time}` : current.data_fim }; })} /><Field label="Local ou link"><Input value={form.local_link} onChange={(event) => setForm((current) => ({ ...current, local_link: event.target.value }))} /></Field>{form.tipo === "reuniao" && !form.local_link.trim() ? <label className="flex h-9 items-center gap-2 text-sm text-[#0F2340]"><input type="checkbox" className="size-4 accent-[#0F2340]" checked={form.gerar_meet} onChange={(event) => setForm((current) => ({ ...current, gerar_meet: event.target.checked }))} />Gerar link do Meet</label> : null}</> : <><Field label="Data"><DateField value={form.data_inicio} onChange={(value) => setForm((current) => ({ ...current, data_inicio: value ? `${value}${current.data_inicio.slice(10)}` : "", data_fim: current.data_fim ? `${value}${current.data_fim.slice(10)}` : current.data_fim }))} /></Field><TimeRangeField start={form.data_inicio.slice(11, 16)} end={form.data_fim.slice(11, 16)} onStartChange={(time) => setForm((current) => { const date = current.data_inicio.slice(0, 10); return { ...current, data_inicio: date && time ? `${date}T${time}` : current.data_inicio }; })} onEndChange={(time) => setForm((current) => { const date = current.data_fim.slice(0, 10) || current.data_inicio.slice(0, 10); return { ...current, data_fim: date && time ? `${date}T${time}` : current.data_fim }; })} /><Field label="Local ou link"><Input value={form.local_link} onChange={(event) => setForm((current) => ({ ...current, local_link: event.target.value }))} /></Field></>}</div>}
                                     <Field label="Cliente"><div className="relative"><Search className="pointer-events-none absolute left-3 top-1/2 z-10 size-4 -translate-y-1/2 text-muted-foreground" /><Input className="pl-9 pr-9" placeholder="Buscar cliente…" value={clientSearch} onChange={(event) => { setClientSearch(event.target.value); setForm((current) => ({ ...current, cliente_id: "", contrato_id: "" })); }} />{selectedClient && selectedClient.name === clientSearch ? <button type="button" aria-label="Limpar cliente" className="absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded-sm p-1 text-muted-foreground hover:bg-accent hover:text-foreground" onClick={() => { setClientSearch(""); setForm((current) => ({ ...current, cliente_id: "", contrato_id: "" })); }}><X className="size-4" /></button> : null}{clientSearch.trim() && !(selectedClient && selectedClient.name === clientSearch) ? <div className="absolute z-10 mt-1 max-h-48 w-full overflow-y-auto rounded-md border bg-popover p-1 shadow-md">{clients.filter((client) => normalizeClientSearch(client.name).includes(normalizeClientSearch(clientSearch.trim()))).slice(0, 8).map((client) => <button key={client.id} type="button" className="block w-full rounded-sm px-3 py-2 text-left text-sm hover:bg-accent" onClick={() => { setClientSearch(client.name); setForm((current) => ({ ...current, cliente_id: client.id, contrato_id: "" })); }}>{client.name}</button>)}{clients.filter((client) => normalizeClientSearch(client.name).includes(normalizeClientSearch(clientSearch.trim()))).length === 0 ? <p className="px-3 py-2 text-sm text-muted-foreground">Nenhum cliente encontrado</p> : null}</div> : null}</div></Field>
                   {form.cliente_id && <Field label="Contrato"><Select value={form.contrato_id || "none"} onValueChange={(value) => setForm((current) => ({ ...current, contrato_id: value === "none" ? "" : value }))}><SelectTrigger><SelectValue placeholder="Sem contrato" /></SelectTrigger><SelectContent><SelectItem value="none">Sem contrato</SelectItem>{contracts.map((contract) => <SelectItem key={contract.id} value={contract.id}>Contrato {String(contract.numero).padStart(3, "0")}/{contract.ano}</SelectItem>)}</SelectContent></Select></Field>}
                   <Field label="Descrição"><Textarea value={form.descricao} onChange={(event) => setForm((current) => ({ ...current, descricao: event.target.value }))} rows={3} /></Field>
@@ -632,7 +663,8 @@ export function AgendaScreen() {
                       <button type="button" className="text-left text-sm font-semibold leading-snug text-[#0F2340]" onClick={() => openEditEvent(event)}>{event.titulo}</button>
                       <span className={`shrink-0 whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-semibold ${isOverdue(event) ? "bg-[#FBE9E7] text-[#B42318]" : "bg-[#FBF1EA] text-[#8A5A33]"}`}>{`${formatDate(event.data_inicio).slice(0, 5)}${hora !== "00:00" ? ` · ${hora}` : ""}`}</span>
                     </div>
-                    <p className="mt-0.5 text-xs text-muted-foreground">{[clientNames.get(event.cliente_id ?? ""), event.responsavel].filter(Boolean).join(" · ") || "Sem cliente vinculado"}</p>
+                                        <p className="mt-0.5 text-xs text-muted-foreground">{[clientNames.get(event.cliente_id ?? ""), event.responsavel].filter(Boolean).join(" · ") || "Sem cliente vinculado"}</p>
+                    <LinkReuniao link={event.local_link} />
                     <div className="mt-2 flex items-center gap-1.5">
                       <Badge style={{ backgroundColor: colors[event.tipo], color: typeTextColor(event.tipo) }}>{labels[event.tipo]}</Badge>
                       {isOverdue(event) ? <Badge variant="destructive">VENCIDO</Badge> : !pendente ? <Badge variant="secondary">{event.status === "cumprido" ? "Cumprido" : "Cancelado"}</Badge> : null}
@@ -649,7 +681,7 @@ export function AgendaScreen() {
             })}
           </div>
           <div className="panel mt-6 hidden overflow-hidden md:block"><Table><TableHeader><TableRow><TableHead>Tipo</TableHead><TableHead>Evento</TableHead><TableHead>Data</TableHead><TableHead>Responsável</TableHead><TableHead>Situação</TableHead><TableHead className="text-right">Ação</TableHead></TableRow></TableHeader><TableBody>
-          {isLoading ? <TableRow><TableCell colSpan={6} className="py-10 text-center text-muted-foreground">Carregando agenda…</TableCell></TableRow> : filteredEvents.length === 0 ? <TableRow><TableCell colSpan={6} className="py-16 text-center"><span className="mx-auto flex size-14 items-center justify-center rounded-full bg-[#F1E8DD] text-[#0F2340]"><CalendarDays className="size-7" /></span><p className="mt-4 font-semibold text-[#0F2340]">Nenhum compromisso por aqui</p><p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">Cadastre seu primeiro evento para acompanhar prazos e reuniões.</p><Button className="mt-5" variant="outline" onClick={() => openNewEvent()}><Plus className="size-4" />Cadastrar primeiro evento</Button></TableCell></TableRow> : filteredEvents.map((event) => <TableRow key={event.id}><TableCell><Badge style={{ backgroundColor: colors[event.tipo], color: typeTextColor(event.tipo) }}>{labels[event.tipo]}</Badge></TableCell><TableCell><div className="flex items-center gap-2"><button type="button" className="font-medium text-left hover:underline" onClick={() => openEditEvent(event)}>{event.titulo}</button>{!event.google_event_id ? <Tooltip><TooltipTrigger asChild><CloudOff className="size-4 text-muted-foreground" aria-label="Não sincronizado" /></TooltipTrigger><TooltipContent>Não sincronizado</TooltipContent></Tooltip> : null}</div><div className="text-xs text-muted-foreground">{clientNames.get(event.cliente_id ?? "") ?? "Sem cliente vinculado"}</div>{!event.google_event_id ? <Button type="button" variant="ghost" size="sm" className="mt-1 h-7 px-2 text-xs" onClick={() => retrySync.mutate(event)} disabled={retrySync.isPending}>Tentar novamente</Button> : null}</TableCell><TableCell className="whitespace-nowrap text-sm">{formatDate(event.data_inicio)}<div className="text-xs text-muted-foreground">{new Intl.DateTimeFormat("pt-BR", { timeZone: APP_TIME_ZONE, hour: "2-digit", minute: "2-digit" }).format(new Date(event.data_inicio))}</div></TableCell><TableCell className="text-sm text-muted-foreground">{event.responsavel || "—"}</TableCell><TableCell>{isOverdue(event) ? <Badge variant="destructive">VENCIDO</Badge> : <Badge variant="secondary">{event.status === "cumprido" ? "Cumprido" : event.status === "cancelado" ? "Cancelado" : "Pendente"}</Badge>}</TableCell><TableCell className="text-right"><div className="flex justify-end gap-2">{event.status !== "cumprido" && event.status !== "cancelado" ? <Button size="sm" variant="outline" onClick={() => markDone.mutate(event.id)} disabled={markDone.isPending}><Check className="size-4" />Cumprido</Button> : <span className="text-xs text-muted-foreground">Concluído</span>}<Button size="sm" variant="outline" onClick={() => { if (window.confirm("Excluir este evento?")) deleteEvent.mutate(event.id); }} disabled={deleteEvent.isPending} aria-label="Excluir evento"><Trash2 className="size-4" /></Button></div></TableCell></TableRow>)}
+          {isLoading ? <TableRow><TableCell colSpan={6} className="py-10 text-center text-muted-foreground">Carregando agenda…</TableCell></TableRow> : filteredEvents.length === 0 ? <TableRow><TableCell colSpan={6} className="py-16 text-center"><span className="mx-auto flex size-14 items-center justify-center rounded-full bg-[#F1E8DD] text-[#0F2340]"><CalendarDays className="size-7" /></span><p className="mt-4 font-semibold text-[#0F2340]">Nenhum compromisso por aqui</p><p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">Cadastre seu primeiro evento para acompanhar prazos e reuniões.</p><Button className="mt-5" variant="outline" onClick={() => openNewEvent()}><Plus className="size-4" />Cadastrar primeiro evento</Button></TableCell></TableRow> : filteredEvents.map((event) => <TableRow key={event.id}><TableCell><Badge style={{ backgroundColor: colors[event.tipo], color: typeTextColor(event.tipo) }}>{labels[event.tipo]}</Badge></TableCell><TableCell><div className="flex items-center gap-2"><button type="button" className="font-medium text-left hover:underline" onClick={() => openEditEvent(event)}>{event.titulo}</button>{!event.google_event_id ? <Tooltip><TooltipTrigger asChild><CloudOff className="size-4 text-muted-foreground" aria-label="Não sincronizado" /></TooltipTrigger><TooltipContent>Não sincronizado</TooltipContent></Tooltip> : null}</div><div className="text-xs text-muted-foreground">{clientNames.get(event.cliente_id ?? "") ?? "Sem cliente vinculado"}</div><LinkReuniao link={event.local_link} />{!event.google_event_id ? <Button type="button" variant="ghost" size="sm" className="mt-1 h-7 px-2 text-xs" onClick={() => retrySync.mutate(event)} disabled={retrySync.isPending}>Tentar novamente</Button> : null}</TableCell><TableCell className="whitespace-nowrap text-sm">{formatDate(event.data_inicio)}<div className="text-xs text-muted-foreground">{new Intl.DateTimeFormat("pt-BR", { timeZone: APP_TIME_ZONE, hour: "2-digit", minute: "2-digit" }).format(new Date(event.data_inicio))}</div></TableCell><TableCell className="text-sm text-muted-foreground">{event.responsavel || "—"}</TableCell><TableCell>{isOverdue(event) ? <Badge variant="destructive">VENCIDO</Badge> : <Badge variant="secondary">{event.status === "cumprido" ? "Cumprido" : event.status === "cancelado" ? "Cancelado" : "Pendente"}</Badge>}</TableCell><TableCell className="text-right"><div className="flex justify-end gap-2">{event.status !== "cumprido" && event.status !== "cancelado" ? <Button size="sm" variant="outline" onClick={() => markDone.mutate(event.id)} disabled={markDone.isPending}><Check className="size-4" />Cumprido</Button> : <span className="text-xs text-muted-foreground">Concluído</span>}<Button size="sm" variant="outline" onClick={() => { if (window.confirm("Excluir este evento?")) deleteEvent.mutate(event.id); }} disabled={deleteEvent.isPending} aria-label="Excluir evento"><Trash2 className="size-4" /></Button></div></TableCell></TableRow>)}
                 </TableBody></Table></div></> : view === "mes" ? <MonthCalendar currentDate={calendarDate} onDateChange={setCalendarDate} onDayClick={openNewEvent} events={filteredEvents} onEventClick={openEditEvent} /> : view === "semana" ? <WeekCalendar currentDate={calendarDate} onDateChange={setCalendarDate} onSlotClick={openNewEvent} events={filteredEvents} onEventClick={openEditEvent} /> : null}
             </TooltipProvider>
       
