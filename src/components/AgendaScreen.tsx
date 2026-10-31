@@ -267,7 +267,7 @@ function TimeRangeField({ start, end, onStartChange, onEndChange }: { start: str
         inputMode="numeric"
         className={`h-[52px] w-full rounded-lg border border-input bg-white px-3 py-1 text-base shadow-sm transition-colors outline-none focus-visible:ring-1 focus-visible:ring-ring md:text-sm ${open === kind ? "ring-1 ring-ring" : ""}`}
       />
-      {open === kind ? <div ref={listRef} className="absolute left-0 top-11 z-30 max-h-56 w-48 overflow-y-auto rounded-md border bg-popover p-1 shadow-lg">
+      {open === kind ? <div ref={listRef} className="absolute left-0 top-[56px] z-30 max-h-56 w-48 overflow-y-auto rounded-md border bg-popover p-1 shadow-lg">
         {options.map((minutes) => {
           const option = minutesToTime(minutes);
           return <button key={option} type="button" className={`flex w-full items-center justify-between rounded px-3 py-2 text-left text-sm hover:bg-accent ${selectedMinutes === minutes ? "bg-accent font-semibold" : ""}`} onMouseDown={(event) => event.preventDefault()} onClick={() => choose(minutes)}><span>{option}</span>{kind === "end" && startMinutes !== null && minutes > startMinutes ? <span className="text-xs text-muted-foreground">({formatDuration(minutes - startMinutes)})</span> : null}</button>;
