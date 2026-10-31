@@ -457,7 +457,7 @@ export function AgendaScreen() {
 
     const createEvent = useMutation({
         mutationFn: async () => {
-      const { id: eventId, ...values } = form;
+            const { id: eventId, gerar_meet: gerarMeet, ...values } = form;
       const brazilDateTime = (value: string) => {
         if (!value) return null;
         const localValue = value.slice(0, 16);
