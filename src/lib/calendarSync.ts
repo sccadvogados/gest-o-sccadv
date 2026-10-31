@@ -291,7 +291,7 @@ const calendarEventSchema = z.object({
   responsavel: z.string().nullable().optional(),
   cliente_nome: z.string().nullable().optional(),
   
-    local_link: z.string().nullable().optional(),
+      local_link: z.string().nullable().optional(),
   gerar_meet: z.boolean().optional(),
 });
 
