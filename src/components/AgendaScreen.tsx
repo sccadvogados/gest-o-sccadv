@@ -468,15 +468,12 @@ export function AgendaScreen() {
         return matchesSearch && matchesCard &&
           (typeFilter === "todos" || event.tipo === typeFilter) &&
           (responsibleFilter === "todos" || event.responsavel === responsibleFilter) &&
-                    // Cumpridos e cancelados saem da lista; aparecem só se escolhidos no filtro de Situação
-          (statusFilter === "todos" ? event.status !== "cumprido" && event.status !== "cancelado" : event.status === statusFilter);
+                              // Agenda mostra só o que falta fazer; cumpridos e cancelados ficam na ficha do cliente
+          event.status !== "cumprido" && event.status !== "cancelado";
       })
-            .sort((a, b) => {
-        // 1º a vencer (mais próximo primeiro) · 2º vencidos · 3º cumpridos/cancelados (mais recentes primeiro)
-        const grupo = (event: AgendaEvent) => (event.status === "cumprido" || event.status === "cancelado" ? 2 : isOverdue(event) ? 1 : 0);
-        const diferenca = new Date(a.data_inicio).getTime() - new Date(b.data_inicio).getTime();
-        return grupo(a) - grupo(b) || (grupo(a) === 0 ? diferenca : -diferenca);
-      });
+                  // 1º vencidos (o mais atrasado primeiro) · 2º pendentes (o mais próximo primeiro)
+      .sort((a, b) => Number(isOverdue(b)) - Number(isOverdue(a)) ||
+        new Date(a.data_inicio).getTime() - new Date(b.data_inicio).getTime());
   }, [cardFilter, clientNames, events, responsibleFilter, search, statusFilter, today, typeFilter]);
 
     const createEvent = useMutation({
@@ -644,7 +641,7 @@ export function AgendaScreen() {
                         <div className="mt-6 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3"><div className="relative col-span-2 sm:min-w-64 sm:flex-1"><Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" /><Input className="pl-9" placeholder="Buscar evento…" value={search} onChange={(event) => setSearch(event.target.value)} /></div>
           <Select value={typeFilter} onValueChange={(value: "todos" | EventType) => setTypeFilter(value)}><SelectTrigger className="w-full sm:w-44"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="todos">Todos os Tipos</SelectItem>{Object.entries(labels).map(([value, label]) => <SelectItem key={value} value={value}>{label}</SelectItem>)}</SelectContent></Select>
           <Select value={responsibleFilter} onValueChange={setResponsibleFilter}><SelectTrigger className="w-full sm:w-44"><SelectValue placeholder="Responsável" /></SelectTrigger><SelectContent><SelectItem value="todos">Todos os Responsáveis</SelectItem>{responsibleNames.map((name) => <SelectItem key={name} value={name}>{name}</SelectItem>)}</SelectContent></Select>
-          <Select value={statusFilter} onValueChange={(value: "todos" | EventStatus) => setStatusFilter(value)}><SelectTrigger className="col-span-2 w-full sm:col-auto sm:w-44"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="todos">Todas as Situações</SelectItem><SelectItem value="pendente">Pendente</SelectItem><SelectItem value="cumprido">Cumprido</SelectItem><SelectItem value="cancelado">Cancelado</SelectItem></SelectContent></Select>
+          
         </div>
 
                 {view === "lista" ? <>
