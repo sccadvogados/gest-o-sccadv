@@ -144,7 +144,7 @@ function LinkReuniao({ link }: { link: string | null }) {
         size="sm"
         variant="ghost"
         className="h-7 px-2 text-xs"
-        onClick={() => void navigator.clipboard.writeText(url).then(() => toast.success("Link copiado."), () => toast.error("Não foi possível copiar."))}
+                onClick={() => void navigator.clipboard.writeText(url).then(() => toast.success("Link copiado.", { description: "Cole no WhatsApp do cliente." }), () => toast.error("Não foi possível copiar."))}
       >
         <Copy className="size-3.5" />Copiar Link
       </Button>
