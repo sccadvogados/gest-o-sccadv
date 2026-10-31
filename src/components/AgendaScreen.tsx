@@ -124,9 +124,33 @@ const emptyForm = {
   data_inicio: "",
   data_fim: "",
   
-  local_link: "",
+    local_link: "",
   responsavel: "",
+  gerar_meet: true,
 };
+
+/** Link de reunião (Meet, Zoom, Teams…): botões Entrar e Copiar para mandar no WhatsApp */
+function LinkReuniao({ link }: { link: string | null }) {
+  if (!link || !/^https?:\/\//i.test(link.trim())) return null;
+  const url = link.trim();
+  const meet = url.includes("meet.google.com");
+  return (
+    <span className="mt-2 flex flex-wrap items-center gap-1.5">
+      <Button asChild size="sm" variant="outline" className="h-7 px-2 text-xs">
+        <a href={url} target="_blank" rel="noreferrer"><Video className="size-3.5" />{meet ? "Entrar no Meet" : "Entrar"}</a>
+      </Button>
+      <Button
+        type="button"
+        size="sm"
+        variant="ghost"
+        className="h-7 px-2 text-xs"
+        onClick={() => void navigator.clipboard.writeText(url).then(() => toast.success("Link copiado."), () => toast.error("Não foi possível copiar."))}
+      >
+        <Copy className="size-3.5" />Copiar Link
+      </Button>
+    </span>
+  );
+}
 
 function localDateKey(value: string) {
   return new Intl.DateTimeFormat("en-CA", { timeZone: APP_TIME_ZONE }).format(new Date(value));
