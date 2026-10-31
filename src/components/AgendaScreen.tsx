@@ -509,8 +509,13 @@ export function AgendaScreen() {
       queryClient.invalidateQueries({ queryKey: ["agenda-events"] });
       setForm(emptyForm);
       setOpen(false);
-      if (result?.googleFailed) {
+            if (result?.googleFailed) {
         toast.error("Evento salvo, mas não foi possível enviar ao Google Agenda.");
+      } else if (result?.meetLink) {
+        const link = result.meetLink;
+        toast.success("Reunião salva com link do Meet.", { description: link, action: { label: "Copiar", onClick: () => void navigator.clipboard.writeText(link) } });
+      } else if (result?.meetFalhou) {
+        toast.warning("Reunião salva, mas o Google não gerou o link do Meet.");
       } else {
         toast.success(form.id ? "Evento atualizado." : "Evento criado.");
       }
