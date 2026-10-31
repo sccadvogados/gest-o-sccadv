@@ -207,16 +207,29 @@ async function googleRequest(path: string, init?: RequestInit): Promise<unknown>
   return response.status === 204 ? null : response.json();
 }
 
-async function insertGoogleEvent(event: GoogleEvent): Promise<string> {
+type GoogleResult = { id?: string; hangoutLink?: string };
+
+// Pede ao Google uma sala do Meet junto com o evento (conferenceDataVersion=1)
+const meetRequest = () => ({ conferenceData: { createRequest: { requestId: crypto.randomUUID(), conferenceSolutionKey: { type: "hangoutsMeet" } } } });
+
+async function insertGoogleEvent(event: GoogleEvent, meet = false): Promise<{ id: string; meetLink: string | null; meetFalhou: boolean }> {
   const { id: omittedId, colorId, ...rest } = event;
   const payload = { ...rest, ...(colorId ? { colorId } : {}) };
   if (!payload.description) delete payload.description;
+  if (meet) {
+    try {
+      const result = await googleRequest("/events?conferenceDataVersion=1", { method: "POST", body: JSON.stringify({ ...payload, ...meetRequest() }) }) as GoogleResult;
+      if (result.id) return { id: result.id, meetLink: result.hangoutLink ?? null, meetFalhou: !result.hangoutLink };
+    } catch {
+      // Sem permissão para criar sala: salva o evento sem o Meet
+    }
+  }
   const result = await googleRequest("/events", {
     method: "POST",
     body: JSON.stringify(payload),
-  }) as { id?: string };
+  }) as GoogleResult;
   if (!result.id) throw new Error("O Google Agenda não retornou o ID do evento.");
-  return result.id;
+  return { id: result.id, meetLink: null, meetFalhou: meet };
 }
 
 async function removeGoogleEvent(id: string | null | undefined): Promise<void> {
@@ -278,7 +291,7 @@ const calendarEventSchema = z.object({
   responsavel: z.string().nullable().optional(),
   cliente_nome: z.string().nullable().optional(),
   
-    local_link: z.string().nullable().optional(),
+      local_link: z.string().nullable().optional(),
   gerar_meet: z.boolean().optional(),
 });
 
