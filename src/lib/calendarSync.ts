@@ -276,11 +276,14 @@ async function syncCreatedEvent(supabase: SupabaseClient<Database>, data: z.infe
     parte_contraria: data.parte_contraria ?? null, responsavel: data.responsavel ?? null,
         cliente_nome: data.cliente_nome ?? null, local_link: data.local_link ?? null,
   };
-  const ids: GoogleEventIds = { comum: null };
+    const ids: GoogleEventIds & { meetLink: string | null; meetFalhou: boolean } = { comum: null, meetLink: null, meetFalhou: false };
   for (const googleEvent of buildGoogleEvents(event)) {
-    ids.comum = await insertGoogleEvent(googleEvent);
+    const result = await insertGoogleEvent(googleEvent, querMeet(data));
+    ids.comum = result.id;
+    ids.meetLink = result.meetLink;
+    ids.meetFalhou = result.meetFalhou;
   }
-  const { error } = await supabase.from("eventos").update({ google_event_id: ids.comum }).eq("id", data.id);
+  const { error } = await supabase.from("eventos").update({ google_event_id: ids.comum, ...(ids.meetLink ? { local_link: ids.meetLink } : {}) }).eq("id", data.id);
   if (error) throw error;
   return ids;
 }
