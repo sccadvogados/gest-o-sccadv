@@ -327,19 +327,20 @@ export const updateEvent = createServerFn({ method: "POST" })
         .update({ google_event_id: null })
         .eq("id", data.id);
       if (clearError) throw clearError;
-      return { comum: null };
+            return { comum: null, meetLink: null, meetFalhou: false };
     }
 
-    const googleId = previous.google_event_id
-      ? await updateGoogleEvent(previous.google_event_id, googleEvent)
-      : await insertGoogleEvent(googleEvent);
+    const meet = querMeet(data.event);
+    const result = previous.google_event_id
+      ? await updateGoogleEvent(previous.google_event_id, googleEvent, meet)
+      : await insertGoogleEvent(googleEvent, meet);
 
     const { error: updateError } = await context.supabase
       .from("eventos")
-      .update({ google_event_id: googleId })
+      .update({ google_event_id: result.id, ...(result.meetLink ? { local_link: result.meetLink } : {}) })
       .eq("id", data.id);
     if (updateError) throw updateError;
-    return { comum: googleId };
+    return { comum: result.id, meetLink: result.meetLink, meetFalhou: result.meetFalhou };
   });
 
 export const deleteEvent = createServerFn({ method: "POST" })
