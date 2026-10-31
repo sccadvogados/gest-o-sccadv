@@ -17,7 +17,8 @@ type CalendarEvent = {
     data_inicio: string;
   data_fim?: string | null | undefined;
   
-  local_link?: string | null | undefined;
+    local_link?: string | null | undefined;
+  gerar_meet?: boolean | undefined;
 };
 
 type GoogleEvent = {
@@ -228,24 +229,37 @@ async function removeGoogleEvent(id: string | null | undefined): Promise<void> {
   }
 }
 
-async function updateGoogleEvent(id: string, event: GoogleEvent): Promise<string> {
+async function updateGoogleEvent(id: string, event: GoogleEvent, meet = false): Promise<{ id: string; meetLink: string | null; meetFalhou: boolean }> {
   const { id: omittedId, colorId, ...rest } = event;
   const payload = { ...rest, ...(colorId ? { colorId } : {}) };
   if (!payload.description) delete payload.description;
+
+  if (meet) {
+    try {
+      const result = await googleRequest(`/events/${encodeURIComponent(id)}?conferenceDataVersion=1`, { method: "PATCH", body: JSON.stringify({ ...payload, ...meetRequest() }) }) as GoogleResult;
+      return { id, meetLink: result.hangoutLink ?? null, meetFalhou: !result.hangoutLink };
+    } catch (error) {
+      const status = (error as { status?: number }).status;
+      if (status === 404 || status === 410) return insertGoogleEvent(event, true);
+    }
+  }
 
   try {
     await googleRequest(`/events/${encodeURIComponent(id)}`, {
       method: "PATCH",
       body: JSON.stringify(payload),
     });
-    return id;
+    return { id, meetLink: null, meetFalhou: meet };
   } catch (error) {
     const status = (error as { status?: number }).status;
     if (status !== 404 && status !== 410) throw error;
   }
 
-  return insertGoogleEvent(event);
+  return insertGoogleEvent(event, meet);
 }
+
+const querMeet = (event: { tipo: string; local_link?: string | null | undefined; gerar_meet?: boolean | undefined }) =>
+  event.tipo === "reuniao" && Boolean(event.gerar_meet) && !event.local_link?.trim();
 
 async function ensureActive(supabase: SupabaseClient<Database>) {
   const { data, error } = await supabase.rpc("is_ativo");
@@ -264,7 +278,8 @@ const calendarEventSchema = z.object({
   responsavel: z.string().nullable().optional(),
   cliente_nome: z.string().nullable().optional(),
   
-  local_link: z.string().nullable().optional(),
+    local_link: z.string().nullable().optional(),
+  gerar_meet: z.boolean().optional(),
 });
 
 async function syncCreatedEvent(supabase: SupabaseClient<Database>, data: z.infer<typeof calendarEventSchema>) {
@@ -275,11 +290,14 @@ async function syncCreatedEvent(supabase: SupabaseClient<Database>, data: z.infe
     parte_contraria: data.parte_contraria ?? null, responsavel: data.responsavel ?? null,
         cliente_nome: data.cliente_nome ?? null, local_link: data.local_link ?? null,
   };
-  const ids: GoogleEventIds = { comum: null };
+    const ids: GoogleEventIds & { meetLink: string | null; meetFalhou: boolean } = { comum: null, meetLink: null, meetFalhou: false };
   for (const googleEvent of buildGoogleEvents(event)) {
-    ids.comum = await insertGoogleEvent(googleEvent);
+    const result = await insertGoogleEvent(googleEvent, querMeet(data));
+    ids.comum = result.id;
+    ids.meetLink = result.meetLink;
+    ids.meetFalhou = result.meetFalhou;
   }
-  const { error } = await supabase.from("eventos").update({ google_event_id: ids.comum }).eq("id", data.id);
+  const { error } = await supabase.from("eventos").update({ google_event_id: ids.comum, ...(ids.meetLink ? { local_link: ids.meetLink } : {}) }).eq("id", data.id);
   if (error) throw error;
   return ids;
 }
