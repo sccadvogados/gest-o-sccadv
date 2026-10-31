@@ -634,7 +634,8 @@ export function AgendaScreen() {
                       <button type="button" className="text-left text-sm font-semibold leading-snug text-[#0F2340]" onClick={() => openEditEvent(event)}>{event.titulo}</button>
                       <span className={`shrink-0 whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-semibold ${isOverdue(event) ? "bg-[#FBE9E7] text-[#B42318]" : "bg-[#FBF1EA] text-[#8A5A33]"}`}>{`${formatDate(event.data_inicio).slice(0, 5)}${hora !== "00:00" ? ` · ${hora}` : ""}`}</span>
                     </div>
-                    <p className="mt-0.5 text-xs text-muted-foreground">{[clientNames.get(event.cliente_id ?? ""), event.responsavel].filter(Boolean).join(" · ") || "Sem cliente vinculado"}</p>
+                                        <p className="mt-0.5 text-xs text-muted-foreground">{[clientNames.get(event.cliente_id ?? ""), event.responsavel].filter(Boolean).join(" · ") || "Sem cliente vinculado"}</p>
+                    <LinkReuniao link={event.local_link} />
                     <div className="mt-2 flex items-center gap-1.5">
                       <Badge style={{ backgroundColor: colors[event.tipo], color: typeTextColor(event.tipo) }}>{labels[event.tipo]}</Badge>
                       {isOverdue(event) ? <Badge variant="destructive">VENCIDO</Badge> : !pendente ? <Badge variant="secondary">{event.status === "cumprido" ? "Cumprido" : "Cancelado"}</Badge> : null}
