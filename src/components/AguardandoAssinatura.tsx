@@ -95,7 +95,13 @@ export function AguardandoAssinatura() {
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2 md:flex md:shrink-0">
-                <Button size="sm" disabled={mudar.isPending} onClick={() => mudar.mutate({ id: item.id, etapa: "cliente" })}>
+                                <Button
+                  size="sm"
+                  disabled={mudar.isPending}
+                  onClick={() => {
+                    if (window.confirm(`Confirmar que ${item.name} assinou o contrato? Ele passa para a aba Clientes e para o Financeiro.`)) mudar.mutate({ id: item.id, etapa: "cliente" });
+                  }}
+                >
                   <Check className="size-4" /> Assinado
                 </Button>
                 <Button
