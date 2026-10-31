@@ -254,7 +254,7 @@ function TimeRangeField({ start, end, onStartChange, onEndChange }: { start: str
   };
 
   const input = (kind: "start" | "end", value: string, onChange: (value: string) => void) => (
-    <div className="relative min-w-0 flex-1">
+        <div className="relative min-w-[88px] flex-1">
       <input
         aria-label={kind === "start" ? "Hora de início" : "Hora de término"}
         value={value}
