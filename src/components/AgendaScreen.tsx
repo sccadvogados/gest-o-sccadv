@@ -446,8 +446,12 @@ export function AgendaScreen() {
           (responsibleFilter === "todos" || event.responsavel === responsibleFilter) &&
           (statusFilter === "todos" || event.status === statusFilter);
       })
-      .sort((a, b) => Number(isOverdue(b)) - Number(isOverdue(a)) ||
-        new Date(a.data_inicio).getTime() - new Date(b.data_inicio).getTime());
+            .sort((a, b) => {
+        // 1º a vencer (mais próximo primeiro) · 2º vencidos · 3º cumpridos/cancelados (mais recentes primeiro)
+        const grupo = (event: AgendaEvent) => (event.status === "cumprido" || event.status === "cancelado" ? 2 : isOverdue(event) ? 1 : 0);
+        const diferenca = new Date(a.data_inicio).getTime() - new Date(b.data_inicio).getTime();
+        return grupo(a) - grupo(b) || (grupo(a) === 0 ? diferenca : -diferenca);
+      });
   }, [cardFilter, clientNames, events, responsibleFilter, search, statusFilter, today, typeFilter]);
 
     const createEvent = useMutation({
