@@ -828,7 +828,7 @@ function NewClientPage() {
               />
             </div>
             <div className="space-y-2 sm:col-span-3">
-                            <Label htmlFor="email">E-mail <Pending value={form.email} /></Label>
+                            <Label htmlFor="email">E-mail <span className="text-xs font-normal text-muted-foreground">(Opcional)</span></Label>
               <Input
                 id="email"
                 type="email"
