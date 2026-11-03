@@ -336,7 +336,7 @@ function NewClientPage() {
         ["Bairro", form.district],
         ["Cidade", form.city],
         ["UF", form.state],
-        ["E-mail", form.email],
+        
         ["Telefone", form.phone],
         ...(form.person_type === "PF"
           ? ([
