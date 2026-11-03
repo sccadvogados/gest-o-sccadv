@@ -93,7 +93,7 @@ function missingFields(client: ClientRow) {
   const missing: string[] = [];
   if (!client.cpf_cnpj?.trim()) missing.push("CPF/CNPJ");
   if (!client.cep?.trim() && !client.street?.trim()) missing.push("endereço");
-  if (!client.email?.trim()) missing.push("e-mail");
+  
   if (!client.phone?.trim()) missing.push("telefone");
   return missing;
 }

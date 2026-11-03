@@ -52,7 +52,7 @@ function isClientIncomplete(client: {
 }) {
   return !client.cpf_cnpj?.trim() ||
     (!client.cep?.trim() && !client.street?.trim()) ||
-    !client.email?.trim() ||
+    
     !client.phone?.trim();
 }
 
