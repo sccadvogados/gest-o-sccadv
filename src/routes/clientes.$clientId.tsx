@@ -471,7 +471,7 @@ function ClientDetailPage() {
                   </Badge>
                                 ) : null}
                                 {contract.modality !== "probono" ? (
-                                    <Badge variant="secondary">{contract.payment_method || "Forma a Definir"}</Badge>
+                                                                        <Badge variant="secondary">{contract.payment_method === "Cartão" && contract.modality === "parcelado" ? `Cartão ${contract.installments_count}x` : contract.payment_method || "Forma a Definir"}</Badge>
                 ) : null}
                 {contract.socios?.length && contract.modality !== "probono" ? (
                   <Badge variant="secondary" title={SOCIOS.filter((s) => contract.socios?.includes(s.sigla)).map((s) => s.nome).join(", ")}>
