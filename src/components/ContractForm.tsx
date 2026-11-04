@@ -92,8 +92,8 @@ export function ContractForm({
       setPreview([]);
       return;
     }
-    setPreview(buildContractInstallments(totalValue, Number(count), firstDue, modality));
-  }, [totalValue, count, firstDue, modality, semParcelas]);
+        setPreview(buildContractInstallments(totalValue, Number(count), firstDue, modality, paymentMethod));
+  }, [totalValue, count, firstDue, modality, semParcelas, paymentMethod]);
 
   function updatePreview(index: number, field: "amount" | "due_date", value: number | string) {
     setPreview((current) => current.map((row, rowIndex) => (rowIndex === index ? { ...row, [field]: value } : row)));
