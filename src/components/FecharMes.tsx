@@ -201,8 +201,8 @@ export function FecharMes({ periodo, nomePeriodo, lancamentos }: { periodo: stri
               <p className="text-muted-foreground">Nenhuma pendência encontrada neste mês.</p>
             )}
 
-            <p className="text-muted-foreground">
-              Depois de fechado, ninguém inclui, altera ou exclui lançamentos deste mês (nem baixa parcelas com pagamento nele) até um administrador reabrir.
+                        <p className="text-justify text-muted-foreground">
+              Após o fechamento, não é permitido incluir, alterar ou excluir lançamentos, nem baixar parcelas com pagamento previsto para este mês. Essas ações só serão liberadas após a reabertura por um administrador.
             </p>
             {!terminou ? <p className="text-[#B42318]">O mês só pode ser fechado a partir do último dia dele.</p> : null}
           </div>
