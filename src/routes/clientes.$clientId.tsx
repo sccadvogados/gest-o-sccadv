@@ -66,7 +66,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { officeDatabase } from "@/lib/office-database";
 import { arquivarContrato } from "@/lib/arquivo.functions";
 import {
-  buildContractInstallments,
+    buildContractInstallments,
+  isCartaoParcelado,
   buildInstallments,
   formatCurrency,
   formatDate,
@@ -75,6 +76,8 @@ import {
   type ContractModality,
 } from "@/lib/format";
 import { useValoresOcultos } from "@/lib/valores-ocultos";
+import { CartaoSimulacao } from "@/components/CartaoSimulacao";
+import { CartaoAsaas } from "@/components/CartaoAsaas";
 
 export const Route = createFileRoute("/clientes/$clientId")({
   head: () => ({
@@ -451,8 +454,15 @@ function ClientDetailPage() {
                     ? "Pro Bono"
                     : contract.modality === "exito"
                       ? `Somente Êxito · ${contract.success_fee_percent}%`
-                      : `${contract.category} · ${formatCurrency(contract.total_value)} em ${contract.installments_count}x · êxito ${contract.success_fee_percent}%`}
+                                            : `${contract.category} · ${formatCurrency(contract.total_value)} em ${contract.installments_count}x · êxito ${contract.success_fee_percent}%`}
                 </p>
+                {contract.payment_method === "Cartão" && contract.modality === "parcelado" && contract.situacao !== "arquivado" ? (
+                  <CartaoAsaas
+                    clientId={clientId}
+                    contractId={contract.id}
+                    linkUrl={(contract as { asaas_link_url?: string | null }).asaas_link_url}
+                  />
+                ) : null}
               </div>
                                                         <div className="flex items-center gap-2">
                 {contract.situacao === "arquivado" ? (
@@ -461,7 +471,7 @@ function ClientDetailPage() {
                   </Badge>
                                 ) : null}
                                 {contract.modality !== "probono" ? (
-                                    <Badge variant="secondary">{contract.payment_method || "Forma a Definir"}</Badge>
+                                                                        <Badge variant="secondary">{contract.payment_method === "Cartão" && contract.modality === "parcelado" ? `Cartão ${contract.installments_count}x` : contract.payment_method || "Forma a Definir"}</Badge>
                 ) : null}
                 {contract.socios?.length && contract.modality !== "probono" ? (
                   <Badge variant="secondary" title={SOCIOS.filter((s) => contract.socios?.includes(s.sigla)).map((s) => s.nome).join(", ")}>
@@ -918,7 +928,7 @@ function EditContractDialog({
       if (deleteError) throw deleteError;
       if (semParcelas) return;
 
-      const rows = buildContractInstallments(totalValue, installmentsCount, firstDue, modality).map((row) => ({
+            const rows = buildContractInstallments(totalValue, installmentsCount, firstDue, modality, paymentMethod).map((row) => ({
         ...row,
         contract_id: contract.id,
         client_id: clientId,
@@ -974,13 +984,14 @@ function EditContractDialog({
               <CurrencyInput id={`edit-contract-total-${contract.id}`} value={totalValue} onChange={setTotalValue} disabled={hasPaidInstallment} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor={`edit-contract-count-${contract.id}`}>Número de Parcelas</Label>
+                            <Label htmlFor={`edit-contract-count-${contract.id}`}>{isCartaoParcelado(paymentMethod, modality) ? "Parcelas no Cartão" : "Número de Parcelas"}</Label>
               <Input id={`edit-contract-count-${contract.id}`} type="number" min={1} value={count} onChange={(e) => setCount(e.target.value)} disabled={hasPaidInstallment} />
             </div>
             <div className="space-y-2">
-                            <Label htmlFor={`edit-contract-due-${contract.id}`}>Primeiro Vencimento</Label>
+                                                        <Label htmlFor={`edit-contract-due-${contract.id}`}>{isCartaoParcelado(paymentMethod, modality) ? "Data do Pagamento no Cartão" : "Primeiro Vencimento"}</Label>
               <Input id={`edit-contract-due-${contract.id}`} type="date" value={firstDue} onChange={(e) => setFirstDue(e.target.value)} disabled={hasPaidInstallment} />
             </div>
+            {isCartaoParcelado(paymentMethod, modality) && !hasPaidInstallment ? <CartaoSimulacao valor={totalValue} parcelas={Number(count)} dataPagamento={firstDue} onParcelas={(n) => setCount(String(n))} /> : null}
           </>
         ) : null}
                 {!proBono ? (
