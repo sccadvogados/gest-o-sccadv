@@ -123,6 +123,7 @@ export function ContractForm({
         if (!Number.isFinite(totalValue) || totalValue <= 0) throw new Error("Informe um valor válido.");
         if (!Number.isInteger(Number(count)) || Number(count) < 1) throw new Error("Informe um número inteiro de meses/parcelas.");
         if (!firstDue) throw new Error("Informe o primeiro vencimento.");
+                if (cartao && installmentsCount > CARTAO_MAX_PARCELAS) throw new Error(`No cartão o limite é de ${CARTAO_MAX_PARCELAS} parcelas.`);
         if (preview.length !== installmentsCount) throw new Error("Preencha as condições para gerar a prévia das parcelas.");
         const expectedTotal = modality === "mensal" ? totalValue * installmentsCount : totalValue;
         const previewTotal = preview.reduce((sum, row) => sum + row.amount, 0);
