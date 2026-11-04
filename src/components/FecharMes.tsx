@@ -15,7 +15,9 @@ const db = supabase as unknown as { from: (table: string) => any; rpc: (fn: stri
 const CATEGORIAS_HONORARIOS = ["(R) Pró-labore", "(R) Honorários de Êxito", "(R) Honorários de Sucumbência"];
 
 type Fechamento = { mes: string; entradas: number; saidas: number; saldo_final: number; fechado_por_email: string | null; fechado_em: string };
-type LancamentoMes = { data: string; tipo: string; categoria: string; valor: number; revisar: boolean; distribuido?: boolean; origem: string };
+type LancamentoMes = { data: string; tipo: string; categoria: string; valor: number; revisar: boolean; distribuido?: boolean; origem: string; descricao?: string | null };
+type ParcelaSemBaixa = { id: string; number: number; amount: number; due_date: string; clients: { name: string } | null; contracts: { numero: number | null; ano: number | null } | null };
+type Pendencia = { titulo: string; itens: Array<{ chave: string; texto: string; valor: number }> };
 
 function mensagem(error: unknown, padrao: string) {
   const texto = (error as { message?: string } | null)?.message;
@@ -54,23 +56,27 @@ export function FecharMes({ periodo, nomePeriodo, lancamentos }: { periodo: stri
   const entradas = doMes.filter((item) => item.tipo === "entrada" && item.origem !== "saldo_inicial").reduce((s, item) => s + Number(item.valor), 0);
   const saidas = doMes.filter((item) => item.tipo === "saida").reduce((s, item) => s + Number(item.valor), 0);
   const saldoFinal = lancamentos.filter((item) => item.data <= fim).reduce((s, item) => s + (item.tipo === "entrada" ? 1 : -1) * Number(item.valor), 0);
-  const revisar = doMes.filter((item) => item.revisar).length;
-  const aDistribuir = doMes.filter((item) => item.tipo === "entrada" && !item.distribuido && CATEGORIAS_HONORARIOS.includes(item.categoria)).length;
+    const listaRevisar = doMes.filter((item) => item.revisar);
+  const listaADistribuir = doMes.filter((item) => item.tipo === "entrada" && !item.distribuido && CATEGORIAS_HONORARIOS.includes(item.categoria));
+  const revisar = listaRevisar.length;
+  const aDistribuir = listaADistribuir.length;
 
-  const { data: parcelasSemBaixa = 0 } = useQuery({
+  const { data: listaParcelas = [] } = useQuery({
     queryKey: ["parcelas-sem-baixa-mes", periodo],
     enabled: aberto && ehMes,
     queryFn: async () => {
-      const { count, error } = await db
+            const { data, error } = await db
         .from("installments")
-        .select("id", { count: "exact", head: true })
+        .select("id, number, amount, due_date, clients(name), contracts(numero, ano)")
         .gte("due_date", inicio)
         .lte("due_date", fim)
-        .not("status", "in", "(Pago,Cancelado)");
+        .not("status", "in", "(Pago,Cancelado)")
+        .order("due_date");
       if (error) throw error;
-      return (count ?? 0) as number;
+      return (data ?? []) as ParcelaSemBaixa[];
     },
   });
+  const parcelasSemBaixa = listaParcelas.length;
 
   const fechar = useMutation({
     mutationFn: async () => {
@@ -122,11 +128,25 @@ export function FecharMes({ periodo, nomePeriodo, lancamentos }: { periodo: stri
     );
   }
 
-  const pendencias = [
-    revisar ? `${revisar} lançamento${revisar > 1 ? "s" : ""} marcado${revisar > 1 ? "s" : ""} para revisar` : "",
-    aDistribuir ? `${aDistribuir} recebimento${aDistribuir > 1 ? "s" : ""} ainda sem distribuição` : "",
-    parcelasSemBaixa ? `${parcelasSemBaixa} parcela${parcelasSemBaixa > 1 ? "s" : ""} com vencimento no mês sem baixa` : "",
-  ].filter(Boolean);
+    const doLancamento = (item: LancamentoMes, indice: number) => ({
+    chave: `${item.data}-${indice}`,
+    texto: `${formatDate(item.data).slice(0, 5)} · ${item.descricao?.trim() || item.categoria}`,
+    valor: Number(item.valor),
+  });
+  const pendencias: Pendencia[] = [
+    revisar ? { titulo: `${revisar} lançamento${revisar > 1 ? "s" : ""} marcado${revisar > 1 ? "s" : ""} para revisar`, itens: listaRevisar.map(doLancamento) } : null,
+    aDistribuir ? { titulo: `${aDistribuir} recebimento${aDistribuir > 1 ? "s" : ""} ainda sem distribuição`, itens: listaADistribuir.map(doLancamento) } : null,
+    parcelasSemBaixa
+      ? {
+          titulo: `${parcelasSemBaixa} parcela${parcelasSemBaixa > 1 ? "s" : ""} com vencimento no mês sem baixa`,
+          itens: listaParcelas.map((parcela) => ({
+            chave: parcela.id,
+            texto: `${formatDate(parcela.due_date).slice(0, 5)} · ${parcela.clients?.name ?? "Cliente"}${parcela.contracts?.numero != null ? ` · ${String(parcela.contracts.numero).padStart(3, "0")}/${parcela.contracts.ano}` : ""} · Parcela ${parcela.number}`,
+            valor: Number(parcela.amount),
+          })),
+        }
+      : null,
+  ].filter((item): item is Pendencia => item !== null);
 
   return (
         <div>
@@ -158,7 +178,24 @@ export function FecharMes({ periodo, nomePeriodo, lancamentos }: { periodo: stri
             {pendencias.length > 0 ? (
               <div className="rounded-md border border-[#E8B9A5] bg-[#FBF1EC] px-3 py-2 text-[#7A3F2D]">
                 <p className="font-medium">Antes de fechar, confira:</p>
-                <ul className="mt-1 list-disc pl-5">{pendencias.map((texto) => <li key={texto}>{texto}</li>)}</ul>
+                                <div className="mt-1 space-y-1">
+                  {pendencias.map((pendencia) => (
+                    <details key={pendencia.titulo} className="group">
+                      <summary className="cursor-pointer list-none select-none">
+                        <span className="mr-1 inline-block transition-transform group-open:rotate-90">›</span>
+                        <span className="underline decoration-dotted underline-offset-2">{pendencia.titulo}</span>
+                      </summary>
+                      <ul className="mt-1 max-h-40 space-y-0.5 overflow-y-auto pl-4 text-xs">
+                        {pendencia.itens.map((item) => (
+                          <li key={item.chave} className="flex justify-between gap-3 border-b border-[#F1D6CA] py-1 last:border-0">
+                            <span className="min-w-0">{item.texto}</span>
+                            <span className="shrink-0 whitespace-nowrap tabular-nums">{formatCurrency(item.valor)}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </details>
+                  ))}
+                </div>
               </div>
             ) : (
               <p className="text-muted-foreground">Nenhuma pendência encontrada neste mês.</p>
