@@ -56,10 +56,12 @@ export function FecharMes({ periodo, nomePeriodo, lancamentos }: { periodo: stri
   const entradas = doMes.filter((item) => item.tipo === "entrada" && item.origem !== "saldo_inicial").reduce((s, item) => s + Number(item.valor), 0);
   const saidas = doMes.filter((item) => item.tipo === "saida").reduce((s, item) => s + Number(item.valor), 0);
   const saldoFinal = lancamentos.filter((item) => item.data <= fim).reduce((s, item) => s + (item.tipo === "entrada" ? 1 : -1) * Number(item.valor), 0);
-  const revisar = doMes.filter((item) => item.revisar).length;
-  const aDistribuir = doMes.filter((item) => item.tipo === "entrada" && !item.distribuido && CATEGORIAS_HONORARIOS.includes(item.categoria)).length;
+    const listaRevisar = doMes.filter((item) => item.revisar);
+  const listaADistribuir = doMes.filter((item) => item.tipo === "entrada" && !item.distribuido && CATEGORIAS_HONORARIOS.includes(item.categoria));
+  const revisar = listaRevisar.length;
+  const aDistribuir = listaADistribuir.length;
 
-  const { data: parcelasSemBaixa = 0 } = useQuery({
+  const { data: listaParcelas = [] } = useQuery({
     queryKey: ["parcelas-sem-baixa-mes", periodo],
     enabled: aberto && ehMes,
     queryFn: async () => {
