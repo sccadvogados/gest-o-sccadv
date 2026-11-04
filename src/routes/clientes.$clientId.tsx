@@ -454,8 +454,15 @@ function ClientDetailPage() {
                     ? "Pro Bono"
                     : contract.modality === "exito"
                       ? `Somente Êxito · ${contract.success_fee_percent}%`
-                      : `${contract.category} · ${formatCurrency(contract.total_value)} em ${contract.installments_count}x · êxito ${contract.success_fee_percent}%`}
+                                            : `${contract.category} · ${formatCurrency(contract.total_value)} em ${contract.installments_count}x · êxito ${contract.success_fee_percent}%`}
                 </p>
+                {contract.payment_method === "Cartão" && contract.modality === "parcelado" && contract.situacao !== "arquivado" ? (
+                  <CartaoAsaas
+                    clientId={clientId}
+                    contractId={contract.id}
+                    linkUrl={(contract as { asaas_link_url?: string | null }).asaas_link_url}
+                  />
+                ) : null}
               </div>
                                                         <div className="flex items-center gap-2">
                 {contract.situacao === "arquivado" ? (
