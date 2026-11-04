@@ -82,14 +82,42 @@ export function maskPhone(value: string) {
 
 export type ContractModality = "parcelado" | "mensal" | "exito" | "probono";
 
+/** Cartão (Asaas): taxa repassada ao cliente; o escritório recebe as parcelas mês a mês, a 1ª 30 dias após o pagamento. */
+export const CARTAO_TAXA_PERCENTUAL = 2.99;
+export const CARTAO_TAXA_FIXA = 0.49;
+export const CARTAO_MAX_PARCELAS = 10;
+export const CARTAO_DIAS_CREDITO = 30;
+
+/** Cartão parcelado: o app abre as N parcelas mensais, a 1ª na data do crédito (pagamento + 30 dias). */
+export function isCartaoParcelado(paymentMethod: string | null | undefined, modality: ContractModality) {
+  return paymentMethod === "Cartão" && modality === "parcelado";
+}
+
+/** Quanto o cliente paga no cartão para o escritório receber o valor cheio (estimativa; o valor exato vem do Asaas). */
+export function cartaoTotalCliente(valor: number) {
+  return Math.round(((valor + CARTAO_TAXA_FIXA) / (1 - CARTAO_TAXA_PERCENTUAL / 100)) * 100) / 100;
+}
+
+/** Data do crédito da 1ª parcela do cartão: pagamento + 30 dias. */
+export function cartaoDataCredito(dataPagamento: string) {
+  const data = new Date(`${dataPagamento.slice(0, 10)}T12:00:00Z`);
+  data.setUTCDate(data.getUTCDate() + CARTAO_DIAS_CREDITO);
+  return data.toISOString().slice(0, 10);
+}
+
 /** Gera parcelas conforme a modalidade do contrato. */
 export function buildContractInstallments(
   value: number,
   count: number,
   firstDueDate: string,
   modality: ContractModality = "parcelado",
+  paymentMethod?: string | null,
 ) {
   if (modality === "exito" || modality === "probono") return [];
+  // Cartão: o escritório recebe uma parcela por mês, a 1ª 30 dias após o pagamento
+  if (isCartaoParcelado(paymentMethod, modality)) {
+    return buildInstallments(value, count, cartaoDataCredito(firstDueDate));
+  }
   const total = modality === "mensal" ? value * Math.max(1, Math.floor(count)) : value;
   return buildInstallments(total, count, firstDueDate);
 }
