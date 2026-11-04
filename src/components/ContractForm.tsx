@@ -248,13 +248,14 @@ export function ContractForm({
               <CurrencyInput id="total" value={totalValue} onChange={setTotalValue} />
             </div>
             <div className="space-y-2">
-                            <Label htmlFor="count">Número de Parcelas</Label>
-              <Input id="count" type="number" min={1} value={count} onChange={(e) => setCount(e.target.value)} />
+                                                        <Label htmlFor="count">{cartao ? "Parcelas no Cartão" : "Número de Parcelas"}</Label>
+              <Input id="count" type="number" min={1} max={cartao ? CARTAO_MAX_PARCELAS : undefined} value={count} onChange={(e) => setCount(e.target.value)} />
             </div>
             <div className="space-y-2">
-                            <Label htmlFor="firstDue">Primeiro Vencimento</Label>
+                            <Label htmlFor="firstDue">{cartao ? "Data do Pagamento no Cartão" : "Primeiro Vencimento"}</Label>
               <Input id="firstDue" type="date" value={firstDue} onChange={(e) => setFirstDue(e.target.value)} />
                         </div>
+            {cartao ? <CartaoSimulacao valor={totalValue} parcelas={Number(count)} dataPagamento={firstDue} onParcelas={(n) => setCount(String(n))} /> : null}
           </>
         ) : null}
 
