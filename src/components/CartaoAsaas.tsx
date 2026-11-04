@@ -22,8 +22,13 @@ export function CartaoAsaas({ clientId, contractId, linkUrl }: { clientId: strin
   const gerar = useMutation({
     // Edge Function do Supabase (asaas-link): a chave do Asaas fica só no Supabase
     mutationFn: async () => {
-      const { data, error } = await supabase.functions.invoke<{ url?: string; erro?: string }>("asaas-link", { body: { contractId } });
-      if (error || !data?.url) throw new Error(data?.erro ?? "Não foi possível gerar o link no Asaas.");
+            const { data, error } = await supabase.functions.invoke<{ url?: string; erro?: string }>("asaas-link", { body: { contractId } });
+      if (error || !data?.url) {
+        // Mostra o motivo devolvido pela função (ex.: recusa do Asaas)
+        const contexto = (error as { context?: Response } | null)?.context;
+        const detalhe = contexto ? await contexto.clone().json().then((corpo: { erro?: string }) => corpo.erro).catch(() => `Erro ${contexto.status}`) : undefined;
+        throw new Error(data?.erro ?? detalhe ?? "Não foi possível gerar o link no Asaas.");
+      }
       return { url: data.url };
     },
     onSuccess: ({ url }) => {
