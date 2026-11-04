@@ -65,16 +65,18 @@ export function FecharMes({ periodo, nomePeriodo, lancamentos }: { periodo: stri
     queryKey: ["parcelas-sem-baixa-mes", periodo],
     enabled: aberto && ehMes,
     queryFn: async () => {
-      const { count, error } = await db
+            const { data, error } = await db
         .from("installments")
-        .select("id", { count: "exact", head: true })
+        .select("id, number, amount, due_date, clients(name), contracts(numero, ano)")
         .gte("due_date", inicio)
         .lte("due_date", fim)
-        .not("status", "in", "(Pago,Cancelado)");
+        .not("status", "in", "(Pago,Cancelado)")
+        .order("due_date");
       if (error) throw error;
-      return (count ?? 0) as number;
+      return (data ?? []) as ParcelaSemBaixa[];
     },
   });
+  const parcelasSemBaixa = listaParcelas.length;
 
   const fechar = useMutation({
     mutationFn: async () => {
