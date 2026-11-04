@@ -84,7 +84,8 @@ export function ContractForm({
   const [preview, setPreview] = useState<PreviewInstallment[]>([]);
   const queryClient = useQueryClient();
   const proBono = modality === "probono";
-  const semParcelas = modality === "exito" || proBono;
+    const semParcelas = modality === "exito" || proBono;
+  const cartao = isCartaoParcelado(paymentMethod, modality);
 
   useEffect(() => {
     if (!Number.isFinite(totalValue) || totalValue <= 0 || !Number.isInteger(Number(count)) || Number(count) < 1 || !firstDue || semParcelas) {
