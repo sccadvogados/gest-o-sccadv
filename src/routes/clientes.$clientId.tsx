@@ -988,9 +988,10 @@ function EditContractDialog({
               <Input id={`edit-contract-count-${contract.id}`} type="number" min={1} value={count} onChange={(e) => setCount(e.target.value)} disabled={hasPaidInstallment} />
             </div>
             <div className="space-y-2">
-                            <Label htmlFor={`edit-contract-due-${contract.id}`}>Primeiro Vencimento</Label>
+                                                        <Label htmlFor={`edit-contract-due-${contract.id}`}>{isCartaoParcelado(paymentMethod, modality) ? "Data do Pagamento no Cartão" : "Primeiro Vencimento"}</Label>
               <Input id={`edit-contract-due-${contract.id}`} type="date" value={firstDue} onChange={(e) => setFirstDue(e.target.value)} disabled={hasPaidInstallment} />
             </div>
+            {isCartaoParcelado(paymentMethod, modality) && !hasPaidInstallment ? <CartaoSimulacao valor={totalValue} parcelas={Number(count)} dataPagamento={firstDue} onParcelas={(n) => setCount(String(n))} /> : null}
           </>
         ) : null}
                 {!proBono ? (
