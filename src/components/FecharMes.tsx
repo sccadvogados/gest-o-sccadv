@@ -15,7 +15,9 @@ const db = supabase as unknown as { from: (table: string) => any; rpc: (fn: stri
 const CATEGORIAS_HONORARIOS = ["(R) Pró-labore", "(R) Honorários de Êxito", "(R) Honorários de Sucumbência"];
 
 type Fechamento = { mes: string; entradas: number; saidas: number; saldo_final: number; fechado_por_email: string | null; fechado_em: string };
-type LancamentoMes = { data: string; tipo: string; categoria: string; valor: number; revisar: boolean; distribuido?: boolean; origem: string };
+type LancamentoMes = { data: string; tipo: string; categoria: string; valor: number; revisar: boolean; distribuido?: boolean; origem: string; descricao?: string | null };
+type ParcelaSemBaixa = { id: string; number: number; amount: number; due_date: string; clients: { name: string } | null; contracts: { numero: number | null; ano: number | null } | null };
+type Pendencia = { titulo: string; itens: Array<{ chave: string; texto: string; valor: number }> };
 
 function mensagem(error: unknown, padrao: string) {
   const texto = (error as { message?: string } | null)?.message;
