@@ -128,11 +128,25 @@ export function FecharMes({ periodo, nomePeriodo, lancamentos }: { periodo: stri
     );
   }
 
-  const pendencias = [
-    revisar ? `${revisar} lançamento${revisar > 1 ? "s" : ""} marcado${revisar > 1 ? "s" : ""} para revisar` : "",
-    aDistribuir ? `${aDistribuir} recebimento${aDistribuir > 1 ? "s" : ""} ainda sem distribuição` : "",
-    parcelasSemBaixa ? `${parcelasSemBaixa} parcela${parcelasSemBaixa > 1 ? "s" : ""} com vencimento no mês sem baixa` : "",
-  ].filter(Boolean);
+    const doLancamento = (item: LancamentoMes, indice: number) => ({
+    chave: `${item.data}-${indice}`,
+    texto: `${formatDate(item.data).slice(0, 5)} · ${item.descricao?.trim() || item.categoria}`,
+    valor: Number(item.valor),
+  });
+  const pendencias: Pendencia[] = [
+    revisar ? { titulo: `${revisar} lançamento${revisar > 1 ? "s" : ""} marcado${revisar > 1 ? "s" : ""} para revisar`, itens: listaRevisar.map(doLancamento) } : null,
+    aDistribuir ? { titulo: `${aDistribuir} recebimento${aDistribuir > 1 ? "s" : ""} ainda sem distribuição`, itens: listaADistribuir.map(doLancamento) } : null,
+    parcelasSemBaixa
+      ? {
+          titulo: `${parcelasSemBaixa} parcela${parcelasSemBaixa > 1 ? "s" : ""} com vencimento no mês sem baixa`,
+          itens: listaParcelas.map((parcela) => ({
+            chave: parcela.id,
+            texto: `${formatDate(parcela.due_date).slice(0, 5)} · ${parcela.clients?.name ?? "Cliente"}${parcela.contracts?.numero != null ? ` · ${String(parcela.contracts.numero).padStart(3, "0")}/${parcela.contracts.ano}` : ""} · Parcela ${parcela.number}`,
+            valor: Number(parcela.amount),
+          })),
+        }
+      : null,
+  ].filter((item): item is Pendencia => item !== null);
 
   return (
         <div>
