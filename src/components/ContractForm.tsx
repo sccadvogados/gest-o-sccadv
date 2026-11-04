@@ -14,7 +14,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { officeDatabase } from "@/lib/office-database";
-import { buildContractInstallments, formatCurrency, todayISO, type ContractModality } from "@/lib/format";
+import { buildContractInstallments, CARTAO_MAX_PARCELAS, formatCurrency, isCartaoParcelado, todayISO, type ContractModality } from "@/lib/format";
+import { CartaoSimulacao } from "@/components/CartaoSimulacao";
 
 const CATEGORIES = [
   "(R) Pró-labore",
@@ -83,15 +84,16 @@ export function ContractForm({
   const [preview, setPreview] = useState<PreviewInstallment[]>([]);
   const queryClient = useQueryClient();
   const proBono = modality === "probono";
-  const semParcelas = modality === "exito" || proBono;
+    const semParcelas = modality === "exito" || proBono;
+  const cartao = isCartaoParcelado(paymentMethod, modality);
 
   useEffect(() => {
     if (!Number.isFinite(totalValue) || totalValue <= 0 || !Number.isInteger(Number(count)) || Number(count) < 1 || !firstDue || semParcelas) {
       setPreview([]);
       return;
     }
-    setPreview(buildContractInstallments(totalValue, Number(count), firstDue, modality));
-  }, [totalValue, count, firstDue, modality, semParcelas]);
+        setPreview(buildContractInstallments(totalValue, Number(count), firstDue, modality, paymentMethod));
+  }, [totalValue, count, firstDue, modality, semParcelas, paymentMethod]);
 
   function updatePreview(index: number, field: "amount" | "due_date", value: number | string) {
     setPreview((current) => current.map((row, rowIndex) => (rowIndex === index ? { ...row, [field]: value } : row)));
@@ -121,6 +123,7 @@ export function ContractForm({
         if (!Number.isFinite(totalValue) || totalValue <= 0) throw new Error("Informe um valor válido.");
         if (!Number.isInteger(Number(count)) || Number(count) < 1) throw new Error("Informe um número inteiro de meses/parcelas.");
         if (!firstDue) throw new Error("Informe o primeiro vencimento.");
+                if (cartao && installmentsCount > CARTAO_MAX_PARCELAS) throw new Error(`No cartão o limite é de ${CARTAO_MAX_PARCELAS} parcelas.`);
         if (preview.length !== installmentsCount) throw new Error("Preencha as condições para gerar a prévia das parcelas.");
         const expectedTotal = modality === "mensal" ? totalValue * installmentsCount : totalValue;
         const previewTotal = preview.reduce((sum, row) => sum + row.amount, 0);
@@ -245,13 +248,14 @@ export function ContractForm({
               <CurrencyInput id="total" value={totalValue} onChange={setTotalValue} />
             </div>
             <div className="space-y-2">
-                            <Label htmlFor="count">Número de Parcelas</Label>
-              <Input id="count" type="number" min={1} value={count} onChange={(e) => setCount(e.target.value)} />
+                                                        <Label htmlFor="count">{cartao ? "Parcelas no Cartão" : "Número de Parcelas"}</Label>
+              <Input id="count" type="number" min={1} max={cartao ? CARTAO_MAX_PARCELAS : undefined} value={count} onChange={(e) => setCount(e.target.value)} />
             </div>
             <div className="space-y-2">
-                            <Label htmlFor="firstDue">Primeiro Vencimento</Label>
+                            <Label htmlFor="firstDue">{cartao ? "Data do Pagamento no Cartão" : "Primeiro Vencimento"}</Label>
               <Input id="firstDue" type="date" value={firstDue} onChange={(e) => setFirstDue(e.target.value)} />
                         </div>
+            {cartao ? <CartaoSimulacao valor={totalValue} parcelas={Number(count)} dataPagamento={firstDue} onParcelas={(n) => setCount(String(n))} /> : null}
           </>
         ) : null}
 
