@@ -918,7 +918,7 @@ function EditContractDialog({
       if (deleteError) throw deleteError;
       if (semParcelas) return;
 
-      const rows = buildContractInstallments(totalValue, installmentsCount, firstDue, modality).map((row) => ({
+            const rows = buildContractInstallments(totalValue, installmentsCount, firstDue, modality, paymentMethod).map((row) => ({
         ...row,
         contract_id: contract.id,
         client_id: clientId,
