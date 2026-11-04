@@ -178,7 +178,24 @@ export function FecharMes({ periodo, nomePeriodo, lancamentos }: { periodo: stri
             {pendencias.length > 0 ? (
               <div className="rounded-md border border-[#E8B9A5] bg-[#FBF1EC] px-3 py-2 text-[#7A3F2D]">
                 <p className="font-medium">Antes de fechar, confira:</p>
-                <ul className="mt-1 list-disc pl-5">{pendencias.map((texto) => <li key={texto}>{texto}</li>)}</ul>
+                                <div className="mt-1 space-y-1">
+                  {pendencias.map((pendencia) => (
+                    <details key={pendencia.titulo} className="group">
+                      <summary className="cursor-pointer list-none select-none">
+                        <span className="mr-1 inline-block transition-transform group-open:rotate-90">›</span>
+                        <span className="underline decoration-dotted underline-offset-2">{pendencia.titulo}</span>
+                      </summary>
+                      <ul className="mt-1 max-h-40 space-y-0.5 overflow-y-auto pl-4 text-xs">
+                        {pendencia.itens.map((item) => (
+                          <li key={item.chave} className="flex justify-between gap-3 border-b border-[#F1D6CA] py-1 last:border-0">
+                            <span className="min-w-0">{item.texto}</span>
+                            <span className="shrink-0 whitespace-nowrap tabular-nums">{formatCurrency(item.valor)}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </details>
+                  ))}
+                </div>
               </div>
             ) : (
               <p className="text-muted-foreground">Nenhuma pendência encontrada neste mês.</p>
