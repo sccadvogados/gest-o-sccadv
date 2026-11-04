@@ -66,7 +66,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { officeDatabase } from "@/lib/office-database";
 import { arquivarContrato } from "@/lib/arquivo.functions";
 import {
-  buildContractInstallments,
+    buildContractInstallments,
+  isCartaoParcelado,
   buildInstallments,
   formatCurrency,
   formatDate,
