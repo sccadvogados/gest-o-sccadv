@@ -220,101 +220,102 @@ export function ContractForm({
 
   return (
     <>
-            <div className="grid gap-4 sm:grid-cols-2 [&_input:not([type=checkbox])]:h-9 [&_input:not([type=checkbox])]:text-sm">
-        <div className="space-y-2">
-          <Label>Modalidade</Label>
-          <Select value={modality} onValueChange={(value) => setModality(value as ContractModality)}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-                            <SelectItem value="parcelado">Pró-labore</SelectItem>
-                            <SelectItem value="exito">Somente Êxito</SelectItem>
-              <SelectItem value="probono">Pro Bono</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-2">
-          <Label>Categoria</Label>
-          <Select value={category} onValueChange={setCategory}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>{CATEGORIES.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
-          </Select>
-        </div>
-
-                        {!proBono ? (
+                  <div className="grid gap-4 [&_input:not([type=checkbox])]:h-9 [&_input:not([type=checkbox])]:text-sm">
+        {/* Linha 1: escolhas (selects lado a lado, sem sobra) */}
+        <div className={`grid gap-4 ${proBono ? "sm:grid-cols-3" : "sm:grid-cols-4"}`}>
           <div className="space-y-2">
-            <Label>Forma de Pagamento</Label>
-            <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+            <Label>Modalidade</Label>
+            <Select value={modality} onValueChange={(value) => setModality(value as ContractModality)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>{PAYMENT_METHODS.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
+              <SelectContent>
+                <SelectItem value="parcelado">Pró-labore</SelectItem>
+                <SelectItem value="exito">Somente Êxito</SelectItem>
+                <SelectItem value="probono">Pro Bono</SelectItem>
+              </SelectContent>
             </Select>
           </div>
-        ) : null}
-
-                {!semParcelas ? (
-          <>
+          <div className="space-y-2">
+            <Label>Categoria</Label>
+            <Select value={category} onValueChange={setCategory}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>{CATEGORIES.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+          {!proBono ? (
             <div className="space-y-2">
-                            <Label htmlFor="total">{modality === "mensal" ? "Valor Mensal" : "Valor Total"}</Label>
-              <CurrencyInput id="total" value={totalValue} onChange={setTotalValue} />
+              <Label>Forma de Pagamento</Label>
+              <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>{PAYMENT_METHODS.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
+              </Select>
             </div>
-            <div className="space-y-2">
-                                                        <Label htmlFor="count">{cartao ? "Parcelas no Cartão" : "Número de Parcelas"}</Label>
-              <Input id="count" type="number" min={1} max={cartao ? CARTAO_MAX_PARCELAS : undefined} value={count} onChange={(e) => setCount(e.target.value)} />
-            </div>
-            <div className="space-y-2">
-                            <Label htmlFor="firstDue">{cartao ? "Data do Pagamento no Cartão" : "Primeiro Vencimento"}</Label>
-              <Input id="firstDue" type="date" value={firstDue} onChange={(e) => setFirstDue(e.target.value)} />
-                        </div>
-            {cartao ? <CartaoSimulacao valor={totalValue} parcelas={Number(count)} dataPagamento={firstDue} onParcelas={(n) => setCount(String(n))} /> : null}
-          </>
-        ) : null}
-
-                        <div className="space-y-2">
-                    <Label>Forma de Captação</Label>
-          <Select value={captacao} onValueChange={(value) => setCaptacao(value === "nenhuma" ? "" : value)}>
-
-            <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
-            <SelectContent><SelectItem value="nenhuma">Nenhuma</SelectItem>{CAPTACAO.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
-          </Select>
+          ) : null}
+          <div className="space-y-2">
+            <Label>Forma de Captação</Label>
+            <Select value={captacao} onValueChange={(value) => setCaptacao(value === "nenhuma" ? "" : value)}>
+              <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+              <SelectContent><SelectItem value="nenhuma">Nenhuma</SelectItem>{CAPTACAO.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
         </div>
 
-                {captacao === "Indicação" || captacao === "Parceria" ? (
-          <CaptadorField tipo={captacao} value={captadorId} onChange={setCaptadorId} />
-        ) : null}
-
+        {/* Linha 2 (só Indicação/Parceria): captador + % de repasse */}
         {temRepasse ? (
-          <div className="space-y-2">
-                        <Label htmlFor="captacaoPercentual">% de Repasse da {captacao}{!captacaoPercentual ? <span className="ml-0.5 text-destructive">*</span> : null}</Label>
-            <PercentInput id="captacaoPercentual" placeholder="Ex.: 10" value={captacaoPercentual} onChange={(e) => setCaptacaoPercentual(e.target.value)} />
-                        <p className="text-xs text-muted-foreground">Percentual dos honorários destinado a quem indicou ou ao parceiro.</p>
+          <div className="grid gap-4 sm:grid-cols-4">
+            <div className="sm:col-span-3"><CaptadorField tipo={captacao} value={captadorId} onChange={setCaptadorId} /></div>
+            <div className="space-y-2">
+              <Label htmlFor="captacaoPercentual">% de Repasse{!captacaoPercentual ? <span className="ml-0.5 text-destructive">*</span> : null}</Label>
+              <PercentInput id="captacaoPercentual" placeholder="Ex.: 10" value={captacaoPercentual} onChange={(e) => setCaptacaoPercentual(e.target.value)} />
+            </div>
           </div>
         ) : null}
 
-                {!proBono ? (
-          <div className="space-y-2">
-                                                <Label htmlFor="successFee">% de Êxito{modality === "exito" ? " (Obrigatório)" : ""}</Label>
-            <PercentInput id="successFee" value={successFee} onChange={(e) => setSuccessFee(e.target.value)} />
-          </div>
-        ) : null}
-
+        {/* Linha 3: valores (todos do mesmo tamanho, na mesma linha) */}
         {!proBono ? (
-          <div className="space-y-2">
-                        <Label htmlFor="retencao">% de Retenção do Escritório{!retencao.trim() ? <span className="ml-0.5 text-destructive">*</span> : null}</Label>
-            <PercentInput id="retencao" placeholder="Ex.: 20" value={retencao} onChange={(e) => setRetencao(e.target.value)} />
-            <p className="text-xs text-muted-foreground">Sobre pró-labore e êxito. Fica só no sistema.</p>
+          <div>
+            <div className={`grid grid-cols-2 gap-4 ${semParcelas ? "sm:grid-cols-2" : "sm:grid-cols-5"}`}>
+              {!semParcelas ? (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="total">{modality === "mensal" ? "Valor Mensal" : "Valor Total"}</Label>
+                    <CurrencyInput id="total" value={totalValue} onChange={setTotalValue} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="count">{cartao ? "Parcelas no Cartão" : "Nº de Parcelas"}</Label>
+                    <Input id="count" type="number" min={1} max={cartao ? CARTAO_MAX_PARCELAS : undefined} value={count} onChange={(e) => setCount(e.target.value)} />
+                  </div>
+                  <div className="col-span-2 space-y-2 sm:col-span-1">
+                    <Label htmlFor="firstDue">{cartao ? "Pago no Cartão em" : "Primeiro Vencimento"}</Label>
+                    <Input id="firstDue" type="date" value={firstDue} onChange={(e) => setFirstDue(e.target.value)} />
+                  </div>
+                </>
+              ) : null}
+              <div className="space-y-2">
+                <Label htmlFor="successFee">% de Êxito{modality === "exito" ? <span className="ml-0.5 text-destructive">*</span> : null}</Label>
+                <PercentInput id="successFee" value={successFee} onChange={(e) => setSuccessFee(e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="retencao">% de Retenção{!retencao.trim() ? <span className="ml-0.5 text-destructive">*</span> : null}</Label>
+                <PercentInput id="retencao" placeholder="Ex.: 20" value={retencao} onChange={(e) => setRetencao(e.target.value)} />
+              </div>
+            </div>
+            <p className="mt-2 text-xs text-muted-foreground">
+              {`Retenção: sobre pró-labore e êxito, fica só no sistema.${temRepasse ? " Repasse: percentual dos honorários para quem indicou ou para o parceiro." : ""}`}
+            </p>
           </div>
         ) : null}
 
+        {cartao && !semParcelas ? <CartaoSimulacao valor={totalValue} parcelas={Number(count)} dataPagamento={firstDue} onParcelas={(n) => setCount(String(n))} /> : null}
 
-                {!proBono ? <SociosField value={socios} onChange={setSocios} /> : null}
+        {!proBono ? <div><SociosField value={socios} onChange={setSocios} /></div> : null}
 
         {!hideObject ? (
-          <div className="sm:col-span-2">
+          <div>
             <ObjectClauseField value={object} onChange={setObject} />
           </div>
         ) : null}
         {!hideObject && personType === "PF" ? (
-                    <div className="space-y-2 text-sm sm:col-span-2">
+          <div className="space-y-2 text-sm">
             <p className="font-medium">Pedir Gratuidade de Justiça?</p>
             <div className="flex items-center gap-6">
               <label className="flex items-center gap-2">
