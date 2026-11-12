@@ -221,7 +221,7 @@ export const analisarObjetoProcuracao = createServerFn({ method: "POST" })
         // Palavra inteira também com acentos (\b não reconhece "ação" dentro de "homologação")
     const temPalavra = (lista: string) => new RegExp(`(?<![\\p{L}\\p{N}])(${lista})(?![\\p{L}\\p{N}])`, "iu").test(objeto);
     const hasPartContraria = Boolean(parteContraria) || temPalavra("em face de|contra|réu|ré|parte contrária");
-    const temProcessoCnj = /\d{7}-?\d{2}\. ?\d{4}/.test(objeto);
+        const temProcessoCnj = /\d{7}-?\d{2}\. ?\d{4}\. ?\d{2}\. ?\d{4}/.test(objeto);
     const hasAssunto = temProcessoCnj ||
       temPalavra("ações?|processos?|autos|demandas?|cobranças?|indenizaç(?:ão|ões)|execuç(?:ão|ões)|contratos?|divórcio|inventário|partilha|benefícios?|aposentadoria|acidentes?|verbas?|rescisão|danos?|homologação|exoneração|alimentos|guarda|alvará|usucapião|revisão|cumprimento de sentença|recursos?|mandado de segurança") ||
       temPalavra("sobre|relativos?|relativas?|referentes?|acerca d[oa]s?");
