@@ -269,17 +269,7 @@ export function ContractForm({
           </>
         ) : null}
 
-        {!proBono ? (
-          <div className="space-y-2">
-            <Label>Forma de Pagamento</Label>
-            <Select value={paymentMethod} onValueChange={setPaymentMethod}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>{PAYMENT_METHODS.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
-            </Select>
-          </div>
-        ) : null}
-
-                <div className="space-y-2">
+                        <div className="space-y-2">
                     <Label>Forma de Captação</Label>
           <Select value={captacao} onValueChange={(value) => setCaptacao(value === "nenhuma" ? "" : value)}>
 
