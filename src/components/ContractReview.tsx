@@ -125,7 +125,8 @@ export function ContractReview({ contractId, personType, onBack, onEditObject, o
       setAnalysis(result);
       setPoderes(result.poderes_especificos);
       setDestino(result.destino);
-      setEditing(result.situacao !== "ok" || !result.destino.trim());
+            // Tela limpa: campos só abrem sozinhos se faltar o tribunal (sem ele não dá para finalizar)
+      setEditing(!result.destino.trim());
     } catch (error) {
       toast.error(errorMessage(error, "Não foi possível analisar o objeto."));
     } finally {
