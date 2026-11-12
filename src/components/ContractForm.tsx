@@ -220,7 +220,7 @@ export function ContractForm({
 
   return (
     <>
-      <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-2 [&_input:not([type=checkbox])]:h-9 [&_input:not([type=checkbox])]:text-sm">
         <div className="space-y-2">
           <Label>Modalidade</Label>
           <Select value={modality} onValueChange={(value) => setModality(value as ContractModality)}>
@@ -241,6 +241,16 @@ export function ContractForm({
           </Select>
         </div>
 
+                        {!proBono ? (
+          <div className="space-y-2">
+            <Label>Forma de Pagamento</Label>
+            <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>{PAYMENT_METHODS.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+        ) : null}
+
                 {!semParcelas ? (
           <>
             <div className="space-y-2">
@@ -259,17 +269,7 @@ export function ContractForm({
           </>
         ) : null}
 
-        {!proBono ? (
-          <div className="space-y-2">
-            <Label>Forma de Pagamento</Label>
-            <Select value={paymentMethod} onValueChange={setPaymentMethod}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>{PAYMENT_METHODS.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
-            </Select>
-          </div>
-        ) : null}
-
-                <div className="space-y-2">
+                        <div className="space-y-2">
                     <Label>Forma de Captação</Label>
           <Select value={captacao} onValueChange={(value) => setCaptacao(value === "nenhuma" ? "" : value)}>
 
