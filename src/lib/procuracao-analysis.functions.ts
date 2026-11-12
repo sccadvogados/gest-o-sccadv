@@ -218,11 +218,15 @@ export const analisarObjetoProcuracao = createServerFn({ method: "POST" })
     }
 
         const parteContraria = typeof contract.parte_contraria === "string" ? contract.parte_contraria.trim() : "";
-    const hasPartContraria = Boolean(parteContraria) || /\b(em face de|contra|réu|ré|parte contrária)\b/i.test(objeto);
-    const hasAssunto = /\b(ação|processo|demanda|cobrança|indenização|execução|contrato|divórcio|inventário|benefício|aposentadoria|acidente|verbas?|rescisão|danos?)\b/i.test(objeto) ||
-      /\b(sobre|relativo ao?|referente ao?|acerca do?)\b/i.test(objeto);
+        // Palavra inteira também com acentos (\b não reconhece "ação" dentro de "homologação")
+    const temPalavra = (lista: string) => new RegExp(`(?<![\\p{L}\\p{N}])(${lista})(?![\\p{L}\\p{N}])`, "iu").test(objeto);
+    const hasPartContraria = Boolean(parteContraria) || temPalavra("em face de|contra|réu|ré|parte contrária");
+    const temProcessoCnj = /\d{7}-?\d{2}\. ?\d{4}/.test(objeto);
+    const hasAssunto = temProcessoCnj ||
+      temPalavra("ações?|processos?|autos|demandas?|cobranças?|indenizaç(?:ão|ões)|execuç(?:ão|ões)|contratos?|divórcio|inventário|partilha|benefícios?|aposentadoria|acidentes?|verbas?|rescisão|danos?|homologação|exoneração|alimentos|guarda|alvará|usucapião|revisão|cumprimento de sentença|recursos?|mandado de segurança") ||
+      temPalavra("sobre|relativos?|relativas?|referentes?|acerca d[oa]s?");
     if (!hasAssunto && !hasPartContraria) {
-      return blockedAnalysisResult("Informe o assunto e a parte contrária do objeto do contrato.");
+      return blockedAnalysisResult("Informe o assunto do objeto (e a parte contrária, quando houver).");
     }
 
     const [{ data: tribunais, error: tribunaisError }, { data: exemplos, error: exemplosError }] = await Promise.all([
