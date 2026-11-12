@@ -922,7 +922,18 @@ function EditContractDialog({
       const { error } = await officeDatabase(supabase).from("contracts").update(contractUpdate).eq("id", contract.id);
       if (error) throw error;
 
-            if (hasPaidInstallment) return;
+                        if (hasPaidInstallment) return;
+
+      // Só refaz as parcelas se mudou algo que as define (valor, quantidade, data, modalidade ou forma).
+      // Evita, p. ex., que editar só a descrição de um contrato antigo no cartão empurre os vencimentos em 30 dias.
+      const mudouParcelas =
+        Math.abs(totalValue - (Number(contract.total_value) || 0)) > 0.005 ||
+        installmentsCount !== Number(contract.installments_count) ||
+        firstDue !== contract.first_due_date ||
+        modality !== contract.modality ||
+        paymentMethod !== (contract.payment_method ?? PAYMENT_METHODS[0]);
+      if (!mudouParcelas) return;
+
 
       const { error: deleteError } = await supabase.from("installments").delete().eq("contract_id", contract.id);
       if (deleteError) throw deleteError;
