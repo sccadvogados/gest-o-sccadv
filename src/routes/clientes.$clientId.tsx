@@ -78,6 +78,7 @@ import {
 import { useValoresOcultos } from "@/lib/valores-ocultos";
 import { CartaoSimulacao } from "@/components/CartaoSimulacao";
 import { CartaoAsaas } from "@/components/CartaoAsaas";
+import { DadosPessoaJuridica } from "@/components/DadosPessoaJuridica";
 
 export const Route = createFileRoute("/clientes/$clientId")({
   head: () => ({
@@ -364,10 +365,13 @@ function ClientDetailPage() {
           ))}
         </TabsList>
 
-        <TabsContent value="dados">
+                <TabsContent value="dados">
+          {client.person_type === "PJ" ? (
+            <DadosPessoaJuridica clientId={clientId} cnpj={client.cpf_cnpj} email={client.email} phone={client.phone} address={address} notes={client.notes} />
+          ) : (
             <section className="panel mt-6 grid gap-5 rounded-xl border border-[#E6D6C4] border-t-[3px] border-t-[#D4A782] bg-white p-6 shadow-panel sm:grid-cols-2">
                 <Field label="Nacionalidade" value={client.nationality} />
-        {client.person_type === "PJ" ? <Field label="Descrição da Pessoa Jurídica" value={client.pj_descricao ?? null} /> : null}
+        
         <Field label="Estado Civil" value={client.marital_status} />
         <Field label="Profissão" value={client.profession} />
         <Field
@@ -381,10 +385,11 @@ function ClientDetailPage() {
         </div>
         {client.notes ? (
           <div className="sm:col-span-2">
-            <Field label="Observações" value={client.notes} />
+                        <Field label="Observações" value={client.notes} />
           </div>
         ) : null}
       </section>
+          )}
 
       <section className="mt-8">
                 <h2 className="text-xl font-semibold text-[#0F2340]">Documentos</h2>
