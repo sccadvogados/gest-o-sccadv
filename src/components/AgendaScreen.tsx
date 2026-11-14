@@ -437,9 +437,16 @@ export function AgendaScreen() {
     queryFn: async () => {
       const { data, error } = await supabase.from("contracts").select("id, numero, ano, description, category").eq("client_id", form.cliente_id).order("created_at", { ascending: false });
       if (error) throw error;
-      return data as { id: string; numero: number; ano: number; description: string | null; category: string }[];
+            return data as { id: string; numero: number; ano: number; description: string | null; category: string }[];
     },
   });
+
+  // Novo evento: já sugere o contrato mais recente do cliente (dá para trocar ou escolher "Sem Contrato")
+  useEffect(() => {
+    const maisRecente = contracts[0];
+    if (!maisRecente) return;
+    setForm((atual) => (!atual.id && atual.cliente_id && !atual.contrato_id ? { ...atual, contrato_id: maisRecente.id } : atual));
+  }, [contracts]);
   const selectedClient = clients.find((client) => client.id === form.cliente_id);
   const responsibleNames = useMemo(
     () => [...new Set(events.map((event) => event.responsavel).filter(Boolean) as string[])].sort(),
