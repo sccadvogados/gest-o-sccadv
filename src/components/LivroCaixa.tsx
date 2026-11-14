@@ -147,11 +147,18 @@ export function LivroCaixa() {
         .select("id, numero, ano, objeto")
         .eq("client_id", clienteForm)
         .eq("rascunho", false)
-        .order("created_at");
+                .order("created_at", { ascending: false });
       if (error) throw error;
       return (data ?? []) as Array<{ id: string; numero: number | null; ano: number | null; objeto: string | null }>;
     },
   });
+
+  // Novo lançamento: já sugere o contrato mais recente do cliente (dá para trocar ou escolher "Sem Contrato")
+  useEffect(() => {
+    const maisRecente = contratosCliente?.[0];
+    if (!maisRecente) return;
+    setForm((atual) => (atual && !atual.id && atual.cliente_id === clienteForm && !atual.contrato_id ? { ...atual, contrato_id: maisRecente.id } : atual));
+  }, [contratosCliente, clienteForm]);
 
   // Período: mês ("2026-08") ou ano inteiro ("2026").
   const inicio = periodo.length === 4 ? `${periodo}-01-01` : `${periodo}-01`;
