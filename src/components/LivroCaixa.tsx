@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { Pencil, Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 
@@ -147,11 +147,18 @@ export function LivroCaixa() {
         .select("id, numero, ano, objeto")
         .eq("client_id", clienteForm)
         .eq("rascunho", false)
-        .order("created_at");
+                .order("created_at", { ascending: false });
       if (error) throw error;
       return (data ?? []) as Array<{ id: string; numero: number | null; ano: number | null; objeto: string | null }>;
     },
   });
+
+  // Novo lançamento: já sugere o contrato mais recente do cliente (dá para trocar ou escolher "Sem Contrato")
+  useEffect(() => {
+    const maisRecente = contratosCliente?.[0];
+    if (!maisRecente) return;
+    setForm((atual) => (atual && !atual.id && atual.cliente_id === clienteForm && !atual.contrato_id ? { ...atual, contrato_id: maisRecente.id } : atual));
+  }, [contratosCliente, clienteForm]);
 
   // Período: mês ("2026-08") ou ano inteiro ("2026").
   const inicio = periodo.length === 4 ? `${periodo}-01-01` : `${periodo}-01`;
@@ -622,7 +629,7 @@ export function LivroCaixa() {
                   <Select value={form.contrato_id || "nenhum"} onValueChange={(valor) => setForm({ ...form, contrato_id: valor === "nenhum" ? "" : valor })}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="nenhum">Sem contrato</SelectItem>
+                      <SelectItem value="nenhum">Sem Contrato</SelectItem>
                       {(contratosCliente ?? []).map((contrato) => (
                         <SelectItem key={contrato.id} value={contrato.id}>
                           {`${contrato.numero != null && contrato.ano != null ? `Contrato ${String(contrato.numero).padStart(3, "0")}/${contrato.ano}` : "Contrato"}${contrato.objeto ? ` · ${contrato.objeto.slice(0, 50)}${contrato.objeto.length > 50 ? "…" : ""}` : ""}`}
