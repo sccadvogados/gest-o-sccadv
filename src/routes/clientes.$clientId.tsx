@@ -78,6 +78,7 @@ import {
 import { useValoresOcultos } from "@/lib/valores-ocultos";
 import { CartaoSimulacao } from "@/components/CartaoSimulacao";
 import { CartaoAsaas } from "@/components/CartaoAsaas";
+import { DadosPessoaJuridica } from "@/components/DadosPessoaJuridica";
 
 export const Route = createFileRoute("/clientes/$clientId")({
   head: () => ({
