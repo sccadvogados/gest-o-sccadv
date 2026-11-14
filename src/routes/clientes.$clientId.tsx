@@ -365,7 +365,10 @@ function ClientDetailPage() {
           ))}
         </TabsList>
 
-        <TabsContent value="dados">
+                <TabsContent value="dados">
+          {client.person_type === "PJ" ? (
+            <DadosPessoaJuridica clientId={clientId} cnpj={client.cpf_cnpj} email={client.email} phone={client.phone} address={address} notes={client.notes} />
+          ) : (
             <section className="panel mt-6 grid gap-5 rounded-xl border border-[#E6D6C4] border-t-[3px] border-t-[#D4A782] bg-white p-6 shadow-panel sm:grid-cols-2">
                 <Field label="Nacionalidade" value={client.nationality} />
         
