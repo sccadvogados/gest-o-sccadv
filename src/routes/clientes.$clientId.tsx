@@ -381,10 +381,11 @@ function ClientDetailPage() {
         </div>
         {client.notes ? (
           <div className="sm:col-span-2">
-            <Field label="Observações" value={client.notes} />
+                        <Field label="Observações" value={client.notes} />
           </div>
         ) : null}
       </section>
+          )}
 
       <section className="mt-8">
                 <h2 className="text-xl font-semibold text-[#0F2340]">Documentos</h2>
