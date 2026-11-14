@@ -629,7 +629,7 @@ export function LivroCaixa() {
                   <Select value={form.contrato_id || "nenhum"} onValueChange={(valor) => setForm({ ...form, contrato_id: valor === "nenhum" ? "" : valor })}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="nenhum">Sem contrato</SelectItem>
+                      <SelectItem value="nenhum">Sem Contrato</SelectItem>
                       {(contratosCliente ?? []).map((contrato) => (
                         <SelectItem key={contrato.id} value={contrato.id}>
                           {`${contrato.numero != null && contrato.ano != null ? `Contrato ${String(contrato.numero).padStart(3, "0")}/${contrato.ano}` : "Contrato"}${contrato.objeto ? ` · ${contrato.objeto.slice(0, 50)}${contrato.objeto.length > 50 ? "…" : ""}` : ""}`}
