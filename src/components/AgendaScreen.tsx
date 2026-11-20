@@ -625,16 +625,18 @@ export function AgendaScreen() {
             id,
             event: {
               ...event,
-              status: "cumprido",
+                            status: "cumprido",
               cliente_nome: clients.find((client) => client.id === event.cliente_id)?.name ?? null,
             },
           },
         });
+        return criarProtocoloDoPrazo(event);
       }
+      return false;
     },
-    onSuccess: () => {
+    onSuccess: (protocolo) => {
       queryClient.invalidateQueries({ queryKey: ["agenda-events"] });
-      toast.success("Evento marcado como cumprido.");
+      toast.success(protocolo ? "Prazo cumprido. Protocolo criado para o Raphael." : "Evento marcado como cumprido.");
     },
     onError: () => toast.error("Não foi possível atualizar o evento."),
   });
