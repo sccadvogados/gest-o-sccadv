@@ -567,6 +567,53 @@ export function AgendaScreen() {
         onError: () => toast.error("Ainda não foi possível enviar ao Google Agenda."),
   });
 
+    /** Prazo cumprido → cria o Protocolo para o Raphael (mesmo cliente/processo), uma única vez. */
+  const criarProtocoloDoPrazo = async (prazo: AgendaEvent) => {
+    if (prazo.tipo !== "prazo") return false;
+    const titulo = `Protocolo – ${prazo.titulo.replace(/^\[?prazo\]?\s*[-–]?\s*/i, "")}`.slice(0, 200);
+    const { data: existente } = await officeDatabase(supabase)
+      .from("eventos")
+      .select("id")
+      .eq("tipo", "protocolo")
+      .eq("titulo", titulo)
+      .neq("status", "cancelado")
+      .limit(1);
+    if (existente && existente.length > 0) return false;
+    // Data: próximo dia útil depois de hoje (pula sábado, domingo e feriados cadastrados)
+    const feriados = new Set(holidays.map((dia) => String(dia).slice(0, 10)));
+    const proximo = new Date(`${today}T12:00:00Z`);
+    do {
+      proximo.setUTCDate(proximo.getUTCDate() + 1);
+    } while ([0, 6].includes(proximo.getUTCDay()) || feriados.has(proximo.toISOString().slice(0, 10)));
+    const data = proximo.toISOString().slice(0, 10);
+    const novo = {
+      tipo: "protocolo",
+      titulo,
+      descricao: `Gerado automaticamente ao cumprir o prazo "${prazo.titulo}".`,
+      cliente_id: prazo.cliente_id,
+      contrato_id: prazo.contrato_id,
+      numero_processo: prazo.numero_processo,
+      parte_contraria: prazo.parte_contraria,
+      responsavel: "Raphael Corradi",
+      status: "pendente",
+      dia_inteiro: true,
+      data_inicio: `${data}T00:00:00-03:00`,
+      data_fim: null,
+      local_link: null,
+      created_by: (await supabase.auth.getUser()).data.user?.id ?? null,
+    };
+    const { data: criado, error } = await officeDatabase(supabase).from("eventos").insert(novo).select("id").single();
+    if (error) throw error;
+    try {
+      await syncCreateEvent({
+        data: { ...novo, id: criado.id, cliente_nome: clients.find((client) => client.id === prazo.cliente_id)?.name ?? null },
+      });
+    } catch {
+      /* fica "Não sincronizado" na lista, com o botão Tentar Novamente */
+    }
+    return true;
+  };
+
   const markDone = useMutation({
     mutationFn: async (id: string) => {
                         const { error } = await officeDatabase(supabase).from("eventos").update({ status: "cumprido" }).eq("id", id);
