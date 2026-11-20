@@ -79,14 +79,55 @@ export const Route = createFileRoute("/api/avisos-agenda")({
         if (!segredo || !privada) return json({ erro: "Configuração ausente" }, 500);
         if (!iguais(request.headers.get("x-scc-cron") ?? "", segredo)) return json({ erro: "Não autorizado" }, 401);
 
-        const pedido = (await request.json().catch(() => ({}))) as { evento_id?: unknown; acao?: unknown; autor?: unknown };
-        const acao = pedido.acao === "cumprido" ? "cumprido" : pedido.acao === "agendado" ? "agendado" : null;
-        if (!acao || typeof pedido.evento_id !== "string") return json({ erro: "Pedido inválido" }, 400);
+                const pedido = (await request.json().catch(() => ({}))) as { evento_id?: unknown; lancamento_id?: unknown; acao?: unknown; autor?: unknown };
         const autor = typeof pedido.autor === "string" ? pedido.autor : null;
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const { enviarPush } = await import("@/lib/web-push.server");
         const db = supabaseAdmin as unknown as Banco;
+
+        // Livro-Caixa: avisa todos, menos quem fez o lançamento.
+        if (pedido.acao === "lancamento" && typeof pedido.lancamento_id === "string") {
+          const { data: l } = await db.from("lancamentos").select("id, tipo, descricao, valor, data, cliente_id").eq("id", pedido.lancamento_id).maybeSingle();
+          if (!l) return json({ erro: "Lançamento não encontrado" }, 404);
+          let clienteL = "";
+          if (l["cliente_id"]) {
+            const { data: c } = await db.from("clients").select("name, person_type").eq("id", l["cliente_id"]).maybeSingle();
+            if (c) clienteL = nomeCurto(String(c["name"] ?? ""), c["person_type"] === "PJ");
+          }
+          let quemL = "";
+          if (autor) {
+            const { data: perfil } = await db.from("perfis").select("nome").eq("id", autor).maybeSingle();
+            quemL = String(perfil?.["nome"] ?? "").trim().split(/\s+/)[0] ?? "";
+          }
+          const entrada = l["tipo"] === "entrada";
+          const avisoL = {
+            title: quemL ? `${quemL} Lançou uma ${entrada ? "Entrada" : "Saída"}` : `Nova ${entrada ? "Entrada" : "Saída"} no Caixa`,
+            body: [reais(l["valor"]), String(l["descricao"] ?? "").trim(), clienteL, dataBR(l["data"])].filter(Boolean).join(" · "),
+            url: "/financeiro",
+            tag: `lancamento-${String(l["id"])}`,
+          };
+          const { data: linhasL } = await db.rpc("push_inscricoes_ativas", {});
+          const destinos = (linhasL ?? [])
+            .filter((x) => !(autor && String(x["user_id"]) === autor))
+            .map((x) => ({ id: String(x["id"]), endpoint: String(x["endpoint"]), p256dh: String(x["p256dh"]), auth: String(x["auth"]) }));
+          const vencidasL: string[] = [];
+          let enviadosL = 0;
+          for (const inscricao of destinos) {
+            try {
+              const status = await enviarPush(inscricao, avisoL, privada);
+              if (status === 404 || status === 410) vencidasL.push(inscricao.id);
+              else if (status < 300) enviadosL += 1;
+            } catch {
+              /* um aparelho com problema não impede os outros */
+            }
+          }
+          if (vencidasL.length) await db.from("push_inscricoes").delete().in("id", vencidasL);
+          return json({ acao: "lancamento", avisos_enviados: enviadosL });
+        }
+
+        const acao = pedido.acao === "cumprido" ? "cumprido" : pedido.acao === "agendado" ? "agendado" : null;
+        if (!acao || typeof pedido.evento_id !== "string") return json({ erro: "Pedido inválido" }, 400);
 
         const { data: evento } = await db.from("eventos").select("id, tipo, titulo, data_inicio, dia_inteiro, cliente_id").eq("id", pedido.evento_id).maybeSingle();
         if (!evento) return json({ erro: "Evento não encontrado" }, 404);
