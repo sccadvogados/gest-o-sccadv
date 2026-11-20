@@ -496,8 +496,13 @@ export function AgendaScreen() {
       if (!dataInicio) throw new Error("Informe a data do evento.");
       const payload = { ...values, cliente_id: form.cliente_id || null, contrato_id: form.contrato_id || null, data_inicio: dataInicio, data_fim: ["prazo", "protocolo", "acompanhamento"].includes(form.tipo) ? null : brazilDateTime(form.data_fim), ...(["reuniao", "audiencia", "julgamento"].includes(form.tipo) ? { dia_inteiro: false } : form.tipo === "acompanhamento" ? { dia_inteiro: true } : {}), local_link: !["prazo", "protocolo", "acompanhamento"].includes(form.tipo) ? form.local_link || null : null, status: form.status, ...(form.id ? {} : { created_by: (await supabase.auth.getUser()).data.user?.id ?? null }) };
       if (form.id) {
+                                const anterior = events.find((item) => item.id === form.id);
                 const { error } = await officeDatabase(supabase).from("eventos").update(payload).eq("id", form.id);
         if (error) throw error;
+        // Prazo marcado como cumprido pelo formulário: também gera o Protocolo para o Raphael
+        if (anterior && anterior.status !== "cumprido" && form.status === "cumprido") {
+          await criarProtocoloDoPrazo({ ...anterior, ...payload, id: form.id } as AgendaEvent).catch(() => toast.error("Prazo salvo, mas não foi possível criar o Protocolo."));
+        }
                                                 try {
           const sync = await syncUpdateEvent({
             data: {
@@ -567,6 +572,53 @@ export function AgendaScreen() {
         onError: () => toast.error("Ainda não foi possível enviar ao Google Agenda."),
   });
 
+    /** Prazo cumprido → cria o Protocolo para o Raphael (mesmo cliente/processo), uma única vez. */
+  const criarProtocoloDoPrazo = async (prazo: AgendaEvent) => {
+    if (prazo.tipo !== "prazo") return false;
+    const titulo = `Protocolo – ${prazo.titulo.replace(/^\[?prazo\]?\s*[-–]?\s*/i, "")}`.slice(0, 200);
+    const { data: existente } = await officeDatabase(supabase)
+      .from("eventos")
+      .select("id")
+      .eq("tipo", "protocolo")
+      .eq("titulo", titulo)
+      .neq("status", "cancelado")
+      .limit(1);
+    if (existente && existente.length > 0) return false;
+    // Data: próximo dia útil depois de hoje (pula sábado, domingo e feriados cadastrados)
+    const feriados = new Set(holidays.map((dia) => String(dia).slice(0, 10)));
+    const proximo = new Date(`${today}T12:00:00Z`);
+    do {
+      proximo.setUTCDate(proximo.getUTCDate() + 1);
+    } while ([0, 6].includes(proximo.getUTCDay()) || feriados.has(proximo.toISOString().slice(0, 10)));
+    const data = proximo.toISOString().slice(0, 10);
+    const novo = {
+      tipo: "protocolo",
+      titulo,
+      descricao: `Gerado automaticamente ao cumprir o prazo "${prazo.titulo}".`,
+      cliente_id: prazo.cliente_id,
+      contrato_id: prazo.contrato_id,
+      numero_processo: prazo.numero_processo,
+      parte_contraria: prazo.parte_contraria,
+      responsavel: "Raphael Corradi",
+      status: "pendente",
+      dia_inteiro: true,
+      data_inicio: `${data}T00:00:00-03:00`,
+      data_fim: null,
+      local_link: null,
+      created_by: (await supabase.auth.getUser()).data.user?.id ?? null,
+    };
+    const { data: criado, error } = await officeDatabase(supabase).from("eventos").insert(novo).select("id").single();
+    if (error) throw error;
+    try {
+      await syncCreateEvent({
+        data: { ...novo, id: criado.id, cliente_nome: clients.find((client) => client.id === prazo.cliente_id)?.name ?? null },
+      });
+    } catch {
+      /* fica "Não sincronizado" na lista, com o botão Tentar Novamente */
+    }
+    return true;
+  };
+
   const markDone = useMutation({
     mutationFn: async (id: string) => {
                         const { error } = await officeDatabase(supabase).from("eventos").update({ status: "cumprido" }).eq("id", id);
@@ -578,16 +630,18 @@ export function AgendaScreen() {
             id,
             event: {
               ...event,
-              status: "cumprido",
+                            status: "cumprido",
               cliente_nome: clients.find((client) => client.id === event.cliente_id)?.name ?? null,
             },
           },
         });
+        return criarProtocoloDoPrazo(event);
       }
+      return false;
     },
-    onSuccess: () => {
+    onSuccess: (protocolo) => {
       queryClient.invalidateQueries({ queryKey: ["agenda-events"] });
-      toast.success("Evento marcado como cumprido.");
+      toast.success(protocolo ? "Prazo cumprido. Protocolo criado para o Raphael." : "Evento marcado como cumprido.");
     },
     onError: () => toast.error("Não foi possível atualizar o evento."),
   });
