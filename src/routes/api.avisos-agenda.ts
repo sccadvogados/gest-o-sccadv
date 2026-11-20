@@ -61,6 +61,12 @@ function quando(evento: Record<string, unknown>) {
   return `${dia} às ${partes["hour"]}h${partes["minute"] === "00" ? "" : partes["minute"]}`;
 }
 
+const reais = (v: unknown) => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(Number(v ?? 0));
+const dataBR = (d: unknown) => {
+  const [a, m, dia] = String(d ?? "").split("-");
+  return a && m && dia ? `${dia}/${m}` : "";
+};
+
 const json = (corpo: unknown, status = 200) =>
   new Response(JSON.stringify(corpo), { status, headers: { "content-type": "application/json; charset=utf-8" } });
 
