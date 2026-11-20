@@ -96,8 +96,14 @@ export const Route = createFileRoute("/api/avisos-agenda")({
         const titulo = String(evento["titulo"] ?? "").trim();
         const data = quando(evento);
         // Título: "Prazo Agendado" / "Audiência Cumprida". Texto: cliente · título do evento · data.
+                // Cumprido: "Tiago Cumpriu o Prazo" (primeiro nome de quem cumpriu)
+        let quem = "";
+        if (acao === "cumprido" && autor) {
+          const { data: perfil } = await db.from("perfis").select("nome").eq("id", autor).maybeSingle();
+          quem = String(perfil?.["nome"] ?? "").trim().split(/\s+/)[0] ?? "";
+        }
         const aviso = {
-          title: `${tipo.nome} ${verbo}`,
+          title: quem ? `${quem} Cumpriu ${tipo.feminino ? "a" : "o"} ${tipo.nome}` : `${tipo.nome} ${verbo}`, 
           body: [cliente, titulo, data].filter(Boolean).join(" · ") || "Toque para ver na Agenda.",
           url: "/agenda",
           tag: `evento-${String(evento["id"])}-${acao}`,
