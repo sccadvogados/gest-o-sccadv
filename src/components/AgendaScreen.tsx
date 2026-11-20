@@ -496,8 +496,13 @@ export function AgendaScreen() {
       if (!dataInicio) throw new Error("Informe a data do evento.");
       const payload = { ...values, cliente_id: form.cliente_id || null, contrato_id: form.contrato_id || null, data_inicio: dataInicio, data_fim: ["prazo", "protocolo", "acompanhamento"].includes(form.tipo) ? null : brazilDateTime(form.data_fim), ...(["reuniao", "audiencia", "julgamento"].includes(form.tipo) ? { dia_inteiro: false } : form.tipo === "acompanhamento" ? { dia_inteiro: true } : {}), local_link: !["prazo", "protocolo", "acompanhamento"].includes(form.tipo) ? form.local_link || null : null, status: form.status, ...(form.id ? {} : { created_by: (await supabase.auth.getUser()).data.user?.id ?? null }) };
       if (form.id) {
+                                const anterior = events.find((item) => item.id === form.id);
                 const { error } = await officeDatabase(supabase).from("eventos").update(payload).eq("id", form.id);
         if (error) throw error;
+        // Prazo marcado como cumprido pelo formulário: também gera o Protocolo para o Raphael
+        if (anterior && anterior.status !== "cumprido" && form.status === "cumprido") {
+          await criarProtocoloDoPrazo({ ...anterior, ...payload, id: form.id } as AgendaEvent).catch(() => toast.error("Prazo salvo, mas não foi possível criar o Protocolo."));
+        }
                                                 try {
           const sync = await syncUpdateEvent({
             data: {
