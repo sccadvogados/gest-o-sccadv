@@ -496,7 +496,7 @@ function ClientDetailPage() {
                   <Badge className="border-[#BFD3C5] bg-[#E7F2EA] font-semibold text-[#256b3a] hover:bg-[#E7F2EA]">{`Êxito recebido: ${formatCurrency(recebidosExito[contract.id]!.exito)}`}</Badge>
                 ) : null}
                 {recebidosExito?.[contract.id]?.sucumbencia ? (
-                  <Badge className="border-[#BFD3C5] bg-[#E7F2EA] font-semibold text-[#256b3a] hover:bg-[#E7F2EA]">{`Sucumbência recebida: ${formatCurrency(recebidosExito[contract.id]!.sucumbencia)}`}</Badge>
+                  <Badge className="border-[#BFD3C5] bg-[#E7F2EA] font-semibold text-[#256b3a] hover:bg-[#E7F2EA]">{`Sucumbência Recebida: ${formatCurrency(recebidosExito[contract.id]!.sucumbencia)}`}</Badge>
                 ) : null}
                 <ContractActions
                   clientId={clientId}
